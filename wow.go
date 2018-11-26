@@ -154,20 +154,21 @@ func main() {
 
 		auctionURL := getAuctionURL(*realm, token)
 		if auctionURL == lastAuctionURL {
-			fmt.Println("No new AH data ...")
+			fmt.Printf(".")
 			time.Sleep(60 * time.Second)
 			retries++
 			continue
 		}
 		fmt.Println("retries:", retries)
+		fmt.Println()
 		retries = 0
 		lastAuctionURL = auctionURL
 
 		auctions := getAuctions(auctionURL)
 
-		fmt.Println()
 		letsGoShopping(auctions)
 		fmt.Println()
 		arbitrage(auctions, token)
+		fmt.Println()
 	}
 }
