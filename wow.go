@@ -11,6 +11,13 @@ import (
 	"time"
 )
 
+// Good represents an item that we could go shopping for.
+type Good struct {
+	item     int64
+	maxPrice int64
+	name     string
+}
+
 var (
 	clientID     = flag.String("clientID", "", "WoW API client ID")
 	clientSecret = flag.String("clientSecret", "", "WoW API client secret")
@@ -40,21 +47,7 @@ func getAuctions(auctionURL string) []interface{} {
 }
 
 // letsGoShopping() alerts if it finds bargain prices on goods I need.
-func letsGoShopping(auctions []interface{}) {
-	var goods = []struct {
-		item     int64
-		maxPrice int64
-		name     string
-	}{
-		{33447, 28000, "Runic Healing Potion"},
-		{34721, 28000, "Frostweave Bandage"},
-		{34722, 40000, "Heavy Frostweave Bandage"},
-
-		// Enchanting
-		{34054, 20000, "Infinite Dust"},
-		{34056, 25000, "Lesser Cosmic Essence"},
-	}
-
+func letsGoShopping(auctions []interface{}, goods []Good) {
 	for _, a := range auctions {
 		auction := a.(map[string]interface{})
 		id := web.ToInt64(auction["item"])
@@ -76,30 +69,40 @@ func webGetItem(id, accessToken string) map[string]interface{} {
 	return web.RequestJSON(url)
 }
 
-func lookupItem(id int64, accessToken string) database.Item {
-	var item database.Item
+func lookupItem(id int64, accessToken string) (item database.Item) {
 	var ok bool
+	cache := true
 
 	// Do we have it cached in the database?
 	item, ok = database.LookupItem(id)
 	if ok {
-		return item
+		return
 	}
 
 	i := webGetItem(web.ToString(id), accessToken)
-	_, ok = i["sellPrice"]
-	if !ok {
-		fmt.Println("Item had no sellPrice")
-		return item
-	}
 	item.Id = web.ToInt64(i["id"])
-	item.Name = i["name"].(string)
-	item.SellPrice = web.ToInt64(i["sellPrice"])
 	item.JSON = fmt.Sprintf("%v", i)
+	_, ok = i["sellPrice"]
+	if ok {
+		item.SellPrice = web.ToInt64(i["sellPrice"])
+	} else {
+		fmt.Println("Item had no sellPrice:", i)
+		cache = false
+	}
+	_, ok = i["name"]
+	if ok {
+		item.Name = i["name"].(string)
+	} else {
+		fmt.Println("Item had no name:", i)
+		cache = false
+	}
 
-	database.SaveItem(item)
+	// Cache it. Database lookups are much faster than web calls.
+	if cache {
+		database.SaveItem(item)
+	}
 
-	return item
+	return
 }
 
 // arbitrage() alerts if it finds auction prices that are lower than vendor prices.
@@ -117,22 +120,21 @@ func arbitrage(auctions []interface{}, accessToken string) {
 			continue
 		}
 		item := lookupItem(id, accessToken)
-		sellPrice := item.SellPrice
 		bid := web.ToInt64(auction["bid"])
 		quantity := web.ToInt64(auction["quantity"])
 		buyout := web.ToInt64(auction["buyout"])
 		unitBid := bid / quantity
 		unitBuyout := buyout / quantity
-		if unitBuyout > 0 && unitBuyout < sellPrice {
-			profit := sellPrice*quantity - buyout
-			if profit < 100 {
+		if unitBuyout > 0 && unitBuyout < item.SellPrice {
+			profit := item.SellPrice*quantity - buyout
+			if profit < 500 {
 				continue
 			}
 			fmt.Printf("Buy!  '%s' %s %d %d\n", item.Name, auction["owner"], quantity, profit)
 		} else {
-			if unitBid < sellPrice {
-				profit := sellPrice*quantity - bid
-				if profit < 500 {
+			if unitBid < item.SellPrice {
+				profit := item.SellPrice*quantity - bid
+				if profit < 5000 {
 					continue
 				}
 				fmt.Printf("Bid   '%s' %s %d %d\n", item.Name, auction["owner"], quantity, profit)
@@ -166,7 +168,18 @@ func main() {
 
 		auctions := getAuctions(auctionURL)
 
-		letsGoShopping(auctions)
+		var goods = []Good{
+			// Health
+			{33447, 30000, "Runic Healing Potion"},
+			{34721, 28000, "Frostweave Bandage"},
+			{34722, 40000, "Heavy Frostweave Bandage"},
+
+			// Enchanting
+			{34054, 25000, "Infinite Dust"},
+			{34056, 30000, "Lesser Cosmic Essence"},
+		}
+
+		letsGoShopping(auctions, goods)
 		fmt.Println()
 		arbitrage(auctions, token)
 		fmt.Println()
