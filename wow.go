@@ -24,8 +24,8 @@ var (
 	realm        = flag.String("realm", "icecrown", "WoW realm")
 )
 
-// accessToken() retrieves an access token from battle.net. This token is used to authenticate API calls.
-func accessToken(id, secret string) string {
+// getAccessToken() retrieves an access token from battle.net. This token is used to authenticate API calls.
+func getAccessToken(id, secret string) string {
 	url := "https://us.battle.net/oauth/token?client_id=" + id + "&client_secret=" + secret + "&grant_type=client_credentials"
 	response := web.RequestJSON(url)
 	return response["access_token"].(string)
@@ -46,7 +46,7 @@ func getAuctions(auctionURL string) []interface{} {
 	return auctions
 }
 
-// letsGoShopping() alerts if it finds bargain prices on goods I need.
+// letsGoShopping() alerts if it finds bargain prices on a given list of goods.
 func letsGoShopping(auctions []interface{}, goods []Good) {
 	for _, a := range auctions {
 		auction := a.(map[string]interface{})
@@ -58,7 +58,7 @@ func letsGoShopping(auctions []interface{}, goods []Good) {
 		for _, good := range goods {
 			if id == good.item && unitBuyout < good.maxPrice {
 				discount := good.maxPrice - unitBuyout
-				fmt.Printf("Shop  '%s' %s %d %d\n", good.name, auction["owner"], quantity, discount)
+				fmt.Printf("Shop  '%s' %s quantity: %d save: %d\n", good.name, auction["owner"], quantity, discount)
 			}
 		}
 	}
@@ -105,40 +105,42 @@ func lookupItem(id int64, accessToken string) (item database.Item) {
 	return
 }
 
-// arbitrage() alerts if it finds auction prices that are lower than vendor prices.
-func arbitrage(auctions []interface{}, accessToken string) {
-	blacklist := map[int64]bool{
-		71359:  true, // Chelley's Sterilized Scalpel
-		71366:  true, // Lava Bolt Crossbow
-		111475: true, // Beater's Beat Stick
-	}
+// getAuctionItems retrieves the item data for every item in the auction house data. This is faster than querying for each item and each of its repeats. It also makes the tests simpler.
+func getAuctionItems(auctions []interface{}, accessToken string) map[int64]database.Item {
+	var items = map[int64]database.Item{}
 
 	for _, a := range auctions {
 		auction := a.(map[string]interface{})
 		id := web.ToInt64(auction["item"])
-		if blacklist[id] {
+		if _, ok := items[id]; ok {
 			continue
 		}
 		item := lookupItem(id, accessToken)
+		items[id] = item
+	}
+
+	return items
+}
+
+// arbitrage() flags auction prices that are lower than vendor prices.
+func arbitrage(auctions []interface{}, items map[int64]database.Item) {
+	for _, a := range auctions {
+		auction := a.(map[string]interface{})
+		item := items[web.ToInt64(auction["item"])]
 		bid := web.ToInt64(auction["bid"])
 		quantity := web.ToInt64(auction["quantity"])
 		buyout := web.ToInt64(auction["buyout"])
-		unitBid := bid / quantity
-		unitBuyout := buyout / quantity
-		if unitBuyout > 0 && unitBuyout < item.SellPrice {
-			profit := item.SellPrice*quantity - buyout
-			if profit < 500 {
-				continue
-			}
+
+		profit := item.SellPrice*quantity - buyout
+		if buyout > 0 && profit >= 500 {
 			fmt.Printf("Buy!  '%s' %s %d %d\n", item.Name, auction["owner"], quantity, profit)
-		} else {
-			if unitBid < item.SellPrice {
-				profit := item.SellPrice*quantity - bid
-				if profit < 5000 {
-					continue
-				}
-				fmt.Printf("Bid   '%s' %s %d %d\n", item.Name, auction["owner"], quantity, profit)
-			}
+			continue
+		}
+
+		profit = item.SellPrice*quantity - bid
+		if profit >= 5000 {
+			fmt.Printf("Bid   '%s' %s %d %d\n", item.Name, auction["owner"], quantity, profit)
+			continue
 		}
 	}
 }
@@ -152,9 +154,9 @@ func main() {
 	lastAuctionURL := ""
 	retries := 0
 	for {
-		token := accessToken(*clientID, *clientSecret)
+		accessToken := getAccessToken(*clientID, *clientSecret)
 
-		auctionURL := getAuctionURL(*realm, token)
+		auctionURL := getAuctionURL(*realm, accessToken)
 		if auctionURL == lastAuctionURL {
 			fmt.Printf(".")
 			time.Sleep(60 * time.Second)
@@ -167,6 +169,7 @@ func main() {
 		lastAuctionURL = auctionURL
 
 		auctions := getAuctions(auctionURL)
+		items := getAuctionItems(auctions, accessToken)
 
 		var goods = []Good{
 			// Health
@@ -181,7 +184,8 @@ func main() {
 
 		letsGoShopping(auctions, goods)
 		fmt.Println()
-		arbitrage(auctions, token)
+
+		arbitrage(auctions, items)
 		fmt.Println()
 	}
 }
