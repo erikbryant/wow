@@ -251,6 +251,8 @@ func main() {
 		retries = 0
 		lastAuctionURL = auctionURL
 
+		fmt.Println("Items:", database.CountItems(), "Auctions:", database.CountAuctions())
+
 		auctions := webGetAuctions(auctionURL)
 		saveAuctions(auctions)
 		items := webGetAllItems(auctions, accessToken)
@@ -285,5 +287,7 @@ func main() {
 			}
 		}
 		fmt.Println()
+
+		fmt.Println("Items:", database.CountItems(), "Auctions:", database.CountAuctions())
 	}
 }

@@ -102,11 +102,12 @@ func SaveAuction(auction Auction) {
 
 func LookupAuction(auc int64) (Auction, bool) {
 	var auction Auction
+	var lastUpdated string
 
 	sqlString := "SELECT * FROM auctions WHERE auc = " + fmt.Sprintf("%d", auc) + " LIMIT 1"
 
 	rows := db.QueryRow(sqlString)
-	err := rows.Scan(&auction.Auc, &auction.Item, &auction.Owner, &auction.Bid, &auction.Buyout, &auction.Quantity, &auction.TimeLeft, &auction.Rand, &auction.Seed, &auction.Context, &auction.HasBonusLists, &auction.HasModifiers, &auction.PetBreedId, &auction.PetLevel, &auction.PetQualityId, &auction.PetSpeciesId, &auction.JSON)
+	err := rows.Scan(&auction.Auc, &auction.Item, &auction.Owner, &auction.Bid, &auction.Buyout, &auction.Quantity, &auction.TimeLeft, &auction.Rand, &auction.Seed, &auction.Context, &auction.HasBonusLists, &auction.HasModifiers, &auction.PetBreedId, &auction.PetLevel, &auction.PetQualityId, &auction.PetSpeciesId, &auction.JSON, &lastUpdated)
 	if err != nil {
 		if err != sql.ErrNoRows {
 			fmt.Println("LookupAuction Scan:", err)
@@ -115,4 +116,26 @@ func LookupAuction(auc int64) (Auction, bool) {
 	}
 
 	return auction, true
+}
+
+func countRows(table string) int64 {
+	var count int64
+
+	sqlString := "SELECT count(*) FROM " + table
+	rows := db.QueryRow(sqlString)
+	err := rows.Scan(&count)
+	if err != nil {
+		fmt.Println("countRows Scan:", err)
+		return -1
+	}
+
+	return count
+}
+
+func CountItems() int64 {
+	return countRows("items")
+}
+
+func CountAuctions() int64 {
+	return countRows("auctions")
 }
