@@ -6,6 +6,7 @@ package main
 import (
 	"./database"
 	"./web"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"time"
@@ -18,58 +19,50 @@ type Good struct {
 	name     string
 }
 
+// ShoppingItem is a single item that the user can purchase.
+type ShoppingItem struct {
+	name     string
+	owner    string
+	quantity int64
+	discount int64
+}
+
 var (
 	clientID     = flag.String("clientID", "", "WoW API client ID")
 	clientSecret = flag.String("clientSecret", "", "WoW API client secret")
 	realm        = flag.String("realm", "icecrown", "WoW realm")
 )
 
-// getAccessToken() retrieves an access token from battle.net. This token is used to authenticate API calls.
-func getAccessToken(id, secret string) string {
+// getAccessToken retrieves an access token from battle.net. This token is used to authenticate API calls.
+func webGetAccessToken(id, secret string) string {
 	url := "https://us.battle.net/oauth/token?client_id=" + id + "&client_secret=" + secret + "&grant_type=client_credentials"
 	response := web.RequestJSON(url)
 	return response["access_token"].(string)
 }
 
-// getAuctionURL() retrieves the URL for the latest auction house data.
-func getAuctionURL(realm, accessToken string) string {
+// getAuctionURL retrieves the URL for the latest auction house data.
+func webGetAuctionURL(realm, accessToken string) string {
 	url := "https://us.api.blizzard.com/wow/auction/data/" + realm + "?locale=en_US&access_token=" + accessToken
 	response := web.RequestJSON(url)
 	data := response["files"].([]interface{})[0].(map[string]interface{})
 	return data["url"].(string)
 }
 
-// getAuctions() retrieves the latest auctions from the auction house.
-func getAuctions(auctionURL string) []interface{} {
+// getAuctions retrieves the latest auctions from the auction house.
+func webGetAuctions(auctionURL string) []interface{} {
 	response := web.RequestJSON(auctionURL)
 	auctions := response["auctions"].([]interface{})
 	return auctions
 }
 
-// letsGoShopping() alerts if it finds bargain prices on a given list of goods.
-func letsGoShopping(auctions []interface{}, goods []Good) {
-	for _, a := range auctions {
-		auction := a.(map[string]interface{})
-		id := web.ToInt64(auction["item"])
-		quantity := web.ToInt64(auction["quantity"])
-		buyout := web.ToInt64(auction["buyout"])
-		unitBuyout := buyout / quantity
-
-		for _, good := range goods {
-			if id == good.item && unitBuyout < good.maxPrice {
-				discount := good.maxPrice - unitBuyout
-				fmt.Printf("Shop  '%s' %s quantity: %d save: %d\n", good.name, auction["owner"], quantity, discount)
-			}
-		}
-	}
-}
-
+// webGetItem retrieves a single item from the WoW web API.
 func webGetItem(id, accessToken string) map[string]interface{} {
 	url := "https://us.api.blizzard.com/wow/item/" + id + "?locale=en_US&access_token=" + accessToken
 	return web.RequestJSON(url)
 }
 
-func lookupItem(id int64, accessToken string) (item database.Item) {
+// lookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also stores it in the database.
+func webLookupItem(id int64, accessToken string) (item database.Item) {
 	var ok bool
 	cache := true
 
@@ -81,7 +74,8 @@ func lookupItem(id int64, accessToken string) (item database.Item) {
 
 	i := webGetItem(web.ToString(id), accessToken)
 	item.Id = web.ToInt64(i["id"])
-	item.JSON = fmt.Sprintf("%v", i)
+	b, _ := json.Marshal(i)
+	item.JSON = fmt.Sprintf("%s", b)
 	_, ok = i["sellPrice"]
 	if ok {
 		item.SellPrice = web.ToInt64(i["sellPrice"])
@@ -105,8 +99,8 @@ func lookupItem(id int64, accessToken string) (item database.Item) {
 	return
 }
 
-// getAuctionItems retrieves the item data for every item in the auction house data. This is faster than querying for each item and each of its repeats. It also makes the tests simpler.
-func getAuctionItems(auctions []interface{}, accessToken string) map[int64]database.Item {
+// getAllItems prefetches item data for every requested item. This is faster than querying for each item and each of its repeats. It also makes the tests simpler.
+func webGetAllItems(auctions []interface{}, accessToken string) map[int64]database.Item {
 	var items = map[int64]database.Item{}
 
 	for _, a := range auctions {
@@ -115,18 +109,105 @@ func getAuctionItems(auctions []interface{}, accessToken string) map[int64]datab
 		if _, ok := items[id]; ok {
 			continue
 		}
-		item := lookupItem(id, accessToken)
+		item := webLookupItem(id, accessToken)
 		items[id] = item
 	}
 
 	return items
 }
 
-// arbitrage() flags auction prices that are lower than vendor prices.
-func arbitrage(auctions []interface{}, items map[int64]database.Item) {
+// itemsWeNeed returns all of the auctions for which the given goods are below our desired prices.
+func itemsWeNeed(auctions []interface{}, goods []Good) map[int64][]ShoppingItem {
+	shoppingList := make(map[int64][]ShoppingItem)
+
+	for _, a := range auctions {
+		auction := a.(map[string]interface{})
+		id := web.ToInt64(auction["item"])
+		quantity := web.ToInt64(auction["quantity"])
+		buyout := web.ToInt64(auction["buyout"])
+		unitBuyout := buyout / quantity
+
+		for _, good := range goods {
+			if id == good.item && unitBuyout < good.maxPrice {
+				discount := good.maxPrice - unitBuyout
+				if _, ok := shoppingList[id]; !ok {
+					shoppingList[id] = []ShoppingItem{}
+				}
+				shoppingItem := ShoppingItem{
+					name:     good.name,
+					owner:    web.ToString(auction["owner"]),
+					quantity: quantity,
+					discount: discount,
+				}
+				shoppingList[id] = append(shoppingList[id], shoppingItem)
+			}
+		}
+	}
+
+	return shoppingList
+}
+
+func jsonToStruct(auc map[string]interface{}) database.Auction {
+	var auction database.Auction
+	var ok bool
+
+	auction.Auc = web.ToInt64(auc["auc"])
+	auction.Item = web.ToInt64(auc["item"])
+	auction.Owner = web.ToString(auc["owner"])
+	auction.Bid = web.ToInt64(auc["bid"])
+	auction.Buyout = web.ToInt64(auc["buyout"])
+	auction.Quantity = web.ToInt64(auc["quantity"])
+	auction.TimeLeft = web.ToString(auc["timeLeft"])
+	auction.Rand = web.ToInt64(auc["rand"])
+	auction.Seed = web.ToInt64(auc["seed"])
+	auction.Context = web.ToInt64(auc["context"])
+	_, auction.HasBonusLists = auc["bonusLists"]
+	_, auction.HasModifiers = auc["bonusModifiers"]
+	if _, ok = auc["petBreedId"]; ok {
+		auction.PetBreedId = web.ToInt64(auc["petBreedId"])
+	}
+	if _, ok = auc["petLevel"]; ok {
+		auction.PetLevel = web.ToInt64(auc["petLevel"])
+	}
+	if _, ok = auc["petQualityId"]; ok {
+		auction.PetQualityId = web.ToInt64(auc["petQualityId"])
+	}
+	if _, ok = auc["petSpeciesId"]; ok {
+		auction.PetSpeciesId = web.ToInt64(auc["petSpeciesId"])
+	}
+	b, _ := json.Marshal(auc)
+	auction.JSON = fmt.Sprintf("%s", b)
+
+	database.SaveAuction(auction)
+
+	return auction
+}
+
+func saveAuctions(auctions []interface{}) []database.Auction {
+	var aucs []database.Auction
+
+	for _, a := range auctions {
+		s := jsonToStruct(a.(map[string]interface{}))
+		aucs = append(aucs, s)
+	}
+
+	return aucs
+}
+
+// arbitrage flags auction prices that are lower than vendor prices.
+func arbitrage(auctions []interface{}, items map[int64]database.Item) map[int64][]ShoppingItem {
+	shoppingList := make(map[int64][]ShoppingItem)
+
 	for _, a := range auctions {
 		auction := a.(map[string]interface{})
 		item := items[web.ToInt64(auction["item"])]
+		var j interface{}
+		json.Unmarshal([]byte(item.JSON), &j)
+		js := j.(map[string]interface{})
+		if js["equippable"].(bool) {
+			// I do not understand how to price these.
+			continue
+		}
 		bid := web.ToInt64(auction["bid"])
 		quantity := web.ToInt64(auction["quantity"])
 		buyout := web.ToInt64(auction["buyout"])
@@ -143,6 +224,8 @@ func arbitrage(auctions []interface{}, items map[int64]database.Item) {
 			continue
 		}
 	}
+
+	return shoppingList
 }
 
 func main() {
@@ -154,9 +237,9 @@ func main() {
 	lastAuctionURL := ""
 	retries := 0
 	for {
-		accessToken := getAccessToken(*clientID, *clientSecret)
+		accessToken := webGetAccessToken(*clientID, *clientSecret)
 
-		auctionURL := getAuctionURL(*realm, accessToken)
+		auctionURL := webGetAuctionURL(*realm, accessToken)
 		if auctionURL == lastAuctionURL {
 			fmt.Printf(".")
 			time.Sleep(60 * time.Second)
@@ -168,8 +251,9 @@ func main() {
 		retries = 0
 		lastAuctionURL = auctionURL
 
-		auctions := getAuctions(auctionURL)
-		items := getAuctionItems(auctions, accessToken)
+		auctions := webGetAuctions(auctionURL)
+		saveAuctions(auctions)
+		items := webGetAllItems(auctions, accessToken)
 
 		var goods = []Good{
 			// Health
@@ -177,15 +261,29 @@ func main() {
 			{34721, 28000, "Frostweave Bandage"},
 			{34722, 40000, "Heavy Frostweave Bandage"},
 
-			// Enchanting
+			// Enchanting: Boots
 			{34054, 25000, "Infinite Dust"},
 			{34056, 30000, "Lesser Cosmic Essence"},
+
+			// Enchanting: Runed Copper Rod
+			{10940, 800, "Strange Dust"},
+			{10938, 800, "Lesser Magic Essence"},
 		}
 
-		letsGoShopping(auctions, goods)
+		shoppingList := itemsWeNeed(auctions, goods)
+		for _, list := range shoppingList {
+			for _, item := range list {
+				fmt.Printf("Shop  '%s' %s quantity: %d save: %d\n", item.name, item.owner, item.quantity, item.discount*item.quantity)
+			}
+		}
 		fmt.Println()
 
-		arbitrage(auctions, items)
+		shoppingList = arbitrage(auctions, items)
+		for _, list := range shoppingList {
+			for _, item := range list {
+				fmt.Printf("Shop  '%s' %s quantity: %d save: %d\n", item.name, item.owner, item.quantity, item.discount*item.quantity)
+			}
+		}
 		fmt.Println()
 	}
 }
