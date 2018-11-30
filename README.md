@@ -11,13 +11,35 @@ SQL statements
  GRANT ALL PRIVILEGES ON wow.* TO 'wow'@'localhost' IDENTIFIED BY 'wowpassword';
 
  CREATE TABLE items (
-    id int,
+    id bigint,
     name varchar(128),
-    sellPrice int,
-    json varchar(5000)
+    sellPrice bigint,
+    json varchar(15000)
  );
 
  CREATE UNIQUE INDEX id ON items ( id );
+
+ CREATE TABLE auctions (
+    auc bigint,
+    item bigint,
+    owner varchar(80),
+    bid bigint,
+    buyout bigint,
+    quantity bigint,
+    timeLeft varchar(20),
+    rand bigint,
+    seed bigint,
+    context bigint,
+    hasBonusLists bool,
+    hasModifiers bool,
+    petBreedId bigint,
+    petLevel bigint,
+    petQualityId bigint,
+    petSpeciesId bigint,
+    json varchar(15000)
+ );
+
+ CREATE UNIQUE INDEX auc ON auctions ( auc );
 
  # Change root password
  service mysql stop
