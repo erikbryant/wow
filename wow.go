@@ -196,16 +196,43 @@ func arbitrage(auctions map[int64]database.Auction, items map[int64]database.Ite
 	return toBid, toBuy
 }
 
+// coinsToString returns a human-readable, formatted version of the coin amount.
+func coinsToString(amount int64) string {
+	sign := ""
+	if amount < 0 {
+		sign = "-"
+		amount *= -1
+	}
+
+	copper := amount % 100
+	silver := (amount / 100) % 100
+	gold := amount / 10000
+
+	if gold > 0 {
+		return fmt.Sprintf("%s%d.%02d.%02d", sign, gold, silver, copper)
+	}
+
+	if silver > 0 {
+		return fmt.Sprintf("%s%d.%02d", sign, silver, copper)
+	}
+
+	return fmt.Sprintf("%s%d", sign, copper)
+}
+
 // printShoppingList prints a list of auctions the user should consider bidding/buying.
-func printShoppingList(header string, toGet []int64, auctions map[int64]database.Auction, items map[int64]database.Item) {
-	printed := false
+func printShoppingList(action string, toGet []int64, auctions map[int64]database.Auction, items map[int64]database.Item) {
+	if len(toGet) == 0 {
+		return
+	}
+
 	for _, b := range toGet {
-		fmt.Printf("%s <%s> %s quantity: %d\n", header, items[auctions[b].Item].Name, auctions[b].Owner, auctions[b].Quantity)
-		printed = true
+		item := items[auctions[b].Item]
+		auction := auctions[b]
+		profitBid := item.SellPrice - auction.Bid*auction.Quantity
+		profitBuy := item.SellPrice - auction.Buyout*auction.Quantity
+		fmt.Printf("%s <%s> %s quantity: %d profit: %s/%s\n", action, item.Name, auction.Owner, auction.Quantity, coinsToString(profitBid), coinsToString(profitBuy))
 	}
-	if printed {
-		fmt.Println()
-	}
+	fmt.Println()
 }
 
 func main() {
@@ -240,7 +267,7 @@ func main() {
 
 		var goods = map[int64]int64{
 			// Health
-			33447: 30000, // Runic Healing Potion
+			33447: 24000, // Runic Healing Potion
 			34721: 28000, // Frostweave Bandage
 			34722: 40000, // Heavy Frostweave Bandage
 
