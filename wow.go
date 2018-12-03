@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"sort"
 	"time"
 )
 
@@ -115,6 +116,10 @@ func bargains(auctions map[int64]database.Auction, goods map[int64]int64) (toBid
 			}
 		}
 	}
+
+	// Keep the results stable across calls.
+	sort.Slice(toBid, func(i, j int) bool { return toBid[i] < toBid[j] })
+	sort.Slice(toBuy, func(i, j int) bool { return toBuy[i] < toBuy[j] })
 
 	return toBid, toBuy
 }
@@ -228,8 +233,8 @@ func printShoppingList(action string, toGet []int64, auctions map[int64]database
 	for _, b := range toGet {
 		item := items[auctions[b].Item]
 		auction := auctions[b]
-		profitBid := item.SellPrice - auction.Bid*auction.Quantity
-		profitBuy := item.SellPrice - auction.Buyout*auction.Quantity
+		profitBid := item.SellPrice*auction.Quantity - auction.Bid
+		profitBuy := item.SellPrice*auction.Quantity - auction.Buyout
 		fmt.Printf("%s <%s> %s quantity: %d profit: %s/%s\n", action, item.Name, auction.Owner, auction.Quantity, coinsToString(profitBid), coinsToString(profitBuy))
 	}
 	fmt.Println()
@@ -268,15 +273,12 @@ func main() {
 		var goods = map[int64]int64{
 			// Health
 			33447: 24000, // Runic Healing Potion
-			34721: 28000, // Frostweave Bandage
 			34722: 40000, // Heavy Frostweave Bandage
 
 			// Enchanting: Boots
-			34054: 25000, // Infinite Dust
 			34056: 30000, // Lesser Cosmic Essence
 
 			// Enchanting: Runed Copper Rod
-			10940: 800, // Strange Dust
 			10938: 800, // Lesser Magic Essence
 		}
 
