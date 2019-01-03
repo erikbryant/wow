@@ -20,45 +20,75 @@ var (
 )
 
 // getAccessToken retrieves an access token from battle.net. This token is used to authenticate API calls.
-func webGetAccessToken(id, secret string) string {
+func webGetAccessToken(id, secret string) (string, bool) {
 	url := "https://us.battle.net/oauth/token?client_id=" + id + "&client_secret=" + secret + "&grant_type=client_credentials"
-	response := web.RequestJSON(url)
-	return response["access_token"].(string)
+	response, err := web.RequestJSON(url)
+	if err != nil {
+		fmt.Println("webGetAccessToken:", err)
+		return "", false
+	}
+
+	if response == nil {
+		fmt.Println("webGetAccessToken: no response from battle.net")
+		return "", false
+	}
+
+	return response["access_token"].(string), true
 }
 
 // getAuctionURL retrieves the URL for the latest auction house data.
-func webGetAuctionURL(realm, accessToken string) (string, int64) {
+func webGetAuctionURL(realm, accessToken string) (string, int64, bool) {
 	url := "https://us.api.blizzard.com/wow/auction/data/" + realm + "?locale=en_US&access_token=" + accessToken
-	response := web.RequestJSON(url)
+	response, err := web.RequestJSON(url)
+	if err != nil {
+		fmt.Println("webGetAuctionURL: no response from api.blizzard.com", err)
+		return "", 0, false
+	}
+
 	data := response["files"].([]interface{})[0].(map[string]interface{})
-	return web.ToString(data["url"]), web.ToInt64(data["lastModified"])
+	return web.ToString(data["url"]), web.ToInt64(data["lastModified"]), true
 }
 
 // getAuctions retrieves the latest auctions from the auction house.
-func webGetAuctions(auctionURL string) []interface{} {
-	response := web.RequestJSON(auctionURL)
+func webGetAuctions(auctionURL string) ([]interface{}, bool) {
+	response, err := web.RequestJSON(auctionURL)
+	if err != nil {
+		fmt.Println("webGetAuction: no auction data returned", err)
+		return nil, false
+	}
+
 	auctions := response["auctions"].([]interface{})
-	return auctions
+
+	return auctions, true
 }
 
 // webGetItem retrieves a single item from the WoW web API.
-func webGetItem(id, accessToken string) map[string]interface{} {
+func webGetItem(id, accessToken string) (map[string]interface{}, bool) {
 	url := "https://us.api.blizzard.com/wow/item/" + id + "?locale=en_US&access_token=" + accessToken
-	return web.RequestJSON(url)
+	response, err := web.RequestJSON(url)
+	if err != nil {
+		fmt.Println("webGetItem: failed to retrieve item from blizzard.com", err)
+		return nil, false
+	}
+
+	return response, true
 }
 
 // lookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also stores it in the database.
-func webLookupItem(id int64, accessToken string) (item database.Item) {
-	var ok bool
+func webLookupItem(id int64, accessToken string) (database.Item, bool) {
 	cache := true
 
-	// Do we have it cached in the database?
-	item, ok = database.LookupItem(id)
+	// Is it cached in the database?
+	item, ok := database.LookupItem(id)
 	if ok {
-		return
+		return item, true
 	}
 
-	i := webGetItem(web.ToString(id), accessToken)
+	i, ok := webGetItem(web.ToString(id), accessToken)
+	if !ok {
+		return item, false
+	}
+
 	item.Id = web.ToInt64(i["id"])
 	b, _ := json.Marshal(i)
 	item.JSON = fmt.Sprintf("%s", b)
@@ -82,7 +112,7 @@ func webLookupItem(id int64, accessToken string) (item database.Item) {
 		database.SaveItem(item)
 	}
 
-	return
+	return item, true
 }
 
 // getAllItems prefetches item data for every requested item. This is faster than querying for each item and each of its repeats. It also makes the tests simpler.
@@ -93,7 +123,7 @@ func webGetAllItems(auctions map[int64]database.Auction, accessToken string) map
 		if _, ok := items[auction.Item]; ok {
 			continue
 		}
-		items[auction.Item] = webLookupItem(auction.Item, accessToken)
+		items[auction.Item], _ = webLookupItem(auction.Item, accessToken)
 	}
 
 	return items
@@ -250,10 +280,17 @@ func main() {
 	lastModified := int64(0)
 	for {
 		// Make sure our credentials are current.
-		accessToken := webGetAccessToken(*clientID, *clientSecret)
+		accessToken, ok := webGetAccessToken(*clientID, *clientSecret)
+		if !ok {
+			fmt.Println("ERROR: Unable to obtain access token.")
+			return
+		}
 
 		// Sleep until a new auction file is published.
-		auctionURL, modified := webGetAuctionURL(*realm, accessToken)
+		auctionURL, modified, ok := webGetAuctionURL(*realm, accessToken)
+		if !ok {
+			continue
+		}
 		if auctionURL == lastAuctionURL && modified == lastModified {
 			fmt.Printf(".")
 			time.Sleep(60 * time.Second)
@@ -267,12 +304,15 @@ func main() {
 		fmt.Printf("#Items: %d #Auctions: %d\n\n", database.CountItems(), database.CountAuctions())
 
 		// Download the auction file and all items for sale.
-		auctions := unpackAuctions(webGetAuctions(auctionURL))
+		response, ok := webGetAuctions(auctionURL)
+		if !ok {
+			continue
+		}
+		auctions := unpackAuctions(response)
 		items := webGetAllItems(auctions, accessToken)
 
 		var goods = map[int64]int64{
 			// Health
-			33447: 24000, // Runic Healing Potion
 			34722: 40000, // Heavy Frostweave Bandage
 
 			// Enchanting: Boots
