@@ -6,6 +6,8 @@ phases:
     commands:
       - go get -u github.com/golang/lint/golint
       - go get -u github.com/go-sql-driver/mysql
+      - go get -u github.com/erikbryant/database
+      - go get -u github.com/erikbryant/web
 
   pre_build: 
     commands:
