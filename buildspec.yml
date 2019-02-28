@@ -5,6 +5,7 @@ phases:
   install: 
     commands:
       - go get -u github.com/golang/lint/golint
+      - go get -u github.com/go-sql-driver/mysql
 
   pre_build: 
     commands:
