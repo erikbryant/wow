@@ -4,8 +4,8 @@ package main
 // $ go get github.com/go-sql-driver/mysql
 
 import (
-	"database"
-	"web"
+	"github.com/erikbryant/database"
+	"github.com/erikbryant/web"
 	"encoding/json"
 	"flag"
 	"fmt"

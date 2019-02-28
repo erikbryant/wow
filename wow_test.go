@@ -1,7 +1,7 @@
 package main
 
 import (
-	"wow/database"
+	"github.com/erikbryant/database"
 	"testing"
 )
 
