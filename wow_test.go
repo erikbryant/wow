@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./database"
+	"wow/database"
 	"testing"
 )
 
