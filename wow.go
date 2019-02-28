@@ -4,8 +4,8 @@ package main
 // $ go get github.com/go-sql-driver/mysql
 
 import (
-	"wow/database/database"
-	"wow/web/web"
+	"src/wow/database"
+	"src/wow/web"
 	"encoding/json"
 	"flag"
 	"fmt"
