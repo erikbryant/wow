@@ -2,9 +2,10 @@ package main
 
 // https://develop.battle.net/documentation
 // $ go get github.com/go-sql-driver/mysql
+// $ go get github.com/erikbryant/wow-database
 
 import (
-	"github.com/erikbryant/database"
+	"github.com/erikbryant/wow-database"
 	"github.com/erikbryant/web"
 	"encoding/json"
 	"flag"
