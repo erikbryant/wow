@@ -5,11 +5,12 @@ package main
 // $ go get github.com/erikbryant/wow-database
 
 import (
-	"github.com/erikbryant/wow-database"
-	"github.com/erikbryant/web"
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow-database"
+	"os"
 	"sort"
 	"time"
 )
@@ -69,6 +70,11 @@ func webGetItem(id, accessToken string) (map[string]interface{}, bool) {
 	response, err := web.RequestJSON(url)
 	if err != nil {
 		fmt.Println("webGetItem: failed to retrieve item from blizzard.com", err)
+		return nil, false
+	}
+
+	if response["status"] == "nok" {
+		fmt.Println("INFO: ", response["reason"], "id: ", id)
 		return nil, false
 	}
 
@@ -211,6 +217,9 @@ func arbitrage(auctions map[int64]database.Auction, items map[int64]database.Ite
 
 		var j interface{}
 		json.Unmarshal([]byte(item.JSON), &j)
+		if j == nil {
+			continue
+		}
 		js := j.(map[string]interface{})
 		if js["equippable"].(bool) {
 			// I do not understand how to price these.
@@ -271,11 +280,20 @@ func printShoppingList(action string, toGet []int64, auctions map[int64]database
 	fmt.Println()
 }
 
+func usage() {
+	fmt.Println("Usage: wow -clientID=xxyyzz -clientSecret=aabbccdd")
+	os.Exit(1)
+}
+
 func main() {
 	flag.Parse()
 
 	database.Open()
 	defer database.Close()
+
+	if *clientID == "" || *clientSecret == "" {
+		usage()
+	}
 
 	lastAuctionURL := ""
 	lastModified := int64(0)
