@@ -1,26 +1,26 @@
 package main
 
 import (
-	"github.com/erikbryant/wow-database"
+	"github.com/erikbryant/wowdb"
 	"testing"
 )
 
 var (
-	auction1 = database.Auction{
+	auction1 = wowdb.Auction{
 		Auc:      1,
 		Item:     100,
 		Bid:      100,
 		Buyout:   110,
 		Quantity: 1,
 	}
-	auction2 = database.Auction{
+	auction2 = wowdb.Auction{
 		Auc:      2,
 		Item:     200,
 		Bid:      100,
 		Buyout:   11000,
 		Quantity: 1,
 	}
-	auction3 = database.Auction{
+	auction3 = wowdb.Auction{
 		Auc:      3,
 		Item:     300,
 		Bid:      100,
@@ -31,14 +31,14 @@ var (
 
 func TestBargains(t *testing.T) {
 	testCases := []struct {
-		auctions    map[int64]database.Auction
+		auctions    map[int64]wowdb.Auction
 		goods       map[int64]int64
 		expectedBid []int64
 		expectedBuy []int64
 	}{
 		{
 			// Auctions.
-			map[int64]database.Auction{
+			map[int64]wowdb.Auction{
 				1: auction1,
 				2: auction2,
 				3: auction3,

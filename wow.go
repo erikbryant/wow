@@ -1,24 +1,27 @@
 package main
 
 // https://develop.battle.net/documentation
-// $ go get github.com/go-sql-driver/mysql
-// $ go get github.com/erikbryant/wow-database
 
 import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/erikbryant/aes"
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow-database"
+	"github.com/erikbryant/wowdb"
+	_ "github.com/go-sql-driver/mysql"
 	"os"
 	"sort"
 	"time"
 )
 
 var (
-	clientID     = flag.String("clientID", "", "WoW API client ID")
-	clientSecret = flag.String("clientSecret", "", "WoW API client secret")
-	realm        = flag.String("realm", "icecrown", "WoW realm")
+	clientIDCrypt     = "f7FhewxUd0lWQz/zPb27ZcwI/ZqkaMyd5YyuskFyEugQEeiKsfL7dvr11Kx1Y+Mi23qMciOAPe5ksCOy"
+	clientSecretCrypt = "CtJH62iU6V3ZeqiHyKItECHahdUYgAFyfHmQ4DRabhWIv6JeK5K4dT7aiybot6MS4JitmDzuWSz1UHHv"
+	clientID          string
+	clientSecret      string
+	passPhrase        = flag.String("passPhrase", "", "Passphrase to unlock WOW API cliend ID/secret")
+	realm             = flag.String("realm", "icecrown", "WoW realm")
 )
 
 // getAccessToken retrieves an access token from battle.net. This token is used to authenticate API calls.
@@ -81,12 +84,12 @@ func webGetItem(id, accessToken string) (map[string]interface{}, bool) {
 	return response, true
 }
 
-// lookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also stores it in the database.
-func webLookupItem(id int64, accessToken string) (database.Item, bool) {
+// lookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also stores it in the wowdb.
+func webLookupItem(id int64, accessToken string) (wowdb.Item, bool) {
 	cache := true
 
 	// Is it cached in the database?
-	item, ok := database.LookupItem(id)
+	item, ok := wowdb.LookupItem(id)
 	if ok {
 		return item, true
 	}
@@ -96,7 +99,7 @@ func webLookupItem(id int64, accessToken string) (database.Item, bool) {
 		return item, false
 	}
 
-	item.Id = web.ToInt64(i["id"])
+	item.ID = web.ToInt64(i["id"])
 	b, _ := json.Marshal(i)
 	item.JSON = fmt.Sprintf("%s", b)
 	_, ok = i["sellPrice"]
@@ -116,15 +119,15 @@ func webLookupItem(id int64, accessToken string) (database.Item, bool) {
 
 	// Cache it. Database lookups are much faster than web calls.
 	if cache {
-		database.SaveItem(item)
+		wowdb.SaveItem(item)
 	}
 
 	return item, true
 }
 
 // getAllItems prefetches item data for every requested item. This is faster than querying for each item and each of its repeats. It also makes the tests simpler.
-func webGetAllItems(auctions map[int64]database.Auction, accessToken string) map[int64]database.Item {
-	var items = map[int64]database.Item{}
+func webGetAllItems(auctions map[int64]wowdb.Auction, accessToken string) map[int64]wowdb.Item {
+	var items = map[int64]wowdb.Item{}
 
 	for _, auction := range auctions {
 		if _, ok := items[auction.Item]; ok {
@@ -137,7 +140,7 @@ func webGetAllItems(auctions map[int64]database.Auction, accessToken string) map
 }
 
 // bargains returns all of the auctions for which the given goods are below our desired prices.
-func bargains(auctions map[int64]database.Auction, goods map[int64]int64) (toBid []int64, toBuy []int64) {
+func bargains(auctions map[int64]wowdb.Auction, goods map[int64]int64) (toBid []int64, toBuy []int64) {
 	for _, auction := range auctions {
 		if _, ok := goods[auction.Item]; !ok {
 			// We do not need this item.
@@ -162,8 +165,8 @@ func bargains(auctions map[int64]database.Auction, goods map[int64]int64) (toBid
 }
 
 // jsonToStruct converts a single auction json string into a struct that is much easier to work with.
-func jsonToStruct(auc map[string]interface{}) database.Auction {
-	var auction database.Auction
+func jsonToStruct(auc map[string]interface{}) wowdb.Auction {
+	var auction wowdb.Auction
 	var ok bool
 
 	auction.Auc = web.ToInt64(auc["auc"])
@@ -179,28 +182,28 @@ func jsonToStruct(auc map[string]interface{}) database.Auction {
 	_, auction.HasBonusLists = auc["bonusLists"]
 	_, auction.HasModifiers = auc["bonusModifiers"]
 	if _, ok = auc["petBreedId"]; ok {
-		auction.PetBreedId = web.ToInt64(auc["petBreedId"])
+		auction.PetBreedID = web.ToInt64(auc["petBreedId"])
 	}
 	if _, ok = auc["petLevel"]; ok {
 		auction.PetLevel = web.ToInt64(auc["petLevel"])
 	}
 	if _, ok = auc["petQualityId"]; ok {
-		auction.PetQualityId = web.ToInt64(auc["petQualityId"])
+		auction.PetQualityID = web.ToInt64(auc["petQualityId"])
 	}
 	if _, ok = auc["petSpeciesId"]; ok {
-		auction.PetSpeciesId = web.ToInt64(auc["petSpeciesId"])
+		auction.PetSpeciesID = web.ToInt64(auc["petSpeciesId"])
 	}
 	b, _ := json.Marshal(auc)
 	auction.JSON = fmt.Sprintf("%s", b)
 
-	database.SaveAuction(auction)
+	wowdb.SaveAuction(auction)
 
 	return auction
 }
 
 // unpackAuction unpacks the []interface{} format we get from the web into a map of structs. Same data, but in a format that is much easier to work with.
-func unpackAuctions(auctions []interface{}) map[int64]database.Auction {
-	aucs := make(map[int64]database.Auction)
+func unpackAuctions(auctions []interface{}) map[int64]wowdb.Auction {
+	aucs := make(map[int64]wowdb.Auction)
 
 	for _, a := range auctions {
 		s := jsonToStruct(a.(map[string]interface{}))
@@ -211,7 +214,7 @@ func unpackAuctions(auctions []interface{}) map[int64]database.Auction {
 }
 
 // arbitrage finds auction prices that are lower than vendor prices.
-func arbitrage(auctions map[int64]database.Auction, items map[int64]database.Item) (toBid []int64, toBuy []int64) {
+func arbitrage(auctions map[int64]wowdb.Auction, items map[int64]wowdb.Item) (toBid []int64, toBuy []int64) {
 	for _, auction := range auctions {
 		item := items[auction.Item]
 
@@ -265,7 +268,7 @@ func coinsToString(amount int64) string {
 }
 
 // printShoppingList prints a list of auctions the user should consider bidding/buying.
-func printShoppingList(action string, toGet []int64, auctions map[int64]database.Auction, items map[int64]database.Item) {
+func printShoppingList(action string, toGet []int64, auctions map[int64]wowdb.Auction, items map[int64]wowdb.Item) {
 	if len(toGet) == 0 {
 		return
 	}
@@ -281,25 +284,28 @@ func printShoppingList(action string, toGet []int64, auctions map[int64]database
 }
 
 func usage() {
-	fmt.Println("Usage: wow -clientID=xxyyzz -clientSecret=aabbccdd")
+	fmt.Println("Usage: wow -passPhrase <phrase>")
 	os.Exit(1)
 }
 
 func main() {
 	flag.Parse()
 
-	database.Open()
-	defer database.Close()
-
-	if *clientID == "" || *clientSecret == "" {
+	if *passPhrase == "" {
+		fmt.Println("ERROR: You must specify --passPhrase to unlock the client ID/secret")
 		usage()
 	}
+	clientID = aes.Decrypt(clientIDCrypt, *passPhrase)
+	clientSecret = aes.Decrypt(clientSecretCrypt, *passPhrase)
+
+	wowdb.Open()
+	defer wowdb.Close()
 
 	lastAuctionURL := ""
 	lastModified := int64(0)
 	for {
 		// Make sure our credentials are current.
-		accessToken, ok := webGetAccessToken(*clientID, *clientSecret)
+		accessToken, ok := webGetAccessToken(clientID, clientSecret)
 		if !ok {
 			fmt.Println("ERROR: Unable to obtain access token.")
 			return
@@ -320,7 +326,7 @@ func main() {
 		lastModified = modified
 
 		// Database stats are fun to see! :-)
-		fmt.Printf("#Items: %d #Auctions: %d\n\n", database.CountItems(), database.CountAuctions())
+		fmt.Printf("#Items: %d #Auctions: %d\n\n", wowdb.CountItems(), wowdb.CountAuctions())
 
 		// Download the auction file and all items for sale.
 		response, ok := webGetAuctions(auctionURL)
