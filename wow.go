@@ -295,8 +295,20 @@ func main() {
 		fmt.Println("ERROR: You must specify --passPhrase to unlock the client ID/secret")
 		usage()
 	}
-	clientID = aes.Decrypt(clientIDCrypt, *passPhrase)
-	clientSecret = aes.Decrypt(clientSecretCrypt, *passPhrase)
+
+	var err error
+
+	clientID, err = aes.Decrypt(clientIDCrypt, *passPhrase)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	clientSecret, err = aes.Decrypt(clientSecretCrypt, *passPhrase)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
 	wowdb.Open()
 	defer wowdb.Close()
