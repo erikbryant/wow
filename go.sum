@@ -6,6 +6,8 @@ github.com/erikbryant/web v0.0.0-20190420232530-127f33105aff h1:CAiKe0j9sMbqNKga
 github.com/erikbryant/web v0.0.0-20190420232530-127f33105aff/go.mod h1:N7abeM/YK+B42O/DKRY60lELAsw7kXmI/+xrlc9EZag=
 github.com/erikbryant/web v0.1.0 h1:YFCwUvzCxmjJ95qqoANLJhU/0inUjDN8KuiXbakITNM=
 github.com/erikbryant/web v0.1.0/go.mod h1:COKnbDhT4/QO3SrM93Emm6rm6R/Q/SjAmJrc1TLslWs=
+github.com/erikbryant/web v0.2.0 h1:rUBxijcTbXmk8KBS9lS2VttivDUEFcsWI+nYFd61jC4=
+github.com/erikbryant/web v0.2.0/go.mod h1:COKnbDhT4/QO3SrM93Emm6rm6R/Q/SjAmJrc1TLslWs=
 github.com/erikbryant/wowdb v0.1.0 h1:i3R+K3MK/7D2i2xjtbg6pvsycjxgLt1CP4HtOqrIaXw=
 github.com/erikbryant/wowdb v0.1.0/go.mod h1:aebUdqWHO521Wyc3c4jNYz56M6TZybNRXGfHsiXl5eM=
 github.com/go-sql-driver/mysql v1.5.0 h1:ozyZYNQW3x3HtqT1jira07DN2PArx2v7/mN66gGcHOs=
