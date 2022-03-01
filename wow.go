@@ -27,7 +27,7 @@ var (
 // getAccessToken retrieves an access token from battle.net. This token is used to authenticate API calls.
 func webGetAccessToken(id, secret string) (string, bool) {
 	url := "https://us.battle.net/oauth/token?client_id=" + id + "&client_secret=" + secret + "&grant_type=client_credentials"
-	response, err := web.RequestJSON(url)
+	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
 		fmt.Println("webGetAccessToken:", err)
 		return "", false
@@ -44,7 +44,7 @@ func webGetAccessToken(id, secret string) (string, bool) {
 // getAuctionURL retrieves the URL for the latest auction house data.
 func webGetAuctionURL(realm, accessToken string) (string, int64, bool) {
 	url := "https://us.api.blizzard.com/wow/auction/data/" + realm + "?locale=en_US&access_token=" + accessToken
-	response, err := web.RequestJSON(url)
+	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
 		fmt.Println("webGetAuctionURL: no response from api.blizzard.com", err)
 		return "", 0, false
@@ -56,7 +56,7 @@ func webGetAuctionURL(realm, accessToken string) (string, int64, bool) {
 
 // getAuctions retrieves the latest auctions from the auction house.
 func webGetAuctions(auctionURL string) ([]interface{}, bool) {
-	response, err := web.RequestJSON(auctionURL)
+	response, err := web.RequestJSON(auctionURL, map[string]string{})
 	if err != nil {
 		fmt.Println("webGetAuction: no auction data returned", err)
 		return nil, false
@@ -70,7 +70,7 @@ func webGetAuctions(auctionURL string) ([]interface{}, bool) {
 // webGetItem retrieves a single item from the WoW web API.
 func webGetItem(id, accessToken string) (map[string]interface{}, bool) {
 	url := "https://us.api.blizzard.com/wow/item/" + id + "?locale=en_US&access_token=" + accessToken
-	response, err := web.RequestJSON(url)
+	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
 		fmt.Println("webGetItem: failed to retrieve item from blizzard.com", err)
 		return nil, false
@@ -292,7 +292,7 @@ func main() {
 	flag.Parse()
 
 	if *passPhrase == "" {
-		fmt.Println("ERROR: You must specify --passPhrase to unlock the client ID/secret")
+		fmt.Println("ERROR: You must specify -passPhrase to unlock the client ID/secret")
 		usage()
 	}
 
