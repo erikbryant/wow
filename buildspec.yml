@@ -4,7 +4,6 @@ phases:
 
   install: 
     commands:
-      - go get -u github.com/golang/lint/golint
       - go get -u github.com/go-sql-driver/mysql
       - go get -u github.com/erikbryant/wow-database
       - go get -u github.com/erikbryant/web
@@ -13,10 +12,10 @@ phases:
     commands:
 
       # Ensure code passes all lint tests
-      - golint -set_exit_status
+      - go vet ./...
 
       # Run all tests included with our application
-      - go test
+      - go test ./...
 
   build:
     commands:
