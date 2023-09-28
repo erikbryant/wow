@@ -1,5 +1,5 @@
-github.com/erikbryant/aes v0.1.1 h1:sZSGs/ieJgIgqurknCYHYHHMfvYfDEY/jXBjiNBVtNw=
-github.com/erikbryant/aes v0.1.1/go.mod h1:CBqNYY6kQetj2lnXEcX7hkG+xNqcp26xnJWPQJMM4S4=
+github.com/erikbryant/aes v0.2.0 h1:nDs9POVjoYNzSsW40JlTOmlcoEnG6avPe7wieZoQlvw=
+github.com/erikbryant/aes v0.2.0/go.mod h1:LUWSBXtHE/RAN102ZlCR4weAaNtEXPWQpOVg3g/Wmec=
 github.com/erikbryant/web v0.7.0 h1:x5TWZkY+Jcr8K31qGwybUfCjJvCfVoyvQr1IYLIbb7E=
 github.com/erikbryant/web v0.7.0/go.mod h1:T9X91jpCgLGuVTyCMZrRPnu+of2XZVQfpQA7emieISU=
 github.com/erikbryant/wowdb v0.1.0 h1:i3R+K3MK/7D2i2xjtbg6pvsycjxgLt1CP4HtOqrIaXw=
