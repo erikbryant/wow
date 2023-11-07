@@ -1,6 +1,8 @@
 module github.com/erikbryant/wow
 
-go 1.20
+go 1.21
+
+toolchain go1.21.4
 
 require (
 	github.com/erikbryant/aes v0.2.0
