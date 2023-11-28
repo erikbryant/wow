@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/erikbryant/wowdb"
 	"testing"
+
+	"github.com/erikbryant/wowdb"
 )
 
 var (

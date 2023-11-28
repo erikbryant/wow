@@ -6,13 +6,14 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"os"
+	"sort"
+	"time"
+
 	"github.com/erikbryant/aes"
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wowdb"
 	_ "github.com/go-sql-driver/mysql"
-	"os"
-	"sort"
-	"time"
 )
 
 var (
