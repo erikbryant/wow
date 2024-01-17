@@ -1,7 +1,7 @@
-github.com/erikbryant/aes v0.2.0 h1:nDs9POVjoYNzSsW40JlTOmlcoEnG6avPe7wieZoQlvw=
-github.com/erikbryant/aes v0.2.0/go.mod h1:LUWSBXtHE/RAN102ZlCR4weAaNtEXPWQpOVg3g/Wmec=
-github.com/erikbryant/web v0.7.0 h1:x5TWZkY+Jcr8K31qGwybUfCjJvCfVoyvQr1IYLIbb7E=
-github.com/erikbryant/web v0.7.0/go.mod h1:T9X91jpCgLGuVTyCMZrRPnu+of2XZVQfpQA7emieISU=
+github.com/erikbryant/aes v0.3.0 h1:Ap4KGrn9yaaiOticxf1MD2KBKKvJKiy45QEc1ng814k=
+github.com/erikbryant/aes v0.3.0/go.mod h1:u+FeFwr15zM2pTGJGCEPjZKZgESvNLrNnInKR9N83zE=
+github.com/erikbryant/web v0.8.0 h1:2AKBweydq8P6Xu6hOakK7QXTKQHVPORoWj5rV9NOvVI=
+github.com/erikbryant/web v0.8.0/go.mod h1:2RmWHCj2fNhQHSt8VO5e91EBf2flEBGGxQTiYhROcBo=
 github.com/erikbryant/wowdb v0.1.0 h1:i3R+K3MK/7D2i2xjtbg6pvsycjxgLt1CP4HtOqrIaXw=
 github.com/erikbryant/wowdb v0.1.0/go.mod h1:aebUdqWHO521Wyc3c4jNYz56M6TZybNRXGfHsiXl5eM=
 github.com/go-sql-driver/mysql v1.5.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
