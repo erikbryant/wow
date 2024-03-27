@@ -7,5 +7,5 @@ github.com/erikbryant/web v0.8.0/go.mod h1:2RmWHCj2fNhQHSt8VO5e91EBf2flEBGGxQTiY
 github.com/erikbryant/wowdb v0.1.0 h1:i3R+K3MK/7D2i2xjtbg6pvsycjxgLt1CP4HtOqrIaXw=
 github.com/erikbryant/wowdb v0.1.0/go.mod h1:aebUdqWHO521Wyc3c4jNYz56M6TZybNRXGfHsiXl5eM=
 github.com/go-sql-driver/mysql v1.5.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
-github.com/go-sql-driver/mysql v1.8.0 h1:UtktXaU2Nb64z/pLiGIxY4431SJ4/dR5cjMmlVHgnT4=
-github.com/go-sql-driver/mysql v1.8.0/go.mod h1:wEBSXgmK//2ZFJyE+qWnIsVGmvmEKlqwuVSjsCm7DZg=
+github.com/go-sql-driver/mysql v1.8.1 h1:LedoTUt/eveggdHS9qUFC1EFSa8bU2+1pZjSRpvNJ1Y=
+github.com/go-sql-driver/mysql v1.8.1/go.mod h1:wEBSXgmK//2ZFJyE+qWnIsVGmvmEKlqwuVSjsCm7DZg=
