@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"strings"
 )
 
 var (
@@ -60,12 +61,15 @@ func webGetAccessToken(id, secret string) (string, bool) {
 	return jsonObject["access_token"].(string), true
 }
 
-// realmToSlug
+// realmToSlug returns the slug form of a given realm name
 func realmToSlug(realm string) string {
-	return realm
+	slug := realm
+	slug = strings.ReplaceAll(slug, "-", "")
+	slug = strings.ReplaceAll(slug, " ", "-")
+	return slug
 }
 
-// webGetRealmId
+// webGetRealmId returns the ID of the given realm
 func webGetRealmId(realm, accessToken string) (string, bool) {
 	url := "https://us.api.blizzard.com/data/wow/realm/" + realmToSlug(realm) + "?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
 
@@ -78,33 +82,7 @@ func webGetRealmId(realm, accessToken string) (string, bool) {
 	return web.ToString(response["id"]), true
 }
 
-// getAuctionURL retrieves the URL for the latest auction house data.
-func webGetAuctionURL(realm, accessToken string) (string, int64, bool) {
-	url := "https://us.api.blizzard.com/wow/auction/data/" + realm + "?locale=en_US&access_token=" + accessToken
-	response, err := web.RequestJSON(url, map[string]string{})
-	if err != nil {
-		fmt.Println("webGetAuctionURL: no response from api.blizzard.com", err)
-		return "", 0, false
-	}
-
-	data := response["files"].([]interface{})[0].(map[string]interface{})
-	return web.ToString(data["url"]), web.ToInt64(data["lastModified"]), true
-}
-
-//// getAuctions retrieves the latest auctions from the auction house.
-//func webGetAuctions(auctionURL string) ([]interface{}, bool) {
-//	response, err := web.RequestJSON(auctionURL, map[string]string{})
-//	if err != nil {
-//		fmt.Println("webGetAuction: no auction data returned", err)
-//		return nil, false
-//	}
-//
-//	auctions := response["auctions"].([]interface{})
-//
-//	return auctions, true
-//}
-
-// webGetAuctions retrieves the latest auctions from the auction house
+// webGetAuctions returns the current auctions from the auction house
 func webGetAuctions(realmId, accessToken string) ([]interface{}, bool) {
 	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + realmId + "/auctions?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
 	response, err := web.RequestJSON(url, map[string]string{})
@@ -113,15 +91,16 @@ func webGetAuctions(realmId, accessToken string) ([]interface{}, bool) {
 		return nil, false
 	}
 
-	fmt.Println(response)
+	if response["code"] != 200 {
+		fmt.Println("webGetAuction: HTTP error", response)
+		return nil, false
+	}
 
-	//auctions := response["auctions"].([]interface{})
-
-	//return auctions, true
-	return nil, true
+	auctions := response["auctions"].([]interface{})
+	return auctions, true
 }
 
-// webGetCommodityAuctions retrieves the latest auctions from the auction house
+// webGetCommodityAuctions returns the current commodity auctions from the auction house
 func webGetCommodityAuctions(realmId, accessToken string) ([]interface{}, bool) {
 	url := "https://us.api.blizzard.com/data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
 	response, err := web.RequestJSON(url, map[string]string{})
@@ -133,7 +112,7 @@ func webGetCommodityAuctions(realmId, accessToken string) ([]interface{}, bool) 
 	return response["auctions"].([]interface{}), true
 }
 
-// webGetItem retrieves a single item from the WoW web API.
+// webGetItem retrieves a single item from the WoW web API
 func webGetItem(id, accessToken string) (map[string]interface{}, bool) {
 	url := "https://us.api.blizzard.com/wow/item/" + id + "?locale=en_US&access_token=" + accessToken
 	response, err := web.RequestJSON(url, map[string]string{})
@@ -150,7 +129,7 @@ func webGetItem(id, accessToken string) (map[string]interface{}, bool) {
 	return response, true
 }
 
-// lookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also stores it in the wowdb.
+// webLookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also stores it in the wowdb.
 func webLookupItem(id int64, accessToken string) (wowdb.Item, bool) {
 	cache := true
 
@@ -191,7 +170,7 @@ func webLookupItem(id int64, accessToken string) (wowdb.Item, bool) {
 	return item, true
 }
 
-// getAllItems prefetches item data for every requested item. This is faster than querying for each item and each of its repeats. It also makes the tests simpler.
+// webGetAllItems prefetches item data for every requested item. This is faster than querying for each item and each of its repeats. It also makes the tests simpler.
 func webGetAllItems(auctions map[int64]wowdb.Auction, accessToken string) map[int64]wowdb.Item {
 	var items = map[int64]wowdb.Item{}
 
@@ -205,7 +184,7 @@ func webGetAllItems(auctions map[int64]wowdb.Auction, accessToken string) map[in
 	return items
 }
 
-// bargains returns all of the auctions for which the given goods are below our desired prices.
+// bargains returns all of the auctions for which the given goods are below our desired prices
 func bargains(auctions map[int64]wowdb.Auction, goods map[int64]int64) (toBid []int64, toBuy []int64) {
 	for _, auction := range auctions {
 		if _, ok := goods[auction.Item]; !ok {
@@ -230,7 +209,7 @@ func bargains(auctions map[int64]wowdb.Auction, goods map[int64]int64) (toBid []
 	return toBid, toBuy
 }
 
-// jsonToStruct converts a single auction json string into a struct that is much easier to work with.
+// jsonToStruct converts a single auction json string into a struct that is much easier to work with
 func jsonToStruct(auc map[string]interface{}) wowdb.Auction {
 	var auction wowdb.Auction
 	var ok bool
@@ -279,7 +258,7 @@ func unpackAuctions(auctions []interface{}) map[int64]wowdb.Auction {
 	return aucs
 }
 
-// arbitrage finds auction prices that are lower than vendor prices.
+// arbitrage finds auction prices that are lower than vendor prices
 func arbitrage(auctions map[int64]wowdb.Auction, items map[int64]wowdb.Item) (toBid []int64, toBuy []int64) {
 	for _, auction := range auctions {
 		item := items[auction.Item]
@@ -310,7 +289,7 @@ func arbitrage(auctions map[int64]wowdb.Auction, items map[int64]wowdb.Item) (to
 	return toBid, toBuy
 }
 
-// coinsToString returns a human-readable, formatted version of the coin amount.
+// coinsToString returns a human-readable, formatted version of the coin amount
 func coinsToString(amount int64) string {
 	sign := ""
 	if amount < 0 {
@@ -333,7 +312,7 @@ func coinsToString(amount int64) string {
 	return fmt.Sprintf("%s%d", sign, copper)
 }
 
-// printShoppingList prints a list of auctions the user should consider bidding/buying.
+// printShoppingList prints a list of auctions the user should consider bidding/buying
 func printShoppingList(action string, toGet []int64, auctions map[int64]wowdb.Auction, items map[int64]wowdb.Item) {
 	if len(toGet) == 0 {
 		return
@@ -349,6 +328,7 @@ func printShoppingList(action string, toGet []int64, auctions map[int64]wowdb.Au
 	fmt.Println()
 }
 
+// usage prints a usage message and terminates the program with an error
 func usage() {
 	fmt.Println("Usage: wow -passPhrase <phrase>")
 	os.Exit(1)
@@ -389,19 +369,19 @@ func main() {
 		return
 	}
 
-	auctions, ok := webGetCommodityAuctions(realmId, accessToken)
+	auctionsC, ok := webGetCommodityAuctions(realmId, accessToken)
+	if !ok {
+		fmt.Println("ERROR: Unable to obtain auctions.")
+		return
+	}
+	fmt.Println(auctionsC[0])
+
+	auctions, ok := webGetAuctions(realmId, accessToken)
 	if !ok {
 		fmt.Println("ERROR: Unable to obtain auctions.")
 		return
 	}
 	fmt.Println(auctions)
-
-	//auctions, ok := webGetAuctions(realmId, accessToken)
-	//if !ok {
-	//	fmt.Println("ERROR: Unable to obtain auctions.")
-	//	return
-	//}
-	//fmt.Println(auctions)
 
 	//	// Database stats are fun to see! :-)
 	//	fmt.Printf("#Items: %d #Auctions: %d\n\n", wowdb.CountItems(), wowdb.CountAuctions())
