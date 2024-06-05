@@ -3,17 +3,19 @@ package main
 // https://develop.battle.net/documentation
 
 import (
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
-	"os"
-	"sort"
-	"time"
-
 	"github.com/erikbryant/aes"
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wowdb"
 	_ "github.com/go-sql-driver/mysql"
+	"io"
+	"log"
+	"net/http"
+	"os"
+	"sort"
 )
 
 var (
@@ -21,25 +23,59 @@ var (
 	clientSecretCrypt = "CtJH62iU6V3ZeqiHyKItECHahdUYgAFyfHmQ4DRabhWIv6JeK5K4dT7aiybot6MS4JitmDzuWSz1UHHv"
 	clientID          string
 	clientSecret      string
-	passPhrase        = flag.String("passPhrase", "", "Passphrase to unlock WOW API cliend ID/secret")
+	passPhrase        = flag.String("passPhrase", "", "Passphrase to unlock WOW API client ID/secret")
 	realm             = flag.String("realm", "icecrown", "WoW realm")
 )
 
-// getAccessToken retrieves an access token from battle.net. This token is used to authenticate API calls.
+// webGetAccessToken retrieves an access token from battle.net. This token is used to authenticate API calls.
 func webGetAccessToken(id, secret string) (string, bool) {
-	url := "https://us.battle.net/oauth/token?client_id=" + id + "&client_secret=" + secret + "&grant_type=client_credentials"
+	grantString := "grant_type=client_credentials"
+	request, err := http.NewRequest("POST", "https://oauth.battle.net/token", bytes.NewBuffer([]byte(grantString)))
+	if err != nil {
+		log.Fatal(err)
+	}
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	request.SetBasicAuth(id, secret)
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer response.Body.Close()
+
+	contents, err := io.ReadAll(response.Body)
+	if err != nil {
+		return "", false
+	}
+
+	var jsonObject map[string]interface{}
+
+	err = json.Unmarshal(contents, &jsonObject)
+	if err != nil {
+		return "", false
+	}
+
+	return jsonObject["access_token"].(string), true
+}
+
+// realmToSlug
+func realmToSlug(realm string) string {
+	return realm
+}
+
+// webGetRealmId
+func webGetRealmId(realm, accessToken string) (string, bool) {
+	url := "https://us.api.blizzard.com/data/wow/realm/" + realmToSlug(realm) + "?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
+
 	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
-		fmt.Println("webGetAccessToken:", err)
+		fmt.Println("webGetAuctionURL: no response from api.blizzard.com", err)
 		return "", false
 	}
 
-	if response == nil {
-		fmt.Println("webGetAccessToken: no response from battle.net")
-		return "", false
-	}
-
-	return response["access_token"].(string), true
+	return web.ToString(response["id"]), true
 }
 
 // getAuctionURL retrieves the URL for the latest auction house data.
@@ -55,17 +91,46 @@ func webGetAuctionURL(realm, accessToken string) (string, int64, bool) {
 	return web.ToString(data["url"]), web.ToInt64(data["lastModified"]), true
 }
 
-// getAuctions retrieves the latest auctions from the auction house.
-func webGetAuctions(auctionURL string) ([]interface{}, bool) {
-	response, err := web.RequestJSON(auctionURL, map[string]string{})
+//// getAuctions retrieves the latest auctions from the auction house.
+//func webGetAuctions(auctionURL string) ([]interface{}, bool) {
+//	response, err := web.RequestJSON(auctionURL, map[string]string{})
+//	if err != nil {
+//		fmt.Println("webGetAuction: no auction data returned", err)
+//		return nil, false
+//	}
+//
+//	auctions := response["auctions"].([]interface{})
+//
+//	return auctions, true
+//}
+
+// webGetAuctions retrieves the latest auctions from the auction house
+func webGetAuctions(realmId, accessToken string) ([]interface{}, bool) {
+	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + realmId + "/auctions?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
+	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
 		fmt.Println("webGetAuction: no auction data returned", err)
 		return nil, false
 	}
 
-	auctions := response["auctions"].([]interface{})
+	fmt.Println(response)
 
-	return auctions, true
+	//auctions := response["auctions"].([]interface{})
+
+	//return auctions, true
+	return nil, true
+}
+
+// webGetCommodityAuctions retrieves the latest auctions from the auction house
+func webGetCommodityAuctions(realmId, accessToken string) ([]interface{}, bool) {
+	url := "https://us.api.blizzard.com/data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
+	response, err := web.RequestJSON(url, map[string]string{})
+	if err != nil {
+		fmt.Println("webGetAuction: no auction data returned", err)
+		return nil, false
+	}
+
+	return response["auctions"].([]interface{}), true
 }
 
 // webGetItem retrieves a single item from the WoW web API.
@@ -297,9 +362,7 @@ func main() {
 		usage()
 	}
 
-	var err error
-
-	clientID, err = aes.Decrypt(clientIDCrypt, *passPhrase)
+	clientID, err := aes.Decrypt(clientIDCrypt, *passPhrase)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -314,60 +377,61 @@ func main() {
 	wowdb.Open()
 	defer wowdb.Close()
 
-	lastAuctionURL := ""
-	lastModified := int64(0)
-	for {
-		// Make sure our credentials are current.
-		accessToken, ok := webGetAccessToken(clientID, clientSecret)
-		if !ok {
-			fmt.Println("ERROR: Unable to obtain access token.")
-			return
-		}
-
-		// Sleep until a new auction file is published.
-		auctionURL, modified, ok := webGetAuctionURL(*realm, accessToken)
-		if !ok {
-			continue
-		}
-		if auctionURL == lastAuctionURL && modified == lastModified {
-			fmt.Printf(".")
-			time.Sleep(60 * time.Second)
-			continue
-		}
-		fmt.Println()
-		lastAuctionURL = auctionURL
-		lastModified = modified
-
-		// Database stats are fun to see! :-)
-		fmt.Printf("#Items: %d #Auctions: %d\n\n", wowdb.CountItems(), wowdb.CountAuctions())
-
-		// Download the auction file and all items for sale.
-		response, ok := webGetAuctions(auctionURL)
-		if !ok {
-			continue
-		}
-		auctions := unpackAuctions(response)
-		items := webGetAllItems(auctions, accessToken)
-
-		var goods = map[int64]int64{
-			// Health
-			34722: 40000, // Heavy Frostweave Bandage
-
-			// Enchanting: Boots
-			34056: 30000, // Lesser Cosmic Essence
-
-			// Enchanting: Runed Copper Rod
-			10938: 800, // Lesser Magic Essence
-		}
-
-		// Look for bargains on items we need.
-		toBid, toBuy := bargains(auctions, goods)
-		printShoppingList("Bid ", toBid, auctions, items)
-		printShoppingList("Buy!", toBuy, auctions, items)
-
-		// Look for items listed lower than what vendors will pay for them.
-		toBid, toBuy = arbitrage(auctions, items)
-		printShoppingList("Bid ", toBid, auctions, items)
-		printShoppingList("Buy!", toBuy, auctions, items)
+	accessToken, ok := webGetAccessToken(clientID, clientSecret)
+	if !ok {
+		fmt.Println("ERROR: Unable to obtain access token.")
+		return
 	}
+
+	realmId, ok := webGetRealmId("sisters-of-elune", accessToken)
+	if !ok {
+		fmt.Println("ERROR: Unable to obtain realm ID.")
+		return
+	}
+
+	auctions, ok := webGetCommodityAuctions(realmId, accessToken)
+	if !ok {
+		fmt.Println("ERROR: Unable to obtain auctions.")
+		return
+	}
+	fmt.Println(auctions)
+
+	//auctions, ok := webGetAuctions(realmId, accessToken)
+	//if !ok {
+	//	fmt.Println("ERROR: Unable to obtain auctions.")
+	//	return
+	//}
+	//fmt.Println(auctions)
+
+	//	// Database stats are fun to see! :-)
+	//	fmt.Printf("#Items: %d #Auctions: %d\n\n", wowdb.CountItems(), wowdb.CountAuctions())
+	//
+	//	// Download the auction file and all items for sale.
+	//	response, ok := webGetAuctions(auctionURL)
+	//	if !ok {
+	//		continue
+	//	}
+	//	auctions := unpackAuctions(response)
+	//	items := webGetAllItems(auctions, accessToken)
+	//
+	//	var goods = map[int64]int64{
+	//		// Health
+	//		34722: 40000, // Heavy Frostweave Bandage
+	//
+	//		// Enchanting: Boots
+	//		34056: 30000, // Lesser Cosmic Essence
+	//
+	//		// Enchanting: Runed Copper Rod
+	//		10938: 800, // Lesser Magic Essence
+	//	}
+	//
+	//	// Look for bargains on items we need.
+	//	toBid, toBuy := bargains(auctions, goods)
+	//	printShoppingList("Bid ", toBid, auctions, items)
+	//	printShoppingList("Buy!", toBuy, auctions, items)
+	//
+	//	// Look for items listed lower than what vendors will pay for them.
+	//	toBid, toBuy = arbitrage(auctions, items)
+	//	printShoppingList("Bid ", toBid, auctions, items)
+	//	printShoppingList("Buy!", toBuy, auctions, items)
 }
