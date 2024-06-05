@@ -13,3 +13,10 @@
 
 # Emacs
 *~
+
+# Local files
+.fleet/
+.idea/
+.vscode/
+.DS_Store
+
