@@ -3,20 +3,16 @@ package main
 // https://develop.battle.net/documentation
 
 import (
-	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/erikbryant/aes"
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/wowAPI"
 	"github.com/erikbryant/wowdb"
 	_ "github.com/go-sql-driver/mysql"
-	"io"
-	"log"
-	"net/http"
 	"os"
 	"sort"
-	"strings"
 )
 
 var (
@@ -25,150 +21,8 @@ var (
 	clientID          string
 	clientSecret      string
 	passPhrase        = flag.String("passPhrase", "", "Passphrase to unlock WOW API client ID/secret")
-	realm             = flag.String("realm", "icecrown", "WoW realm")
+	realm             = flag.String("realm", "Sisters of Elune", "WoW realm")
 )
-
-// webGetAccessToken retrieves an access token from battle.net. This token is used to authenticate API calls.
-func webGetAccessToken(id, secret string) (string, bool) {
-	grantString := "grant_type=client_credentials"
-	request, err := http.NewRequest("POST", "https://oauth.battle.net/token", bytes.NewBuffer([]byte(grantString)))
-	if err != nil {
-		log.Fatal(err)
-	}
-	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	request.SetBasicAuth(id, secret)
-
-	client := &http.Client{}
-	response, err := client.Do(request)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer response.Body.Close()
-
-	contents, err := io.ReadAll(response.Body)
-	if err != nil {
-		return "", false
-	}
-
-	var jsonObject map[string]interface{}
-
-	err = json.Unmarshal(contents, &jsonObject)
-	if err != nil {
-		return "", false
-	}
-
-	return jsonObject["access_token"].(string), true
-}
-
-// realmToSlug returns the slug form of a given realm name
-func realmToSlug(realm string) string {
-	slug := realm
-	slug = strings.ReplaceAll(slug, "-", "")
-	slug = strings.ReplaceAll(slug, " ", "-")
-	return slug
-}
-
-// webGetRealmId returns the ID of the given realm
-func webGetRealmId(realm, accessToken string) (string, bool) {
-	url := "https://us.api.blizzard.com/data/wow/realm/" + realmToSlug(realm) + "?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
-
-	response, err := web.RequestJSON(url, map[string]string{})
-	if err != nil {
-		fmt.Println("webGetAuctionURL: no response from api.blizzard.com", err)
-		return "", false
-	}
-
-	return web.ToString(response["id"]), true
-}
-
-// webGetAuctions returns the current auctions from the auction house
-func webGetAuctions(realmId, accessToken string) ([]interface{}, bool) {
-	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + realmId + "/auctions?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
-	response, err := web.RequestJSON(url, map[string]string{})
-	if err != nil {
-		fmt.Println("webGetAuction: no auction data returned", err)
-		return nil, false
-	}
-
-	if response["code"] != 200 {
-		fmt.Println("webGetAuction: HTTP error", response)
-		return nil, false
-	}
-
-	auctions := response["auctions"].([]interface{})
-	return auctions, true
-}
-
-// webGetCommodityAuctions returns the current commodity auctions from the auction house
-func webGetCommodityAuctions(realmId, accessToken string) ([]interface{}, bool) {
-	url := "https://us.api.blizzard.com/data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
-	response, err := web.RequestJSON(url, map[string]string{})
-	if err != nil {
-		fmt.Println("webGetAuction: no auction data returned", err)
-		return nil, false
-	}
-
-	return response["auctions"].([]interface{}), true
-}
-
-// webGetItem retrieves a single item from the WoW web API
-func webGetItem(id, accessToken string) (map[string]interface{}, bool) {
-	url := "https://us.api.blizzard.com/wow/item/" + id + "?locale=en_US&access_token=" + accessToken
-	response, err := web.RequestJSON(url, map[string]string{})
-	if err != nil {
-		fmt.Println("webGetItem: failed to retrieve item from blizzard.com", err)
-		return nil, false
-	}
-
-	if response["status"] == "nok" {
-		fmt.Println("INFO: ", response["reason"], "id: ", id)
-		return nil, false
-	}
-
-	return response, true
-}
-
-// webLookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also stores it in the wowdb.
-func webLookupItem(id int64, accessToken string) (wowdb.Item, bool) {
-	cache := true
-
-	// Is it cached in the database?
-	item, ok := wowdb.LookupItem(id)
-	if ok {
-		return item, true
-	}
-
-	i, ok := webGetItem(web.ToString(id), accessToken)
-	if !ok {
-		return item, false
-	}
-
-	item.ID = web.ToInt64(i["id"])
-	b, _ := json.Marshal(i)
-	item.JSON = fmt.Sprintf("%s", b)
-	_, ok = i["sellPrice"]
-	if ok {
-		item.SellPrice = web.ToInt64(i["sellPrice"])
-	} else {
-		fmt.Println("Item had no sellPrice:", i)
-		cache = false
-	}
-	_, ok = i["name"]
-	if ok {
-		item.Name = i["name"].(string)
-	} else {
-		fmt.Println("Item had no name:", i)
-		cache = false
-	}
-
-	// Cache it. Database lookups are much faster than web calls.
-	if cache {
-		wowdb.SaveItem(item)
-	}
-
-	return item, true
-}
 
 // webGetAllItems prefetches item data for every requested item. This is faster than querying for each item and each of its repeats. It also makes the tests simpler.
 func webGetAllItems(auctions map[int64]wowdb.Auction, accessToken string) map[int64]wowdb.Item {
@@ -178,13 +32,22 @@ func webGetAllItems(auctions map[int64]wowdb.Auction, accessToken string) map[in
 		if _, ok := items[auction.Item]; ok {
 			continue
 		}
-		items[auction.Item], _ = webLookupItem(auction.Item, accessToken)
+		items[auction.Item], _ = wowAPI.LookupItem(auction.Item, accessToken)
 	}
 
 	return items
 }
 
-// bargains returns all of the auctions for which the given goods are below our desired prices
+// realmId returns the ID of the given realm
+func realmId(realm, accessToken string) (string, bool) {
+	response := wowAPI.Realm(realm, accessToken)
+	if response == nil {
+		return "", false
+	}
+	return response["id"].(string), true
+}
+
+// bargains returns all auctions for which the given goods are below our desired prices
 func bargains(auctions map[int64]wowdb.Auction, goods map[int64]int64) (toBid []int64, toBuy []int64) {
 	for _, auction := range auctions {
 		if _, ok := goods[auction.Item]; !ok {
@@ -357,31 +220,31 @@ func main() {
 	wowdb.Open()
 	defer wowdb.Close()
 
-	accessToken, ok := webGetAccessToken(clientID, clientSecret)
+	accessToken, ok := wowAPI.AccessToken(clientID, clientSecret)
 	if !ok {
 		fmt.Println("ERROR: Unable to obtain access token.")
 		return
 	}
 
-	realmId, ok := webGetRealmId("sisters-of-elune", accessToken)
-	if !ok {
-		fmt.Println("ERROR: Unable to obtain realm ID.")
-		return
-	}
+	//auctionsC, ok := wowAPI.Commodities(accessToken)
+	//if !ok {
+	//	fmt.Println("ERROR: Unable to obtain commodity auctions.")
+	//	return
+	//}
+	//fmt.Printf("Commodity auctions:\n%v\n\n", auctionsC[0])
 
-	auctionsC, ok := webGetCommodityAuctions(realmId, accessToken)
-	if !ok {
-		fmt.Println("ERROR: Unable to obtain auctions.")
-		return
-	}
-	fmt.Println(auctionsC[0])
+	//auctions, ok := wowAPI.Auctions(*realm, accessToken)
+	//if !ok {
+	//	fmt.Println("ERROR: Unable to obtain auctions.")
+	//	return
+	//}
+	//fmt.Printf("Auctions:\n%v\n\n", auctions[0])
 
-	auctions, ok := webGetAuctions(realmId, accessToken)
+	item, ok := wowAPI.Item("19019", accessToken)
 	if !ok {
-		fmt.Println("ERROR: Unable to obtain auctions.")
 		return
 	}
-	fmt.Println(auctions)
+	fmt.Println(item)
 
 	//	// Database stats are fun to see! :-)
 	//	fmt.Printf("#Items: %d #Auctions: %d\n\n", wowdb.CountItems(), wowdb.CountAuctions())

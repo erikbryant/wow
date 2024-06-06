@@ -6,7 +6,7 @@ phases:
     commands:
       - go get -u github.com/go-sql-driver/mysql
       - go get -u github.com/erikbryant/wow-database
-      - go get -u github.com/erikbryant/web
+      - go get -u github.com/erikbryant/wowAPI
 
   pre_build: 
     commands:
