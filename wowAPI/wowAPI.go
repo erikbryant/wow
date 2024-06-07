@@ -184,8 +184,6 @@ func Item(id, accessToken string) (map[string]interface{}, bool) {
 
 // LookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also caches it in the wowdb.
 func LookupItem(id int64, accessToken string) (wowdb.Item, bool) {
-	cache := true
-
 	// Is it cached in the database?
 	item, ok := wowdb.LookupItem(id)
 	if ok {
@@ -197,28 +195,23 @@ func LookupItem(id int64, accessToken string) (wowdb.Item, bool) {
 		return item, false
 	}
 
+	_, ok = i["name"]
+	if !ok {
+		fmt.Println("Item had no name:", i)
+		return item, false
+	}
+	item.Name = i["name"].(string)
+
 	item.ID = web.ToInt64(i["id"])
+
 	b, _ := json.Marshal(i)
 	item.JSON = fmt.Sprintf("%s", b)
-	_, ok = i["sellPrice"]
-	if ok {
-		item.SellPrice = web.ToInt64(i["sellPrice"])
-	} else {
-		fmt.Println("Item had no sellPrice:", i)
-		cache = false
-	}
-	_, ok = i["name"]
-	if ok {
-		item.Name = i["name"].(string)
-	} else {
-		fmt.Println("Item had no name:", i)
-		cache = false
-	}
+
+	_, ok = i["sell_price"]
+	item.SellPrice = web.ToInt64(i["sell_price"])
 
 	// Cache it. Database lookups are much faster than web calls.
-	if cache {
-		wowdb.SaveItem(item)
-	}
+	wowdb.SaveItem(item)
 
 	return item, true
 }

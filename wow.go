@@ -226,25 +226,31 @@ func main() {
 		return
 	}
 
-	//auctionsC, ok := wowAPI.Commodities(accessToken)
-	//if !ok {
-	//	fmt.Println("ERROR: Unable to obtain commodity auctions.")
-	//	return
-	//}
-	//fmt.Printf("Commodity auctions:\n%v\n\n", auctionsC[0])
+	auctionsC, ok := wowAPI.Commodities(accessToken)
+	if !ok {
+		fmt.Println("ERROR: Unable to obtain commodity auctions.")
+		return
+	}
+	fmt.Printf("Commodity auctions:\n%v\n\n", auctionsC[0])
 
-	//auctions, ok := wowAPI.Auctions(*realm, accessToken)
-	//if !ok {
-	//	fmt.Println("ERROR: Unable to obtain auctions.")
-	//	return
-	//}
-	//fmt.Printf("Auctions:\n%v\n\n", auctions[0])
+	auctions, ok := wowAPI.Auctions(*realm, accessToken)
+	if !ok {
+		fmt.Println("ERROR: Unable to obtain auctions.")
+		return
+	}
+	fmt.Printf("Auctions:\n%v\n\n", auctions[0])
 
-	item, ok := wowAPI.Item("19019", accessToken)
+	item, ok := wowAPI.Item("172052", accessToken)
 	if !ok {
 		return
 	}
-	fmt.Println(item)
+	fmt.Printf("%v\n\n", item)
+
+	item2, ok := wowAPI.LookupItem(172052, accessToken)
+	if !ok {
+		return
+	}
+	fmt.Printf("%v\n\n", item2)
 
 	//	// Database stats are fun to see! :-)
 	//	fmt.Printf("#Items: %d #Auctions: %d\n\n", wowdb.CountItems(), wowdb.CountAuctions())
