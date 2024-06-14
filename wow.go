@@ -25,8 +25,8 @@ var (
 )
 
 // webGetAllItems prefetches item data for every requested item. This is faster than querying for each item and each of its repeats. It also makes the tests simpler.
-func webGetAllItems(auctions map[int64]wowdb.Auction, accessToken string) map[int64]wowdb.Item {
-	var items = map[int64]wowdb.Item{}
+func webGetAllItems(auctions map[int64]wowAPI.Auction, accessToken string) map[int64]wowAPI.Item {
+	var items = map[int64]wowAPI.Item{}
 
 	for _, auction := range auctions {
 		if _, ok := items[auction.Item]; ok {
@@ -48,7 +48,7 @@ func realmId(realm, accessToken string) (string, bool) {
 }
 
 // bargains returns all auctions for which the given goods are below our desired prices
-func bargains(auctions map[int64]wowdb.Auction, goods map[int64]int64) (toBid []int64, toBuy []int64) {
+func bargains(auctions map[int64]wowAPI.Auction, goods map[int64]int64) (toBid []int64, toBuy []int64) {
 	for _, auction := range auctions {
 		if _, ok := goods[auction.Item]; !ok {
 			// We do not need this item.
@@ -73,45 +73,36 @@ func bargains(auctions map[int64]wowdb.Auction, goods map[int64]int64) (toBid []
 }
 
 // jsonToStruct converts a single auction json string into a struct that is much easier to work with
-func jsonToStruct(auc map[string]interface{}) wowdb.Auction {
-	var auction wowdb.Auction
-	var ok bool
+func jsonToStruct(auc map[string]interface{}) wowAPI.Auction {
+	var auction wowAPI.Auction
 
-	auction.Auc = web.ToInt64(auc["auc"])
-	auction.Item = web.ToInt64(auc["item"])
-	auction.Owner = web.ToString(auc["owner"])
-	auction.Bid = web.ToInt64(auc["bid"])
-	auction.Buyout = web.ToInt64(auc["buyout"])
+	if _, ok := auc["buyout"]; ok {
+		auction.Buyout = web.ToInt64(auc["buyout"])
+	}
+	if _, ok := auc["bid"]; ok {
+		auction.Bid = web.ToInt64(auc["bid"])
+	}
 	auction.Quantity = web.ToInt64(auc["quantity"])
 	auction.TimeLeft = web.ToString(auc["timeLeft"])
-	auction.Rand = web.ToInt64(auc["rand"])
-	auction.Seed = web.ToInt64(auc["seed"])
-	auction.Context = web.ToInt64(auc["context"])
-	_, auction.HasBonusLists = auc["bonusLists"]
-	_, auction.HasModifiers = auc["bonusModifiers"]
-	if _, ok = auc["petBreedId"]; ok {
-		auction.PetBreedID = web.ToInt64(auc["petBreedId"])
+	auction.Auc = web.ToInt64(auc["id"])
+
+	_, ok := auc["item"]
+	if !ok {
+		fmt.Println("Auction had no item: ", auc)
+		return wowAPI.Auction{}
 	}
-	if _, ok = auc["petLevel"]; ok {
-		auction.PetLevel = web.ToInt64(auc["petLevel"])
-	}
-	if _, ok = auc["petQualityId"]; ok {
-		auction.PetQualityID = web.ToInt64(auc["petQualityId"])
-	}
-	if _, ok = auc["petSpeciesId"]; ok {
-		auction.PetSpeciesID = web.ToInt64(auc["petSpeciesId"])
-	}
+	item := auc["item"].(map[string]interface{})
+	auction.Item = web.ToInt64(item["id"])
+
 	b, _ := json.Marshal(auc)
 	auction.JSON = fmt.Sprintf("%s", b)
-
-	wowdb.SaveAuction(auction)
 
 	return auction
 }
 
-// unpackAuction unpacks the []interface{} format we get from the web into a map of structs. Same data, but in a format that is much easier to work with.
-func unpackAuctions(auctions []interface{}) map[int64]wowdb.Auction {
-	aucs := make(map[int64]wowdb.Auction)
+// unpackAuction converts the []interface{} format we get from the web into a map of structs
+func unpackAuctions(auctions []interface{}) map[int64]wowAPI.Auction {
+	aucs := make(map[int64]wowAPI.Auction)
 
 	for _, a := range auctions {
 		s := jsonToStruct(a.(map[string]interface{}))
@@ -122,7 +113,7 @@ func unpackAuctions(auctions []interface{}) map[int64]wowdb.Auction {
 }
 
 // arbitrage finds auction prices that are lower than vendor prices
-func arbitrage(auctions map[int64]wowdb.Auction, items map[int64]wowdb.Item) (toBid []int64, toBuy []int64) {
+func arbitrage(auctions map[int64]wowAPI.Auction, items map[int64]wowdb.Item) (toBid []int64, toBuy []int64) {
 	for _, auction := range auctions {
 		item := items[auction.Item]
 
@@ -176,7 +167,7 @@ func coinsToString(amount int64) string {
 }
 
 // printShoppingList prints a list of auctions the user should consider bidding/buying
-func printShoppingList(action string, toGet []int64, auctions map[int64]wowdb.Auction, items map[int64]wowdb.Item) {
+func printShoppingList(action string, toGet []int64, auctions map[int64]wowAPI.Auction, items map[int64]wowdb.Item) {
 	if len(toGet) == 0 {
 		return
 	}
@@ -226,43 +217,36 @@ func main() {
 		return
 	}
 
-	auctionsC, ok := wowAPI.Commodities(accessToken)
-	if !ok {
-		fmt.Println("ERROR: Unable to obtain commodity auctions.")
-		return
-	}
-	fmt.Printf("Commodity auctions:\n%v\n\n", auctionsC[0])
-
-	auctions, ok := wowAPI.Auctions(*realm, accessToken)
+	a, ok := wowAPI.Auctions(*realm, accessToken)
 	if !ok {
 		fmt.Println("ERROR: Unable to obtain auctions.")
 		return
 	}
-	fmt.Printf("Auctions:\n%v\n\n", auctions[0])
+	auctions := unpackAuctions(a)
+	fmt.Printf("#Auctions: %d\n\n", len(auctions))
 
-	item, ok := wowAPI.Item("172052", accessToken)
-	if !ok {
-		return
+	//c, ok := wowAPI.Commodities(accessToken)
+	//if !ok {
+	//	fmt.Println("ERROR: Unable to obtain commodity auctions.")
+	//	return
+	//}
+	//auctionsC := unpackAuctions(c)
+	//fmt.Printf("#Commodities: %d\n\n", len(auctionsC))
+
+	for _, auction := range auctions {
+		item, ok := wowAPI.LookupItem(auction.Item, accessToken)
+		if !ok {
+			return
+		}
+		if item.Equippable {
+			// I do not understand how to price these
+			continue
+		}
+		if auction.Buyout > 0 && auction.Buyout < item.SellPrice {
+			fmt.Printf("Arbitrage! %d < %d\n%v\n%v\n\n", auction.Buyout, item.SellPrice, auction, item)
+		}
 	}
-	fmt.Printf("%v\n\n", item)
 
-	item2, ok := wowAPI.LookupItem(172052, accessToken)
-	if !ok {
-		return
-	}
-	fmt.Printf("%v\n\n", item2)
-
-	//	// Database stats are fun to see! :-)
-	//	fmt.Printf("#Items: %d #Auctions: %d\n\n", wowdb.CountItems(), wowdb.CountAuctions())
-	//
-	//	// Download the auction file and all items for sale.
-	//	response, ok := webGetAuctions(auctionURL)
-	//	if !ok {
-	//		continue
-	//	}
-	//	auctions := unpackAuctions(response)
-	//	items := webGetAllItems(auctions, accessToken)
-	//
 	//	var goods = map[int64]int64{
 	//		// Health
 	//		34722: 40000, // Heavy Frostweave Bandage
@@ -276,11 +260,6 @@ func main() {
 	//
 	//	// Look for bargains on items we need.
 	//	toBid, toBuy := bargains(auctions, goods)
-	//	printShoppingList("Bid ", toBid, auctions, items)
-	//	printShoppingList("Buy!", toBuy, auctions, items)
-	//
-	//	// Look for items listed lower than what vendors will pay for them.
-	//	toBid, toBuy = arbitrage(auctions, items)
 	//	printShoppingList("Bid ", toBid, auctions, items)
 	//	printShoppingList("Buy!", toBuy, auctions, items)
 }

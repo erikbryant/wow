@@ -5,12 +5,41 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wowdb"
 	"io"
 	"log"
 	"net/http"
 	"strings"
 )
+
+// Item contains the properties of a single auction house item.
+type Item struct {
+	ID         int64
+	Name       string
+	SellPrice  int64
+	Equippable bool
+	JSON       string
+}
+
+// Auction contains the properties of a single auction house auction.
+type Auction struct {
+	Auc           int64
+	Item          int64
+	Owner         string
+	Bid           int64
+	Buyout        int64
+	Quantity      int64
+	TimeLeft      string
+	Rand          int64
+	Seed          int64
+	Context       int64
+	HasBonusLists bool
+	HasModifiers  bool
+	PetBreedID    int64
+	PetLevel      int64
+	PetQualityID  int64
+	PetSpeciesID  int64
+	JSON          string
+}
 
 // realmToSlug returns the slug form of a given realm name
 func realmToSlug(realm string) string {
@@ -166,8 +195,8 @@ func Commodities(accessToken string) ([]interface{}, bool) {
 	return response["auctions"].([]interface{}), true
 }
 
-// Item retrieves a single item from the WoW web API
-func Item(id, accessToken string) (map[string]interface{}, bool) {
+// wowItem retrieves a single item from the WoW web API
+func wowItem(id, accessToken string) (map[string]interface{}, bool) {
 	url := "https://us.api.blizzard.com/data/wow/item/" + id + "?namespace=static-us&locale=en_US&access_token=" + accessToken
 	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
@@ -182,36 +211,49 @@ func Item(id, accessToken string) (map[string]interface{}, bool) {
 	return response, true
 }
 
-// LookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also caches it in the wowdb.
-func LookupItem(id int64, accessToken string) (wowdb.Item, bool) {
-	// Is it cached in the database?
-	item, ok := wowdb.LookupItem(id)
+var (
+	cache = map[int64]Item{}
+)
+
+func cacheWrite(id int64, item Item) {
+	cache[id] = item
+}
+
+func cacheRead(id int64) (Item, bool) {
+	item, ok := cache[id]
+	return item, ok
+}
+
+// LookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
+func LookupItem(id int64, accessToken string) (Item, bool) {
+	// Is it cached?
+	item, ok := cacheRead(id)
 	if ok {
 		return item, true
 	}
 
-	i, ok := Item(web.ToString(id), accessToken)
+	i, ok := wowItem(web.ToString(id), accessToken)
 	if !ok {
 		return item, false
 	}
 
 	_, ok = i["name"]
 	if !ok {
-		fmt.Println("Item had no name:", i)
+		fmt.Println("Item had no name:", id, i)
 		return item, false
 	}
 	item.Name = i["name"].(string)
 
 	item.ID = web.ToInt64(i["id"])
 
+	item.Equippable = i["is_equippable"].(bool)
 	b, _ := json.Marshal(i)
 	item.JSON = fmt.Sprintf("%s", b)
 
 	_, ok = i["sell_price"]
 	item.SellPrice = web.ToInt64(i["sell_price"])
 
-	// Cache it. Database lookups are much faster than web calls.
-	wowdb.SaveItem(item)
+	cacheWrite(id, item)
 
 	return item, true
 }
