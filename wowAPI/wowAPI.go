@@ -32,7 +32,7 @@ type Item struct {
 type Auction struct {
 	Id       int64
 	ItemId   int64
-	Buyout   int64 // For commodity auctions, this stores 'unit_price'
+	Buyout   int64 // For commodity auctions this stores 'unit_price'
 	Quantity int64
 }
 

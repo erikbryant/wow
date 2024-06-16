@@ -44,7 +44,7 @@ func TestBargains(t *testing.T) {
 				2: auction2,
 				3: auction3,
 			},
-			// Goods to look for bargains on.
+			// Goods to look for bargains on
 			map[int64]int64{
 				100: 1000,
 				200: 2000,
@@ -54,8 +54,7 @@ func TestBargains(t *testing.T) {
 			[]int64{
 				2,
 			},
-			// Expected buys (if a buy is signaled, it will not
-			// also signal a bid).
+			// Expected buys (if a buy is signaled, it will not also signal a bid)
 			[]int64{
 				1,
 				3,
@@ -64,7 +63,7 @@ func TestBargains(t *testing.T) {
 	}
 
 	for test, testCase := range testCases {
-		answerBid, answerBuy := bargains(testCase.auctions, testCase.goods)
+		answerBid, answerBuy := findBargains(testCase.auctions, testCase.goods)
 		if len(answerBid) != len(testCase.expectedBid) {
 			t.Errorf("ERROR: For test %d, expected bids %v, got %v", test, testCase.expectedBid, answerBid)
 		}
