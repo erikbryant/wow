@@ -15,6 +15,7 @@ import (
 
 var (
 	skipItems = map[int64]bool{
+		// HTTP 404
 		201421: true,
 		204841: true,
 		60405:  true,
