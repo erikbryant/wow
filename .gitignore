@@ -19,4 +19,4 @@
 .idea/
 .vscode/
 .DS_Store
-.gob
+*.gob
