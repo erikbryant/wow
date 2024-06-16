@@ -13,6 +13,33 @@ import (
 	"strings"
 )
 
+var (
+	skipItems = map[int64]bool{
+		201421: true,
+		204841: true,
+		60405:  true,
+		204842: true,
+		204836: true,
+		204839: true,
+		56055:  true,
+		54629:  true,
+		60406:  true,
+		60390:  true,
+		178149: true,
+		204837: true,
+		204840: true,
+		201420: true,
+		204835: true,
+		204834: true,
+		62770:  true,
+	}
+)
+
+// SkipItem returns true if the caller should ignore this item
+func SkipItem(item int64) bool {
+	return skipItems[item]
+}
+
 // realmToSlug returns the slug form of a given realm name
 func realmToSlug(realm string) string {
 	slug := strings.ToLower(realm)

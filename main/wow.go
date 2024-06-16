@@ -111,16 +111,14 @@ func jsonToStruct(auc map[string]interface{}) common.Auction {
 }
 
 // unpackAuction converts the []interface{} format we get from the web into structs
-func unpackAuctions(a1, a2 []interface{}) map[int64][]common.Auction {
+func unpackAuctions(a1 []interface{}) map[int64][]common.Auction {
 	auctions := map[int64][]common.Auction{}
 
 	for _, a := range a1 {
 		auction := jsonToStruct(a.(map[string]interface{}))
-		auctions[auction.ItemId] = append(auctions[auction.ItemId], auction)
-	}
-
-	for _, a := range a2 {
-		auction := jsonToStruct(a.(map[string]interface{}))
+		if wowAPI.SkipItem(auction.ItemId) {
+			continue
+		}
 		auctions[auction.ItemId] = append(auctions[auction.ItemId], auction)
 	}
 
@@ -157,7 +155,6 @@ func findBargains(goods map[int64]int64, auctions map[int64][]common.Auction, ac
 	for itemId, maxPrice := range goods {
 		item, ok := wowAPI.LookupItem(itemId, accessToken)
 		if !ok {
-			fmt.Println("ERROR: Unable to lookup item for bargain: ", itemId)
 			continue
 		}
 		for _, auction := range auctions[itemId] {
@@ -175,9 +172,8 @@ func findBargains(goods map[int64]int64, auctions map[int64][]common.Auction, ac
 	return bargains
 }
 
-// printBargains prints a list of auctions the user should consider bidding/buying
-func printBargains(bargains []Bargain) {
-	fmt.Println("Bargains:")
+// printShoppingList prints a list of auctions the user should consider bidding/buying
+func printShoppingList(bargains []Bargain) {
 	for _, bargain := range bargains {
 		fmt.Printf("%50s \t quantity: %5d \t savings: %10s\n", bargain.Name, bargain.Quantity, coinsToString(bargain.UnitSavings))
 	}
@@ -191,7 +187,6 @@ func findArbitrages(auctions map[int64][]common.Auction, accessToken string) []B
 	for itemId, aucs := range auctions {
 		item, ok := wowAPI.LookupItem(itemId, accessToken)
 		if !ok {
-			fmt.Println("ERROR: Unable to lookup item for bargain: ", itemId)
 			continue
 		}
 		for _, auction := range aucs {
@@ -211,15 +206,6 @@ func findArbitrages(auctions map[int64][]common.Auction, accessToken string) []B
 	}
 
 	return bargains
-}
-
-// printArbitrages prints a list of auctions the user should consider buying
-func printArbitrages(bargains []Bargain) {
-	fmt.Println("Arbitrage:")
-	for _, bargain := range bargains {
-		fmt.Printf("%50s \t quantity: %5d \t savings: %10s\n", bargain.Name, bargain.Quantity, coinsToString(bargain.UnitSavings))
-	}
-	fmt.Println()
 }
 
 // usage prints a usage message and terminates the program with an error
@@ -262,12 +248,16 @@ func main() {
 	}
 	fmt.Printf("#Commodities: %d\n\n", len(c))
 
-	auctions := unpackAuctions(a, c)
-	auctionsC := unpackAuctions(c, nil)
+	auctions := unpackAuctions(a)
+	commodities := unpackAuctions(c)
 
-	// Look for bargains
-	bargains := findBargains(usefulGoods, auctions, accessToken)
-	printBargains(bargains)
-	arbitrage := findArbitrages(auctionsC, accessToken)
-	printArbitrages(arbitrage)
+	// Look for things to buy
+	fmt.Println("Bargains:")
+	toBuy := findBargains(usefulGoods, auctions, accessToken)
+	printShoppingList(toBuy)
+	toBuy = findBargains(usefulGoods, commodities, accessToken)
+	printShoppingList(toBuy)
+	fmt.Println("Arbitrages:")
+	toBuy = findArbitrages(commodities, accessToken)
+	printShoppingList(toBuy)
 }
