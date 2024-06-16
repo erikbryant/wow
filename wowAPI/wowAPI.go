@@ -16,32 +16,24 @@ import (
 // Item contains the properties of a single auction house item
 type Item struct {
 	// WARNING: Changing this struct invalidates the cache
-	ID         int64
+	Id         int64
 	Name       string
-	SellPrice  int64
 	Equippable bool
-	JSON       string
+	SellPrice  int64
 }
+
+// Sample auction response. Some have more or fewer fields.
+// map[buyout:1.1111011e+09 id:3.49632108e+08 item:map[id:142075] quantity:1 time_left:VERY_LONG]
+
+// Commodity auction response. All have exactly these fields.
+// map[id:3.44371058e+08 item:map[id:192672] quantity:1 time_left:SHORT unit_price:16800]
 
 // Auction contains the properties of a single auction house auction
 type Auction struct {
-	Auc           int64
-	Item          int64
-	Owner         string
-	Bid           int64
-	Buyout        int64
-	Quantity      int64
-	TimeLeft      string
-	Rand          int64
-	Seed          int64
-	Context       int64
-	HasBonusLists bool
-	HasModifiers  bool
-	PetBreedID    int64
-	PetLevel      int64
-	PetQualityID  int64
-	PetSpeciesID  int64
-	JSON          string
+	Id       int64
+	ItemId   int64
+	Buyout   int64 // For commodity auctions, this stores 'unit_price'
+	Quantity int64
 }
 
 var (
@@ -141,7 +133,7 @@ func ConnectedRealmSearch(accessToken string) map[string]interface{} {
 	return response
 }
 
-// ConnectedRealmId returns the connected realm ID of the given realm
+// ConnectedRealmId returns the connected realm Id of the given realm
 func ConnectedRealmId(realm, accessToken string) (string, bool) {
 	connectedRealms := ConnectedRealmSearch(accessToken)
 	if connectedRealms == nil {
@@ -213,7 +205,7 @@ func wowItem(id, accessToken string) (map[string]interface{}, bool) {
 	url := "https://us.api.blizzard.com/data/wow/item/" + id + "?namespace=static-us&locale=en_US&access_token=" + accessToken
 	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
-		fmt.Println("Item: failed to retrieve item", err)
+		fmt.Println("ItemId: failed to retrieve item", err)
 		return nil, false
 	}
 	if response["status"] == "nok" {
@@ -280,16 +272,14 @@ func LookupItem(id int64, accessToken string) (Item, bool) {
 
 	_, ok = i["name"]
 	if !ok {
-		fmt.Println("Item had no name:", id, i)
+		fmt.Println("ItemId had no name:", id, i)
 		return item, false
 	}
 	item.Name = i["name"].(string)
 
-	item.ID = web.ToInt64(i["id"])
+	item.Id = web.ToInt64(i["id"])
 
 	item.Equippable = i["is_equippable"].(bool)
-	b, _ := json.Marshal(i)
-	item.JSON = fmt.Sprintf("%s", b)
 
 	_, ok = i["sell_price"]
 	item.SellPrice = web.ToInt64(i["sell_price"])
