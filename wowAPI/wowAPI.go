@@ -229,6 +229,8 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 		return item, false
 	}
 
+	item.Id = web.ToInt64(i["id"])
+
 	_, ok = i["name"]
 	if !ok {
 		fmt.Println("ItemId had no name:", id, i)
@@ -236,12 +238,15 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 	}
 	item.Name = i["name"].(string)
 
-	item.Id = web.ToInt64(i["id"])
-
 	item.Equippable = i["is_equippable"].(bool)
 
-	_, ok = i["sell_price"]
-	item.SellPrice = web.ToInt64(i["sell_price"])
+	switch item.Id {
+	case 194829: // Fated Fortune Card (can't be sold until read)
+		item.SellPrice = 10000
+	default:
+		_, ok = i["sell_price"]
+		item.SellPrice = web.ToInt64(i["sell_price"])
+	}
 
 	cache.Write(id, item)
 
