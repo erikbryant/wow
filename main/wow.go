@@ -43,26 +43,26 @@ var (
 		7078:   5000,    // Essence of Fire
 		12808:  558000,  // Essence of Undeath
 		7080:   458700,  // Essence of Water
-		23427:  340000,  // Eternium Ore
+		23427:  329500,  // Eternium Ore
 		22794:  57500,   // Fel Lotus
 		124116: 777500,  // Felhide
 		124106: 1047700, // Felwort
 		4625:   55000,   // Firebloom
 		34056:  2400,    // Lesser Cosmic Essence
 		16202:  39200,   // Lesser Eternal Essence
-		10938:  17700,   // Lesser Magic Essence
+		10938:  4500,    // Lesser Magic Essence
 		22447:  5000,    // Lesser Planar Essence
 		124441: 89900,   // Leylight Shard
 		16204:  3000,    // Light Illusion Dust
 		12803:  233900,  // Living Essence
 		111245: 77500,   // Luminous Shard
-		52722:  16800,   // Maelstrom Crystal
+		52722:  10100,   // Maelstrom Crystal
 		22791:  92500,   // Netherbloom
 		22792:  52500,   // Nightmare Vine
 		22451:  4009900, // Primal Air
 		22452:  74500,   // Primal Earth
 		21884:  1745000, // Primal Fire
-		21886:  969000,  // Primal Life
+		21886:  958900,  // Primal Life
 		22457:  1480000, // Primal Mana
 		23571:  7235000, // Primal Might
 		22456:  1059800, // Primal Shadow
@@ -70,11 +70,11 @@ var (
 		156930: 4600,    // Rich Illusion Dust
 		14343:  3500,    // Small Brilliant Shard
 		22448:  4500,    // Small Prismatic Shard
-		10940:  5000,    // Strange Dust
-		113588: 72500,   // Temporal Crystal
-		22450:  12000,   // Void Crystal
-		52328:  193600,  // Volatile Air
-		8153:   3999900, // WildVine
+		10940:  4500,    // Strange Dust
+		113588: 72000,   // Temporal Crystal
+		22450:  11800,   // Void Crystal
+		52328:  190000,  // Volatile Air
+		8153:   3759900, // WildVine
 
 		// Tailoring
 		111557: 8800, // Sumptuous Fur
