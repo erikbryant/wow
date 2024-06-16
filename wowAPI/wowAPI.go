@@ -2,17 +2,20 @@ package wowAPI
 
 import (
 	"bytes"
+	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"github.com/erikbryant/web"
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
-// Item contains the properties of a single auction house item.
+// Item contains the properties of a single auction house item
 type Item struct {
+	// WARNING: Changing this struct invalidates the cache
 	ID         int64
 	Name       string
 	SellPrice  int64
@@ -20,7 +23,7 @@ type Item struct {
 	JSON       string
 }
 
-// Auction contains the properties of a single auction house auction.
+// Auction contains the properties of a single auction house auction
 type Auction struct {
 	Auc           int64
 	Item          int64
@@ -39,6 +42,16 @@ type Auction struct {
 	PetQualityID  int64
 	PetSpeciesID  int64
 	JSON          string
+}
+
+var (
+	cache     = map[int64]Item{}
+	cacheFile = "cache.gob"
+)
+
+func init() {
+	cacheLoad()
+	fmt.Printf("#Cache items: %d\n", len(cache))
 }
 
 // realmToSlug returns the slug form of a given realm name
@@ -207,21 +220,49 @@ func wowItem(id, accessToken string) (map[string]interface{}, bool) {
 		fmt.Println("INFO: ", response["reason"], "id: ", id)
 		return nil, false
 	}
+	_, ok := response["code"]
+	if ok {
+		fmt.Println("Error retrieving id: ", id, response)
+		return nil, false
+	}
 
 	return response, true
 }
 
-var (
-	cache = map[int64]Item{}
-)
+func cacheLoad() {
+	file, err := os.Open(cacheFile)
+	if err != nil {
+		fmt.Printf("error opening cache file: %v", err)
+		panic(err)
+	}
+	defer file.Close()
+	decoder := gob.NewDecoder(file)
+	err = decoder.Decode(&cache)
+	if err != nil {
+		fmt.Printf("error reading cache: %v", err)
+		panic(err)
+	}
+}
 
-func cacheWrite(id int64, item Item) {
-	cache[id] = item
+func cacheSave() {
+	file, err := os.Create(cacheFile)
+	if err != nil {
+		fmt.Printf("error creating cache file: %v", err)
+		panic(err)
+	}
+	defer file.Close()
+	encoder := gob.NewEncoder(file)
+	encoder.Encode(cache)
 }
 
 func cacheRead(id int64) (Item, bool) {
 	item, ok := cache[id]
 	return item, ok
+}
+
+func cacheWrite(id int64, item Item) {
+	cache[id] = item
+	cacheSave()
 }
 
 // LookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
