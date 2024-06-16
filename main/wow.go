@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/erikbryant/aes"
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
 )
@@ -26,41 +27,70 @@ var (
 	realm             = flag.String("realm", "Sisters of Elune", "WoW realm")
 	usefulGoods       = map[int64]int64{
 		// Health
-		34722: 75000, // Heavy Frostweave Bandage
+		211943: 6000, // Scarlet Silk Bandage
 
 		// Enchanting
-		34057:  7900,   // Abyss Crystal
-		7909:   7500,   // Aquamarine
-		22445:  12100,  // Arcane Dust
-		124440: 29800,  // Arkhana
-		124442: 295000, // Chaos Crystal
-		109693: 7400,   // Draenic Dust
-		//: 117700, // Dragon's Teeth
-		//: 740000, // Elixir of Demonslaying
-		7082:   247300,  // Essence of Air
-		7076:   3500,    // Essence of Earth
+		34057:  7900,    // Abyss Crystal
+		7909:   7500,    // Aquamarine
+		22445:  12100,   // Arcane Dust
+		124440: 29800,   // Arkhana
+		124442: 260000,  // Chaos Crystal
+		109693: 7400,    // Draenic Dust
+		3819:   117700,  // Dragon's Teeth
+		9224:   730000,  // Elixir of Demonslaying
+		7082:   200000,  // Essence of Air
+		7076:   2500,    // Essence of Earth
 		7078:   9400,    // Essence of Fire
-		12808:  639700,  // Essence of Undeath
+		12808:  600000,  // Essence of Undeath
 		7080:   458700,  // Essence of Water
 		23427:  350000,  // Eternium Ore
-		22794:  59900,   // Fel Lotus
-		124116: 836000,  // Felhide
-		124106: 1099700, // Felwort
+		22794:  57500,   // Fel Lotus
+		124116: 777500,  // Felhide
+		124106: 1048900, // Felwort
 		4625:   55000,   // Firebloom
-		34056:  1,       // Lesser Cosmic Essence
+		34056:  2400,    // Lesser Cosmic Essence
+		16202:  39200,   // Lesser Eternal Essence
+		10938:  29900,   // Lesser Magic Essence
+		22447:  6500,    // Lesser Planar Essence
+		124441: 89900,   // Leylight Shard
+		16204:  3000,    // Light Illusion Dust
+		12803:  233900,  // Living Essence
+		111245: 84700,   // Luminous Shard
+		52722:  16800,   // Maelstrom Crystal
+		22791:  92500,   // Netherbloom
+		22792:  52500,   // Nightmare Vine
+		22451:  4009900, // Primal Air
+		22452:  74500,   // Primal Earth
+		21884:  1745000, // Primal Fire
+		21886:  970000,  // Primal Life
+		22457:  1480000, // Primal Mana
+		23571:  7235000, // Primal Might
+		22456:  1059800, // Primal Shadow
+		21885:  1080000, // Primal Water
+		156930: 4600,    // Rich Illusion Dust
+		14343:  4000,    // Small Brilliant Shard
+		22448:  4900,    // Small Prismatic Shard
+		10940:  5000,    // Strange Dust
+		113588: 85000,   // Temporal Crystal
+		22450:  13500,   // Void Crystal
+		52328:  193600,  // Volatile Air
+		8153:   3999900, // WildVine
+
+		// Tailoring
+		111557: 8800, // Sumptuous Fur
 	}
 )
 
 // jsonToStruct converts a single auction json string into a struct that is much easier to work with
-func jsonToStruct(auc map[string]interface{}) wowAPI.Auction {
-	var auction wowAPI.Auction
+func jsonToStruct(auc map[string]interface{}) common.Auction {
+	var auction common.Auction
 
 	auction.Id = web.ToInt64(auc["id"])
 
 	_, ok := auc["item"]
 	if !ok {
 		fmt.Println("Auction had no item: ", auc)
-		return wowAPI.Auction{}
+		return common.Auction{}
 	}
 	item := auc["item"].(map[string]interface{})
 	auction.ItemId = web.ToInt64(item["id"])
@@ -81,8 +111,8 @@ func jsonToStruct(auc map[string]interface{}) wowAPI.Auction {
 }
 
 // unpackAuction converts the []interface{} format we get from the web into structs
-func unpackAuctions(a1, a2 []interface{}) map[int64][]wowAPI.Auction {
-	auctions := map[int64][]wowAPI.Auction{}
+func unpackAuctions(a1, a2 []interface{}) map[int64][]common.Auction {
+	auctions := map[int64][]common.Auction{}
 
 	for _, a := range a1 {
 		auction := jsonToStruct(a.(map[string]interface{}))
@@ -95,26 +125,6 @@ func unpackAuctions(a1, a2 []interface{}) map[int64][]wowAPI.Auction {
 	}
 
 	return auctions
-}
-
-// arbitrage returns auctions selling for lower than vendor prices
-func arbitrage(auctions map[int64]wowAPI.Auction, accessToken string) (toBuy []wowAPI.Auction) {
-	for _, auction := range auctions {
-		item, ok := wowAPI.LookupItem(auction.ItemId, accessToken)
-		if !ok {
-			fmt.Println("ERROR: Unable to lookup item for auction: ", auction)
-			continue
-		}
-		if item.Equippable {
-			// I do not understand how to price these
-			continue
-		}
-		if auction.Buyout > 0 && auction.Buyout < item.SellPrice {
-			toBuy = append(toBuy, auction)
-		}
-	}
-
-	return toBuy
 }
 
 // coinsToString returns a human-readable, formatted version of the coin amount
@@ -140,24 +150,9 @@ func coinsToString(amount int64) string {
 	return fmt.Sprintf("%s%d", sign, copper)
 }
 
-// printShoppingList prints a list of auctions the user should consider bidding/buying
-func printShoppingList(action string, auctions []wowAPI.Auction, accessToken string) {
-	for _, auction := range auctions {
-		item, ok := wowAPI.LookupItem(auction.ItemId, accessToken)
-		if !ok {
-			fmt.Println("ERROR: Unable to lookup item for shopping list auction: ", auction)
-			continue
-		}
-		profitBuy := item.SellPrice - auction.Buyout
-		fmt.Printf("%s %25s \t quantity: %d \t profit: %s\n", action, item.Name, auction.Quantity, coinsToString(profitBuy))
-	}
-
-	fmt.Println()
-}
-
 // findBargains returns auctions for which the goods are below our desired prices
-func findBargains(goods map[int64]int64, auctions map[int64][]wowAPI.Auction, accessToken string) []Bargain {
-	bargains := make([]Bargain, 0)
+func findBargains(goods map[int64]int64, auctions map[int64][]common.Auction, accessToken string) []Bargain {
+	bargains := []Bargain{}
 
 	for itemId, maxPrice := range goods {
 		item, ok := wowAPI.LookupItem(itemId, accessToken)
@@ -182,8 +177,47 @@ func findBargains(goods map[int64]int64, auctions map[int64][]wowAPI.Auction, ac
 
 // printBargains prints a list of auctions the user should consider bidding/buying
 func printBargains(bargains []Bargain) {
+	fmt.Println("Bargains:")
 	for _, bargain := range bargains {
-		fmt.Printf("%20s \t quantity: %5d \t savings: %10s\n", bargain.Name, bargain.Quantity, coinsToString(bargain.UnitSavings))
+		fmt.Printf("%50s \t quantity: %5d \t savings: %10s\n", bargain.Name, bargain.Quantity, coinsToString(bargain.UnitSavings))
+	}
+	fmt.Println()
+}
+
+// findArbitrages returns auctions selling for lower than vendor prices
+func findArbitrages(auctions map[int64][]common.Auction, accessToken string) []Bargain {
+	bargains := []Bargain{}
+
+	for itemId, aucs := range auctions {
+		item, ok := wowAPI.LookupItem(itemId, accessToken)
+		if !ok {
+			fmt.Println("ERROR: Unable to lookup item for bargain: ", itemId)
+			continue
+		}
+		for _, auction := range aucs {
+			if item.Equippable {
+				// I do not understand how to price these
+				continue
+			}
+			if auction.Buyout < item.SellPrice {
+				bargain := Bargain{
+					Quantity:    auction.Quantity,
+					UnitSavings: item.SellPrice - auction.Buyout,
+					Name:        item.Name,
+				}
+				bargains = append(bargains, bargain)
+			}
+		}
+	}
+
+	return bargains
+}
+
+// printArbitrages prints a list of auctions the user should consider buying
+func printArbitrages(bargains []Bargain) {
+	fmt.Println("Arbitrage:")
+	for _, bargain := range bargains {
+		fmt.Printf("%50s \t quantity: %5d \t savings: %10s\n", bargain.Name, bargain.Quantity, coinsToString(bargain.UnitSavings))
 	}
 	fmt.Println()
 }
@@ -229,9 +263,11 @@ func main() {
 	fmt.Printf("#Commodities: %d\n\n", len(c))
 
 	auctions := unpackAuctions(a, c)
+	auctionsC := unpackAuctions(c, nil)
 
-	// Look for findBargains
-
+	// Look for bargains
 	bargains := findBargains(usefulGoods, auctions, accessToken)
 	printBargains(bargains)
+	arbitrage := findArbitrages(auctionsC, accessToken)
+	printArbitrages(arbitrage)
 }

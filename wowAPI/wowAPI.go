@@ -2,49 +2,16 @@ package wowAPI
 
 import (
 	"bytes"
-	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/cache"
+	"github.com/erikbryant/wow/common"
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 )
-
-// Item contains the properties of a single auction house item
-type Item struct {
-	// WARNING: Changing this struct invalidates the cache
-	Id         int64
-	Name       string
-	Equippable bool
-	SellPrice  int64
-}
-
-// Sample auction response. Some have more or fewer fields.
-// map[buyout:1.1111011e+09 id:3.49632108e+08 item:map[id:142075] quantity:1 time_left:VERY_LONG]
-
-// Commodity auction response. All have exactly these fields.
-// map[id:3.44371058e+08 item:map[id:192672] quantity:1 time_left:SHORT unit_price:16800]
-
-// Auction contains the properties of a single auction house auction
-type Auction struct {
-	Id       int64
-	ItemId   int64
-	Buyout   int64 // For commodity auctions this stores 'unit_price'
-	Quantity int64
-}
-
-var (
-	cache     = map[int64]Item{}
-	cacheFile = "cache.gob"
-)
-
-func init() {
-	cacheLoad()
-	fmt.Printf("#Cache items: %d\n", len(cache))
-}
 
 // realmToSlug returns the slug form of a given realm name
 func realmToSlug(realm string) string {
@@ -221,46 +188,10 @@ func wowItem(id, accessToken string) (map[string]interface{}, bool) {
 	return response, true
 }
 
-func cacheLoad() {
-	file, err := os.Open(cacheFile)
-	if err != nil {
-		fmt.Printf("error opening cache file: %v", err)
-		panic(err)
-	}
-	defer file.Close()
-	decoder := gob.NewDecoder(file)
-	err = decoder.Decode(&cache)
-	if err != nil {
-		fmt.Printf("error reading cache: %v", err)
-		panic(err)
-	}
-}
-
-func cacheSave() {
-	file, err := os.Create(cacheFile)
-	if err != nil {
-		fmt.Printf("error creating cache file: %v", err)
-		panic(err)
-	}
-	defer file.Close()
-	encoder := gob.NewEncoder(file)
-	encoder.Encode(cache)
-}
-
-func cacheRead(id int64) (Item, bool) {
-	item, ok := cache[id]
-	return item, ok
-}
-
-func cacheWrite(id int64, item Item) {
-	cache[id] = item
-	cacheSave()
-}
-
 // LookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
-func LookupItem(id int64, accessToken string) (Item, bool) {
+func LookupItem(id int64, accessToken string) (common.Item, bool) {
 	// Is it cached?
-	item, ok := cacheRead(id)
+	item, ok := cache.Read(id)
 	if ok {
 		return item, true
 	}
@@ -284,7 +215,7 @@ func LookupItem(id int64, accessToken string) (Item, bool) {
 	_, ok = i["sell_price"]
 	item.SellPrice = web.ToInt64(i["sell_price"])
 
-	cacheWrite(id, item)
+	cache.Write(id, item)
 
 	return item, true
 }
