@@ -236,27 +236,26 @@ func main() {
 		log.Fatal("ERROR: Unable to obtain access token.")
 	}
 
-	a, ok := wowAPI.Auctions(*realm, accessToken)
-	if !ok {
-		log.Fatal("ERROR: Unable to obtain auctions.")
-	}
-	fmt.Printf("#Auctions: %d\n\n", len(a))
+	//a, ok := wowAPI.Auctions(*realm, accessToken)
+	//if !ok {
+	//	log.Fatal("ERROR: Unable to obtain auctions.")
+	//}
+	//fmt.Printf("#Auctions: %d\n\n", len(a))
+	//auctions := unpackAuctions(a)
 
 	c, ok := wowAPI.Commodities(accessToken)
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain commodity auctions.")
 	}
 	fmt.Printf("#Commodities: %d\n\n", len(c))
-
-	auctions := unpackAuctions(a)
 	commodities := unpackAuctions(c)
 
 	// Look for things to buy
 	fmt.Println("Bargains:")
-	toBuy := findBargains(usefulGoods, auctions, accessToken)
+	toBuy := findBargains(usefulGoods, commodities, accessToken)
 	printShoppingList(toBuy)
-	toBuy = findBargains(usefulGoods, commodities, accessToken)
-	printShoppingList(toBuy)
+	//toBuy = findBargains(usefulGoods, auctions, accessToken)
+	//printShoppingList(toBuy)
 	fmt.Println("Arbitrages:")
 	toBuy = findArbitrages(commodities, accessToken)
 	printShoppingList(toBuy)
