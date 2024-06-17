@@ -10,6 +10,7 @@ import (
 	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
+	"sort"
 )
 
 type Bargain struct {
@@ -36,7 +37,7 @@ var (
 		124440: 29800,   // Arkhana
 		124442: 225000,  // Chaos Crystal
 		109693: 6600,    // Draenic Dust
-		3819:   117700,  // Dragon's Teeth
+		3819:   97500,   // Dragon's Teeth
 		9224:   730000,  // Elixir of Demonslaying
 		7082:   200000,  // Essence of Air
 		7076:   2000,    // Essence of Earth
@@ -46,7 +47,7 @@ var (
 		23427:  310000,  // Eternium Ore
 		22794:  57500,   // Fel Lotus
 		124116: 777500,  // Felhide
-		124106: 1047700, // Felwort
+		124106: 1000000, // Felwort
 		4625:   55000,   // Firebloom
 		34056:  2400,    // Lesser Cosmic Essence
 		16202:  39200,   // Lesser Eternal Essence
@@ -169,15 +170,11 @@ func findBargains(goods map[int64]int64, auctions map[int64][]common.Auction, ac
 		}
 	}
 
-	return bargains
-}
+	sort.Slice(bargains, func(i, j int) bool {
+		return bargains[i].Name < bargains[j].Name
+	})
 
-// printShoppingList prints a list of auctions the user should consider bidding/buying
-func printShoppingList(bargains []Bargain) {
-	for _, bargain := range bargains {
-		fmt.Printf("%50s \t quantity: %5d \t savings: %10s\n", bargain.Name, bargain.Quantity, coinsToString(bargain.UnitSavings))
-	}
-	fmt.Println()
+	return bargains
 }
 
 // findArbitrages returns auctions selling for lower than vendor prices
@@ -205,7 +202,28 @@ func findArbitrages(auctions map[int64][]common.Auction, accessToken string) []B
 		}
 	}
 
+	sort.Slice(bargains, func(i, j int) bool {
+		return bargains[i].Name < bargains[j].Name
+	})
+
 	return bargains
+}
+
+// printShoppingList prints a list of auctions the user should consider bidding/buying
+func printShoppingList(label string, bargains []Bargain) {
+	fmt.Printf("--- %s ---\n", label)
+
+	lastName := ""
+	for _, bargain := range bargains {
+		if bargain.Name == lastName {
+			// Only print an item once
+			continue
+		}
+		fmt.Printf("%s\n", bargain.Name)
+		lastName = bargain.Name
+	}
+
+	fmt.Println()
 }
 
 // usage prints a usage message and terminates the program with an error
@@ -242,6 +260,8 @@ func main() {
 	//}
 	//fmt.Printf("#Auctions: %d\n\n", len(a))
 	//auctions := unpackAuctions(a)
+	//toBuy = findBargains(usefulGoods, auctions, accessToken)
+	//printShoppingList(toBuy)
 
 	c, ok := wowAPI.Commodities(accessToken)
 	if !ok {
@@ -251,12 +271,8 @@ func main() {
 	commodities := unpackAuctions(c)
 
 	// Look for things to buy
-	fmt.Println("Bargains:")
 	toBuy := findBargains(usefulGoods, commodities, accessToken)
-	printShoppingList(toBuy)
-	//toBuy = findBargains(usefulGoods, auctions, accessToken)
-	//printShoppingList(toBuy)
-	fmt.Println("Arbitrages:")
+	printShoppingList("Bargains", toBuy)
 	toBuy = findArbitrages(commodities, accessToken)
-	printShoppingList(toBuy)
+	printShoppingList("Arbitrages", toBuy)
 }
