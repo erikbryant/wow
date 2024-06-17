@@ -34,7 +34,7 @@ var (
 		7909:   5000,    // Aquamarine
 		22445:  12100,   // Arcane Dust
 		124440: 29800,   // Arkhana
-		124442: 246200,  // Chaos Crystal
+		124442: 240000,  // Chaos Crystal
 		109693: 7400,    // Draenic Dust
 		3819:   117700,  // Dragon's Teeth
 		9224:   730000,  // Elixir of Demonslaying
@@ -43,7 +43,7 @@ var (
 		7078:   5000,    // Essence of Fire
 		12808:  558000,  // Essence of Undeath
 		7080:   458700,  // Essence of Water
-		23427:  329500,  // Eternium Ore
+		23427:  328800,  // Eternium Ore
 		22794:  57500,   // Fel Lotus
 		124116: 777500,  // Felhide
 		124106: 1047700, // Felwort
@@ -52,12 +52,12 @@ var (
 		16202:  39200,   // Lesser Eternal Essence
 		10938:  4500,    // Lesser Magic Essence
 		22447:  5000,    // Lesser Planar Essence
-		124441: 89900,   // Leylight Shard
-		16204:  3000,    // Light Illusion Dust
+		124441: 89800,   // Leylight Shard
+		16204:  600,     // Light Illusion Dust
 		12803:  233900,  // Living Essence
-		111245: 77500,   // Luminous Shard
+		111245: 75700,   // Luminous Shard
 		52722:  10100,   // Maelstrom Crystal
-		22791:  92500,   // Netherbloom
+		22791:  80000,   // Netherbloom
 		22792:  52500,   // Nightmare Vine
 		22451:  4009900, // Primal Air
 		22452:  74500,   // Primal Earth
@@ -68,13 +68,13 @@ var (
 		22456:  1059800, // Primal Shadow
 		21885:  1064000, // Primal Water
 		156930: 4600,    // Rich Illusion Dust
-		14343:  3500,    // Small Brilliant Shard
+		14343:  700,     // Small Brilliant Shard
 		22448:  4500,    // Small Prismatic Shard
-		10940:  4500,    // Strange Dust
+		10940:  4400,    // Strange Dust
 		113588: 72000,   // Temporal Crystal
-		22450:  11800,   // Void Crystal
-		52328:  190000,  // Volatile Air
-		8153:   3759900, // WildVine
+		22450:  11300,   // Void Crystal
+		52328:  159900,  // Volatile Air
+		8153:   3500000, // WildVine
 
 		// Tailoring
 		111557: 8800, // Sumptuous Fur
