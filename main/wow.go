@@ -34,8 +34,8 @@ var (
 		7909:   5000,    // Aquamarine
 		22445:  12100,   // Arcane Dust
 		124440: 29800,   // Arkhana
-		124442: 240000,  // Chaos Crystal
-		109693: 7400,    // Draenic Dust
+		124442: 230000,  // Chaos Crystal
+		109693: 6600,    // Draenic Dust
 		3819:   117700,  // Dragon's Teeth
 		9224:   730000,  // Elixir of Demonslaying
 		7082:   200000,  // Essence of Air
@@ -43,7 +43,7 @@ var (
 		7078:   5000,    // Essence of Fire
 		12808:  558000,  // Essence of Undeath
 		7080:   458700,  // Essence of Water
-		23427:  328800,  // Eternium Ore
+		23427:  310000,  // Eternium Ore
 		22794:  57500,   // Fel Lotus
 		124116: 777500,  // Felhide
 		124106: 1047700, // Felwort
