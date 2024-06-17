@@ -63,9 +63,9 @@ var (
 		22451:  3000100, // Primal Air
 		22452:  74500,   // Primal Earth
 		21884:  1745000, // Primal Fire
-		21886:  958600,  // Primal Life
+		21886:  957700,  // Primal Life
 		22457:  1480000, // Primal Mana
-		23571:  7220000, // Primal Might
+		23571:  7215000, // Primal Might
 		22456:  1059800, // Primal Shadow
 		21885:  1064000, // Primal Water
 		156930: 3500,    // Rich Illusion Dust
