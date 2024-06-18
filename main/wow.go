@@ -79,6 +79,16 @@ var (
 
 		// Tailoring
 		111557: 8800, // Sumptuous Fur
+
+		// Bags
+		194017: 500000, // Wildercloth Bag
+
+		// Item pricing research
+		33428: 1000000, // Dulled Shiv
+		2057:  1000000, // Pitted Defias Shorrtsword
+		6563:  1000000, // Shimmering Bracers
+		15248: 1000000, // Gleaming Claymore
+		//: 1000000, // Fighter Broadsword
 	}
 )
 
@@ -271,14 +281,14 @@ func main() {
 	// Is this a reputation issue? Do we scale the sell price down
 	// based on how little reputation the seller has with this faction?
 
-	//a, ok := wowAPI.Auctions(*realm, accessToken)
-	//if !ok {
-	//	log.Fatal("ERROR: Unable to obtain auctions.")
-	//}
-	//fmt.Printf("#Auctions: %d\n\n", len(a))
-	//auctions := unpackAuctions(a)
-	//toBuy = findBargains(usefulGoods, auctions, accessToken)
-	//printShoppingList("Auctions", toBuy)
-	//toBuy = findArbitrages(auctions, accessToken)
-	//printShoppingList("Auctions", toBuy)
+	a, ok := wowAPI.Auctions(*realm, accessToken)
+	if !ok {
+		log.Fatal("ERROR: Unable to obtain auctions.")
+	}
+	fmt.Printf("#Auctions: %d\n\n", len(a))
+	auctions := unpackAuctions(a)
+	toBuy = findBargains(usefulGoods, auctions, accessToken)
+	printShoppingList("Auction Bargains", toBuy)
+	toBuy = findArbitrages(auctions, accessToken)
+	printShoppingList("*** BAD DATA *** Auction Arbitrages *** BAD DATA ***", toBuy)
 }
