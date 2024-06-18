@@ -32,10 +32,10 @@ var (
 
 		// Enchanting
 		34057:  7900,    // Abyss Crystal
-		7909:   5000,    // Aquamarine
+		7909:   2000,    // Aquamarine
 		22445:  12100,   // Arcane Dust
 		124440: 29800,   // Arkhana
-		124442: 190000,  // Chaos Crystal
+		124442: 188000,  // Chaos Crystal
 		109693: 5700,    // Draenic Dust
 		3819:   97300,   // Dragon's Teeth
 		9224:   710000,  // Elixir of Demonslaying
@@ -53,7 +53,7 @@ var (
 		16202:  35100,   // Lesser Eternal Essence
 		10938:  4500,    // Lesser Magic Essence (720 in shop)
 		22447:  5000,    // Lesser Planar Essence
-		124441: 72000,   // Leylight Shard
+		124441: 71500,   // Leylight Shard
 		16204:  600,     // Light Illusion Dust
 		12803:  233900,  // Living Essence
 		111245: 40000,   // Luminous Shard
@@ -63,11 +63,11 @@ var (
 		22451:  3000100, // Primal Air
 		22452:  70000,   // Primal Earth
 		21884:  1740000, // Primal Fire
-		21886:  904800,  // Primal Life
+		21886:  903000,  // Primal Life
 		22457:  1480000, // Primal Mana
-		23571:  7210000, // Primal Might
+		23571:  7200000, // Primal Might
 		22456:  1059800, // Primal Shadow
-		21885:  1039000, // Primal Water
+		21885:  906500,  // Primal Water
 		156930: 3500,    // Rich Illusion Dust
 		14343:  700,     // Small Brilliant Shard
 		22448:  4500,    // Small Prismatic Shard
