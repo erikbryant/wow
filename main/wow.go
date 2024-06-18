@@ -65,9 +65,9 @@ var (
 		21884:  1740000, // Primal Fire
 		21886:  904800,  // Primal Life
 		22457:  1480000, // Primal Mana
-		23571:  7214900, // Primal Might
+		23571:  7210000, // Primal Might
 		22456:  1059800, // Primal Shadow
-		21885:  1039500, // Primal Water
+		21885:  1039000, // Primal Water
 		156930: 3500,    // Rich Illusion Dust
 		14343:  700,     // Small Brilliant Shard
 		22448:  4500,    // Small Prismatic Shard
