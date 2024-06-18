@@ -36,10 +36,10 @@ var (
 		22445:  12100,   // Arcane Dust
 		124440: 29800,   // Arkhana
 		124442: 190000,  // Chaos Crystal
-		109693: 6600,    // Draenic Dust
+		109693: 5700,    // Draenic Dust
 		3819:   97300,   // Dragon's Teeth
 		9224:   720000,  // Elixir of Demonslaying
-		7082:   200000,  // Essence of Air
+		7082:   170000,  // Essence of Air
 		7076:   2000,    // Essence of Earth
 		7078:   5000,    // Essence of Fire
 		12808:  558000,  // Essence of Undeath
@@ -50,7 +50,7 @@ var (
 		124106: 999800,  // Felwort
 		4625:   55000,   // Firebloom
 		34056:  2400,    // Lesser Cosmic Essence
-		16202:  39200,   // Lesser Eternal Essence
+		16202:  35100,   // Lesser Eternal Essence
 		10938:  4500,    // Lesser Magic Essence (720 in shop)
 		22447:  5000,    // Lesser Planar Essence
 		124441: 72000,   // Leylight Shard
@@ -61,11 +61,11 @@ var (
 		22791:  75000,   // Netherbloom
 		22792:  39900,   // Nightmare Vine
 		22451:  3000100, // Primal Air
-		22452:  74500,   // Primal Earth
+		22452:  70000,   // Primal Earth
 		21884:  1745000, // Primal Fire
-		21886:  957700,  // Primal Life
+		21886:  955900,  // Primal Life
 		22457:  1480000, // Primal Mana
-		23571:  7215000, // Primal Might
+		23571:  7214900, // Primal Might
 		22456:  1059800, // Primal Shadow
 		21885:  1064000, // Primal Water
 		156930: 3500,    // Rich Illusion Dust
@@ -74,7 +74,7 @@ var (
 		10940:  1000,    // Strange Dust (720 in shop)
 		113588: 72000,   // Temporal Crystal
 		22450:  9700,    // Void Crystal
-		52328:  159900,  // Volatile Air
+		52328:  150000,  // Volatile Air
 		8153:   3500000, // WildVine
 
 		// Tailoring
