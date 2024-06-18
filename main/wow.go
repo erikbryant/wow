@@ -35,7 +35,7 @@ var (
 		7909:   2000,    // Aquamarine
 		22445:  12100,   // Arcane Dust
 		124440: 29800,   // Arkhana
-		124442: 188000,  // Chaos Crystal
+		124442: 187800,  // Chaos Crystal
 		109693: 5700,    // Draenic Dust
 		3819:   97300,   // Dragon's Teeth
 		9224:   710000,  // Elixir of Demonslaying
@@ -85,10 +85,10 @@ var (
 
 		// Item pricing research
 		33428: 1000000, // Dulled Shiv
-		2057:  1000000, // Pitted Defias Shorrtsword
+		2057:  1000000, // Pitted Defias Shortsword
 		6563:  1000000, // Shimmering Bracers
 		15248: 1000000, // Gleaming Claymore
-		//: 1000000, // Fighter Broadsword
+		15212: 1000000, // Fighter Broadsword
 	}
 )
 
