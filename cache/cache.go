@@ -60,6 +60,6 @@ func Write(id int64, item common.Item) {
 // Print writes a text version of the in-memory cache to stdout
 func Print() {
 	for id, item := range itemCache {
-		fmt.Printf("%-60s %d\n", item.Name, id)
+		fmt.Printf("%-60s %d - %v\n", item.Name, id, item)
 	}
 }
