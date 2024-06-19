@@ -73,7 +73,7 @@ var (
 		14343:  700,     // Small Brilliant Shard
 		22448:  4500,    // Small Prismatic Shard
 		10940:  1000,    // Strange Dust (720 in shop)
-		113588: 65500,   // Temporal Crystal
+		113588: 64300,   // Temporal Crystal
 		22450:  9700,    // Void Crystal
 		52328:  150000,  // Volatile Air
 		8153:   3500000, // WildVine
