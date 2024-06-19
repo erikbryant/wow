@@ -34,7 +34,7 @@ var (
 		// Enchanting
 		34057:  7900,    // Abyss Crystal
 		7909:   2000,    // Aquamarine
-		22445:  12100,   // Arcane Dust
+		22445:  7000,    // Arcane Dust
 		124440: 29800,   // Arkhana
 		124442: 18700,   // Chaos Crystal
 		109693: 5700,    // Draenic Dust
@@ -51,20 +51,20 @@ var (
 		124106: 999800,  // Felwort
 		4625:   55000,   // Firebloom
 		34056:  2400,    // Lesser Cosmic Essence
-		16202:  35100,   // Lesser Eternal Essence
+		16202:  27400,   // Lesser Eternal Essence
 		10938:  4500,    // Lesser Magic Essence (720 in shop)
 		22447:  5000,    // Lesser Planar Essence
 		124441: 71500,   // Leylight Shard
 		16204:  600,     // Light Illusion Dust
 		12803:  233900,  // Living Essence
-		111245: 31000,   // Luminous Shard
+		111245: 30000,   // Luminous Shard
 		52722:  10100,   // Maelstrom Crystal
 		22791:  55000,   // Netherbloom
 		22792:  39900,   // Nightmare Vine
 		22451:  2750000, // Primal Air
 		22452:  60000,   // Primal Earth
 		21884:  1740000, // Primal Fire
-		21886:  902400,  // Primal Life
+		21886:  901400,  // Primal Life
 		22457:  1480000, // Primal Mana
 		23571:  7110000, // Primal Might
 		22456:  1059800, // Primal Shadow
@@ -73,7 +73,7 @@ var (
 		14343:  700,     // Small Brilliant Shard
 		22448:  4500,    // Small Prismatic Shard
 		10940:  1000,    // Strange Dust (720 in shop)
-		113588: 64300,   // Temporal Crystal
+		113588: 64200,   // Temporal Crystal
 		22450:  9700,    // Void Crystal
 		52328:  150000,  // Volatile Air
 		8153:   3500000, // WildVine
