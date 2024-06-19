@@ -11,6 +11,7 @@ import (
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
 	"sort"
+	"time"
 )
 
 type Bargain struct {
@@ -38,7 +39,7 @@ var (
 		124442: 18700,   // Chaos Crystal
 		109693: 5700,    // Draenic Dust
 		3819:   97300,   // Dragon's Teeth
-		9224:   710000,  // Elixir of Demonslaying
+		9224:   700000,  // Elixir of Demonslaying
 		7082:   170000,  // Essence of Air
 		7076:   2000,    // Essence of Earth
 		7078:   5000,    // Essence of Fire
@@ -58,21 +59,21 @@ var (
 		12803:  233900,  // Living Essence
 		111245: 31000,   // Luminous Shard
 		52722:  10100,   // Maelstrom Crystal
-		22791:  59400,   // Netherbloom
+		22791:  55000,   // Netherbloom
 		22792:  39900,   // Nightmare Vine
 		22451:  2750000, // Primal Air
-		22452:  70000,   // Primal Earth
+		22452:  60000,   // Primal Earth
 		21884:  1740000, // Primal Fire
-		21886:  902500,  // Primal Life
+		21886:  902400,  // Primal Life
 		22457:  1480000, // Primal Mana
-		23571:  7199800, // Primal Might
+		23571:  7110000, // Primal Might
 		22456:  1059800, // Primal Shadow
 		21885:  906500,  // Primal Water
 		156930: 3500,    // Rich Illusion Dust
 		14343:  700,     // Small Brilliant Shard
 		22448:  4500,    // Small Prismatic Shard
 		10940:  1000,    // Strange Dust (720 in shop)
-		113588: 72000,   // Temporal Crystal
+		113588: 65500,   // Temporal Crystal
 		22450:  9700,    // Void Crystal
 		52328:  150000,  // Volatile Air
 		8153:   3500000, // WildVine
@@ -135,29 +136,6 @@ func unpackAuctions(a1 []interface{}) map[int64][]common.Auction {
 	}
 
 	return auctions
-}
-
-// coinsToString returns a human-readable, formatted version of the coin amount
-func coinsToString(amount int64) string {
-	sign := ""
-	if amount < 0 {
-		sign = "-"
-		amount *= -1
-	}
-
-	copper := amount % 100
-	silver := (amount / 100) % 100
-	gold := amount / 10000
-
-	if gold > 0 {
-		return fmt.Sprintf("%s%d.%02d.%02d", sign, gold, silver, copper)
-	}
-
-	if silver > 0 {
-		return fmt.Sprintf("%s%d.%02d", sign, silver, copper)
-	}
-
-	return fmt.Sprintf("%s%d", sign, copper)
 }
 
 // findBargains returns auctions for which the goods are below our desired prices
@@ -233,6 +211,76 @@ func printShoppingList(label string, bargains []Bargain) {
 	fmt.Println()
 }
 
+// hash returns a checksum hash of the given data
+func hash(blob []interface{}) int64 {
+	return int64(len(blob))
+}
+
+// getCommodities returns the current auctions and their hash
+func getCommodities(accessToken string) (map[int64][]common.Auction, int64, bool) {
+	auctions, ok := wowAPI.Commodities(accessToken)
+	if !ok {
+		log.Fatal("ERROR: Unable to obtain commodity auctions.")
+	}
+	return unpackAuctions(auctions), hash(auctions), true
+}
+
+// getAuctions returns the current auctions and their hash
+func getAuctions(accessToken string) (map[int64][]common.Auction, int64, bool) {
+	auctions, ok := wowAPI.Auctions(*realm, accessToken)
+	if !ok {
+		log.Fatal("ERROR: Unable to obtain auctions.")
+	}
+	return unpackAuctions(auctions), hash(auctions), true
+}
+
+// printBargains prints the bargains found in the auction house
+func printBargains(auctions map[int64][]common.Auction, accessToken string, includeArbitrage bool) {
+	toBuy := findBargains(usefulGoods, auctions, accessToken)
+	printShoppingList(fmt.Sprintf("Bargains (%d)", len(auctions)), toBuy)
+	if !includeArbitrage {
+		// Non-commodity auctions are strange. They have items for sale.
+		// These items have sell prices. But, the sell prices in the
+		// item's data are not the sell prices that the vendors offer.
+		// How do we know what the actual vendor offer will be?
+		//
+		// Is this a reputation issue? Do we scale the sell price down
+		// based on how little reputation the seller has with this faction?
+		return
+	}
+	toBuy = findArbitrages(auctions, accessToken)
+	printShoppingList("Arbitrages", toBuy)
+}
+
+// findNewAuctions loops forever, printing any new auction data it finds
+func findNewAuctions(accessToken string) {
+	lastHash := int64(-1)
+
+	for {
+		now := time.Now()
+		c, hash, ok := getCommodities(accessToken)
+		if !ok {
+			continue
+		}
+		if hash == lastHash {
+			// We have already seen this auction data
+			time.Sleep(1 * time.Minute)
+			continue
+		}
+		lastHash = hash
+
+		fmt.Printf("\n\n\n*** NEW AUCTION DATA (hh:%d) ***\n\n", now.Minute())
+
+		printBargains(c, accessToken, true)
+
+		a, hash, ok := getAuctions(accessToken)
+		if !ok {
+			continue
+		}
+		printBargains(a, accessToken, false)
+	}
+}
+
 // usage prints a usage message and terminates the program with an error
 func usage() {
 	log.Fatal("Usage: wow -passPhrase <phrase>")
@@ -261,35 +309,5 @@ func main() {
 		log.Fatal("ERROR: Unable to obtain access token.")
 	}
 
-	c, ok := wowAPI.Commodities(accessToken)
-	if !ok {
-		log.Fatal("ERROR: Unable to obtain commodity auctions.")
-	}
-	fmt.Printf("#Commodities: %d\n\n", len(c))
-	commodities := unpackAuctions(c)
-
-	// Look for commodities to buy
-	toBuy := findBargains(usefulGoods, commodities, accessToken)
-	printShoppingList("Bargains", toBuy)
-	toBuy = findArbitrages(commodities, accessToken)
-	printShoppingList("Arbitrages", toBuy)
-
-	// Non-commodity auctions are strange. They have items for sale.
-	// These items have sell prices. But, the sell prices in the
-	// item's data are not the sell prices that the vendors offer.
-	// How do we know what the actual vendor offer will be?
-	//
-	// Is this a reputation issue? Do we scale the sell price down
-	// based on how little reputation the seller has with this faction?
-
-	a, ok := wowAPI.Auctions(*realm, accessToken)
-	if !ok {
-		log.Fatal("ERROR: Unable to obtain auctions.")
-	}
-	fmt.Printf("#Auctions: %d\n\n", len(a))
-	auctions := unpackAuctions(a)
-	toBuy = findBargains(usefulGoods, auctions, accessToken)
-	printShoppingList("Auction Bargains", toBuy)
-	//toBuy = findArbitrages(auctions, accessToken)
-	//printShoppingList("*** BAD DATA *** Auction Arbitrages *** BAD DATA ***", toBuy)
+	findNewAuctions(accessToken)
 }

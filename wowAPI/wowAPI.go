@@ -51,6 +51,29 @@ func realmToSlug(realm string) string {
 	return slug
 }
 
+// CoinsToString returns a human-readable, formatted version of the coin amount
+func CoinsToString(amount int64) string {
+	sign := ""
+	if amount < 0 {
+		sign = "-"
+		amount *= -1
+	}
+
+	copper := amount % 100
+	silver := (amount / 100) % 100
+	gold := amount / 10000
+
+	if gold > 0 {
+		return fmt.Sprintf("%s%d.%02d.%02d", sign, gold, silver, copper)
+	}
+
+	if silver > 0 {
+		return fmt.Sprintf("%s%d.%02d", sign, silver, copper)
+	}
+
+	return fmt.Sprintf("%s%d", sign, copper)
+}
+
 // AccessToken retrieves an access token from battle.net. This token is used to authenticate API calls.
 func AccessToken(id, secret string) (string, bool) {
 	grantString := "grant_type=client_credentials"
