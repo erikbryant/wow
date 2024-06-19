@@ -35,7 +35,7 @@ var (
 		7909:   2000,    // Aquamarine
 		22445:  12100,   // Arcane Dust
 		124440: 29800,   // Arkhana
-		124442: 187800,  // Chaos Crystal
+		124442: 18700,   // Chaos Crystal
 		109693: 5700,    // Draenic Dust
 		3819:   97300,   // Dragon's Teeth
 		9224:   710000,  // Elixir of Demonslaying
@@ -44,7 +44,7 @@ var (
 		7078:   5000,    // Essence of Fire
 		12808:  558000,  // Essence of Undeath
 		7080:   458700,  // Essence of Water
-		23427:  310000,  // Eternium Ore
+		23427:  305000,  // Eternium Ore
 		22794:  57500,   // Fel Lotus
 		124116: 742400,  // Felhide
 		124106: 999800,  // Felwort
@@ -56,16 +56,16 @@ var (
 		124441: 71500,   // Leylight Shard
 		16204:  600,     // Light Illusion Dust
 		12803:  233900,  // Living Essence
-		111245: 40000,   // Luminous Shard
+		111245: 31000,   // Luminous Shard
 		52722:  10100,   // Maelstrom Crystal
-		22791:  75000,   // Netherbloom
+		22791:  59400,   // Netherbloom
 		22792:  39900,   // Nightmare Vine
-		22451:  3000100, // Primal Air
+		22451:  2750000, // Primal Air
 		22452:  70000,   // Primal Earth
 		21884:  1740000, // Primal Fire
-		21886:  903000,  // Primal Life
+		21886:  902500,  // Primal Life
 		22457:  1480000, // Primal Mana
-		23571:  7200000, // Primal Might
+		23571:  7199800, // Primal Might
 		22456:  1059800, // Primal Shadow
 		21885:  906500,  // Primal Water
 		156930: 3500,    // Rich Illusion Dust
@@ -290,6 +290,6 @@ func main() {
 	auctions := unpackAuctions(a)
 	toBuy = findBargains(usefulGoods, auctions, accessToken)
 	printShoppingList("Auction Bargains", toBuy)
-	toBuy = findArbitrages(auctions, accessToken)
-	printShoppingList("*** BAD DATA *** Auction Arbitrages *** BAD DATA ***", toBuy)
+	//toBuy = findArbitrages(auctions, accessToken)
+	//printShoppingList("*** BAD DATA *** Auction Arbitrages *** BAD DATA ***", toBuy)
 }
