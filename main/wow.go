@@ -88,12 +88,15 @@ var (
 		194017: 500000, // Wildercloth Bag
 
 		// Item pricing research
-		33428:  1000000, // Dulled Shiv
-		2057:   1000000, // Pitted Defias Shortsword
-		6563:   1000000, // Shimmering Bracers
-		15248:  1000000, // Gleaming Claymore
-		15212:  1000000, // Fighter Broadsword
-		121110: 1000000, // Hagfeather Wristwraps
+		33428:  10000000, // Dulled Shiv
+		201954: 10000000, // Explorer's Expert Greaves
+		15212:  10000000, // Fighter Broadsword
+		15248:  10000000, // Gleaming Claymore
+		121110: 10000000, // Hagfeather Wristwraps
+		2057:   10000000, // Pitted Defias Shortsword
+		154778: 10000000, // Ruptured Plate Vambraces
+		6563:   10000000, // Shimmering Bracers
+		2215:   10000000, // Wooden Shield
 	}
 )
 
