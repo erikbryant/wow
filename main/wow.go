@@ -59,14 +59,14 @@ var (
 		12803:  233900,  // Living Essence
 		111245: 30000,   // Luminous Shard
 		52722:  10100,   // Maelstrom Crystal
-		22791:  55000,   // Netherbloom
+		22791:  53000,   // Netherbloom
 		22792:  39900,   // Nightmare Vine
 		22451:  2750000, // Primal Air
 		22452:  60000,   // Primal Earth
 		21884:  1740000, // Primal Fire
-		21886:  901400,  // Primal Life
+		21886:  899500,  // Primal Life
 		22457:  1480000, // Primal Mana
-		23571:  7110000, // Primal Might
+		23571:  6989900, // Primal Might
 		22456:  1059800, // Primal Shadow
 		21885:  906500,  // Primal Water
 		156930: 3500,    // Rich Illusion Dust
@@ -269,7 +269,7 @@ func findNewAuctions(accessToken string) {
 		}
 		lastHash = hash
 
-		fmt.Printf("\n\n\n*** NEW AUCTION DATA (hh:%d) ***\n\n", now.Minute())
+		fmt.Printf("\n\n\n*** NEW AUCTION DATA (hh:%02d) ***\n\n", now.Minute())
 
 		printBargains(c, accessToken, true)
 
