@@ -7,6 +7,7 @@ type Item struct {
 	Name       string
 	Equippable bool
 	SellPrice  int64
+	ItemLevel  int64
 }
 
 // Sample auction response. Some have more or fewer fields.

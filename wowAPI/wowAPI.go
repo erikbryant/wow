@@ -289,6 +289,19 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 		item.SellPrice = web.ToInt64(i["sell_price"])
 	}
 
+	_, ok = i["preview_item"]
+	if ok {
+		previewItem := i["preview_item"].(map[string]interface{})
+		_, ok = previewItem["level"]
+		if ok {
+			level := previewItem["level"].(map[string]interface{})
+			_, ok = level["value"]
+			if ok {
+				item.ItemLevel = web.ToInt64(level["value"])
+			}
+		}
+	}
+
 	cache.Write(id, item)
 
 	return item, true
