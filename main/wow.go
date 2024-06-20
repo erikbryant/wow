@@ -46,17 +46,17 @@ var (
 		124106: 999800,  // Felwort
 		4625:   55000,   // Firebloom
 		52719:  50000,   // Greater Celestial Essence
-		16203:  94500,   // Greater Eternal Essence
+		16203:  89000,   // Greater Eternal Essence
 		22446:  9700,    // Greater Planar Essence
 		52721:  27500,   // Heavenly Shard
 		52555:  42400,   // Hypnotic Dust
 		124444: 96700,   // Infernal Brimstone
 		34054:  1900,    // Infinite Dust
-		14344:  1800,    // Large Brilliant Shard
+		14344:  1300,    // Large Brilliant Shard
 		34056:  2400,    // Lesser Cosmic Essence
 		16202:  27400,   // Lesser Eternal Essence
 		10938:  4500,    // Lesser Magic Essence (720 in shop)
-		22447:  5000,    // Lesser Planar Essence
+		22447:  4300,    // Lesser Planar Essence
 		124441: 71500,   // Leylight Shard
 		16204:  600,     // Light Illusion Dust
 		12803:  233900,  // Living Essence
