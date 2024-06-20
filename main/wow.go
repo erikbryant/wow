@@ -45,12 +45,12 @@ var (
 		124116: 742400,  // Felhide
 		124106: 999800,  // Felwort
 		4625:   55000,   // Firebloom
-		52719:  52500,   // Greater Celestial Essence
-		16203:  99900,   // Greater Eternal Essence
-		22446:  9800,    // Greater Planar Essence
+		52719:  50000,   // Greater Celestial Essence
+		16203:  94500,   // Greater Eternal Essence
+		22446:  9700,    // Greater Planar Essence
 		52721:  27500,   // Heavenly Shard
-		52555:  52500,   // Hypnotic Dust
-		124444: 97600,   // Infernal Brimstone
+		52555:  42400,   // Hypnotic Dust
+		124444: 96700,   // Infernal Brimstone
 		34054:  1900,    // Infinite Dust
 		14344:  1800,    // Large Brilliant Shard
 		34056:  2400,    // Lesser Cosmic Essence
@@ -62,12 +62,12 @@ var (
 		12803:  233900,  // Living Essence
 		111245: 30000,   // Luminous Shard
 		52722:  10100,   // Maelstrom Crystal
-		22791:  52000,   // Netherbloom
+		22791:  51900,   // Netherbloom
 		22792:  39900,   // Nightmare Vine
 		22451:  2750000, // Primal Air
 		22452:  60000,   // Primal Earth
 		21884:  1740000, // Primal Fire
-		21886:  889300,  // Primal Life
+		21886:  858500,  // Primal Life
 		22457:  1220000, // Primal Mana
 		23571:  6989800, // Primal Might
 		22456:  1059800, // Primal Shadow
