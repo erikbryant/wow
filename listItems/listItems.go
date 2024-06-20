@@ -36,5 +36,9 @@ func main() {
 		log.Fatal("ERROR: Unable to obtain access token.")
 	}
 
-	wowAPI.LookupItem(*itemId, accessToken)
+	item, ok := wowAPI.LookupItem(*itemId, accessToken)
+	if !ok {
+		return
+	}
+	fmt.Printf("%-60s %d - %v\n", item.Name, *itemId, item)
 }
