@@ -21,8 +21,8 @@ func init() {
 func load() {
 	file, err := os.Open(itemCacheFile)
 	if err != nil {
-		fmt.Printf("error opening itemCache file: %v", err)
-		panic(err)
+		fmt.Printf("*** error opening itemCache file: %v, creating new one\n", err)
+		return
 	}
 	defer file.Close()
 	decoder := gob.NewDecoder(file)
@@ -60,6 +60,6 @@ func Write(id int64, item common.Item) {
 // Print writes a text version of the in-memory cache to stdout
 func Print() {
 	for id, item := range itemCache {
-		fmt.Printf("%-60s %d - %v\n", item.Name, id, item)
+		fmt.Printf("%-50s %d - %v\n", item.Name, id, item)
 	}
 }
