@@ -39,7 +39,7 @@ var (
 		124442: 18700,   // Chaos Crystal
 		109693: 5000,    // Draenic Dust
 		3819:   97300,   // Dragon's Teeth
-		9224:   700000,  // Elixir of Demonslaying
+		9224:   690000,  // Elixir of Demonslaying
 		7082:   170000,  // Essence of Air
 		7076:   2000,    // Essence of Earth
 		7078:   5000,    // Essence of Fire
@@ -59,14 +59,14 @@ var (
 		12803:  233900,  // Living Essence
 		111245: 30000,   // Luminous Shard
 		52722:  10100,   // Maelstrom Crystal
-		22791:  53000,   // Netherbloom
+		22791:  52000,   // Netherbloom
 		22792:  39900,   // Nightmare Vine
 		22451:  2750000, // Primal Air
 		22452:  60000,   // Primal Earth
 		21884:  1740000, // Primal Fire
-		21886:  899400,  // Primal Life
-		22457:  1480000, // Primal Mana
-		23571:  6989900, // Primal Might
+		21886:  899300,  // Primal Life
+		22457:  1224700, // Primal Mana
+		23571:  6989800, // Primal Might
 		22456:  1059800, // Primal Shadow
 		21885:  906500,  // Primal Water
 		156930: 3500,    // Rich Illusion Dust
