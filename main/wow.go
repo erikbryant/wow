@@ -37,13 +37,13 @@ var (
 		22445:  7000,    // Arcane Dust
 		124440: 29800,   // Arkhana
 		124442: 18700,   // Chaos Crystal
-		109693: 5700,    // Draenic Dust
+		109693: 5000,    // Draenic Dust
 		3819:   97300,   // Dragon's Teeth
 		9224:   700000,  // Elixir of Demonslaying
 		7082:   170000,  // Essence of Air
 		7076:   2000,    // Essence of Earth
 		7078:   5000,    // Essence of Fire
-		12808:  558000,  // Essence of Undeath
+		12808:  500000,  // Essence of Undeath
 		7080:   458700,  // Essence of Water
 		23427:  305000,  // Eternium Ore
 		22794:  57500,   // Fel Lotus
@@ -64,7 +64,7 @@ var (
 		22451:  2750000, // Primal Air
 		22452:  60000,   // Primal Earth
 		21884:  1740000, // Primal Fire
-		21886:  899500,  // Primal Life
+		21886:  899400,  // Primal Life
 		22457:  1480000, // Primal Mana
 		23571:  6989900, // Primal Might
 		22456:  1059800, // Primal Shadow
