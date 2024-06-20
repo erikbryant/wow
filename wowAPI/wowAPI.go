@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/erikbryant/aes"
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/common"
@@ -14,6 +15,11 @@ import (
 )
 
 var (
+	clientIDCrypt     = "f7FhewxUd0lWQz/zPb27ZcwI/ZqkaMyd5YyuskFyEugQEeiKsfL7dvr11Kx1Y+Mi23qMciOAPe5ksCOy"
+	clientSecretCrypt = "CtJH62iU6V3ZeqiHyKItECHahdUYgAFyfHmQ4DRabhWIv6JeK5K4dT7aiybot6MS4JitmDzuWSz1UHHv"
+	clientID          string
+	clientSecret      string
+
 	skipItems = map[int64]bool{
 		// HTTP 404
 		201421: true,
@@ -75,14 +81,24 @@ func CoinsToString(amount int64) string {
 }
 
 // AccessToken retrieves an access token from battle.net. This token is used to authenticate API calls.
-func AccessToken(id, secret string) (string, bool) {
+func AccessToken(passPhrase string) (string, bool) {
+	clientID, err := aes.Decrypt(clientIDCrypt, passPhrase)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	clientSecret, err = aes.Decrypt(clientSecretCrypt, passPhrase)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	grantString := "grant_type=client_credentials"
 	request, err := http.NewRequest("POST", "https://oauth.battle.net/token", bytes.NewBuffer([]byte(grantString)))
 	if err != nil {
 		log.Fatal(err)
 	}
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	request.SetBasicAuth(id, secret)
+	request.SetBasicAuth(clientID, clientSecret)
 
 	client := &http.Client{}
 	response, err := client.Do(request)

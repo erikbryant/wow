@@ -5,7 +5,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/erikbryant/aes"
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/wowAPI"
@@ -21,13 +20,9 @@ type Bargain struct {
 }
 
 var (
-	clientIDCrypt     = "f7FhewxUd0lWQz/zPb27ZcwI/ZqkaMyd5YyuskFyEugQEeiKsfL7dvr11Kx1Y+Mi23qMciOAPe5ksCOy"
-	clientSecretCrypt = "CtJH62iU6V3ZeqiHyKItECHahdUYgAFyfHmQ4DRabhWIv6JeK5K4dT7aiybot6MS4JitmDzuWSz1UHHv"
-	clientID          string
-	clientSecret      string
-	passPhrase        = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realm             = flag.String("realm", "Sisters of Elune", "WoW realm")
-	usefulGoods       = map[int64]int64{
+	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
+	realm       = flag.String("realm", "Sisters of Elune", "WoW realm")
+	usefulGoods = map[int64]int64{
 		// Health
 		211943: 6000, // Scarlet Silk Bandage
 
@@ -302,17 +297,7 @@ func main() {
 		usage()
 	}
 
-	clientID, err := aes.Decrypt(clientIDCrypt, *passPhrase)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	clientSecret, err = aes.Decrypt(clientSecretCrypt, *passPhrase)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	accessToken, ok := wowAPI.AccessToken(clientID, clientSecret)
+	accessToken, ok := wowAPI.AccessToken(*passPhrase)
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain access token.")
 	}
