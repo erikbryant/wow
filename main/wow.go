@@ -17,6 +17,7 @@ type Bargain struct {
 	Quantity    int64
 	UnitSavings int64
 	Name        string
+	ItemLevel   int64
 }
 
 var (
@@ -45,11 +46,11 @@ var (
 		124116: 742400,  // Felhide
 		124106: 999800,  // Felwort
 		4625:   55000,   // Firebloom
-		52719:  50000,   // Greater Celestial Essence
+		52719:  49600,   // Greater Celestial Essence
 		16203:  89000,   // Greater Eternal Essence
 		22446:  9700,    // Greater Planar Essence
-		52721:  27500,   // Heavenly Shard
-		52555:  42400,   // Hypnotic Dust
+		52721:  23100,   // Heavenly Shard
+		52555:  42100,   // Hypnotic Dust
 		124444: 96700,   // Infernal Brimstone
 		34054:  1900,    // Infinite Dust
 		14344:  1300,    // Large Brilliant Shard
@@ -154,11 +155,15 @@ func findBargains(goods map[int64]int64, auctions map[int64][]common.Auction, ac
 			continue
 		}
 		for _, auction := range auctions[itemId] {
+			if auction.Buyout <= 0 {
+				continue
+			}
 			if auction.Buyout < maxPrice {
 				bargain := Bargain{
 					Quantity:    auction.Quantity,
 					UnitSavings: maxPrice - auction.Buyout,
 					Name:        item.Name,
+					ItemLevel:   item.ItemLevel,
 				}
 				bargains = append(bargains, bargain)
 			}
@@ -182,11 +187,15 @@ func findArbitrages(auctions map[int64][]common.Auction, accessToken string) []B
 			continue
 		}
 		for _, auction := range aucs {
+			if auction.Buyout <= 0 {
+				continue
+			}
 			if auction.Buyout < item.SellPrice {
 				bargain := Bargain{
 					Quantity:    auction.Quantity,
 					UnitSavings: item.SellPrice - auction.Buyout,
 					Name:        item.Name,
+					ItemLevel:   item.ItemLevel,
 				}
 				bargains = append(bargains, bargain)
 			}
@@ -200,7 +209,7 @@ func findArbitrages(auctions map[int64][]common.Auction, accessToken string) []B
 	return bargains
 }
 
-// printShoppingList prints a list of auctions the user should consider bidding/buying
+// printShoppingList prints a list of auctions the user should buy
 func printShoppingList(label string, bargains []Bargain) {
 	fmt.Printf("--- %s ---\n", label)
 
@@ -210,7 +219,13 @@ func printShoppingList(label string, bargains []Bargain) {
 			// Only print an item once
 			continue
 		}
-		fmt.Printf("%s\n", bargain.Name)
+		if bargain.ItemLevel > 0 {
+			// I don't know how to price these yet
+			//fmt.Printf("%-50s %d\n", bargain.Name, bargain.ItemLevel)
+			continue
+		} else {
+			fmt.Printf("%s\n", bargain.Name)
+		}
 		lastName = bargain.Name
 	}
 
@@ -241,19 +256,9 @@ func getAuctions(accessToken string) (map[int64][]common.Auction, int64, bool) {
 }
 
 // printBargains prints the bargains found in the auction house
-func printBargains(auctions map[int64][]common.Auction, accessToken string, includeArbitrage bool) {
+func printBargains(auctions map[int64][]common.Auction, accessToken string) {
 	toBuy := findBargains(usefulGoods, auctions, accessToken)
 	printShoppingList(fmt.Sprintf("Bargains (%d)", len(auctions)), toBuy)
-	if !includeArbitrage {
-		// Non-commodity auctions are strange. They have items for sale.
-		// These items have sell prices. But, the sell prices in the
-		// item's data are not the sell prices that the vendors offer.
-		// How do we know what the actual vendor offer will be?
-		//
-		// Is this a reputation issue? Do we scale the sell price down
-		// based on how little reputation the seller has with this faction?
-		return
-	}
 	toBuy = findArbitrages(auctions, accessToken)
 	printShoppingList("Arbitrages", toBuy)
 }
@@ -275,15 +280,15 @@ func findNewAuctions(accessToken string) {
 		}
 		lastHash = hash
 
-		fmt.Printf("\n\n\n*** NEW AUCTION DATA (hh:%02d) ***\n\n", now.Minute())
+		fmt.Printf("\n\n\n*** New Auction House Data (hh:%02d) ***\n\n", now.Minute())
 
-		printBargains(c, accessToken, true)
+		printBargains(c, accessToken)
 
 		a, hash, ok := getAuctions(accessToken)
 		if !ok {
 			continue
 		}
-		printBargains(a, accessToken, false)
+		printBargains(a, accessToken)
 	}
 }
 
