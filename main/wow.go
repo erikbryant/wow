@@ -46,7 +46,7 @@ var (
 		124116: 742400,  // Felhide
 		124106: 997500,  // Felwort
 		4625:   55000,   // Firebloom
-		52719:  49600,   // Greater Celestial Essence
+		52719:  42500,   // Greater Celestial Essence
 		16203:  89000,   // Greater Eternal Essence
 		22446:  9700,    // Greater Planar Essence
 		52721:  22600,   // Heavenly Shard
@@ -63,12 +63,12 @@ var (
 		12803:  233900,  // Living Essence
 		111245: 30000,   // Luminous Shard
 		52722:  10100,   // Maelstrom Crystal
-		22791:  51900,   // Netherbloom
+		22791:  46800,   // Netherbloom
 		22792:  39900,   // Nightmare Vine
 		22451:  2750000, // Primal Air
 		22452:  60000,   // Primal Earth
 		21884:  1740000, // Primal Fire
-		21886:  800000,  // Primal Life
+		21886:  790000,  // Primal Life
 		22457:  1189900, // Primal Mana
 		23571:  6985000, // Primal Might
 		22456:  1059800, // Primal Shadow
