@@ -44,12 +44,12 @@ var (
 		23427:  305000,  // Eternium Ore
 		22794:  57500,   // Fel Lotus
 		124116: 742400,  // Felhide
-		124106: 999800,  // Felwort
+		124106: 997500,  // Felwort
 		4625:   55000,   // Firebloom
 		52719:  49600,   // Greater Celestial Essence
 		16203:  89000,   // Greater Eternal Essence
 		22446:  9700,    // Greater Planar Essence
-		52721:  23100,   // Heavenly Shard
+		52721:  22600,   // Heavenly Shard
 		52555:  42100,   // Hypnotic Dust
 		124444: 96700,   // Infernal Brimstone
 		34054:  1900,    // Infinite Dust
@@ -68,9 +68,9 @@ var (
 		22451:  2750000, // Primal Air
 		22452:  60000,   // Primal Earth
 		21884:  1740000, // Primal Fire
-		21886:  858500,  // Primal Life
-		22457:  1218500, // Primal Mana
-		23571:  6989800, // Primal Might
+		21886:  800000,  // Primal Life
+		22457:  1189900, // Primal Mana
+		23571:  6985000, // Primal Might
 		22456:  1059800, // Primal Shadow
 		21885:  883300,  // Primal Water
 		156930: 3500,    // Rich Illusion Dust
