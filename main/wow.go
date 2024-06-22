@@ -35,7 +35,7 @@ var (
 		124442: 18700,   // Chaos Crystal
 		109693: 5000,    // Draenic Dust
 		3819:   97300,   // Dragon's Teeth
-		9224:   690000,  // Elixir of Demonslaying
+		9224:   670000,  // Elixir of Demonslaying
 		7082:   170000,  // Essence of Air
 		7076:   2000,    // Essence of Earth
 		7078:   5000,    // Essence of Fire
@@ -49,13 +49,13 @@ var (
 		52719:  42500,   // Greater Celestial Essence
 		16203:  89000,   // Greater Eternal Essence
 		22446:  9700,    // Greater Planar Essence
-		52721:  22600,   // Heavenly Shard
+		52721:  19900,   // Heavenly Shard
 		52555:  42100,   // Hypnotic Dust
-		124444: 89500,   // Infernal Brimstone
+		124444: 70000,   // Infernal Brimstone
 		34054:  1900,    // Infinite Dust
 		14344:  1300,    // Large Brilliant Shard
 		34056:  2400,    // Lesser Cosmic Essence
-		16202:  27400,   // Lesser Eternal Essence
+		16202:  8000,    // Lesser Eternal Essence
 		10938:  4500,    // Lesser Magic Essence (720 in shop)
 		22447:  4300,    // Lesser Planar Essence
 		124441: 71500,   // Leylight Shard
@@ -68,14 +68,14 @@ var (
 		22451:  2750000, // Primal Air
 		22452:  60000,   // Primal Earth
 		21884:  1740000, // Primal Fire
-		21886:  789900,  // Primal Life
-		22457:  1189900, // Primal Mana
-		23571:  6985000, // Primal Might
+		21886:  699800,  // Primal Life
+		22457:  1156300, // Primal Mana
+		23571:  6959900, // Primal Might
 		22456:  1059800, // Primal Shadow
 		21885:  883300,  // Primal Water
 		156930: 3500,    // Rich Illusion Dust
 		14343:  700,     // Small Brilliant Shard
-		22448:  4500,    // Small Prismatic Shard
+		22448:  3000,    // Small Prismatic Shard
 		10940:  1000,    // Strange Dust (720 in shop)
 		113588: 58100,   // Temporal Crystal
 		22450:  9700,    // Void Crystal
