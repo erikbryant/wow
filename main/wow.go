@@ -50,7 +50,7 @@ var (
 		16203:  89000,   // Greater Eternal Essence
 		22446:  9700,    // Greater Planar Essence
 		52721:  19900,   // Heavenly Shard
-		52555:  42100,   // Hypnotic Dust
+		52555:  40000,   // Hypnotic Dust
 		124444: 70000,   // Infernal Brimstone
 		34054:  1900,    // Infinite Dust
 		14344:  1300,    // Large Brilliant Shard
@@ -60,18 +60,18 @@ var (
 		22447:  4300,    // Lesser Planar Essence
 		124441: 71500,   // Leylight Shard
 		16204:  600,     // Light Illusion Dust
-		12803:  233900,  // Living Essence
+		12803:  156600,  // Living Essence
 		111245: 30000,   // Luminous Shard
 		52722:  10100,   // Maelstrom Crystal
 		22791:  46700,   // Netherbloom
 		22792:  39900,   // Nightmare Vine
 		22451:  2750000, // Primal Air
-		22452:  60000,   // Primal Earth
+		22452:  47700,   // Primal Earth
 		21884:  1740000, // Primal Fire
-		21886:  699800,  // Primal Life
-		22457:  1156300, // Primal Mana
-		23571:  6959900, // Primal Might
-		22456:  1059800, // Primal Shadow
+		21886:  699100,  // Primal Life
+		22457:  1139700, // Primal Mana
+		23571:  6800000, // Primal Might
+		22456:  970000,  // Primal Shadow
 		21885:  883300,  // Primal Water
 		156930: 3500,    // Rich Illusion Dust
 		14343:  700,     // Small Brilliant Shard
