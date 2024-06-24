@@ -35,21 +35,21 @@ var (
 		124442: 18700,   // Chaos Crystal
 		109693: 5000,    // Draenic Dust
 		3819:   97300,   // Dragon's Teeth
-		9224:   670000,  // Elixir of Demonslaying
+		9224:   660000,  // Elixir of Demonslaying
 		7082:   170000,  // Essence of Air
-		7076:   2000,    // Essence of Earth
+		7076:   1100,    // Essence of Earth
 		7078:   5000,    // Essence of Fire
 		12808:  500000,  // Essence of Undeath
 		7080:   458700,  // Essence of Water
 		23427:  305000,  // Eternium Ore
 		22794:  57500,   // Fel Lotus
 		124116: 742400,  // Felhide
-		124106: 997000,  // Felwort
+		124106: 970000,  // Felwort
 		4625:   55000,   // Firebloom
 		52719:  42500,   // Greater Celestial Essence
-		16203:  89000,   // Greater Eternal Essence
+		16203:  79300,   // Greater Eternal Essence
 		22446:  9700,    // Greater Planar Essence
-		52721:  19900,   // Heavenly Shard
+		52721:  17400,   // Heavenly Shard
 		52555:  40000,   // Hypnotic Dust
 		124444: 70000,   // Infernal Brimstone
 		34054:  1900,    // Infinite Dust
@@ -57,8 +57,8 @@ var (
 		34056:  2400,    // Lesser Cosmic Essence
 		16202:  8000,    // Lesser Eternal Essence
 		10938:  4500,    // Lesser Magic Essence (720 in shop)
-		22447:  4300,    // Lesser Planar Essence
-		124441: 71500,   // Leylight Shard
+		22447:  3100,    // Lesser Planar Essence
+		124441: 69800,   // Leylight Shard
 		16204:  600,     // Light Illusion Dust
 		12803:  156600,  // Living Essence
 		111245: 30000,   // Luminous Shard
@@ -68,12 +68,12 @@ var (
 		22451:  2750000, // Primal Air
 		22452:  47700,   // Primal Earth
 		21884:  1740000, // Primal Fire
-		21886:  699100,  // Primal Life
-		22457:  1139700, // Primal Mana
-		23571:  6800000, // Primal Might
+		21886:  646900,  // Primal Life
+		22457:  997900,  // Primal Mana
+		23571:  6780000, // Primal Might
 		22456:  970000,  // Primal Shadow
 		21885:  883300,  // Primal Water
-		156930: 3500,    // Rich Illusion Dust
+		156930: 3200,    // Rich Illusion Dust
 		14343:  700,     // Small Brilliant Shard
 		22448:  3000,    // Small Prismatic Shard
 		10940:  1000,    // Strange Dust (720 in shop)
