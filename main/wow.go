@@ -49,7 +49,7 @@ var (
 		52719:  42500,   // Greater Celestial Essence
 		16203:  79300,   // Greater Eternal Essence
 		22446:  9700,    // Greater Planar Essence
-		52721:  17400,   // Heavenly Shard
+		52721:  16500,   // Heavenly Shard
 		52555:  40000,   // Hypnotic Dust
 		124444: 70000,   // Infernal Brimstone
 		34054:  1900,    // Infinite Dust
@@ -69,8 +69,8 @@ var (
 		22452:  47700,   // Primal Earth
 		21884:  1740000, // Primal Fire
 		21886:  646900,  // Primal Life
-		22457:  997900,  // Primal Mana
-		23571:  6780000, // Primal Might
+		22457:  983500,  // Primal Mana
+		23571:  6759900, // Primal Might
 		22456:  970000,  // Primal Shadow
 		21885:  883300,  // Primal Water
 		156930: 3200,    // Rich Illusion Dust
