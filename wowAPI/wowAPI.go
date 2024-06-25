@@ -130,7 +130,7 @@ func Realm(realm, accessToken string) map[string]interface{} {
 
 	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
-		fmt.Println("Realm: error getting realm", err)
+		fmt.Println("Realm: error getting realm:", err)
 		return nil
 	}
 
@@ -143,11 +143,11 @@ func ConnectedRealm(realmId, accessToken string) map[string]interface{} {
 
 	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
-		fmt.Println("ConnectedRealm: Error getting connected realm", err)
+		fmt.Println("ConnectedRealm: Error getting connected realm:", err)
 		return nil
 	}
 	if response["code"] != nil {
-		fmt.Println("ConnectedRealm: Failed to get connected realm", response)
+		fmt.Println("ConnectedRealm: Failed to get connected realm:", response)
 		return nil
 	}
 
@@ -159,11 +159,11 @@ func ConnectedRealmSearch(accessToken string) map[string]interface{} {
 	url := "https://us.api.blizzard.com/data/wow/search/connected-realm?namespace=dynamic-us&status.type=UP&access_token=" + accessToken
 	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
-		fmt.Println("ConnectedRealmSearch: Error getting connected realms", err)
+		fmt.Println("ConnectedRealmSearch: Error getting connected realms:", err)
 		return nil
 	}
 	if response["code"] != nil {
-		fmt.Println("ConnectedRealmSearch: Failed to get connected realms", response)
+		fmt.Println("ConnectedRealmSearch: Failed to get connected realms:", response)
 		return nil
 	}
 
@@ -212,12 +212,12 @@ func Auctions(realm, accessToken string) ([]interface{}, bool) {
 	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + connectedRealmId + "/auctions?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
 	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
-		fmt.Println("Auctions: no auction data returned", err)
+		fmt.Println("Auctions: no auction data returned:", err)
 		return nil, false
 	}
 
 	if response["code"] != nil {
-		fmt.Println("Auctions: HTTP error", response)
+		fmt.Println("Auctions: HTTP error:", response)
 		return nil, false
 	}
 
@@ -230,7 +230,7 @@ func Commodities(accessToken string) ([]interface{}, bool) {
 	url := "https://us.api.blizzard.com/data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
 	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
-		fmt.Println("Commodities: no auction data returned", err)
+		fmt.Println("Commodities: no auction data returned:", err)
 		return nil, false
 	}
 
@@ -242,7 +242,7 @@ func wowItem(id, accessToken string) (map[string]interface{}, bool) {
 	url := "https://us.api.blizzard.com/data/wow/item/" + id + "?namespace=static-us&locale=en_US&access_token=" + accessToken
 	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
-		fmt.Println("ItemId: failed to retrieve item", err)
+		fmt.Println("ItemId: failed to retrieve item:", err)
 		return nil, false
 	}
 	if response["status"] == "nok" {
