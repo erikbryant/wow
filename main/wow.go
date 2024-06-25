@@ -24,8 +24,10 @@ var (
 	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
 	realm       = flag.String("realm", "Sisters of Elune", "WoW realm")
 	usefulGoods = map[int64]int64{
-		// Health
-		211943: 6000, // Scarlet Silk Bandage
+		// Generally Useful
+		158212: 2000000, // Crow's Nest Scope
+		59596:  200000,  // Safety Catch Removal Kit
+		211943: 6000,    // Scarlet Silk Bandage
 
 		// Enchanting
 		34057:  7900,    // Abyss Crystal
@@ -68,9 +70,9 @@ var (
 		22451:  2750000, // Primal Air
 		22452:  47700,   // Primal Earth
 		21884:  1740000, // Primal Fire
-		21886:  646900,  // Primal Life
-		22457:  983500,  // Primal Mana
-		23571:  6759900, // Primal Might
+		21886:  645700,  // Primal Life
+		22457:  960000,  // Primal Mana
+		23571:  6755000, // Primal Might
 		22456:  970000,  // Primal Shadow
 		21885:  883300,  // Primal Water
 		156930: 3200,    // Rich Illusion Dust
