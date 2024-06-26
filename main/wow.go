@@ -24,71 +24,19 @@ var (
 	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
 	realm       = flag.String("realm", "Sisters of Elune", "WoW realm")
 	usefulGoods = map[int64]int64{
-		// Generally Useful
-		158212: 2000000, // Crow's Nest Scope
-		59596:  200000,  // Safety Catch Removal Kit
-		211943: 6000,    // Scarlet Silk Bandage
-
-		// Enchanting
-		34057:  7900,    // Abyss Crystal
-		7909:   2000,    // Aquamarine
-		22445:  7000,    // Arcane Dust
-		124440: 29800,   // Arkhana
-		124442: 18700,   // Chaos Crystal
-		109693: 5000,    // Draenic Dust
-		3819:   97300,   // Dragon's Teeth
-		9224:   660000,  // Elixir of Demonslaying
-		7082:   170000,  // Essence of Air
-		7076:   1100,    // Essence of Earth
-		7078:   5000,    // Essence of Fire
-		12808:  500000,  // Essence of Undeath
-		7080:   458700,  // Essence of Water
-		23427:  305000,  // Eternium Ore
-		22794:  57500,   // Fel Lotus
-		124116: 742400,  // Felhide
-		124106: 970000,  // Felwort
-		4625:   55000,   // Firebloom
-		52719:  42500,   // Greater Celestial Essence
-		16203:  79300,   // Greater Eternal Essence
-		22446:  9700,    // Greater Planar Essence
-		52721:  16500,   // Heavenly Shard
-		52555:  40000,   // Hypnotic Dust
-		124444: 70000,   // Infernal Brimstone
-		34054:  1900,    // Infinite Dust
-		14344:  1300,    // Large Brilliant Shard
-		34056:  2400,    // Lesser Cosmic Essence
-		16202:  8000,    // Lesser Eternal Essence
-		10938:  4500,    // Lesser Magic Essence (720 in shop)
-		22447:  3100,    // Lesser Planar Essence
-		124441: 69800,   // Leylight Shard
-		16204:  600,     // Light Illusion Dust
-		12803:  156600,  // Living Essence
-		111245: 30000,   // Luminous Shard
-		52722:  10100,   // Maelstrom Crystal
-		22791:  46700,   // Netherbloom
-		22792:  39900,   // Nightmare Vine
-		22451:  2750000, // Primal Air
-		22452:  47700,   // Primal Earth
-		21884:  1740000, // Primal Fire
-		21886:  645700,  // Primal Life
-		22457:  960000,  // Primal Mana
-		23571:  6755000, // Primal Might
-		22456:  970000,  // Primal Shadow
-		21885:  883300,  // Primal Water
-		156930: 3200,    // Rich Illusion Dust
-		14343:  700,     // Small Brilliant Shard
-		22448:  3000,    // Small Prismatic Shard
-		10940:  1000,    // Strange Dust (720 in shop)
-		113588: 58100,   // Temporal Crystal
-		22450:  9700,    // Void Crystal
-		52328:  150000,  // Volatile Air
-		8153:   3500000, // WildVine
-
-		// Tailoring
-		111557: 8800, // Sumptuous Fur
-
-		// Bags
+		// Generally useful items
+		158212: 300000, // Crow's Nest Scope
+		59596:  200000, // Safety Catch Removal Kit
+		211943: 6000,   // Scarlet Silk Bandage
 		194017: 500000, // Wildercloth Bag
+
+		// Markets I want to control
+		10938: 9900, // Lesser Magic Essence (720 in shop)
+		10940: 3900, // Strange Dust (720 in shop)
+
+		// Items I craft
+		67275:  10000000, // Magic Lamp (has sold for 1,000 and 1,500; crafts for ~50gp)
+		128535: 60000000, // Enchanted Pen (has not sold; crafts for ~1200gp)
 
 		// Item pricing research
 		33428:  10000000, // Dulled Shiv
@@ -100,6 +48,62 @@ var (
 		154778: 10000000, // Ruptured Plate Vambraces
 		6563:   10000000, // Shimmering Bracers
 		2215:   10000000, // Wooden Shield
+
+		// Enchanting
+		//34057:  7900,    // Abyss Crystal
+		//7909:   2000,    // Aquamarine
+		//22445:  7000,    // Arcane Dust
+		//124440: 29800,   // Arkhana
+		//124442: 18700,   // Chaos Crystal
+		//109693: 5000,    // Draenic Dust
+		//3819:   97300,   // Dragon's Teeth
+		//9224:   660000,  // Elixir of Demonslaying
+		//7082:   170000,  // Essence of Air
+		//7076:   1100,    // Essence of Earth
+		//7078:   5000,    // Essence of Fire
+		//12808:  500000,  // Essence of Undeath
+		//7080:   458700,  // Essence of Water
+		//23427:  305000,  // Eternium Ore
+		//22794:  57500,   // Fel Lotus
+		//124116: 742400,  // Felhide
+		//124106: 970000,  // Felwort
+		//4625:   55000,   // Firebloom
+		//52719:  42500,   // Greater Celestial Essence
+		//16203:  79300,   // Greater Eternal Essence
+		//22446:  9700,    // Greater Planar Essence
+		//52721:  16500,   // Heavenly Shard
+		//52555:  40000,   // Hypnotic Dust
+		//124444: 70000,   // Infernal Brimstone
+		//34054:  1900,    // Infinite Dust
+		//14344:  1300,    // Large Brilliant Shard
+		//34056:  2400,    // Lesser Cosmic Essence
+		//16202:  8000,    // Lesser Eternal Essence
+		//22447:  3100,    // Lesser Planar Essence
+		//124441: 69800,   // Leylight Shard
+		//16204:  600,     // Light Illusion Dust
+		//12803:  156600,  // Living Essence
+		//111245: 30000,   // Luminous Shard
+		//52722:  10100,   // Maelstrom Crystal
+		//22791:  46700,   // Netherbloom
+		//22792:  39900,   // Nightmare Vine
+		//22451:  2750000, // Primal Air
+		//22452:  47700,   // Primal Earth
+		//21884:  1740000, // Primal Fire
+		//21886:  645700,  // Primal Life
+		//22457:  960000,  // Primal Mana
+		//23571:  6755000, // Primal Might
+		//22456:  970000,  // Primal Shadow
+		//21885:  883300,  // Primal Water
+		//156930: 3200,    // Rich Illusion Dust
+		//14343:  700,     // Small Brilliant Shard
+		//22448:  3000,    // Small Prismatic Shard
+		//113588: 58100,   // Temporal Crystal
+		//22450:  9700,    // Void Crystal
+		//52328:  150000,  // Volatile Air
+		//8153:   3500000, // WildVine
+
+		// Tailoring
+		//111557: 8800, // Sumptuous Fur
 	}
 )
 
