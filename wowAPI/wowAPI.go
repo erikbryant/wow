@@ -138,7 +138,7 @@ func Realm(realm, accessToken string) map[string]interface{} {
 	return response
 }
 
-// ConnectedRealm returns all realms connected to the given realm Id
+// ConnectedRealm returns all realms connected to the given realm ID
 func ConnectedRealm(realmId, accessToken string) map[string]interface{} {
 	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + realmId + "?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
 
@@ -171,7 +171,7 @@ func ConnectedRealmSearch(accessToken string) map[string]interface{} {
 	return response
 }
 
-// ConnectedRealmId returns the connected realm Id of the given realm
+// ConnectedRealmId returns the connected realm ID of the given realm
 func ConnectedRealmId(realm, accessToken string) (string, bool) {
 	connectedRealms := ConnectedRealmSearch(accessToken)
 	if connectedRealms == nil {
