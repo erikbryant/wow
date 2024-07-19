@@ -149,6 +149,43 @@ func findArbitrages(auctions map[int64][]common.Auction, accessToken string) []B
 	return bargains
 }
 
+// findDisenchant returns items that are cheap enough to warrant disenchanting
+func findDisenchant(auctions map[int64][]common.Auction, accessToken string) []Bargain {
+	bargains := []Bargain{}
+
+	for itemId := range auctions {
+		for _, auction := range auctions[itemId] {
+			if auction.Buyout <= 0 {
+				continue
+			}
+			if auction.Buyout < 10000 {
+				item, ok := wowAPI.LookupItem(itemId, accessToken)
+				if !ok {
+					break
+				}
+				if !item.Equippable || item.ItemLevel <= 0 {
+					// Cannot disenchant
+					break
+				}
+				bargain := Bargain{
+					Quantity:    auction.Quantity,
+					UnitSavings: -1,
+					Name:        item.Name,
+					ItemLevel:   -1, // Must be <= 0 or printShoppingList() will skip it
+				}
+				bargains = append(bargains, bargain)
+				break
+			}
+		}
+	}
+
+	sort.Slice(bargains, func(i, j int) bool {
+		return bargains[i].Name < bargains[j].Name
+	})
+
+	return bargains
+}
+
 // printShoppingList prints a list of auctions the user should buy
 func printShoppingList(label string, bargains []Bargain) {
 	fmt.Printf("--- %s ---\n", label)
@@ -198,6 +235,12 @@ func printBargains(auctions map[int64][]common.Auction, accessToken string) {
 	printShoppingList("Arbitrages", toBuy)
 }
 
+// printDisenchant prints the disenchantable bargains found in the auction house
+func printDisenchant(auctions map[int64][]common.Auction, accessToken string) {
+	toBuy := findDisenchant(auctions, accessToken)
+	printShoppingList(fmt.Sprintf("Armor/weapons to disenchant (%d)", len(auctions)), toBuy)
+}
+
 // doit downloads the available auctions and prints any bargains/arbitrages
 func doit(accessToken string) {
 	c, ok := getCommodities(accessToken)
@@ -213,6 +256,7 @@ func doit(accessToken string) {
 		return
 	}
 	printBargains(a, accessToken)
+	printDisenchant(a, accessToken)
 }
 
 // usage prints a usage message and terminates the program with an error
