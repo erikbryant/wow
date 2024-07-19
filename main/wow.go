@@ -10,7 +10,6 @@ import (
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
 	"sort"
-	"time"
 )
 
 type Bargain struct {
@@ -27,7 +26,6 @@ var (
 		// Generally useful items
 		158212: 300000, // Crow's Nest Scope
 		59596:  200000, // Safety Catch Removal Kit
-		211943: 6000,   // Scarlet Silk Bandage
 		194017: 500000, // Wildercloth Bag
 
 		// Item pricing research
@@ -174,27 +172,22 @@ func printShoppingList(label string, bargains []Bargain) {
 	fmt.Println()
 }
 
-// hash returns a checksum hash of the given data
-func hash(blob []interface{}) int64 {
-	return int64(len(blob))
-}
-
 // getCommodities returns the current auctions and their hash
-func getCommodities(accessToken string) (map[int64][]common.Auction, int64, bool) {
+func getCommodities(accessToken string) (map[int64][]common.Auction, bool) {
 	auctions, ok := wowAPI.Commodities(accessToken)
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain commodity auctions.")
 	}
-	return unpackAuctions(auctions), hash(auctions), true
+	return unpackAuctions(auctions), true
 }
 
 // getAuctions returns the current auctions and their hash
-func getAuctions(accessToken string) (map[int64][]common.Auction, int64, bool) {
+func getAuctions(accessToken string) (map[int64][]common.Auction, bool) {
 	auctions, ok := wowAPI.Auctions(*realm, accessToken)
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain auctions.")
 	}
-	return unpackAuctions(auctions), hash(auctions), true
+	return unpackAuctions(auctions), true
 }
 
 // printBargains prints the bargains found in the auction house
@@ -205,33 +198,21 @@ func printBargains(auctions map[int64][]common.Auction, accessToken string) {
 	printShoppingList("Arbitrages", toBuy)
 }
 
-// findNewAuctions loops forever, printing any new auction data it finds
-func findNewAuctions(accessToken string) {
-	lastHash := int64(-1)
-
-	for {
-		now := time.Now()
-		c, hash, ok := getCommodities(accessToken)
-		if !ok {
-			continue
-		}
-		if hash == lastHash {
-			// We have already seen this auction data
-			time.Sleep(1 * time.Minute)
-			continue
-		}
-		lastHash = hash
-
-		fmt.Printf("\n\n\n*** New Auction House Data (hh:%02d) ***\n\n", now.Minute())
-
-		printBargains(c, accessToken)
-
-		a, hash, ok := getAuctions(accessToken)
-		if !ok {
-			continue
-		}
-		printBargains(a, accessToken)
+// doit downloads the available auctions and prints any bargains/arbitrages
+func doit(accessToken string) {
+	c, ok := getCommodities(accessToken)
+	if !ok {
+		return
 	}
+
+	fmt.Printf("\n\n\n*** Auction House Data ***\n\n")
+	printBargains(c, accessToken)
+
+	a, ok := getAuctions(accessToken)
+	if !ok {
+		return
+	}
+	printBargains(a, accessToken)
 }
 
 // usage prints a usage message and terminates the program with an error
@@ -252,5 +233,5 @@ func main() {
 		log.Fatal("ERROR: Unable to obtain access token.")
 	}
 
-	findNewAuctions(accessToken)
+	doit(accessToken)
 }
