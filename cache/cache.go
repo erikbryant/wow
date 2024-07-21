@@ -71,4 +71,23 @@ func PrintLua() {
 		fmt.Printf("  [\"%d\"] = %d,\n", item.Id, item.SellPrice)
 	}
 	fmt.Println("}")
+
+	luaFunc := `
+function VendorSellPrice(itemID)
+    local sellPrice = VendorPriceCache[tostring(itemID)]
+
+    if sellPrice == nil then
+        print("WARNING: No cached vendor price for: ", itemID)
+        local itemInfo = { C_Item.GetItemInfo(itemID) }
+        sellPrice = itemInfo[11]
+        if sellPrice == nil then
+            print("WARNING: No item found for: ", itemID)
+			sellPrice = 0
+        end
+    end
+
+    return sellPrice
+end`
+
+	fmt.Println(luaFunc)
 }

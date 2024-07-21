@@ -21,7 +21,7 @@ var (
 	clientSecret      string
 
 	skipItems = map[int64]bool{
-		// HTTP 404
+		// Items not found in the WoW database
 		201421: true,
 		204841: true,
 		60405:  true,
@@ -310,4 +310,30 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 	cache.Write(id, item)
 
 	return item, true
+}
+
+// PrintLua writes a text version of skipItems to stdout as a lua table
+func PrintLua() {
+	fmt.Println("UnknownItemIDs = {")
+	for key := range skipItems {
+		fmt.Printf("  %d,\n", key)
+	}
+	fmt.Println("}")
+
+	luaFunc := `
+-- Some IDs found in the AH are not actually valid
+function UnknownID(itemID)
+    local i, id = next(UnknownItemIDs, nil)
+
+    while i do
+        if itemID == id then
+            return true
+        end
+        i, id = next(UnknownItemIDs, i)
+    end
+
+    return false
+end`
+
+	fmt.Println(luaFunc)
 }

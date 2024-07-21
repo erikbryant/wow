@@ -23,6 +23,8 @@ func main() {
 	flag.Parse()
 
 	if *lua {
+		wowAPI.PrintLua()
+		fmt.Println()
 		cache.PrintLua()
 		return
 	}
