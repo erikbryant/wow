@@ -11,6 +11,7 @@ import (
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
 	itemId     = flag.Int64("id", 0, "Item ID to look up")
+	lua        = flag.Bool("lua", false, "Generate lua table of all items")
 )
 
 // usage prints a usage message and terminates the program with an error
@@ -20,6 +21,11 @@ func usage() {
 
 func main() {
 	flag.Parse()
+
+	if *lua {
+		cache.PrintLua()
+		return
+	}
 
 	if *itemId == 0 {
 		cache.Print()

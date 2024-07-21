@@ -14,7 +14,7 @@ var (
 
 func init() {
 	load()
-	fmt.Printf("#Cache items: %d\n\n", len(itemCache))
+	//fmt.Printf("#Cache items: %d\n\n", len(itemCache))
 }
 
 // load loads the disk cache file into memory
@@ -62,4 +62,13 @@ func Print() {
 	for id, item := range itemCache {
 		fmt.Printf("%-50s %d - %v\n", item.Name, id, item)
 	}
+}
+
+// PrintLua writes a text version of the in-memory cache to stdout as a lua table
+func PrintLua() {
+	fmt.Println("VendorPriceCache = {")
+	for _, item := range itemCache {
+		fmt.Printf("  [\"%d\"] = %d,\n", item.Id, item.SellPrice)
+	}
+	fmt.Println("}")
 }
