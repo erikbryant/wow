@@ -14,7 +14,7 @@ var (
 
 func init() {
 	load()
-	//fmt.Printf("#Cache items: %d\n\n", len(itemCache))
+	fmt.Printf("-- #items in cache: %d\n\n", len(itemCache))
 }
 
 // load loads the disk cache file into memory
