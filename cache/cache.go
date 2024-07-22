@@ -64,9 +64,27 @@ func Print() {
 	}
 }
 
-// PrintLua writes a text version of the in-memory cache to stdout as a lua table
-func PrintLua() {
-	fmt.Println("VendorPriceCache = {")
+// PrintLuaEquippable writes the cached equippable status to stdout as a lua table and accessor
+func PrintLuaEquippable() {
+	fmt.Println("ItemIsEquippableCache = {")
+	for _, item := range itemCache {
+		if item.Equippable {
+			fmt.Printf("  [\"%d\"] = true,\n", item.Id)
+		}
+	}
+	fmt.Println("}")
+
+	luaFunc := `
+function ItemIsEquippable(itemID)
+	return ItemIsEquippableCache[tostring(itemID)]
+end`
+
+	fmt.Println(luaFunc)
+}
+
+// PrintLuaVendorPrice writes the cached vendor sell prices to stdout as a lua table and accessor
+func PrintLuaVendorPrice() {
+	fmt.Println("VendorSellPriceCache = {")
 	for _, item := range itemCache {
 		fmt.Printf("  [\"%d\"] = %d,\n", item.Id, item.SellPrice)
 	}
@@ -74,7 +92,7 @@ func PrintLua() {
 
 	luaFunc := `
 function VendorSellPrice(itemID)
-    local sellPrice = VendorPriceCache[tostring(itemID)]
+    local sellPrice = VendorSellPriceCache[tostring(itemID)]
 
     if sellPrice == nil then
         print("WARNING: No cached vendor price for: ", itemID)

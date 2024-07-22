@@ -25,7 +25,9 @@ func main() {
 	if *lua {
 		wowAPI.PrintLua()
 		fmt.Println()
-		cache.PrintLua()
+		cache.PrintLuaEquippable()
+		fmt.Println()
+		cache.PrintLuaVendorPrice()
 		return
 	}
 
