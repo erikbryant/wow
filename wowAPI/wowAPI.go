@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"sort"
 	"strings"
 )
 
@@ -318,17 +319,30 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 	return item, true
 }
 
+// sortSkipItemsKeys returns the sorted list of keys from itemCache
+func sortSkipItemsKeys(dict map[int64]bool) []int64 {
+	keys := []int64{}
+
+	for k := range dict {
+		keys = append(keys, k)
+	}
+
+	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
+
+	return keys
+}
+
 // PrintLua writes a text version of skipItems to stdout as a lua table
 func PrintLua() {
-	fmt.Println("UnknownItemIDs = {")
-	for key := range skipItems {
+	fmt.Println("local UnknownItemIDs = {")
+	for _, key := range sortSkipItemsKeys(skipItems) {
 		fmt.Printf("  %d,\n", key)
 	}
 	fmt.Println("}")
 
 	luaFunc := `
 -- Some IDs found in the AH are not actually valid
-function UnknownID(itemID)
+function ItemCache:UnknownID(itemID)
     local i, id = next(UnknownItemIDs, nil)
 
     while i do

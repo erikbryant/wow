@@ -23,6 +23,7 @@ func main() {
 	flag.Parse()
 
 	if *lua {
+		fmt.Printf("ItemCache = CreateFrame(\"Frame\")\n\n")
 		wowAPI.PrintLua()
 		fmt.Println()
 		cache.PrintLuaEquippable()

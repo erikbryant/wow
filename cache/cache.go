@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/erikbryant/wow/common"
 	"os"
+	"sort"
 )
 
 var (
@@ -64,18 +65,31 @@ func Print() {
 	}
 }
 
+// sortItemCacheKeys returns the sorted list of keys from itemCache
+func sortItemCacheKeys(dict map[int64]common.Item) []int64 {
+	keys := []int64{}
+
+	for k := range dict {
+		keys = append(keys, k)
+	}
+
+	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
+
+	return keys
+}
+
 // PrintLuaEquippable writes the cached equippable status to stdout as a lua table and accessor
 func PrintLuaEquippable() {
-	fmt.Println("ItemIsEquippableCache = {")
-	for _, item := range itemCache {
-		if item.Equippable {
-			fmt.Printf("  [\"%d\"] = true,\n", item.Id)
+	fmt.Println("local ItemIsEquippableCache = {")
+	for _, key := range sortItemCacheKeys(itemCache) {
+		if itemCache[key].Equippable {
+			fmt.Printf("  [\"%d\"] = true,\n", key)
 		}
 	}
 	fmt.Println("}")
 
 	luaFunc := `
-function ItemIsEquippable(itemID)
+function ItemCache:ItemIsEquippable(itemID)
 	return ItemIsEquippableCache[tostring(itemID)]
 end`
 
@@ -84,14 +98,14 @@ end`
 
 // PrintLuaVendorPrice writes the cached vendor sell prices to stdout as a lua table and accessor
 func PrintLuaVendorPrice() {
-	fmt.Println("VendorSellPriceCache = {")
-	for _, item := range itemCache {
-		fmt.Printf("  [\"%d\"] = %d,\n", item.Id, item.SellPrice)
+	fmt.Println("local VendorSellPriceCache = {")
+	for _, key := range sortItemCacheKeys(itemCache) {
+		fmt.Printf("  [\"%d\"] = %d,\n", key, itemCache[key].SellPrice)
 	}
 	fmt.Println("}")
 
 	luaFunc := `
-function VendorSellPrice(itemID)
+function ItemCache:VendorSellPrice(itemID)
     local sellPrice = VendorSellPriceCache[tostring(itemID)]
 
     if sellPrice == nil then
