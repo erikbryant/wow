@@ -297,6 +297,11 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 		item.Equippable = true
 	}
 
+	if id == 136377 {
+		// "Oversized Bobber" sells for 11 copper (not 11 silver)
+		item.SellPrice = 11
+	}
+
 	switch item.Id {
 	case 194829: // Fated Fortune Card (can't be sold until read)
 		item.SellPrice = 10000
