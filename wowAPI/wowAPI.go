@@ -292,6 +292,10 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 	item.Name = i["name"].(string)
 
 	item.Equippable = i["is_equippable"].(bool)
+	if id == 141292 || id == 141293 {
+		// Items actually are equippable, but not tagged as such.
+		item.Equippable = true
+	}
 
 	switch item.Id {
 	case 194829: // Fated Fortune Card (can't be sold until read)
