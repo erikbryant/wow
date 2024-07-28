@@ -110,11 +110,7 @@ function ItemCache:VendorSellPrice(itemID)
 
     if sellPrice == nil then
         print("Arbitrages: No cached vendor price for ", itemID)
-        local itemInfo = { C_Item.GetItemInfo(itemID) }
-        sellPrice = itemInfo[11]
-        if sellPrice == nil then
-			sellPrice = 0
-        end
+		sellPrice = 0
     end
 
     return sellPrice
