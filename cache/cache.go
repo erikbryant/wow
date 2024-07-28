@@ -100,20 +100,15 @@ end`
 func PrintLuaVendorPrice() {
 	fmt.Println("local VendorSellPriceCache = {")
 	for _, key := range sortItemCacheKeys(itemCache) {
-		fmt.Printf("  [\"%d\"] = %d,\n", key, itemCache[key].SellPrice)
+		if itemCache[key].SellPrice > 0 {
+			fmt.Printf("  [\"%d\"] = %d,\n", key, itemCache[key].SellPrice)
+		}
 	}
 	fmt.Println("}")
 
 	luaFunc := `
 function ItemCache:VendorSellPrice(itemID)
-    local sellPrice = VendorSellPriceCache[tostring(itemID)]
-
-    if sellPrice == nil then
-        print("Arbitrages: No cached vendor price for ", itemID)
-		sellPrice = 0
-    end
-
-    return sellPrice
+    return VendorSellPriceCache[tostring(itemID)] or 0
 end`
 
 	fmt.Println(luaFunc)
