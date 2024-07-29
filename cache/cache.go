@@ -78,29 +78,11 @@ func sortItemCacheKeys(dict map[int64]common.Item) []int64 {
 	return keys
 }
 
-// PrintLuaEquippable writes the cached equippable status to stdout as a lua table and accessor
-func PrintLuaEquippable() {
-	fmt.Println("local ItemIsEquippableCache = {")
-	for _, key := range sortItemCacheKeys(itemCache) {
-		if itemCache[key].Equippable {
-			fmt.Printf("  [\"%d\"] = true,\n", key)
-		}
-	}
-	fmt.Println("}")
-
-	luaFunc := `
-local function ItemIsEquippable(itemID)
-	return ItemIsEquippableCache[tostring(itemID)]
-end`
-
-	fmt.Println(luaFunc)
-}
-
 // PrintLuaVendorPrice writes the cached vendor sell prices to stdout as a lua table and accessor
 func PrintLuaVendorPrice() {
 	fmt.Println("local VendorSellPriceCache = {")
 	for _, key := range sortItemCacheKeys(itemCache) {
-		if itemCache[key].SellPrice > 0 {
+		if itemCache[key].SellPrice > 0 && !itemCache[key].Equippable {
 			fmt.Printf("  [\"%d\"] = %d,\n", key, itemCache[key].SellPrice)
 		}
 	}

@@ -23,15 +23,9 @@ func main() {
 	flag.Parse()
 
 	if *lua {
-		cache.PrintLuaEquippable()
-		fmt.Println()
-		wowAPI.PrintLuaUnknownItem()
-		fmt.Println()
 		cache.PrintLuaVendorPrice()
 		fmt.Println(`
 ItemCache = {
-  ItemIsEquippable = ItemIsEquippable,
-  UnknownID = UnknownID,
   VendorSellPrice = VendorSellPrice,
 }`)
 		return
