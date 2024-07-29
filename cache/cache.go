@@ -89,7 +89,7 @@ func PrintLuaEquippable() {
 	fmt.Println("}")
 
 	luaFunc := `
-function ItemCache:ItemIsEquippable(itemID)
+local function ItemIsEquippable(itemID)
 	return ItemIsEquippableCache[tostring(itemID)]
 end`
 
@@ -107,7 +107,7 @@ func PrintLuaVendorPrice() {
 	fmt.Println("}")
 
 	luaFunc := `
-function ItemCache:VendorSellPrice(itemID)
+local function VendorSellPrice(itemID)
     return VendorSellPriceCache[tostring(itemID)] or 0
 end`
 

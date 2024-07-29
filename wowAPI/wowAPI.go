@@ -341,8 +341,8 @@ func sortSkipItemsKeys(dict map[int64]bool) []int64 {
 	return keys
 }
 
-// PrintLua writes a text version of skipItems to stdout as a lua table
-func PrintLua() {
+// PrintLuaUnknownItem writes a text version of skipItems to stdout as a lua table
+func PrintLuaUnknownItem() {
 	fmt.Println("local UnknownItemIDCache = {")
 	for _, key := range sortSkipItemsKeys(skipItems) {
 		fmt.Printf("  [\"%d\"] = true,\n", key)
@@ -351,7 +351,7 @@ func PrintLua() {
 
 	luaFunc := `
 -- Some IDs found in the AH are not actually valid
-function ItemCache:UnknownID(itemID)
+local function UnknownID(itemID)
 	return UnknownItemIDCache[tostring(itemID)]
 end`
 
