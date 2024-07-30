@@ -11,6 +11,7 @@ import (
 var (
 	itemCache     = map[int64]common.Item{}
 	itemCacheFile = "itemCache.gob"
+	readDisabled  = false
 )
 
 func init() {
@@ -48,6 +49,9 @@ func save() {
 
 // Read returns the in-memory copy (if exists)
 func Read(id int64) (common.Item, bool) {
+	if readDisabled {
+		return common.Item{}, false
+	}
 	item, ok := itemCache[id]
 	return item, ok
 }
@@ -58,33 +62,42 @@ func Write(id int64, item common.Item) {
 	save()
 }
 
+// IDs returns the sorted list of keys from itemCache
+func IDs() []int64 {
+	ids := []int64{}
+
+	for id := range itemCache {
+		ids = append(ids, id)
+	}
+
+	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
+
+	return ids
+}
+
 // Print writes a text version of the in-memory cache to stdout
 func Print() {
-	for id, item := range itemCache {
+	for _, id := range IDs() {
+		item := itemCache[id]
 		fmt.Printf("%-50s %d - %v\n", item.Name, id, item)
 	}
 }
 
-// sortItemCacheKeys returns the sorted list of keys from itemCache
-func sortItemCacheKeys(dict map[int64]common.Item) []int64 {
-	keys := []int64{}
+func DisableRead() {
+	readDisabled = true
+}
 
-	for k := range dict {
-		keys = append(keys, k)
-	}
-
-	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
-
-	return keys
+func EnableRead() {
+	readDisabled = false
 }
 
 // PrintLuaVendorPrice writes the cached vendor sell prices to stdout as a lua table and accessor
 func PrintLuaVendorPrice() {
 	fmt.Println("local VendorSellPriceCache = {")
-	for _, key := range sortItemCacheKeys(itemCache) {
+	for _, id := range IDs() {
 		// The auction house does not deal in copper; skip any items <= a full silver
-		if itemCache[key].SellPrice > 100 && !itemCache[key].Equippable {
-			fmt.Printf("  [\"%d\"] = %d,\n", key, itemCache[key].SellPrice)
+		if itemCache[id].SellPrice > 100 && !itemCache[id].Equippable {
+			fmt.Printf("  [\"%d\"] = %d,\n", id, itemCache[id].SellPrice)
 		}
 	}
 	fmt.Println("}")

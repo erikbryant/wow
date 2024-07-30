@@ -20,9 +20,10 @@ type Bargain struct {
 }
 
 var (
-	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realm       = flag.String("realm", "Sisters of Elune", "WoW realm")
-	usefulGoods = map[int64]int64{
+	passPhrase   = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
+	realm        = flag.String("realm", "Sisters of Elune", "WoW realm")
+	refreshCache = flag.Bool("refreshCache", false, "Re-download entirety of item cache")
+	usefulGoods  = map[int64]int64{
 		// Generally useful items
 		158212: 300000, // Crow's Nest Scope
 		59596:  200000, // Safety Catch Removal Kit
@@ -231,6 +232,11 @@ func main() {
 	accessToken, ok := wowAPI.AccessToken(*passPhrase)
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain access token.")
+	}
+
+	if *refreshCache {
+		wowAPI.RefreshCache(accessToken)
+		return
 	}
 
 	doit(accessToken)

@@ -270,7 +270,7 @@ func wowItem(id, accessToken string) (map[string]interface{}, bool) {
 
 // LookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
 func LookupItem(id int64, accessToken string) (common.Item, bool) {
-	// Is it cached?
+	// Use the cached value if we have it
 	item, ok := cache.Read(id)
 	if ok {
 		return item, true
@@ -291,18 +291,16 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 	item.Name = i["name"].(string)
 
 	item.Equippable = i["is_equippable"].(bool)
-	if id == 141292 || id == 141293 {
-		// Items actually are equippable, but not tagged as such.
-		item.Equippable = true
-	}
-
-	if id == 136377 {
-		// "Oversized Bobber" sells for 11 copper (not 11 silver)
-		item.SellPrice = 11
-	}
 
 	switch item.Id {
-	case 194829: // Fated Fortune Card (can't be sold until read)
+	case 141292:
+		// Crystallizing Mana
+		item.Equippable = true
+	case 141293:
+		// Spellfire Oil
+		item.Equippable = true
+	case 194829:
+		// Fated Fortune Card (can't be sold until read)
 		item.SellPrice = 10000
 	default:
 		_, ok = i["sell_price"]
@@ -325,4 +323,21 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 	cache.Write(id, item)
 
 	return item, true
+}
+
+func RefreshCache(accessToken string) {
+	cache.DisableRead()
+	defer cache.EnableRead()
+
+	fmt.Println("Refreshing item cache...")
+
+	i := 0
+	ids := cache.IDs()
+	for _, itemID := range ids {
+		LookupItem(itemID, accessToken)
+		i += 1
+		if i%100 == 0 {
+			fmt.Printf("  %d / %d\n", i, len(ids))
+		}
+	}
 }
