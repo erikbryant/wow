@@ -82,7 +82,8 @@ func sortItemCacheKeys(dict map[int64]common.Item) []int64 {
 func PrintLuaVendorPrice() {
 	fmt.Println("local VendorSellPriceCache = {")
 	for _, key := range sortItemCacheKeys(itemCache) {
-		if itemCache[key].SellPrice > 0 && !itemCache[key].Equippable {
+		// The auction house does not deal in copper; skip any items <= a full silver
+		if itemCache[key].SellPrice > 100 && !itemCache[key].Equippable {
 			fmt.Printf("  [\"%d\"] = %d,\n", key, itemCache[key].SellPrice)
 		}
 	}
