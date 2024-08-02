@@ -127,6 +127,10 @@ func findArbitrages(auctions map[int64][]common.Auction, accessToken string) []B
 		if !ok {
 			continue
 		}
+		if item.Equippable {
+			// Don't know how to price these
+			continue
+		}
 		for _, auction := range aucs {
 			if auction.Buyout <= 0 {
 				continue
