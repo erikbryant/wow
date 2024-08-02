@@ -293,6 +293,9 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 	item.Equippable = i["is_equippable"].(bool)
 
 	switch item.Id {
+	case 141284:
+		// Nor'danil Ampoule
+		item.Equippable = true
 	case 141292:
 		// Crystallizing Mana
 		item.Equippable = true
