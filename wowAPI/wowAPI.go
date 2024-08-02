@@ -296,6 +296,9 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 	case 141284:
 		// Nor'danil Ampoule
 		item.Equippable = true
+	case 141286:
+		// Rite of the Val'kyr
+		item.Equippable = true
 	case 141292:
 		// Crystallizing Mana
 		item.Equippable = true
