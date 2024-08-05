@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
@@ -23,22 +24,12 @@ var (
 	passPhrase   = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
 	realm        = flag.String("realm", "Sisters of Elune", "WoW realm")
 	refreshCache = flag.Bool("refreshCache", false, "Re-download entirety of item cache")
+	readThrough  = flag.Bool("readThrough", false, "Read live values")
 	usefulGoods  = map[int64]int64{
 		// Generally useful items
 		158212: 300000, // Crow's Nest Scope
 		59596:  200000, // Safety Catch Removal Kit
 		194017: 500000, // Wildercloth Bag
-
-		// Item pricing research
-		33428:  10000000, // Dulled Shiv
-		201954: 10000000, // Explorer's Expert Greaves
-		15212:  10000000, // Fighter Broadsword
-		15248:  10000000, // Gleaming Claymore
-		121110: 10000000, // Hagfeather Wristwraps
-		2057:   10000000, // Pitted Defias Shortsword
-		154778: 10000000, // Ruptured Plate Vambraces
-		6563:   10000000, // Shimmering Bracers
-		2215:   10000000, // Wooden Shield
 	}
 )
 
@@ -241,6 +232,11 @@ func main() {
 	if *refreshCache {
 		wowAPI.RefreshCache(accessToken)
 		return
+	}
+
+	if *readThrough {
+		// Get the latest values
+		cache.DisableRead()
 	}
 
 	doit(accessToken)
