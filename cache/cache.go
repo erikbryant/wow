@@ -6,6 +6,7 @@ import (
 	"github.com/erikbryant/wow/common"
 	"os"
 	"sort"
+	"time"
 )
 
 var (
@@ -45,6 +46,32 @@ func save() {
 	defer file.Close()
 	encoder := gob.NewEncoder(file)
 	encoder.Encode(itemCache)
+}
+
+// Migrate writes the in-memory cache file to disk in the NewItem format
+func Migrate() {
+	newItemCache := map[int64]common.NewItem{}
+
+	for key, value := range itemCache {
+		newValue := common.NewItem{
+			Id:         value.Id,
+			Name:       value.Name,
+			Equippable: value.Equippable,
+			SellPrice:  value.SellPrice,
+			ItemLevel:  value.ItemLevel,
+			Updated:    time.Now(),
+		}
+		newItemCache[key] = newValue
+	}
+
+	file, err := os.Create("new." + itemCacheFile)
+	if err != nil {
+		fmt.Printf("error creating newItemCache file: %v", err)
+		panic(err)
+	}
+	defer file.Close()
+	encoder := gob.NewEncoder(file)
+	encoder.Encode(newItemCache)
 }
 
 // Read returns the in-memory copy (if exists)

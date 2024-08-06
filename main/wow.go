@@ -25,6 +25,7 @@ var (
 	realm        = flag.String("realm", "Sisters of Elune", "WoW realm")
 	refreshCache = flag.Bool("refreshCache", false, "Re-download entirety of item cache")
 	readThrough  = flag.Bool("readThrough", false, "Read live values")
+	migrate      = flag.Bool("migrate", false, "Migrate to new item cache data format")
 	usefulGoods  = map[int64]int64{
 		// Generally useful items
 		158212: 300000, // Crow's Nest Scope
@@ -201,7 +202,6 @@ func doit(accessToken string) {
 		return
 	}
 
-	fmt.Printf("\n\n\n*** Auction House Data ***\n\n")
 	printBargains(c, accessToken)
 
 	a, ok := getAuctions(accessToken)
@@ -231,6 +231,11 @@ func main() {
 
 	if *refreshCache {
 		wowAPI.RefreshCache(accessToken)
+		return
+	}
+
+	if *migrate {
+		cache.Migrate()
 		return
 	}
 

@@ -1,5 +1,7 @@
 package common
 
+import "time"
+
 // Item contains the properties of a single auction house item
 type Item struct {
 	// WARNING: Changing this struct invalidates the cache
@@ -8,6 +10,17 @@ type Item struct {
 	Equippable bool
 	SellPrice  int64
 	ItemLevel  int64
+	Updated    time.Time // Datetime when created or updated
+}
+
+type NewItem struct {
+	// WARNING: Changing this struct invalidates the cache
+	Id         int64
+	Name       string
+	Equippable bool
+	SellPrice  int64
+	ItemLevel  int64
+	Updated    time.Time // Datetime when created or updated
 }
 
 // Sample auction response. Some have more or fewer fields.
