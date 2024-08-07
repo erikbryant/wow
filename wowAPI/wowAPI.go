@@ -12,6 +12,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
 var (
@@ -268,12 +269,19 @@ func wowItem(id, accessToken string) (map[string]interface{}, bool) {
 	return response, true
 }
 
+func age(item common.Item) time.Duration {
+	return time.Now().Sub(item.Updated)
+}
+
 // LookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
 func LookupItem(id int64, accessToken string) (common.Item, bool) {
 	// Use the cached value if we have it
 	item, ok := cache.Read(id)
 	if ok {
-		return item, true
+		if age(item) <= 7*24*time.Hour {
+			return item, true
+		}
+		fmt.Println("Refreshing stale item:", item)
 	}
 
 	i, ok := wowItem(web.ToString(id), accessToken)
@@ -325,6 +333,8 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 			}
 		}
 	}
+
+	item.Updated = time.Now()
 
 	cache.Write(id, item)
 
