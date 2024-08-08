@@ -279,6 +279,7 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 	item, ok := cache.Read(id)
 	if ok {
 		if age(item) <= 7*24*time.Hour {
+			// Value in cache is fresh; use that
 			return item, true
 		}
 		fmt.Println("Refreshing stale item:", item)
@@ -339,21 +340,4 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 	cache.Write(id, item)
 
 	return item, true
-}
-
-func RefreshCache(accessToken string) {
-	cache.DisableRead()
-	defer cache.EnableRead()
-
-	fmt.Println("Refreshing item cache...")
-
-	i := 0
-	ids := cache.IDs()
-	for _, itemID := range ids {
-		LookupItem(itemID, accessToken)
-		i += 1
-		if i%100 == 0 {
-			fmt.Printf("  %d / %d\n", i, len(ids))
-		}
-	}
 }

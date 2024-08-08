@@ -22,19 +22,18 @@ type Bargain struct {
 }
 
 var (
-	passPhrase   = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms       = flag.String("realms", "Sisters of Elune,IceCrown", "WoW realms")
-	refreshCache = flag.Bool("refreshCache", false, "Re-download entirety of item cache")
-	readThrough  = flag.Bool("readThrough", false, "Read live values")
-	migrate      = flag.Bool("migrate", false, "Migrate to new item cache data format")
-	usefulGoods  = map[int64]int64{
+	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
+	realms      = flag.String("realms", "Sisters of Elune,IceCrown", "WoW realms")
+	readThrough = flag.Bool("readThrough", false, "Read live values")
+	migrate     = flag.Bool("migrate", false, "Migrate to new item cache data format")
+	usefulGoods = map[int64]int64{
 		// Generally useful items
 		158212: common.Coins(30, 0, 0), // Crow's Nest Scope
 		59596:  common.Coins(20, 0, 0), // Safety Catch Removal Kit
 		194017: common.Coins(50, 0, 0), // Wildercloth Bag
 
-		// Battle pets I do not have yet
-		152878: common.Coins(1000, 0, 0), // Enchanted Tiki Mask
+		// Summoners for battle pets I do not have yet
+		152878: common.Coins(100, 0, 0), // Enchanted Tiki Mask
 
 		// Enchanting recipes I do not have yet
 		210175: common.Coins(300, 0, 0), // Formula: Enchant Weapon - Dreaming Devotion
@@ -54,6 +53,15 @@ func jsonToStruct(auc map[string]interface{}) common.Auction {
 	}
 	item := auc["item"].(map[string]interface{})
 	auction.ItemId = web.ToInt64(item["id"])
+
+	// Is this a Pet Cage?
+	if auction.ItemId == 82800 {
+		// A pet auction!
+		auction.Pet.BreedId = web.ToInt64(item["pet_breed_id"])
+		auction.Pet.Level = web.ToInt64(item["pet_level"])
+		auction.Pet.Quality = web.ToInt64(item["pet_quality"])
+		auction.Pet.SpeciesId = web.ToInt64(item["pet_species_id"])
+	}
 
 	if _, ok := auc["buyout"]; ok {
 		// Regular auction
@@ -237,11 +245,6 @@ func main() {
 	accessToken, ok := wowAPI.AccessToken(*passPhrase)
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain access token.")
-	}
-
-	if *refreshCache {
-		wowAPI.RefreshCache(accessToken)
-		return
 	}
 
 	if *migrate {
