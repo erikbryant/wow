@@ -29,9 +29,15 @@ var (
 	migrate      = flag.Bool("migrate", false, "Migrate to new item cache data format")
 	usefulGoods  = map[int64]int64{
 		// Generally useful items
-		158212: 300000, // Crow's Nest Scope
-		59596:  200000, // Safety Catch Removal Kit
-		194017: 500000, // Wildercloth Bag
+		158212: common.Coins(30, 0, 0), // Crow's Nest Scope
+		59596:  common.Coins(20, 0, 0), // Safety Catch Removal Kit
+		194017: common.Coins(50, 0, 0), // Wildercloth Bag
+
+		// Battle pets I do not have yet
+		152878: common.Coins(1000, 0, 0), // Enchanted Tiki Mask
+
+		// Enchanting recipes I do not have yet
+		210175: common.Coins(300, 0, 0), // Formula: Enchant Weapon - Dreaming Devotion
 	}
 )
 
@@ -56,6 +62,8 @@ func jsonToStruct(auc map[string]interface{}) common.Auction {
 		if _, ok := auc["unit_price"]; ok {
 			// Commodity auction
 			auction.Buyout = web.ToInt64(auc["unit_price"])
+		} else {
+			fmt.Println("Unknown auction type:", auc)
 		}
 	}
 

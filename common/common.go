@@ -40,7 +40,13 @@ type Auction struct {
 	Quantity int64
 }
 
-func gold(price int64) string {
+// Coins returns a single numeric value of the given denominations
+func Coins(g, s, c int64) int64 {
+	return g*100*100 + s*100 + c
+}
+
+// Gold returns a formatted string of the given numeric value
+func Gold(price int64) string {
 	copper := price % 100
 	price /= 100
 	silver := price % 100
@@ -54,5 +60,5 @@ func (item Item) Format() string {
 	if item.Equippable {
 		equippable = "T"
 	}
-	return fmt.Sprintf("%7d  %s %11s   %3d   %s   %s", item.Id, equippable, gold(item.SellPrice), item.ItemLevel, item.Updated.Format("2006-01-02"), item.Name)
+	return fmt.Sprintf("%7d  %s %11s   %3d   %s   %s", item.Id, equippable, Gold(item.SellPrice), item.ItemLevel, item.Updated.Format("2006-01-02"), item.Name)
 }
