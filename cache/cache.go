@@ -106,7 +106,7 @@ func IDs() []int64 {
 func Print() {
 	for _, id := range IDs() {
 		item := itemCache[id]
-		fmt.Printf("%-50s %d - %v\n", item.Name, id, item)
+		fmt.Println(item.Format())
 	}
 }
 

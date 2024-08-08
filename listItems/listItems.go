@@ -50,5 +50,5 @@ ItemCache = {
 	if !ok {
 		return
 	}
-	fmt.Printf("%-60s %d - %v\n", item.Name, *itemId, item)
+	fmt.Println(item.Format())
 }

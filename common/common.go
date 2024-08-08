@@ -1,6 +1,9 @@
 package common
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // Item contains the properties of a single auction house item
 type Item struct {
@@ -35,4 +38,21 @@ type Auction struct {
 	ItemId   int64
 	Buyout   int64 // For commodity auctions this stores 'unit_price'
 	Quantity int64
+}
+
+func gold(price int64) string {
+	copper := price % 100
+	price /= 100
+	silver := price % 100
+	price /= 100
+	gold := price
+	return fmt.Sprintf("%d.%02d.%02d", gold, silver, copper)
+}
+
+func (item Item) Format() string {
+	equippable := "F"
+	if item.Equippable {
+		equippable = "T"
+	}
+	return fmt.Sprintf("%7d  %s %11s   %3d   %s   %s", item.Id, equippable, gold(item.SellPrice), item.ItemLevel, item.Updated.Format("2006-01-02"), item.Name)
 }
