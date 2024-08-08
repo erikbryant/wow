@@ -11,6 +11,7 @@ import (
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
 	"sort"
+	"strings"
 )
 
 type Bargain struct {
@@ -22,7 +23,7 @@ type Bargain struct {
 
 var (
 	passPhrase   = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realm        = flag.String("realm", "Sisters of Elune", "WoW realm")
+	realms       = flag.String("realms", "Sisters of Elune,IceCrown", "WoW realms")
 	refreshCache = flag.Bool("refreshCache", false, "Re-download entirety of item cache")
 	readThrough  = flag.Bool("readThrough", false, "Read live values")
 	migrate      = flag.Bool("migrate", false, "Migrate to new item cache data format")
@@ -179,8 +180,8 @@ func getCommodities(accessToken string) (map[int64][]common.Auction, bool) {
 }
 
 // getAuctions returns the current auctions and their hash
-func getAuctions(accessToken string) (map[int64][]common.Auction, bool) {
-	auctions, ok := wowAPI.Auctions(*realm, accessToken)
+func getAuctions(realm, accessToken string) (map[int64][]common.Auction, bool) {
+	auctions, ok := wowAPI.Auctions(realm, accessToken)
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain auctions.")
 	}
@@ -188,27 +189,28 @@ func getAuctions(accessToken string) (map[int64][]common.Auction, bool) {
 }
 
 // printBargains prints the bargains found in the auction house
-func printBargains(auctions map[int64][]common.Auction, accessToken string) {
+func printBargains(auctions map[int64][]common.Auction, realm, accessToken string) {
 	toBuy := findBargains(usefulGoods, auctions, accessToken)
-	printShoppingList(fmt.Sprintf("Bargains (across %d items)", len(auctions)), toBuy)
+	printShoppingList(fmt.Sprintf("%s bargains (across %d items)", realm, len(auctions)), toBuy)
 	toBuy = findArbitrages(auctions, accessToken)
 	printShoppingList("Arbitrages", toBuy)
 }
 
 // doit downloads the available auctions and prints any bargains/arbitrages
-func doit(accessToken string) {
+func doit(accessToken string, realmList string) {
 	c, ok := getCommodities(accessToken)
 	if !ok {
 		return
 	}
+	printBargains(c, "Commodity", accessToken)
 
-	printBargains(c, accessToken)
-
-	a, ok := getAuctions(accessToken)
-	if !ok {
-		return
+	for _, realm := range strings.Split(realmList, ",") {
+		a, ok := getAuctions(realm, accessToken)
+		if !ok {
+			return
+		}
+		printBargains(a, realm, accessToken)
 	}
-	printBargains(a, accessToken)
 }
 
 // usage prints a usage message and terminates the program with an error
@@ -244,5 +246,5 @@ func main() {
 		cache.DisableRead()
 	}
 
-	doit(accessToken)
+	doit(accessToken, *realms)
 }
