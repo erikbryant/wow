@@ -59,7 +59,7 @@ func jsonToStruct(auc map[string]interface{}) common.Auction {
 		// A pet auction!
 		auction.Pet.BreedId = web.ToInt64(item["pet_breed_id"])
 		auction.Pet.Level = web.ToInt64(item["pet_level"])
-		auction.Pet.Quality = web.ToInt64(item["pet_quality"])
+		auction.Pet.QualityId = web.ToInt64(item["pet_quality_id"])
 		auction.Pet.SpeciesId = web.ToInt64(item["pet_species_id"])
 	}
 

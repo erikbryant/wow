@@ -29,7 +29,7 @@ type NewItem struct {
 type PetInfo struct {
 	BreedId   int64
 	Level     int64
-	Quality   int64
+	QualityId int64
 	SpeciesId int64
 }
 
