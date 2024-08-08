@@ -190,7 +190,7 @@ func getAuctions(accessToken string) (map[int64][]common.Auction, bool) {
 // printBargains prints the bargains found in the auction house
 func printBargains(auctions map[int64][]common.Auction, accessToken string) {
 	toBuy := findBargains(usefulGoods, auctions, accessToken)
-	printShoppingList(fmt.Sprintf("Bargains (%d)", len(auctions)), toBuy)
+	printShoppingList(fmt.Sprintf("Bargains (across %d items)", len(auctions)), toBuy)
 	toBuy = findArbitrages(auctions, accessToken)
 	printShoppingList("Arbitrages", toBuy)
 }
