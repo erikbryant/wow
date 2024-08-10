@@ -24,20 +24,20 @@ type Bargain struct {
 
 var (
 	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms      = flag.String("realms", "Commodities,Sisters of Elune,IceCrown", "WoW realms")
+	realms      = flag.String("realms", "Commodities,Sisters of Elune,IceCrown,Drak'thul", "WoW realms")
 	readThrough = flag.Bool("readThrough", false, "Read live values")
 	migrate     = flag.Bool("migrate", false, "Migrate to new item cache data format")
 	usefulGoods = map[int64]int64{
 		// Generally useful items
-		158212: common.Coins(30, 0, 0), // Crow's Nest Scope
-		59596:  common.Coins(20, 0, 0), // Safety Catch Removal Kit
-		194017: common.Coins(50, 0, 0), // Wildercloth Bag
+		//158212: common.Coins(30, 0, 0), // Crow's Nest Scope
+		//59596:  common.Coins(20, 0, 0), // Safety Catch Removal Kit
+		//194017: common.Coins(50, 0, 0), // Wildercloth Bag
 
 		// Summoners (versus pet cages) for battle pets I do not have yet
 		152878: common.Coins(100, 0, 0), // Enchanted Tiki Mask
 
 		// Enchanting recipes I do not have yet
-		210175: common.Coins(300, 0, 0), // Formula: Enchant Weapon - Dreaming Devotion
+		//210175: common.Coins(300, 0, 0), // Formula: Enchant Weapon - Dreaming Devotion
 	}
 )
 
