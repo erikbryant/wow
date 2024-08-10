@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/battlePet"
 	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/wowAPI"
@@ -23,7 +24,7 @@ type Bargain struct {
 
 var (
 	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms      = flag.String("realms", "Sisters of Elune,IceCrown", "WoW realms")
+	realms      = flag.String("realms", "Commodities,Sisters of Elune,IceCrown", "WoW realms")
 	readThrough = flag.Bool("readThrough", false, "Read live values")
 	migrate     = flag.Bool("migrate", false, "Migrate to new item cache data format")
 	usefulGoods = map[int64]int64{
@@ -32,7 +33,7 @@ var (
 		59596:  common.Coins(20, 0, 0), // Safety Catch Removal Kit
 		194017: common.Coins(50, 0, 0), // Wildercloth Bag
 
-		// Summoners for battle pets I do not have yet
+		// Summoners (versus pet cages) for battle pets I do not have yet
 		152878: common.Coins(100, 0, 0), // Enchanted Tiki Mask
 
 		// Enchanting recipes I do not have yet
@@ -165,68 +166,89 @@ func findArbitrages(auctions map[int64][]common.Auction, accessToken string) []B
 
 // printShoppingList prints a list of auctions the user should buy
 func printShoppingList(label string, bargains []Bargain) {
-	fmt.Printf("--- %s ---\n", label)
+	names := []string{}
 
-	lastName := ""
 	for _, bargain := range bargains {
-		if bargain.Name == lastName {
-			// Only print an item once
-			continue
-		}
 		if bargain.ItemLevel > 0 {
 			// I don't know how to price these yet
-			//fmt.Printf("%-50s %d\n", bargain.Name, bargain.ItemLevel)
+			//names = append(names, fmt.Sprintf("%-50s iLvl %3d", bargain.Name, bargain.ItemLevel))
 			continue
 		} else {
-			fmt.Printf("%s\n", bargain.Name)
+			names = append(names, bargain.Name)
 		}
-		lastName = bargain.Name
 	}
 
-	fmt.Println()
-}
-
-// getCommodities returns the current auctions and their hash
-func getCommodities(accessToken string) (map[int64][]common.Auction, bool) {
-	auctions, ok := wowAPI.Commodities(accessToken)
-	if !ok {
-		log.Fatal("ERROR: Unable to obtain commodity auctions.")
+	if len(names) > 0 {
+		fmt.Printf("--- %s ---\n", label)
+		fmt.Println(strings.Join(common.SortUnique(names), "\n"))
+		fmt.Println()
 	}
-	return unpackAuctions(auctions), true
 }
 
 // getAuctions returns the current auctions and their hash
 func getAuctions(realm, accessToken string) (map[int64][]common.Auction, bool) {
-	auctions, ok := wowAPI.Auctions(realm, accessToken)
-	if !ok {
-		log.Fatal("ERROR: Unable to obtain auctions.")
+	var ok bool
+	var auctions []interface{}
+
+	if strings.ToLower(realm) == "commodities" {
+		auctions, ok = wowAPI.Commodities(accessToken)
+	} else {
+		auctions, ok = wowAPI.Auctions(realm, accessToken)
 	}
+	if !ok {
+		log.Println("ERROR: Unable to obtain auctions for", realm)
+		return nil, false
+	}
+
 	return unpackAuctions(auctions), true
+}
+
+// printPetBargains prints a list of pets the user should buy
+func printPetBargains(auctions map[int64][]common.Auction) {
+	bargains := []string{}
+
+	for _, petAuction := range auctions[battlePet.PetCageItemId] {
+		if battlePet.Own(petAuction.Pet.SpeciesId) {
+			continue
+		}
+		if petAuction.Buyout > 1000000 {
+			continue
+		}
+		if petAuction.Pet.QualityId < common.QualityId("Rare") {
+			continue
+		}
+		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId))
+	}
+
+	if len(bargains) > 0 {
+		fmt.Println("--- Pet auction bargains ---")
+		fmt.Println(strings.Join(common.SortUnique(bargains), "\n"))
+		fmt.Println()
+	}
 }
 
 // printBargains prints the bargains found in the auction house
 func printBargains(auctions map[int64][]common.Auction, realm, accessToken string) {
 	toBuy := findBargains(usefulGoods, auctions, accessToken)
-	printShoppingList(fmt.Sprintf("%s bargains (across %d items)", realm, len(auctions)), toBuy)
+	printShoppingList("Bargains", toBuy)
 	toBuy = findArbitrages(auctions, accessToken)
 	printShoppingList("Arbitrages", toBuy)
 }
 
 // doit downloads the available auctions and prints any bargains/arbitrages
 func doit(accessToken string, realmList string) {
-	c, ok := getCommodities(accessToken)
-	if !ok {
-		return
-	}
-	printBargains(c, "Commodity", accessToken)
+	battlePet.Init(accessToken)
 
 	for _, realm := range strings.Split(realmList, ",") {
-		a, ok := getAuctions(realm, accessToken)
+		auctions, ok := getAuctions(realm, accessToken)
 		if !ok {
-			return
+			continue
 		}
-		printBargains(a, realm, accessToken)
+		fmt.Printf("====== %s (%d unique items) ======\n\n", realm, len(auctions))
+		printBargains(auctions, realm, accessToken)
+		printPetBargains(auctions)
 	}
+	fmt.Println()
 }
 
 // usage prints a usage message and terminates the program with an error
