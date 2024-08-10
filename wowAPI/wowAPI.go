@@ -318,3 +318,32 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 
 	return item, true
 }
+
+// Pets returns a list of all battle pets in the game
+func Pets(accessToken string) ([]interface{}, bool) {
+	url := "https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US&access_token=" + accessToken
+
+	response, err := web.RequestJSON(url, map[string]string{})
+	if err != nil {
+		fmt.Println("Pets: no data returned:", err)
+		return nil, false
+	}
+
+	return response["pets"].([]interface{}), true
+}
+
+// CollectionsPets returns the battle pets the user owns
+func CollectionsPets(accessToken string) ([]interface{}, bool) {
+	// This is user-specific data, so it requires a different accessToken.
+	// TODO: Automatically request a new accessToken
+	// https://develop.battle.net/documentation/world-of-warcraft/profile-apis
+
+	url := "https://us.api.blizzard.com/profile/user/wow/collections/pets?namespace=profile-us&locale=en_US&access_token=" + accessToken
+	response, err := web.RequestJSON(url, map[string]string{})
+	if err != nil {
+		fmt.Println("CollectionsPets: no data returned:", err)
+		return nil, false
+	}
+
+	return response["pets"].([]interface{}), true
+}
