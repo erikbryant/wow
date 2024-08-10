@@ -11,7 +11,7 @@ import (
 
 var (
 	itemCache     = map[int64]item.Item{}
-	itemCacheFile = "itemCache.gob"
+	itemCacheFile = "./generated/itemCache.gob"
 	readDisabled  = false
 )
 
@@ -64,7 +64,7 @@ func Migrate() {
 		newItemCache[key] = newValue
 	}
 
-	file, err := os.Create("new." + itemCacheFile)
+	file, err := os.Create(itemCacheFile + ".migrated")
 	if err != nil {
 		fmt.Printf("error creating newItemCache file: %v", err)
 		panic(err)
