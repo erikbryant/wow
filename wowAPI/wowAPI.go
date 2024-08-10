@@ -280,20 +280,24 @@ func LookupItem(id int64, accessToken string) (common.Item, bool) {
 	item.Name = i["name"].(string)
 
 	item.Equippable = i["is_equippable"].(bool)
+	if !item.Equippable {
+		// Is this a special equippable?
+		previewItem := i["preview_item"].(map[string]interface{})
+		binding, ok := previewItem["binding"].(map[string]interface{})
+		if ok {
+			switch binding["type"].(string) {
+			case "ON_EQUIP":
+				item.Equippable = true
+			case "ON_USE":
+				item.Equippable = true
+			default:
+				fmt.Println("LookupItem: Item had unknown binding_type:", item.Id, binding["type"].(string))
+				item.Equippable = false
+			}
+		}
+	}
 
 	switch item.Id {
-	case 141284:
-		// Nor'danil Ampoule
-		item.Equippable = true
-	case 141286:
-		// Rite of the Val'kyr
-		item.Equippable = true
-	case 141292:
-		// Crystallizing Mana
-		item.Equippable = true
-	case 141293:
-		// Spellfire Oil
-		item.Equippable = true
 	case 194829:
 		// Fated Fortune Card (can't be sold until read)
 		item.SellPrice = 10000
