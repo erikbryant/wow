@@ -1,6 +1,13 @@
 package auction
 
-import "github.com/erikbryant/wow/item"
+import (
+	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/common"
+	"github.com/erikbryant/wow/item"
+	"github.com/erikbryant/wow/wowAPI"
+	"log"
+	"strings"
+)
 
 // Sample 'commodity auction' response. All have exactly these fields.
 // map[id:3.44371058e+08 item:map[id:192672] quantity:1 time_left:SHORT unit_price:16800]
@@ -16,6 +23,96 @@ type Auction struct {
 	Id       int64
 	ItemId   int64
 	Buyout   int64 // For commodity auctions this stores 'unit_price'
-	Pet      item.PetInfo
 	Quantity int64
+	Pet      item.PetInfo
+}
+
+func Id(raw interface{}) int64 {
+	return web.ToInt64(common.MSIValue(raw, []string{"id"}))
+}
+
+func ItemId(raw interface{}) int64 {
+	return web.ToInt64(common.MSIValue(raw, []string{"item", "id"}))
+}
+
+func Buyout(raw interface{}) int64 {
+	value := common.MSIValue(raw, []string{"buyout"})
+	if value == nil {
+		value = common.MSIValue(raw, []string{"unit_price"})
+	}
+	return web.ToInt64(value)
+}
+
+func Quantity(raw interface{}) int64 {
+	return web.ToInt64(common.MSIValue(raw, []string{"quantity"}))
+}
+
+func PetBreedId(raw interface{}) int64 {
+	return web.ToInt64(common.MSIValue(raw, []string{"item", "pet_breed_id"}))
+}
+
+func PetLevel(raw interface{}) int64 {
+	return web.ToInt64(common.MSIValue(raw, []string{"item", "pet_level"}))
+}
+
+func PetQualityId(raw interface{}) int64 {
+	return web.ToInt64(common.MSIValue(raw, []string{"item", "pet_quality_id"}))
+}
+
+func PetSpeciesId(raw interface{}) int64 {
+	return web.ToInt64(common.MSIValue(raw, []string{"item", "pet_species_id"}))
+}
+
+// JsonToStruct converts a single auction json string into a struct that is much easier to work with
+func JsonToStruct(auc interface{}) Auction {
+	var a Auction
+
+	a.Id = Id(auc)
+	a.ItemId = ItemId(auc)
+	a.Buyout = Buyout(auc)
+	a.Quantity = Quantity(auc)
+
+	// Is this a Pet Cage?
+	if a.ItemId == 82800 {
+		// A pet auction!
+		a.Pet.BreedId = PetBreedId(auc)
+		a.Pet.Level = PetLevel(auc)
+		a.Pet.QualityId = PetQualityId(auc)
+		a.Pet.SpeciesId = PetSpeciesId(auc)
+	}
+
+	return a
+}
+
+// UnpackAuctions converts the []interface{} format we get from the web into structs
+func UnpackAuctions(auctions []interface{}) map[int64][]Auction {
+	a := map[int64][]Auction{}
+
+	for _, auc := range auctions {
+		aucStruct := JsonToStruct(auc.(map[string]interface{}))
+		if wowAPI.SkipItem(aucStruct.ItemId) {
+			continue
+		}
+		a[aucStruct.ItemId] = append(a[aucStruct.ItemId], aucStruct)
+	}
+
+	return a
+}
+
+// GetAuctions returns the current auctions and their hash
+func GetAuctions(realm, accessToken string) (map[int64][]Auction, bool) {
+	var ok bool
+	var auctions []interface{}
+
+	if strings.ToLower(realm) == "commodities" {
+		auctions, ok = wowAPI.Commodities(accessToken)
+	} else {
+		auctions, ok = wowAPI.Auctions(realm, accessToken)
+	}
+	if !ok {
+		log.Println("ERROR: Unable to obtain auctions for", realm)
+		return nil, false
+	}
+
+	return UnpackAuctions(auctions), true
 }

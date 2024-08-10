@@ -61,3 +61,19 @@ func SortUnique(values []string) []string {
 
 	return unique
 }
+
+// MSIValue returns the interface{} that keys indexes into in a map[string]interface{} struct
+func MSIValue(raw interface{}, keys []string) interface{} {
+	var ok bool
+	var value interface{}
+	value = raw
+
+	for _, key := range keys {
+		value, ok = value.(map[string]interface{})[key]
+		if !ok {
+			return nil
+		}
+	}
+
+	return value
+}

@@ -5,7 +5,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/auction"
 	"github.com/erikbryant/wow/battlePet"
 	"github.com/erikbryant/wow/cache"
@@ -41,61 +40,6 @@ var (
 		//210175: common.Coins(300, 0, 0), // Formula: Enchant Weapon - Dreaming Devotion
 	}
 )
-
-// jsonToStruct converts a single auction json string into a struct that is much easier to work with
-func jsonToStruct(auc map[string]interface{}) auction.Auction {
-	var a auction.Auction
-
-	a.Id = web.ToInt64(auc["id"])
-
-	_, ok := auc["item"]
-	if !ok {
-		fmt.Println("Auction had no item: ", auc)
-		return auction.Auction{}
-	}
-	item := auc["item"].(map[string]interface{})
-	a.ItemId = web.ToInt64(item["id"])
-
-	// Is this a Pet Cage?
-	if a.ItemId == 82800 {
-		// A pet a!
-		a.Pet.BreedId = web.ToInt64(item["pet_breed_id"])
-		a.Pet.Level = web.ToInt64(item["pet_level"])
-		a.Pet.QualityId = web.ToInt64(item["pet_quality_id"])
-		a.Pet.SpeciesId = web.ToInt64(item["pet_species_id"])
-	}
-
-	if _, ok := auc["buyout"]; ok {
-		// Regular a
-		a.Buyout = web.ToInt64(auc["buyout"])
-	} else {
-		if _, ok := auc["unit_price"]; ok {
-			// Commodity a
-			a.Buyout = web.ToInt64(auc["unit_price"])
-		} else {
-			fmt.Println("Unknown a type:", auc)
-		}
-	}
-
-	a.Quantity = web.ToInt64(auc["quantity"])
-
-	return a
-}
-
-// unpackAuction converts the []interface{} format we get from the web into structs
-func unpackAuctions(auctions []interface{}) map[int64][]auction.Auction {
-	a := map[int64][]auction.Auction{}
-
-	for _, auc := range auctions {
-		aucStruct := jsonToStruct(auc.(map[string]interface{}))
-		if wowAPI.SkipItem(aucStruct.ItemId) {
-			continue
-		}
-		a[aucStruct.ItemId] = append(a[aucStruct.ItemId], aucStruct)
-	}
-
-	return a
-}
 
 // findBargains returns auctions for which the goods are below our desired prices
 func findBargains(goods map[int64]int64, auctions map[int64][]auction.Auction, accessToken string) []Bargain {
@@ -186,24 +130,6 @@ func printShoppingList(label string, bargains []Bargain) {
 	}
 }
 
-// getAuctions returns the current auctions and their hash
-func getAuctions(realm, accessToken string) (map[int64][]auction.Auction, bool) {
-	var ok bool
-	var auctions []interface{}
-
-	if strings.ToLower(realm) == "commodities" {
-		auctions, ok = wowAPI.Commodities(accessToken)
-	} else {
-		auctions, ok = wowAPI.Auctions(realm, accessToken)
-	}
-	if !ok {
-		log.Println("ERROR: Unable to obtain auctions for", realm)
-		return nil, false
-	}
-
-	return unpackAuctions(auctions), true
-}
-
 // printPetBargains prints a list of pets the user should buy
 func printPetBargains(auctions map[int64][]auction.Auction) {
 	bargains := []string{}
@@ -241,7 +167,7 @@ func doit(accessToken string, realmList string) {
 	battlePet.Init(accessToken)
 
 	for _, realm := range strings.Split(realmList, ",") {
-		auctions, ok := getAuctions(realm, accessToken)
+		auctions, ok := auction.GetAuctions(realm, accessToken)
 		if !ok {
 			continue
 		}
@@ -254,11 +180,19 @@ func doit(accessToken string, realmList string) {
 
 // usage prints a usage message and terminates the program with an error
 func usage() {
-	log.Fatal("Usage: wow -passPhrase <phrase>")
+	log.Fatal(`Usage:
+  wow -passPhrase <phrase> [-realms <realms>] [-readThrough]
+  wow -migrate
+`)
 }
 
 func main() {
 	flag.Parse()
+
+	if *migrate {
+		cache.Migrate()
+		return
+	}
 
 	if *passPhrase == "" {
 		fmt.Println("ERROR: You must specify -passPhrase to unlock the client Id/secret")
@@ -268,11 +202,6 @@ func main() {
 	accessToken, ok := wowAPI.AccessToken(*passPhrase)
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain access token.")
-	}
-
-	if *migrate {
-		cache.Migrate()
-		return
 	}
 
 	if *readThrough {
