@@ -11,16 +11,8 @@ import (
 	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
-	"sort"
 	"strings"
 )
-
-type Bargain struct {
-	Quantity    int64
-	UnitSavings int64
-	Name        string
-	ItemLevel   int64
-}
 
 var (
 	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
@@ -42,12 +34,16 @@ var (
 )
 
 // findBargains returns auctions for which the goods are below our desired prices
-func findBargains(goods map[int64]int64, auctions map[int64][]auction.Auction, accessToken string) []Bargain {
-	bargains := []Bargain{}
+func findBargains(goods map[int64]int64, auctions map[int64][]auction.Auction, accessToken string) []string {
+	bargains := []string{}
 
 	for itemId, maxPrice := range goods {
 		item, ok := wowAPI.LookupItem(itemId, accessToken)
 		if !ok {
+			continue
+		}
+		if item.Equippable {
+			// Don't know how to price these
 			continue
 		}
 		for _, auc := range auctions[itemId] {
@@ -55,27 +51,17 @@ func findBargains(goods map[int64]int64, auctions map[int64][]auction.Auction, a
 				continue
 			}
 			if auc.Buyout < maxPrice {
-				bargain := Bargain{
-					Quantity:    auc.Quantity,
-					UnitSavings: maxPrice - auc.Buyout,
-					Name:        item.Name,
-					ItemLevel:   item.ItemLevel,
-				}
-				bargains = append(bargains, bargain)
+				bargains = append(bargains, item.Name)
 			}
 		}
 	}
-
-	sort.Slice(bargains, func(i, j int) bool {
-		return bargains[i].Name < bargains[j].Name
-	})
 
 	return bargains
 }
 
 // findArbitrages returns auctions selling for lower than vendor prices
-func findArbitrages(auctions map[int64][]auction.Auction, accessToken string) []Bargain {
-	bargains := []Bargain{}
+func findArbitrages(auctions map[int64][]auction.Auction, accessToken string) []string {
+	bargains := []string{}
 
 	for itemId, itemAuctions := range auctions {
 		item, ok := wowAPI.LookupItem(itemId, accessToken)
@@ -91,38 +77,16 @@ func findArbitrages(auctions map[int64][]auction.Auction, accessToken string) []
 				continue
 			}
 			if auc.Buyout < item.SellPrice {
-				bargain := Bargain{
-					Quantity:    auc.Quantity,
-					UnitSavings: item.SellPrice - auc.Buyout,
-					Name:        item.Name,
-					ItemLevel:   item.ItemLevel,
-				}
-				bargains = append(bargains, bargain)
+				bargains = append(bargains, item.Name)
 			}
 		}
 	}
-
-	sort.Slice(bargains, func(i, j int) bool {
-		return bargains[i].Name < bargains[j].Name
-	})
 
 	return bargains
 }
 
 // printShoppingList prints a list of auctions the user should buy
-func printShoppingList(label string, bargains []Bargain) {
-	names := []string{}
-
-	for _, bargain := range bargains {
-		if bargain.ItemLevel > 0 {
-			// I don't know how to price these yet
-			//names = append(names, fmt.Sprintf("%-50s iLvl %3d", bargain.Name, bargain.ItemLevel))
-			continue
-		} else {
-			names = append(names, bargain.Name)
-		}
-	}
-
+func printShoppingList(label string, names []string) {
 	if len(names) > 0 {
 		fmt.Printf("--- %s ---\n", label)
 		fmt.Println(strings.Join(common.SortUnique(names), "\n"))
