@@ -2,6 +2,8 @@ package common
 
 import (
 	"fmt"
+	"sort"
+	"strings"
 	"time"
 )
 
@@ -26,9 +28,11 @@ type NewItem struct {
 	Updated    time.Time // Datetime when created or updated
 }
 
+// PetInfo contains the properties specific to a pet
 type PetInfo struct {
 	BreedId   int64
 	Level     int64
+	Name      string
 	QualityId int64
 	SpeciesId int64
 }
@@ -72,4 +76,45 @@ func (item Item) Format() string {
 		equippable = "T"
 	}
 	return fmt.Sprintf("%7d  %s %11s   %3d   %s   %s", item.Id, equippable, Gold(item.SellPrice), item.ItemLevel, item.Updated.Format("2006-01-02"), item.Name)
+}
+
+// QualityId return the integer id of the given quality name string
+func QualityId(quality string) int64 {
+	switch strings.ToLower(quality) {
+	case "poor":
+		return 0
+	case "common":
+		return 1
+	case "uncommon":
+		return 2
+	case "rare":
+		return 3
+	case "epic":
+		return 4
+	case "legendary":
+		return 5
+	case "artifact":
+		return 6
+	}
+
+	fmt.Println("ERROR: Unknown quality", quality)
+	return -1
+}
+
+// SortUnique returns a sorted and unique slice
+func SortUnique(values []string) []string {
+	alreadySeen := map[string]bool{}
+	unique := []string{}
+
+	for _, val := range values {
+		if alreadySeen[val] {
+			continue
+		}
+		alreadySeen[val] = true
+		unique = append(unique, val)
+	}
+
+	sort.Strings(unique)
+
+	return unique
 }
