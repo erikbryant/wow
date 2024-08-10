@@ -11,6 +11,7 @@ import (
 	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -150,6 +151,20 @@ func usage() {
 `)
 }
 
+func writeFile(file, contents string) {
+	f, err := os.Create(file)
+	if err != nil {
+		log.Fatal("Failed to create file:", file, err)
+	}
+	_, err = f.WriteString(contents)
+	f.Close()
+}
+
+func generateLua() {
+	writeFile("./generated/PriceCache.lua", cache.LuaVendorPrice())
+	writeFile("./generated/PetCache.lua", battlePet.LuaPetId())
+}
+
 func main() {
 	flag.Parse()
 
@@ -174,4 +189,6 @@ func main() {
 	}
 
 	doit(accessToken, *realms)
+
+	generateLua()
 }

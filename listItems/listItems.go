@@ -12,25 +12,15 @@ var (
 	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
 	readThrough = flag.Bool("readThrough", false, "Read live values")
 	itemId      = flag.Int64("id", 0, "Item ID to look up")
-	lua         = flag.Bool("lua", false, "Generate lua table of all items")
 )
 
 // usage prints a usage message and terminates the program with an error
 func usage() {
-	log.Fatal("Usage: wow -passPhrase <phrase>")
+	log.Fatal("Usage: listItems -passPhrase <phrase>")
 }
 
 func main() {
 	flag.Parse()
-
-	if *lua {
-		cache.PrintLuaVendorPrice()
-		fmt.Println(`
-ItemCache = {
-  VendorSellPrice = VendorSellPrice,
-}`)
-		return
-	}
 
 	if *itemId == 0 {
 		cache.Print()

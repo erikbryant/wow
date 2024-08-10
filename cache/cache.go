@@ -118,21 +118,30 @@ func EnableRead() {
 	readDisabled = false
 }
 
-// PrintLuaVendorPrice writes the cached vendor sell prices to stdout as a lua table and accessor
-func PrintLuaVendorPrice() {
-	fmt.Println("local VendorSellPriceCache = {")
+// LuaVendorPrice writes the cached vendor sell prices to stdout as a lua table and accessor
+func LuaVendorPrice() string {
+	lua := ""
+
+	lua += fmt.Sprintf("local VendorSellPriceCache = {\n")
 	for _, id := range IDs() {
 		// The auction house does not deal in copper; skip any items <= a full silver
 		if itemCache[id].SellPrice > 100 && !itemCache[id].Equippable {
-			fmt.Printf("  [\"%d\"] = %d,\n", id, itemCache[id].SellPrice)
+			lua += fmt.Sprintf("  [\"%d\"] = %d,\n", id, itemCache[id].SellPrice)
 		}
 	}
-	fmt.Println("}")
+	lua += fmt.Sprintf("}\n")
 
-	luaFunc := `
+	lua += fmt.Sprintf(`
 local function VendorSellPrice(itemID)
     return VendorSellPriceCache[tostring(itemID)] or 0
-end`
+end
+`)
 
-	fmt.Println(luaFunc)
+	lua += fmt.Sprintf(`
+PriceCache = {
+  VendorSellPrice = VendorSellPrice,
+}
+`)
+
+	return lua
 }

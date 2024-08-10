@@ -1,11 +1,14 @@
 package battlePet
 
 import (
+	"fmt"
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
+	"sort"
+	"strings"
 )
 
 var (
@@ -93,4 +96,35 @@ func Own(petId int64) bool {
 func Init(accessToken string) {
 	allNames = PetNames(accessToken)
 	owned = Owned(accessToken)
+}
+
+func LuaPetId() string {
+	lua := ""
+
+	rows := []string{}
+	lua += fmt.Sprintf("local PetIdCache = {\n")
+	for petId, name := range allNames {
+		if owned[petId] != nil {
+			continue
+		}
+		row := fmt.Sprintf("  [\"%s\"] = %d,", name, petId)
+		rows = append(rows, row)
+	}
+	sort.Strings(rows)
+	lua += strings.Join(rows, "\n")
+
+	lua += fmt.Sprintf("}\n")
+	lua += fmt.Sprintf(`
+local function PetId(name)
+    return PetIdCache[name] or 0
+end
+`)
+
+	lua += fmt.Sprintf(`
+PetCache = {
+  PetId = PetId,
+}
+`)
+
+	return lua
 }
