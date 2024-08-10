@@ -3,14 +3,14 @@ package cache
 import (
 	"encoding/gob"
 	"fmt"
-	"github.com/erikbryant/wow/common"
+	"github.com/erikbryant/wow/item"
 	"os"
 	"sort"
 	"time"
 )
 
 var (
-	itemCache     = map[int64]common.Item{}
+	itemCache     = map[int64]item.Item{}
 	itemCacheFile = "itemCache.gob"
 	readDisabled  = false
 )
@@ -50,10 +50,10 @@ func save() {
 
 // Migrate writes the in-memory cache file to disk in the NewItem format
 func Migrate() {
-	newItemCache := map[int64]common.NewItem{}
+	newItemCache := map[int64]item.NewItem{}
 
 	for key, value := range itemCache {
-		newValue := common.NewItem{
+		newValue := item.NewItem{
 			Id:         value.Id,
 			Name:       value.Name,
 			Equippable: value.Equippable,
@@ -75,17 +75,17 @@ func Migrate() {
 }
 
 // Read returns the in-memory copy (if exists)
-func Read(id int64) (common.Item, bool) {
+func Read(id int64) (item.Item, bool) {
 	if readDisabled {
-		return common.Item{}, false
+		return item.Item{}, false
 	}
-	item, ok := itemCache[id]
-	return item, ok
+	i, ok := itemCache[id]
+	return i, ok
 }
 
 // Write writes an entry to the in-memory cache
-func Write(id int64, item common.Item) {
-	itemCache[id] = item
+func Write(id int64, i item.Item) {
+	itemCache[id] = i
 	save()
 }
 
@@ -105,8 +105,8 @@ func IDs() []int64 {
 // Print writes a text version of the in-memory cache to stdout
 func Print() {
 	for _, id := range IDs() {
-		item := itemCache[id]
-		fmt.Println(item.Format())
+		i := itemCache[id]
+		fmt.Println(i.Format())
 	}
 }
 

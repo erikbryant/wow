@@ -3,6 +3,7 @@ package battlePet
 import (
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/common"
+	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
 )
@@ -10,12 +11,12 @@ import (
 var (
 	PetCageItemId = int64(82800)
 	allNames      = map[int64]string{}
-	owned         = map[int64][]common.PetInfo{}
+	owned         = map[int64][]item.PetInfo{}
 )
 
 // Owned returns the pets I own
-func Owned(accessToken string) map[int64][]common.PetInfo {
-	myPets := map[int64][]common.PetInfo{}
+func Owned(accessToken string) map[int64][]item.PetInfo {
+	myPets := map[int64][]item.PetInfo{}
 
 	pets, ok := wowAPI.CollectionsPets(accessToken)
 	if !ok {
@@ -25,7 +26,7 @@ func Owned(accessToken string) map[int64][]common.PetInfo {
 	for _, petRaw := range pets {
 		pet := petRaw.(map[string]interface{})
 
-		var p common.PetInfo
+		var p item.PetInfo
 
 		stats, ok := pet["stats"].(map[string]interface{})
 		if !ok {
@@ -49,7 +50,7 @@ func Owned(accessToken string) map[int64][]common.PetInfo {
 
 		_, ok = myPets[p.SpeciesId]
 		if !ok {
-			myPets[p.SpeciesId] = []common.PetInfo{}
+			myPets[p.SpeciesId] = []item.PetInfo{}
 		}
 		myPets[p.SpeciesId] = append(myPets[p.SpeciesId], p)
 	}

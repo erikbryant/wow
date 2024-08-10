@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/auction"
 	"github.com/erikbryant/wow/battlePet"
 	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/common"
@@ -42,62 +43,62 @@ var (
 )
 
 // jsonToStruct converts a single auction json string into a struct that is much easier to work with
-func jsonToStruct(auc map[string]interface{}) common.Auction {
-	var auction common.Auction
+func jsonToStruct(auc map[string]interface{}) auction.Auction {
+	var a auction.Auction
 
-	auction.Id = web.ToInt64(auc["id"])
+	a.Id = web.ToInt64(auc["id"])
 
 	_, ok := auc["item"]
 	if !ok {
 		fmt.Println("Auction had no item: ", auc)
-		return common.Auction{}
+		return auction.Auction{}
 	}
 	item := auc["item"].(map[string]interface{})
-	auction.ItemId = web.ToInt64(item["id"])
+	a.ItemId = web.ToInt64(item["id"])
 
 	// Is this a Pet Cage?
-	if auction.ItemId == 82800 {
-		// A pet auction!
-		auction.Pet.BreedId = web.ToInt64(item["pet_breed_id"])
-		auction.Pet.Level = web.ToInt64(item["pet_level"])
-		auction.Pet.QualityId = web.ToInt64(item["pet_quality_id"])
-		auction.Pet.SpeciesId = web.ToInt64(item["pet_species_id"])
+	if a.ItemId == 82800 {
+		// A pet a!
+		a.Pet.BreedId = web.ToInt64(item["pet_breed_id"])
+		a.Pet.Level = web.ToInt64(item["pet_level"])
+		a.Pet.QualityId = web.ToInt64(item["pet_quality_id"])
+		a.Pet.SpeciesId = web.ToInt64(item["pet_species_id"])
 	}
 
 	if _, ok := auc["buyout"]; ok {
-		// Regular auction
-		auction.Buyout = web.ToInt64(auc["buyout"])
+		// Regular a
+		a.Buyout = web.ToInt64(auc["buyout"])
 	} else {
 		if _, ok := auc["unit_price"]; ok {
-			// Commodity auction
-			auction.Buyout = web.ToInt64(auc["unit_price"])
+			// Commodity a
+			a.Buyout = web.ToInt64(auc["unit_price"])
 		} else {
-			fmt.Println("Unknown auction type:", auc)
+			fmt.Println("Unknown a type:", auc)
 		}
 	}
 
-	auction.Quantity = web.ToInt64(auc["quantity"])
+	a.Quantity = web.ToInt64(auc["quantity"])
 
-	return auction
+	return a
 }
 
 // unpackAuction converts the []interface{} format we get from the web into structs
-func unpackAuctions(a1 []interface{}) map[int64][]common.Auction {
-	auctions := map[int64][]common.Auction{}
+func unpackAuctions(auctions []interface{}) map[int64][]auction.Auction {
+	a := map[int64][]auction.Auction{}
 
-	for _, a := range a1 {
-		auction := jsonToStruct(a.(map[string]interface{}))
-		if wowAPI.SkipItem(auction.ItemId) {
+	for _, auc := range auctions {
+		aucStruct := jsonToStruct(auc.(map[string]interface{}))
+		if wowAPI.SkipItem(aucStruct.ItemId) {
 			continue
 		}
-		auctions[auction.ItemId] = append(auctions[auction.ItemId], auction)
+		a[aucStruct.ItemId] = append(a[aucStruct.ItemId], aucStruct)
 	}
 
-	return auctions
+	return a
 }
 
 // findBargains returns auctions for which the goods are below our desired prices
-func findBargains(goods map[int64]int64, auctions map[int64][]common.Auction, accessToken string) []Bargain {
+func findBargains(goods map[int64]int64, auctions map[int64][]auction.Auction, accessToken string) []Bargain {
 	bargains := []Bargain{}
 
 	for itemId, maxPrice := range goods {
@@ -105,14 +106,14 @@ func findBargains(goods map[int64]int64, auctions map[int64][]common.Auction, ac
 		if !ok {
 			continue
 		}
-		for _, auction := range auctions[itemId] {
-			if auction.Buyout <= 0 {
+		for _, auc := range auctions[itemId] {
+			if auc.Buyout <= 0 {
 				continue
 			}
-			if auction.Buyout < maxPrice {
+			if auc.Buyout < maxPrice {
 				bargain := Bargain{
-					Quantity:    auction.Quantity,
-					UnitSavings: maxPrice - auction.Buyout,
+					Quantity:    auc.Quantity,
+					UnitSavings: maxPrice - auc.Buyout,
 					Name:        item.Name,
 					ItemLevel:   item.ItemLevel,
 				}
@@ -129,10 +130,10 @@ func findBargains(goods map[int64]int64, auctions map[int64][]common.Auction, ac
 }
 
 // findArbitrages returns auctions selling for lower than vendor prices
-func findArbitrages(auctions map[int64][]common.Auction, accessToken string) []Bargain {
+func findArbitrages(auctions map[int64][]auction.Auction, accessToken string) []Bargain {
 	bargains := []Bargain{}
 
-	for itemId, aucs := range auctions {
+	for itemId, itemAuctions := range auctions {
 		item, ok := wowAPI.LookupItem(itemId, accessToken)
 		if !ok {
 			continue
@@ -141,14 +142,14 @@ func findArbitrages(auctions map[int64][]common.Auction, accessToken string) []B
 			// Don't know how to price these
 			continue
 		}
-		for _, auction := range aucs {
-			if auction.Buyout <= 0 {
+		for _, auc := range itemAuctions {
+			if auc.Buyout <= 0 {
 				continue
 			}
-			if auction.Buyout < item.SellPrice {
+			if auc.Buyout < item.SellPrice {
 				bargain := Bargain{
-					Quantity:    auction.Quantity,
-					UnitSavings: item.SellPrice - auction.Buyout,
+					Quantity:    auc.Quantity,
+					UnitSavings: item.SellPrice - auc.Buyout,
 					Name:        item.Name,
 					ItemLevel:   item.ItemLevel,
 				}
@@ -186,7 +187,7 @@ func printShoppingList(label string, bargains []Bargain) {
 }
 
 // getAuctions returns the current auctions and their hash
-func getAuctions(realm, accessToken string) (map[int64][]common.Auction, bool) {
+func getAuctions(realm, accessToken string) (map[int64][]auction.Auction, bool) {
 	var ok bool
 	var auctions []interface{}
 
@@ -204,7 +205,7 @@ func getAuctions(realm, accessToken string) (map[int64][]common.Auction, bool) {
 }
 
 // printPetBargains prints a list of pets the user should buy
-func printPetBargains(auctions map[int64][]common.Auction) {
+func printPetBargains(auctions map[int64][]auction.Auction) {
 	bargains := []string{}
 
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
@@ -228,7 +229,7 @@ func printPetBargains(auctions map[int64][]common.Auction) {
 }
 
 // printBargains prints the bargains found in the auction house
-func printBargains(auctions map[int64][]common.Auction, realm, accessToken string) {
+func printBargains(auctions map[int64][]auction.Auction, accessToken string) {
 	toBuy := findBargains(usefulGoods, auctions, accessToken)
 	printShoppingList("Bargains", toBuy)
 	toBuy = findArbitrages(auctions, accessToken)
@@ -245,7 +246,7 @@ func doit(accessToken string, realmList string) {
 			continue
 		}
 		fmt.Printf("====== %s (%d unique items) ======\n\n", realm, len(auctions))
-		printBargains(auctions, realm, accessToken)
+		printBargains(auctions, accessToken)
 		printPetBargains(auctions)
 	}
 	fmt.Println()

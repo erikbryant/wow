@@ -7,7 +7,7 @@ import (
 	"github.com/erikbryant/aes"
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/cache"
-	"github.com/erikbryant/wow/common"
+	"github.com/erikbryant/wow/item"
 	"io"
 	"log"
 	"net/http"
@@ -249,81 +249,81 @@ func wowItem(id, accessToken string) (map[string]interface{}, bool) {
 	return response, true
 }
 
-func age(item common.Item) time.Duration {
-	return time.Now().Sub(item.Updated)
+func age(i item.Item) time.Duration {
+	return time.Now().Sub(i.Updated)
 }
 
 // LookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
-func LookupItem(id int64, accessToken string) (common.Item, bool) {
+func LookupItem(id int64, accessToken string) (item.Item, bool) {
 	// Use the cached value if we have it
-	item, ok := cache.Read(id)
+	i, ok := cache.Read(id)
 	if ok {
-		if age(item) <= 7*24*time.Hour {
+		if age(i) <= 7*24*time.Hour {
 			// Value in cache is fresh; use that
-			return item, true
+			return i, true
 		}
-		fmt.Println("Refreshing stale item:", item)
+		fmt.Println("Refreshing stale i:", i)
 	}
 
-	i, ok := wowItem(web.ToString(id), accessToken)
+	result, ok := wowItem(web.ToString(id), accessToken)
 	if !ok {
-		return item, false
+		return i, false
 	}
 
-	item.Id = web.ToInt64(i["id"])
+	i.Id = web.ToInt64(result["id"])
 
-	_, ok = i["name"]
+	_, ok = result["name"]
 	if !ok {
-		fmt.Println("ItemId had no name:", id, i)
-		return item, false
+		fmt.Println("ItemId had no name:", id, result)
+		return i, false
 	}
-	item.Name = i["name"].(string)
+	i.Name = result["name"].(string)
 
-	item.Equippable = i["is_equippable"].(bool)
-	if !item.Equippable {
+	i.Equippable = result["is_equippable"].(bool)
+	if !i.Equippable {
 		// Is this a special equippable?
-		previewItem := i["preview_item"].(map[string]interface{})
+		previewItem := result["preview_item"].(map[string]interface{})
 		binding, ok := previewItem["binding"].(map[string]interface{})
 		if ok {
 			switch binding["type"].(string) {
 			case "ON_EQUIP":
-				item.Equippable = true
+				i.Equippable = true
 			case "ON_USE":
-				item.Equippable = true
+				i.Equippable = true
 			default:
-				fmt.Println("LookupItem: Item had unknown binding_type:", item.Id, binding["type"].(string))
-				item.Equippable = false
+				fmt.Println("LookupItem: Item had unknown binding_type:", i.Id, binding["type"].(string))
+				i.Equippable = false
 			}
 		}
 	}
 
-	switch item.Id {
+	switch i.Id {
 	case 194829:
 		// Fated Fortune Card (can't be sold until read)
-		item.SellPrice = 10000
+		i.SellPrice = 10000
 	default:
-		_, ok = i["sell_price"]
-		item.SellPrice = web.ToInt64(i["sell_price"])
+		_, ok = result["sell_price"]
+		i.SellPrice = web.ToInt64(result["sell_price"])
 	}
 
-	_, ok = i["preview_item"]
+	_, ok = result["preview_item"]
 	if ok {
-		previewItem := i["preview_item"].(map[string]interface{})
+		previewItem := result["preview_item"].(map[string]interface{})
 		_, ok = previewItem["level"]
 		if ok {
 			level := previewItem["level"].(map[string]interface{})
 			_, ok = level["value"]
 			if ok {
-				item.ItemLevel = web.ToInt64(level["value"])
+				i.ItemLevel = web.ToInt64(level["value"])
 			}
 		}
 	}
 
-	item.Updated = time.Now()
+	i.Updated = time.Now()
 
-	cache.Write(id, item)
+	cache.Write(id, i)
 
-	return item, true
+	return i, true
 }
 
 // Pets returns a list of all battle pets in the game

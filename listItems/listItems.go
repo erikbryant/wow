@@ -52,9 +52,9 @@ ItemCache = {
 		cache.DisableRead()
 	}
 
-	item, ok := wowAPI.LookupItem(*itemId, accessToken)
+	i, ok := wowAPI.LookupItem(*itemId, accessToken)
 	if !ok {
 		return
 	}
-	fmt.Println(item.Format())
+	fmt.Println(i.Format())
 }
