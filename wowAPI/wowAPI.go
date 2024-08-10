@@ -36,7 +36,9 @@ var (
 		62370:  true,
 		62770:  true,
 		123865: true,
+		123868: true,
 		123869: true,
+		147455: true,
 		158078: true,
 		159217: true,
 		178149: true,
@@ -65,6 +67,7 @@ func SkipItem(item int64) bool {
 func realmToSlug(realm string) string {
 	slug := strings.ToLower(realm)
 	slug = strings.ReplaceAll(slug, "-", "")
+	slug = strings.ReplaceAll(slug, "'", "")
 	slug = strings.ReplaceAll(slug, " ", "-")
 	return slug
 }
