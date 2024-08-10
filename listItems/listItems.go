@@ -9,9 +9,10 @@ import (
 )
 
 var (
-	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	itemId     = flag.Int64("id", 0, "Item ID to look up")
-	lua        = flag.Bool("lua", false, "Generate lua table of all items")
+	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
+	readThrough = flag.Bool("readThrough", false, "Read live values")
+	itemId      = flag.Int64("id", 0, "Item ID to look up")
+	lua         = flag.Bool("lua", false, "Generate lua table of all items")
 )
 
 // usage prints a usage message and terminates the program with an error
@@ -44,6 +45,11 @@ ItemCache = {
 	accessToken, ok := wowAPI.AccessToken(*passPhrase)
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain access token.")
+	}
+
+	if *readThrough {
+		// Get the latest values
+		cache.DisableRead()
 	}
 
 	item, ok := wowAPI.LookupItem(*itemId, accessToken)
