@@ -19,7 +19,6 @@ var (
 	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
 	realms      = flag.String("realms", "Commodities,Sisters of Elune,IceCrown,Drak'thul", "WoW realms")
 	readThrough = flag.Bool("readThrough", false, "Read live values")
-	migrate     = flag.Bool("migrate", false, "Migrate to new item cache data format")
 	usefulGoods = map[int64]int64{
 		// Generally useful items
 		//158212: common.Coins(30, 0, 0), // Crow's Nest Scope
@@ -143,14 +142,7 @@ func doit(accessToken string, realmList string) {
 	fmt.Println()
 }
 
-// usage prints a usage message and terminates the program with an error
-func usage() {
-	log.Fatal(`Usage:
-  wow -passPhrase <phrase> [-realms <realms>] [-readThrough]
-  wow -migrate
-`)
-}
-
+// writeFile writes contents to file
 func writeFile(file, contents string) {
 	f, err := os.Create(file)
 	if err != nil {
@@ -160,18 +152,21 @@ func writeFile(file, contents string) {
 	f.Close()
 }
 
+// generateLua writes the WoW addon lua files
 func generateLua() {
 	writeFile("./generated/PriceCache.lua", cache.LuaVendorPrice())
 	writeFile("./generated/PetCache.lua", battlePet.LuaPetId())
 }
 
+// usage prints a usage message and terminates the program with an error
+func usage() {
+	log.Fatal(`Usage:
+  wow -passPhrase <phrase> [-realms <realms>] [-readThrough]
+`)
+}
+
 func main() {
 	flag.Parse()
-
-	if *migrate {
-		cache.Migrate()
-		return
-	}
 
 	if *passPhrase == "" {
 		fmt.Println("ERROR: You must specify -passPhrase to unlock the client Id/secret")

@@ -49,30 +49,6 @@ func save() {
 	}
 }
 
-// Migrate writes the in-memory cache file to disk in the NewItem format
-func Migrate() {
-	newItemCache := map[int64]item.NewItem{}
-
-	//for key, value := range itemCache {
-	//	newValue := item.NewItem{
-	//		id:         value.Id,
-	//		updated:    time.Now(),
-	//	}
-	//	newItemCache[key] = newValue
-	//}
-
-	file, err := os.Create(itemCacheFile + ".migrated")
-	if err != nil {
-		log.Fatalf("error creating newItemCache file: %v", err)
-	}
-	defer file.Close()
-	encoder := gob.NewEncoder(file)
-	err = encoder.Encode(newItemCache)
-	if err != nil {
-		log.Fatalf("error encoding itemCache: %v", err)
-	}
-}
-
 // Read returns the in-memory copy (if exists)
 func Read(id int64) (item.Item, bool) {
 	if readDisabled {

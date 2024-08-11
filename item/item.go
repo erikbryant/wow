@@ -19,12 +19,9 @@ type Item struct {
 
 type NewItem struct {
 	// WARNING: Changing this struct invalidates the cache
-	Id         int64
-	Name       string
-	Equippable bool
-	SellPrice  int64
-	ItemLevel  int64
-	Updated    time.Time // Datetime when created or updated
+	id      int64
+	item    map[string]interface{}
+	updated time.Time // Datetime when created or updated
 }
 
 // PetInfo contains the properties specific to a battle pet
