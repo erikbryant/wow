@@ -4,9 +4,9 @@ import (
 	"encoding/gob"
 	"fmt"
 	"github.com/erikbryant/wow/item"
+	"log"
 	"os"
 	"sort"
-	"time"
 )
 
 var (
@@ -31,8 +31,7 @@ func load() {
 	decoder := gob.NewDecoder(file)
 	err = decoder.Decode(&itemCache)
 	if err != nil {
-		fmt.Printf("error reading itemCache: %v", err)
-		panic(err)
+		log.Fatalf("error reading itemCache: %v", err)
 	}
 }
 
@@ -40,38 +39,38 @@ func load() {
 func save() {
 	file, err := os.Create(itemCacheFile)
 	if err != nil {
-		fmt.Printf("error creating itemCache file: %v", err)
-		panic(err)
+		log.Fatalf("error creating itemCache file: %v", err)
 	}
 	defer file.Close()
 	encoder := gob.NewEncoder(file)
-	encoder.Encode(itemCache)
+	err = encoder.Encode(itemCache)
+	if err != nil {
+		log.Fatalf("error encoding itemCache: %v", err)
+	}
 }
 
 // Migrate writes the in-memory cache file to disk in the NewItem format
 func Migrate() {
 	newItemCache := map[int64]item.NewItem{}
 
-	for key, value := range itemCache {
-		newValue := item.NewItem{
-			Id:         value.Id,
-			Name:       value.Name,
-			Equippable: value.Equippable,
-			SellPrice:  value.SellPrice,
-			ItemLevel:  value.ItemLevel,
-			Updated:    time.Now(),
-		}
-		newItemCache[key] = newValue
-	}
+	//for key, value := range itemCache {
+	//	newValue := item.NewItem{
+	//		id:         value.Id,
+	//		updated:    time.Now(),
+	//	}
+	//	newItemCache[key] = newValue
+	//}
 
 	file, err := os.Create(itemCacheFile + ".migrated")
 	if err != nil {
-		fmt.Printf("error creating newItemCache file: %v", err)
-		panic(err)
+		log.Fatalf("error creating newItemCache file: %v", err)
 	}
 	defer file.Close()
 	encoder := gob.NewEncoder(file)
-	encoder.Encode(newItemCache)
+	err = encoder.Encode(newItemCache)
+	if err != nil {
+		log.Fatalf("error encoding itemCache: %v", err)
+	}
 }
 
 // Read returns the in-memory copy (if exists)
