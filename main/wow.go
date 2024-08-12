@@ -21,9 +21,7 @@ var (
 	readThrough = flag.Bool("readThrough", false, "Read live values")
 	usefulGoods = map[int64]int64{
 		// Generally useful items
-		//158212: common.Coins(30, 0, 0), // Crow's Nest Scope
-		//59596:  common.Coins(20, 0, 0), // Safety Catch Removal Kit
-		//194017: common.Coins(50, 0, 0), // Wildercloth Bag
+		92741: common.Coins(5000, 0, 0), // Flawless Battle-Stone
 
 		// Summoners (versus pet cages) for battle pets I do not have yet
 		152878: common.Coins(100, 0, 0), // Enchanted Tiki Mask
@@ -42,7 +40,7 @@ func findBargains(goods map[int64]int64, auctions map[int64][]auction.Auction, a
 		if !ok {
 			continue
 		}
-		if item.Equippable {
+		if item.Equippable() {
 			// Don't know how to price these
 			continue
 		}
@@ -51,7 +49,7 @@ func findBargains(goods map[int64]int64, auctions map[int64][]auction.Auction, a
 				continue
 			}
 			if auc.Buyout < maxPrice {
-				bargains = append(bargains, item.Name)
+				bargains = append(bargains, item.Name())
 			}
 		}
 	}
@@ -68,16 +66,12 @@ func findArbitrages(auctions map[int64][]auction.Auction, accessToken string) []
 		if !ok {
 			continue
 		}
-		if item.Equippable {
-			// Don't know how to price these
-			continue
-		}
 		for _, auc := range itemAuctions {
 			if auc.Buyout <= 0 {
 				continue
 			}
-			if auc.Buyout < item.SellPrice {
-				bargains = append(bargains, item.Name)
+			if auc.Buyout < item.SellPrice() {
+				bargains = append(bargains, item.Name())
 			}
 		}
 	}

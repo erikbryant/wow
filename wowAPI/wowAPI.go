@@ -115,19 +115,6 @@ func AccessToken(passPhrase string) (string, bool) {
 	return jsonObject["access_token"].(string), true
 }
 
-// Realm returns info about the given realm
-func Realm(realm, accessToken string) map[string]interface{} {
-	url := "https://us.api.blizzard.com/data/wow/realm/" + realmToSlug(realm) + "?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
-
-	response, err := web.RequestJSON(url, map[string]string{})
-	if err != nil {
-		fmt.Println("Realm: error getting realm:", err)
-		return nil
-	}
-
-	return response
-}
-
 // ConnectedRealm returns all realms connected to the given realm ID
 func ConnectedRealm(realmId, accessToken string) map[string]interface{} {
 	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + realmId + "?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
@@ -249,79 +236,27 @@ func wowItem(id, accessToken string) (map[string]interface{}, bool) {
 	return response, true
 }
 
-func age(i item.Item) time.Duration {
-	return time.Now().Sub(i.Updated)
+func stale(i item.Item) bool {
+	return time.Now().Sub(i.Updated()) > 7*24*time.Hour
 }
 
 // LookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
 func LookupItem(id int64, accessToken string) (item.Item, bool) {
-	// Use the cached value if we have it
+	// Use the cached value if exists and not stale
 	i, ok := cache.Read(id)
 	if ok {
-		if age(i) <= 7*24*time.Hour {
-			// Value in cache is fresh; use that
+		if !stale(i) {
 			return i, true
 		}
-		fmt.Println("Refreshing stale i:", i)
+		fmt.Println("Refreshing stale item:", i.Format())
 	}
 
 	result, ok := wowItem(web.ToString(id), accessToken)
 	if !ok {
-		return i, false
+		return item.Item{}, false
 	}
-
-	i.Id = web.ToInt64(result["id"])
-
-	_, ok = result["name"]
-	if !ok {
-		fmt.Println("ItemId had no name:", id, result)
-		return i, false
-	}
-	i.Name = result["name"].(string)
-
-	i.Equippable = result["is_equippable"].(bool)
-	if !i.Equippable {
-		// Is this a special equippable?
-		previewItem := result["preview_item"].(map[string]interface{})
-		binding, ok := previewItem["binding"].(map[string]interface{})
-		if ok {
-			switch binding["type"].(string) {
-			case "ON_EQUIP":
-				i.Equippable = true
-			case "ON_USE":
-				i.Equippable = true
-			default:
-				fmt.Println("LookupItem: Item had unknown binding_type:", i.Id, binding["type"].(string))
-				i.Equippable = false
-			}
-		}
-	}
-
-	switch i.Id {
-	case 194829:
-		// Fated Fortune Card (can't be sold until read)
-		i.SellPrice = 10000
-	default:
-		_, ok = result["sell_price"]
-		i.SellPrice = web.ToInt64(result["sell_price"])
-	}
-
-	_, ok = result["preview_item"]
-	if ok {
-		previewItem := result["preview_item"].(map[string]interface{})
-		_, ok = previewItem["level"]
-		if ok {
-			level := previewItem["level"].(map[string]interface{})
-			_, ok = level["value"]
-			if ok {
-				i.ItemLevel = web.ToInt64(level["value"])
-			}
-		}
-	}
-
-	i.Updated = time.Now()
-
-	cache.Write(id, i)
+	i = item.NewItem(result)
+	cache.Write(i.Id(), i)
 
 	return i, true
 }
@@ -344,6 +279,7 @@ func CollectionsPets(accessToken string) ([]interface{}, bool) {
 	// This is user-specific data, so it requires a different accessToken.
 	// TODO: Automatically request a new accessToken
 	// https://develop.battle.net/documentation/world-of-warcraft/profile-apis
+	accessToken = "USlF3i3WgcXrNY3f2P2FDw8OvspL313tI5"
 
 	url := "https://us.api.blizzard.com/profile/user/wow/collections/pets?namespace=profile-us&locale=en_US&access_token=" + accessToken
 	response, err := web.RequestJSON(url, map[string]string{})

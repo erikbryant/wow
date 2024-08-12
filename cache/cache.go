@@ -11,11 +11,13 @@ import (
 
 var (
 	itemCache     = map[int64]item.Item{}
-	itemCacheFile = "./generated/itemCache.gob"
+	itemCacheFile = "./generated/new.itemCache.gob"
 	readDisabled  = false
 )
 
 func init() {
+	gob.Register(map[string]interface{}{})
+	gob.Register([]interface{}{})
 	load()
 	fmt.Printf("-- #items in cache: %d\n\n", len(itemCache))
 }
@@ -35,8 +37,8 @@ func load() {
 	}
 }
 
-// save writes the in-memory cache file to disk
-func save() {
+// Save writes the in-memory cache file to disk
+func Save() {
 	file, err := os.Create(itemCacheFile)
 	if err != nil {
 		log.Fatalf("error creating itemCache file: %v", err)
@@ -61,7 +63,7 @@ func Read(id int64) (item.Item, bool) {
 // Write writes an entry to the in-memory cache
 func Write(id int64, i item.Item) {
 	itemCache[id] = i
-	save()
+	Save()
 }
 
 // IDs returns the sorted list of keys from itemCache
@@ -100,8 +102,8 @@ func LuaVendorPrice() string {
 	lua += fmt.Sprintf("local VendorSellPriceCache = {\n")
 	for _, id := range IDs() {
 		// The auction house does not deal in copper; skip any items <= a full silver
-		if itemCache[id].SellPrice > 100 && !itemCache[id].Equippable {
-			lua += fmt.Sprintf("  [\"%d\"] = %d,\n", id, itemCache[id].SellPrice)
+		if itemCache[id].SellPrice() > 100 && !itemCache[id].Equippable() {
+			lua += fmt.Sprintf("  [\"%d\"] = %d,\n", id, itemCache[id].SellPrice())
 		}
 	}
 	lua += fmt.Sprintf("}\n")
