@@ -11,7 +11,7 @@ import (
 
 var (
 	itemCache     = map[int64]item.Item{}
-	itemCacheFile = "./generated/new.itemCache.gob"
+	itemCacheFile = "./generated/itemCache.gob"
 	readDisabled  = false
 	writeDisabled = false
 )
