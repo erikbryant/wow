@@ -120,11 +120,11 @@ func printBargains(auctions map[int64][]auction.Auction, accessToken string) {
 	printShoppingList("Arbitrages", toBuy)
 }
 
-// doit downloads the available auctions and prints any bargains/arbitrages
-func doit(accessToken string, realmList string) {
+// scanRealms downloads the available auctions and prints any bargains/arbitrages
+func scanRealms(accessToken string, realms string) {
 	battlePet.Init(accessToken)
 
-	for _, realm := range strings.Split(realmList, ",") {
+	for _, realm := range strings.Split(realms, ",") {
 		cache.DisableWrite()
 
 		auctions, ok := auction.GetAuctions(realm, accessToken)
@@ -182,7 +182,6 @@ func main() {
 		cache.DisableRead()
 	}
 
-	doit(accessToken, *realms)
-
+	scanRealms(accessToken, *realms)
 	generateLua()
 }

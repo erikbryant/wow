@@ -40,7 +40,6 @@ func Buyout(raw interface{}) int64 {
 	if value == nil {
 		value = common.MSIValue(raw, []string{"unit_price"})
 		if value == nil {
-			log.Println("could not find 'buyout' nor 'unit_price'")
 			return 0
 		}
 	}
