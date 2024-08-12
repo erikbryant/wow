@@ -17,7 +17,7 @@ import (
 
 var (
 	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms      = flag.String("realms", "Commodities,Sisters of Elune,IceCrown,Drak'thul", "WoW realms")
+	realms      = flag.String("realms", "Commodities,Sisters of Elune,IceCrown,Drak'thul,Eitrigg", "WoW realms")
 	readThrough = flag.Bool("readThrough", false, "Read live values")
 	usefulGoods = map[int64]int64{
 		// Generally useful items
@@ -125,6 +125,8 @@ func doit(accessToken string, realmList string) {
 	battlePet.Init(accessToken)
 
 	for _, realm := range strings.Split(realmList, ",") {
+		cache.DisableWrite()
+
 		auctions, ok := auction.GetAuctions(realm, accessToken)
 		if !ok {
 			continue
@@ -132,6 +134,9 @@ func doit(accessToken string, realmList string) {
 		fmt.Printf("====== %s (%d unique items) ======\n\n", realm, len(auctions))
 		printBargains(auctions, accessToken)
 		printPetBargains(auctions)
+
+		cache.EnableWrite()
+		cache.Save()
 	}
 	fmt.Println()
 }
