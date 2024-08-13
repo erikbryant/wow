@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/common"
+	"strings"
 	"time"
 )
 
@@ -52,13 +53,15 @@ func (i Item) Equippable() bool {
 	previewItem := i.XItem["preview_item"].(map[string]interface{})
 	binding, ok := previewItem["binding"].(map[string]interface{})
 	if ok {
-		switch binding["type"].(string) {
+		switch strings.ToUpper(binding["type"].(string)) {
 		case "ON_EQUIP":
 			equippable = true
 		case "ON_USE":
 			equippable = true
 		case "HEALTH":
-			equippable = true
+			equippable = false
+		case "TO_ACCOUNT":
+			equippable = false
 		default:
 			fmt.Println("LookupItem: Item had unknown binding_type:", i.Id(), binding["type"].(string))
 			equippable = false
