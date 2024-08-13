@@ -17,8 +17,57 @@ import (
 
 var (
 	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms      = flag.String("realms", "Commodities,Sisters of Elune,IceCrown,Drak'thul,Eitrigg", "WoW realms")
 	readThrough = flag.Bool("readThrough", false, "Read live values")
+	realms      = flag.String("realms", "Drak'thul,Eitrigg,IceCrown,Sisters of Elune,Commodities", "WoW realms")
+	realmsUS    = flag.Bool("realmsUS", false, "Scan all US realms")
+
+	restOfUS = []string{ // US realms not in the default realm list
+		"Aegwynn",
+		"Agamaggan",
+		"Aggramar",
+		"Akama",
+		"Alexstrasza",
+		"Alleria",
+		"Altar of Storms",
+		"Alterac Mountains",
+		"Andorhal",
+		"Anub'arak",
+		"Argent Dawn",
+		"Azgalor",
+		"Azjol-Nerub",
+		"Azuremyst",
+		"Baelgun",
+		"Blackhand",
+		"Blackwing Lair",
+		"Bloodhoof",
+		"Bloodscalp",
+		"Bronzebeard",
+		"Cairne",
+		"Coilfang",
+		"Darrowmere",
+		"Deathwing",
+		"Dentarg",
+		"Draenor",
+		"Dragonblight",
+		"Durotan",
+		"Elune",
+		"Eredar",
+		"Farstriders",
+		"Feathermoon",
+		"Frostwolf",
+		"Ghostlands",
+		"Greymane",
+		"Kilrogg",
+		"Kirin Tor",
+		"Kul Tiras",
+		"Lightninghoof",
+		"Llane",
+		"Misha",
+		"Nazgrel",
+		"Ravencrest",
+		"Runetotem",
+	}
+
 	usefulGoods = map[int64]int64{
 		// Generally useful items
 		92741: common.Coins(5000, 0, 0), // Flawless Battle-Stone
@@ -120,25 +169,18 @@ func printBargains(auctions map[int64][]auction.Auction, accessToken string) {
 	printShoppingList("Arbitrages", toBuy)
 }
 
-// scanRealms downloads the available auctions and prints any bargains/arbitrages
-func scanRealms(accessToken string, realms string) {
-	battlePet.Init(accessToken)
-
-	for _, realm := range strings.Split(realms, ",") {
-		cache.DisableWrite()
-
-		auctions, ok := auction.GetAuctions(realm, accessToken)
-		if !ok {
-			continue
-		}
-		fmt.Printf("====== %s (%d unique items) ======\n\n", realm, len(auctions))
-		printBargains(auctions, accessToken)
-		printPetBargains(auctions)
-
-		cache.EnableWrite()
-		cache.Save()
+// scanRealm downloads the available auctions and prints any bargains/arbitrages
+func scanRealm(accessToken string, realm string) {
+	cache.DisableWrite()
+	auctions, ok := auction.GetAuctions(realm, accessToken)
+	if !ok {
+		return
 	}
-	fmt.Println()
+	fmt.Printf("====== %s (%d unique items) ======\n\n", realm, len(auctions))
+	printBargains(auctions, accessToken)
+	printPetBargains(auctions)
+	cache.EnableWrite()
+	cache.Save()
 }
 
 // writeFile writes contents to file
@@ -148,7 +190,10 @@ func writeFile(file, contents string) {
 		log.Fatal("Failed to create file:", file, err)
 	}
 	_, err = f.WriteString(contents)
-	f.Close()
+	err = f.Close()
+	if err != nil {
+		fmt.Println("Failed to close file:", file, err)
+	}
 }
 
 // generateLua writes the WoW addon lua files
@@ -182,6 +227,18 @@ func main() {
 		cache.DisableRead()
 	}
 
-	scanRealms(accessToken, *realms)
+	battlePet.Init(accessToken)
+
+	var realmsToScan []string
+	if *realmsUS {
+		realmsToScan = restOfUS
+	} else {
+		realmsToScan = strings.Split(*realms, ",")
+	}
+	for _, realm := range realmsToScan {
+		scanRealm(accessToken, realm)
+		fmt.Println()
+	}
+
 	generateLua()
 }
