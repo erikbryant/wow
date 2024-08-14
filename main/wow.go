@@ -176,7 +176,7 @@ func scanRealm(accessToken string, realm string) {
 	if !ok {
 		return
 	}
-	fmt.Printf("====== %s (%d unique items) ======\n\n", realm, len(auctions))
+	fmt.Printf("===========>  %s (%d unique items)  <===========\n\n", realm, len(auctions))
 	printBargains(auctions, accessToken)
 	printPetBargains(auctions)
 	cache.EnableWrite()
