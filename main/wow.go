@@ -222,12 +222,17 @@ func main() {
 		log.Fatal("ERROR: Unable to obtain access token.")
 	}
 
+	profileAccessToken, ok := wowAPI.ProfileAccessToken(*passPhrase)
+	if !ok {
+		log.Fatal("ERROR: Unable to obtain profile access token.")
+	}
+
+	battlePet.Init(accessToken, profileAccessToken)
+
 	if *readThrough {
 		// Get the latest values
 		cache.DisableRead()
 	}
-
-	battlePet.Init(accessToken)
 
 	var realmsToScan []string
 	if *realmsUS {

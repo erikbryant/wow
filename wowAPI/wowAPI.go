@@ -72,7 +72,28 @@ func realmToSlug(realm string) string {
 	return slug
 }
 
-// AccessToken retrieves an access token from battle.net. This token is used to authenticate API calls.
+// ProfileAccessToken retrieves a profile access token. This token is used to authenticate user profile API calls.
+func ProfileAccessToken(passPhrase string) (string, bool) {
+	clientID, err := aes.Decrypt(clientIDCrypt, passPhrase)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	url := "https://oauth.battle.net/oauth/authorize?response_type=code&client_id=" + clientID + "&scope=wow.profile%20sc2.profile&redirect_uri=https://develop.battle.net/documentation/world-of-warcraft/profile-apis"
+
+	response, err := web.Request(url, nil)
+	if err != nil {
+		fmt.Println("ProfileAccessToken: Error getting token:", err)
+		return "", false
+	}
+
+	// Replace this with code to unpack the profile access token
+	response = ""
+
+	return response, true
+}
+
+// AccessToken retrieves an access token. This token is used to authenticate API calls.
 func AccessToken(passPhrase string) (string, bool) {
 	clientID, err := aes.Decrypt(clientIDCrypt, passPhrase)
 	if err != nil {
@@ -275,12 +296,9 @@ func Pets(accessToken string) ([]interface{}, bool) {
 }
 
 // CollectionsPets returns the battle pets the user owns
-func CollectionsPets(accessToken string) ([]interface{}, bool) {
-	// This is user-specific data, so it requires a different accessToken.
-	// TODO: Automatically request a new accessToken
-	// https://develop.battle.net/documentation/world-of-warcraft/profile-apis
+func CollectionsPets(profileAccessToken string) ([]interface{}, bool) {
+	url := "https://us.api.blizzard.com/profile/user/wow/collections/pets?namespace=profile-us&locale=en_US&access_token=" + profileAccessToken
 
-	url := "https://us.api.blizzard.com/profile/user/wow/collections/pets?namespace=profile-us&locale=en_US&access_token=" + accessToken
 	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
 		fmt.Println("CollectionsPets: no data returned:", err)

@@ -18,10 +18,10 @@ var (
 )
 
 // Owned returns the pets I own
-func Owned(accessToken string) map[int64][]item.PetInfo {
+func Owned(profileAccessToken string) map[int64][]item.PetInfo {
 	myPets := map[int64][]item.PetInfo{}
 
-	pets, ok := wowAPI.CollectionsPets(accessToken)
+	pets, ok := wowAPI.CollectionsPets(profileAccessToken)
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain pets owned.")
 	}
@@ -93,9 +93,9 @@ func Own(petId int64) bool {
 	return len(owned[petId]) > 0
 }
 
-func Init(accessToken string) {
+func Init(accessToken, profileAccessToken string) {
 	allNames = PetNames(accessToken)
-	owned = Owned(accessToken)
+	owned = Owned(profileAccessToken)
 }
 
 func LuaPetId() string {
