@@ -8,6 +8,7 @@ import (
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/item"
+	"github.com/erikbryant/wow/secrets"
 	"io"
 	"log"
 	"net/http"
@@ -88,7 +89,7 @@ func ProfileAccessToken(passPhrase string) (string, bool) {
 	}
 
 	// Replace this with code to unpack the profile access token
-	response = ""
+	response = secrets.Pat
 
 	return response, true
 }
