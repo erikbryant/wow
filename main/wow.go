@@ -71,12 +71,6 @@ var (
 	usefulGoods = map[int64]int64{
 		// Generally useful items
 		92741: common.Coins(5000, 0, 0), // Flawless Battle-Stone
-
-		// Summoners (versus pet cages) for battle pets I do not have yet
-		152878: common.Coins(100, 0, 0), // Enchanted Tiki Mask
-
-		// Enchanting recipes I do not have yet
-		//210175: common.Coins(300, 0, 0), // Formula: Enchant Weapon - Dreaming Devotion
 	}
 )
 
