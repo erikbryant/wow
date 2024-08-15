@@ -89,6 +89,11 @@ func (i Item) Level() int64 {
 	return 0
 }
 
+// ItemClassName returns the item class name
+func (i Item) ItemClassName() string {
+	return common.MSIValue(i.XItem, []string{"item_class", "name"}).(string)
+}
+
 // Name returns the item name
 func (i Item) Name() string {
 	return i.XItem["name"].(string)
@@ -121,5 +126,5 @@ func (i Item) Format() string {
 	if i.Equippable() {
 		equippable = "T"
 	}
-	return fmt.Sprintf("%7d  %s %11s   %3d   %s   %s", i.Id(), equippable, common.Gold(i.SellPrice()), i.Level(), i.Updated().Format("2006-01-02"), i.Name())
+	return fmt.Sprintf("%7d  %s %11s   %3d   %-15s   %s   %s", i.Id(), equippable, common.Gold(i.SellPrice()), i.Level(), i.ItemClassName(), i.Updated().Format("2006-01-02"), i.Name())
 }
