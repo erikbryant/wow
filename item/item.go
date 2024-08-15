@@ -101,7 +101,8 @@ func (i Item) Name() string {
 
 // SellPrice returns the item vendor sell price (zero if unsure)
 func (i Item) SellPrice() int64 {
-	if i.Equippable() {
+	className := i.ItemClassName()
+	if className == "Weapon" || className == "Armor" {
 		// Don't know how to price these
 		return 0
 	}
