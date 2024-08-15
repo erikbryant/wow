@@ -41,31 +41,39 @@ func (i Item) Id() int64 {
 	return i.XId
 }
 
+// Binding returns whether and when the item binds
+func (i Item) Binding() string {
+	value := common.MSIValue(i.XItem, []string{"preview_item", "binding", "type"})
+	if value == nil {
+		return ""
+	}
+	return value.(string)
+}
+
 // Equippable returns true if the item is equippable
 func (i Item) Equippable() bool {
+	// Is this a regular equippable?
 	equippable := i.XItem["is_equippable"].(bool)
-
 	if equippable {
 		return true
 	}
 
 	// Is this a special equippable?
-	previewItem := i.XItem["preview_item"].(map[string]interface{})
-	binding, ok := previewItem["binding"].(map[string]interface{})
-	if ok {
-		switch strings.ToUpper(binding["type"].(string)) {
-		case "ON_EQUIP":
-			equippable = true
-		case "ON_USE":
-			equippable = true
-		case "HEALTH":
-			equippable = false
-		case "TO_ACCOUNT":
-			equippable = false
-		default:
-			fmt.Println("LookupItem: Item had unknown binding_type:", i.Id(), binding["type"].(string))
-			equippable = false
-		}
+	binding := strings.ToUpper(i.Binding())
+	switch binding {
+	case "ON_EQUIP":
+		equippable = true
+	case "ON_USE":
+		equippable = true
+	case "HEALTH":
+		equippable = false
+	case "TO_ACCOUNT":
+		equippable = false
+	case "":
+		equippable = false
+	default:
+		fmt.Println("LookupItem: Item had unknown binding_type:", i.Id(), binding)
+		equippable = false
 	}
 
 	return equippable
@@ -73,20 +81,7 @@ func (i Item) Equippable() bool {
 
 // Level returns the item level
 func (i Item) Level() int64 {
-	_, ok := i.XItem["preview_item"]
-	if ok {
-		previewItem := i.XItem["preview_item"].(map[string]interface{})
-		_, ok = previewItem["level"]
-		if ok {
-			level := previewItem["level"].(map[string]interface{})
-			_, ok = level["value"]
-			if ok {
-				return web.ToInt64(level["value"])
-			}
-		}
-	}
-
-	return 0
+	return common.MSIValue(i.XItem, []string{"preview_item", "level", "value"}).(int64)
 }
 
 // ItemClassName returns the item class name
