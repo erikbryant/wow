@@ -94,8 +94,8 @@ func Own(petId int64) bool {
 }
 
 func Init(accessToken, profileAccessToken string) {
-	allNames = PetNames(accessToken)
 	owned = Owned(profileAccessToken)
+	allNames = PetNames(accessToken)
 }
 
 func LuaPetId() string {
