@@ -12,7 +12,11 @@ The auction house downloadable data is updated once an hour. The precise time mi
 
 https://develop.battle.net/documentation
 
-## Callback URI
+### OAUTH 2.0
+
+[Reference implementation](https://github.com/douglasmakey/oauth2-example).
+
+### Callback URI
 
 This callback has been registered with Blizzard for this client ID:
 
