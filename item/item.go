@@ -81,7 +81,8 @@ func (i Item) Equippable() bool {
 
 // Level returns the item level
 func (i Item) Level() int64 {
-	return common.MSIValue(i.XItem, []string{"preview_item", "level", "value"}).(int64)
+	level := common.MSIValue(i.XItem, []string{"preview_item", "level", "value"})
+	return web.ToInt64(level)
 }
 
 // ItemClassName returns the item class name
@@ -104,7 +105,7 @@ func (i Item) SellPrice() int64 {
 
 	switch i.Id() {
 	case 194829:
-		// Fated Fortune Card (only gets a price once read)
+		// Fated Fortune Card (only gets a price assigned after the card is read)
 		return 10000
 	}
 
