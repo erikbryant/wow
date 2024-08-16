@@ -82,6 +82,9 @@ func (i Item) Equippable() bool {
 // Level returns the item level
 func (i Item) Level() int64 {
 	level := common.MSIValue(i.XItem, []string{"preview_item", "level", "value"})
+	if level == nil {
+		return 0
+	}
 	return web.ToInt64(level)
 }
 
@@ -99,6 +102,12 @@ func (i Item) Name() string {
 func (i Item) SellPrice() int64 {
 	className := i.ItemClassName()
 	if className == "Weapon" || className == "Armor" {
+		// Don't know how to price these
+		return 0
+	}
+
+	level := i.Level()
+	if level > 0 {
 		// Don't know how to price these
 		return 0
 	}
