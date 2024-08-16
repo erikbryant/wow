@@ -8,6 +8,10 @@ Also, scan the Auction House for good deals on items that my characters need. So
 
 The auction house downloadable data is updated once an hour. The precise time might depend upon when the service was last started up after a maintenance. Sampling multiple times during a one-hour window will result in identical downloads. There are other people playing this same arbitrage game, so you have to be *very* quick (right at 10 after) to get in on the bargains before they are gone.
 
+## Development
+
+https://develop.battle.net/documentation
+
 ## Callback URI
 
 This callback has been registered with Blizzard for this client ID:

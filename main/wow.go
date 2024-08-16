@@ -1,7 +1,5 @@
 package main
 
-// https://develop.battle.net/documentation
-
 import (
 	"flag"
 	"fmt"
