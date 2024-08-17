@@ -62,18 +62,26 @@ func SortUnique(values []string) []string {
 	return unique
 }
 
-// MSIValue returns the interface{} that keys indexes into in a map[string]interface{} struct
-func MSIValue(raw interface{}, keys []string) interface{} {
+// MSIValue returns the value at 'keys' in a map[string]interface{} tree
+func MSIValue(msi interface{}, keys []string) (interface{}, error) {
 	var ok bool
-	var value interface{}
-	value = raw
+	value := msi
 
 	for _, key := range keys {
 		value, ok = value.(map[string]interface{})[key]
 		if !ok {
-			return nil
+			return nil, fmt.Errorf("key '%s' not found", key)
 		}
 	}
 
-	return value
+	return value, nil
+}
+
+// MSIValued returns the value at 'keys' in a map[string]interface{} tree, or a default if value is nil
+func MSIValued(msi interface{}, keys []string, d interface{}) (interface{}, error) {
+	value, err := MSIValue(msi, keys)
+	if value == nil {
+		value = d
+	}
+	return value, err
 }

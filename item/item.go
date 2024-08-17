@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/common"
+	"log"
 	"strings"
 	"time"
 )
@@ -43,10 +44,8 @@ func (i Item) Id() int64 {
 
 // Binding returns whether and when the item binds
 func (i Item) Binding() string {
-	value := common.MSIValue(i.XItem, []string{"preview_item", "binding", "type"})
-	if value == nil {
-		return ""
-	}
+	// The key is only sometimes there; do not error if it is missing
+	value, _ := common.MSIValued(i.XItem, []string{"preview_item", "binding", "type"}, "")
 	return value.(string)
 }
 
@@ -81,16 +80,18 @@ func (i Item) Equippable() bool {
 
 // Level returns the item level
 func (i Item) Level() int64 {
-	level := common.MSIValue(i.XItem, []string{"preview_item", "level", "value"})
-	if level == nil {
-		return 0
-	}
-	return web.ToInt64(level)
+	// The key is only sometimes there; do not error if it is missing
+	value, _ := common.MSIValued(i.XItem, []string{"preview_item", "level", "value"}, 0)
+	return web.ToInt64(value)
 }
 
 // ItemClassName returns the item class name
 func (i Item) ItemClassName() string {
-	return common.MSIValue(i.XItem, []string{"item_class", "name"}).(string)
+	value, err := common.MSIValue(i.XItem, []string{"item_class", "name"})
+	if err != nil {
+		log.Fatalf("ItemClassName: %s in %v", err, i.XItem)
+	}
+	return value.(string)
 }
 
 // Name returns the item name

@@ -27,43 +27,72 @@ type Auction struct {
 	Pet      item.PetInfo
 }
 
-func Id(raw interface{}) int64 {
-	return web.ToInt64(common.MSIValue(raw, []string{"id"}))
+func Id(msi interface{}) int64 {
+	value, err := common.MSIValue(msi, []string{"id"})
+	if err != nil {
+		log.Fatalf("Id: %s in %v", err, msi)
+	}
+	return web.ToInt64(value)
 }
 
-func ItemId(raw interface{}) int64 {
-	return web.ToInt64(common.MSIValue(raw, []string{"item", "id"}))
+func ItemId(msi interface{}) int64 {
+	value, err := common.MSIValue(msi, []string{"item", "id"})
+	if err != nil {
+		log.Fatalf("ItemId: %s in %v", err, msi)
+	}
+	return web.ToInt64(value)
 }
 
-func Buyout(raw interface{}) int64 {
-	value := common.MSIValue(raw, []string{"buyout"})
-	if value == nil {
-		value = common.MSIValue(raw, []string{"unit_price"})
-		if value == nil {
+func Buyout(msi interface{}) int64 {
+	value, err := common.MSIValue(msi, []string{"buyout"})
+	if value == nil || err != nil {
+		value, err = common.MSIValued(msi, []string{"unit_price"}, 0)
+		if err != nil {
+			// Some auctions have neither 'buyout' nor 'unit_price'. Strange, but true.
 			return 0
 		}
 	}
 	return web.ToInt64(value)
 }
 
-func Quantity(raw interface{}) int64 {
-	return web.ToInt64(common.MSIValue(raw, []string{"quantity"}))
+func Quantity(msi interface{}) int64 {
+	value, err := common.MSIValued(msi, []string{"quantity"}, 0)
+	if err != nil {
+		log.Fatalf("Quantity: %s in %v", err, msi)
+	}
+	return web.ToInt64(value)
 }
 
-func PetBreedId(raw interface{}) int64 {
-	return web.ToInt64(common.MSIValue(raw, []string{"item", "pet_breed_id"}))
+func PetBreedId(msi interface{}) int64 {
+	value, err := common.MSIValue(msi, []string{"item", "pet_breed_id"})
+	if err != nil {
+		log.Fatalf("PetBreedID: %s in %v", err, msi)
+	}
+	return web.ToInt64(value)
 }
 
-func PetLevel(raw interface{}) int64 {
-	return web.ToInt64(common.MSIValue(raw, []string{"item", "pet_level"}))
+func PetLevel(msi interface{}) int64 {
+	value, err := common.MSIValue(msi, []string{"item", "pet_level"})
+	if err != nil {
+		log.Fatalf("PetLevel: %s in %v", err, msi)
+	}
+	return web.ToInt64(value)
 }
 
-func PetQualityId(raw interface{}) int64 {
-	return web.ToInt64(common.MSIValue(raw, []string{"item", "pet_quality_id"}))
+func PetQualityId(msi interface{}) int64 {
+	value, err := common.MSIValue(msi, []string{"item", "pet_quality_id"})
+	if err != nil {
+		log.Fatalf("PetQualityId: %s in %v", err, msi)
+	}
+	return web.ToInt64(value)
 }
 
-func PetSpeciesId(raw interface{}) int64 {
-	return web.ToInt64(common.MSIValue(raw, []string{"item", "pet_species_id"}))
+func PetSpeciesId(msi interface{}) int64 {
+	value, err := common.MSIValue(msi, []string{"item", "pet_species_id"})
+	if err != nil {
+		log.Fatalf("PetSpeciesId: %s in %v", err, msi)
+	}
+	return web.ToInt64(value)
 }
 
 // JsonToStruct converts a single auction json string into a struct that is much easier to work with
