@@ -2,7 +2,6 @@ package auction
 
 import (
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
@@ -28,7 +27,7 @@ type Auction struct {
 }
 
 func Id(msi interface{}) int64 {
-	value, err := common.MSIValue(msi, []string{"id"})
+	value, err := web.MsiValue(msi, []string{"id"})
 	if err != nil {
 		log.Fatalf("Id: %s in %v", err, msi)
 	}
@@ -36,7 +35,7 @@ func Id(msi interface{}) int64 {
 }
 
 func ItemId(msi interface{}) int64 {
-	value, err := common.MSIValue(msi, []string{"item", "id"})
+	value, err := web.MsiValue(msi, []string{"item", "id"})
 	if err != nil {
 		log.Fatalf("ItemId: %s in %v", err, msi)
 	}
@@ -44,9 +43,9 @@ func ItemId(msi interface{}) int64 {
 }
 
 func Buyout(msi interface{}) int64 {
-	value, err := common.MSIValue(msi, []string{"buyout"})
+	value, err := web.MsiValue(msi, []string{"buyout"})
 	if value == nil || err != nil {
-		value, err = common.MSIValued(msi, []string{"unit_price"}, 0)
+		value, err = web.MsiValued(msi, []string{"unit_price"}, 0)
 		if err != nil {
 			// Some auctions have neither 'buyout' nor 'unit_price'. Strange, but true.
 			return 0
@@ -56,7 +55,7 @@ func Buyout(msi interface{}) int64 {
 }
 
 func Quantity(msi interface{}) int64 {
-	value, err := common.MSIValued(msi, []string{"quantity"}, 0)
+	value, err := web.MsiValued(msi, []string{"quantity"}, 0)
 	if err != nil {
 		log.Fatalf("Quantity: %s in %v", err, msi)
 	}
@@ -64,7 +63,7 @@ func Quantity(msi interface{}) int64 {
 }
 
 func PetBreedId(msi interface{}) int64 {
-	value, err := common.MSIValue(msi, []string{"item", "pet_breed_id"})
+	value, err := web.MsiValue(msi, []string{"item", "pet_breed_id"})
 	if err != nil {
 		log.Fatalf("PetBreedID: %s in %v", err, msi)
 	}
@@ -72,7 +71,7 @@ func PetBreedId(msi interface{}) int64 {
 }
 
 func PetLevel(msi interface{}) int64 {
-	value, err := common.MSIValue(msi, []string{"item", "pet_level"})
+	value, err := web.MsiValue(msi, []string{"item", "pet_level"})
 	if err != nil {
 		log.Fatalf("PetLevel: %s in %v", err, msi)
 	}
@@ -80,7 +79,7 @@ func PetLevel(msi interface{}) int64 {
 }
 
 func PetQualityId(msi interface{}) int64 {
-	value, err := common.MSIValue(msi, []string{"item", "pet_quality_id"})
+	value, err := web.MsiValue(msi, []string{"item", "pet_quality_id"})
 	if err != nil {
 		log.Fatalf("PetQualityId: %s in %v", err, msi)
 	}
@@ -88,7 +87,7 @@ func PetQualityId(msi interface{}) int64 {
 }
 
 func PetSpeciesId(msi interface{}) int64 {
-	value, err := common.MSIValue(msi, []string{"item", "pet_species_id"})
+	value, err := web.MsiValue(msi, []string{"item", "pet_species_id"})
 	if err != nil {
 		log.Fatalf("PetSpeciesId: %s in %v", err, msi)
 	}

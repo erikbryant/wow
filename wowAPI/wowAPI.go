@@ -82,7 +82,7 @@ func ProfileAccessToken(passPhrase string) (string, bool) {
 
 	url := "https://oauth.battle.net/oauth/authorize?response_type=code&client_id=" + clientID + "&scope=wow.profile%20sc2.profile&redirect_uri=https://develop.battle.net/documentation/world-of-warcraft/profile-apis"
 
-	response, err := web.Request(url, nil)
+	response, err := web.RequestBody(url, nil)
 	if err != nil {
 		fmt.Println("ProfileAccessToken: Error getting token:", err)
 		return "", false

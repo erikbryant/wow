@@ -111,9 +111,10 @@ func findArbitrages(auctions map[int64][]auction.Auction, accessToken string) []
 			if auc.Buyout <= 0 {
 				continue
 			}
-			if auc.Buyout < item.SellPrice() {
-				bargains = append(bargains, item.Name())
+			if auc.Buyout >= item.SellPriceRealizable() {
+				continue
 			}
+			bargains = append(bargains, item.Name())
 		}
 	}
 

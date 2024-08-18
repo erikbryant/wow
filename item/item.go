@@ -45,7 +45,7 @@ func (i Item) Id() int64 {
 // Binding returns whether and when the item binds
 func (i Item) Binding() string {
 	// The key is only sometimes there; do not error if it is missing
-	value, _ := common.MSIValued(i.XItem, []string{"preview_item", "binding", "type"}, "")
+	value, _ := web.MsiValued(i.XItem, []string{"preview_item", "binding", "type"}, "")
 	return value.(string)
 }
 
@@ -81,13 +81,13 @@ func (i Item) Equippable() bool {
 // Level returns the item level
 func (i Item) Level() int64 {
 	// The key is only sometimes there; do not error if it is missing
-	value, _ := common.MSIValued(i.XItem, []string{"preview_item", "level", "value"}, 0)
+	value, _ := web.MsiValued(i.XItem, []string{"preview_item", "level", "value"}, 0)
 	return web.ToInt64(value)
 }
 
 // ItemClassName returns the item class name
 func (i Item) ItemClassName() string {
-	value, err := common.MSIValue(i.XItem, []string{"item_class", "name"})
+	value, err := web.MsiValue(i.XItem, []string{"item_class", "name"})
 	if err != nil {
 		log.Fatalf("ItemClassName: %s in %v", err, i.XItem)
 	}
@@ -99,20 +99,8 @@ func (i Item) Name() string {
 	return i.XItem["name"].(string)
 }
 
-// SellPrice returns the item vendor sell price (zero if unsure)
-func (i Item) SellPrice() int64 {
-	className := i.ItemClassName()
-	if className == "Weapon" || className == "Armor" {
-		// Don't know how to price these
-		return 0
-	}
-
-	level := i.Level()
-	if level > 0 {
-		// Don't know how to price these
-		return 0
-	}
-
+// SellPriceAdvertised returns the vendor sell price listed in the JSON
+func (i Item) SellPriceAdvertised() int64 {
 	switch i.Id() {
 	case 194829:
 		// Fated Fortune Card (only gets a price assigned after the card is read)
@@ -120,6 +108,15 @@ func (i Item) SellPrice() int64 {
 	}
 
 	return web.ToInt64(i.XItem["sell_price"])
+}
+
+// SellPriceRealizable returns the actual price the vendor will offer for this specific item
+func (i Item) SellPriceRealizable() int64 {
+	if i.Level() > 0 {
+		// I don't know how to price these
+		return 0
+	}
+	return i.SellPriceAdvertised()
 }
 
 // Updated returns the last time this item was updated in the cache
@@ -133,5 +130,5 @@ func (i Item) Format() string {
 	if i.Equippable() {
 		equippable = "T"
 	}
-	return fmt.Sprintf("%7d  %s %11s   %3d   %-15s   %s   %s", i.Id(), equippable, common.Gold(i.SellPrice()), i.Level(), i.ItemClassName(), i.Updated().Format("2006-01-02"), i.Name())
+	return fmt.Sprintf("%7d  %s %11s   %3d   %-15s   %s   %s", i.Id(), equippable, common.Gold(i.SellPriceAdvertised()), i.Level(), i.ItemClassName(), i.Updated().Format("2006-01-02"), i.Name())
 }

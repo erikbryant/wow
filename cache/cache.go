@@ -114,10 +114,13 @@ func LuaVendorPrice() string {
 
 	lua += fmt.Sprintf("local VendorSellPriceCache = {\n")
 	for _, id := range IDs() {
-		// The auction house does not deal in copper; skip any items <= a full silver
-		if itemCache[id].SellPrice() > 100 && !itemCache[id].Equippable() {
-			lua += fmt.Sprintf("  [\"%d\"] = %d,\n", id, itemCache[id].SellPrice())
+		if itemCache[id].SellPriceRealizable() <= 100 {
+			// To keep the lua table small ignore anything that can't ever be a bargain
+			// Skip prices that are zero
+			// Skip prices <= one silver (the auction house does not deal in copper)
+			continue
 		}
+		lua += fmt.Sprintf("  [\"%d\"] = %d,\n", id, itemCache[id].SellPriceRealizable())
 	}
 	lua += fmt.Sprintf("}\n")
 
