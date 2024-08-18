@@ -130,5 +130,5 @@ func (i Item) Format() string {
 	if i.Equippable() {
 		equippable = "T"
 	}
-	return fmt.Sprintf("%7d  %s %11s   %3d   %-15s   %s   %s", i.Id(), equippable, common.Gold(i.SellPriceAdvertised()), i.Level(), i.ItemClassName(), i.Updated().Format("2006-01-02"), i.Name())
+	return fmt.Sprintf("%7d  %s %11s   %3d   %-17s   %s   %s", i.Id(), equippable, common.Gold(i.SellPriceAdvertised()), i.Level(), i.ItemClassName(), i.Updated().Format("2006-01-02"), i.Name())
 }
