@@ -8,7 +8,7 @@ import (
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/item"
-	"github.com/erikbryant/wow/secrets"
+	"github.com/erikbryant/wow/oauth2"
 	"io"
 	"log"
 	"net/http"
@@ -59,6 +59,20 @@ var (
 	}
 )
 
+func Init(passPhrase string) {
+	var err error
+
+	clientID, err = aes.Decrypt(clientIDCrypt, passPhrase)
+	if err != nil {
+		log.Fatal("unable to decrypt clientID", err)
+	}
+
+	clientSecret, err = aes.Decrypt(clientSecretCrypt, passPhrase)
+	if err != nil {
+		log.Fatal("unable to decrypt clientSecret", err)
+	}
+}
+
 // SkipItem returns true if the caller should ignore this item
 func SkipItem(item int64) bool {
 	return skipItems[item]
@@ -74,38 +88,13 @@ func realmToSlug(realm string) string {
 }
 
 // ProfileAccessToken retrieves a profile access token. This token is used to authenticate user profile API calls.
-func ProfileAccessToken(passPhrase string) (string, bool) {
-	clientID, err := aes.Decrypt(clientIDCrypt, passPhrase)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	url := "https://oauth.battle.net/oauth/authorize?response_type=code&client_id=" + clientID + "&scope=wow.profile%20sc2.profile&redirect_uri=https://develop.battle.net/documentation/world-of-warcraft/profile-apis"
-
-	response, err := web.RequestBody(url, nil)
-	if err != nil {
-		fmt.Println("ProfileAccessToken: Error getting token:", err)
-		return "", false
-	}
-
-	// Replace this with code to unpack the profile access token
-	response = secrets.Pat
-
-	return response, true
+func ProfileAccessToken() (string, bool) {
+	profileAccessToken := oauth2.GetToken(clientID, clientSecret)
+	return profileAccessToken, profileAccessToken != ""
 }
 
 // AccessToken retrieves an access token. This token is used to authenticate API calls.
-func AccessToken(passPhrase string) (string, bool) {
-	clientID, err := aes.Decrypt(clientIDCrypt, passPhrase)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	clientSecret, err = aes.Decrypt(clientSecretCrypt, passPhrase)
-	if err != nil {
-		log.Fatal(err)
-	}
-
+func AccessToken() (string, bool) {
 	grantString := "grant_type=client_credentials"
 	request, err := http.NewRequest("POST", "https://oauth.battle.net/token", bytes.NewBuffer([]byte(grantString)))
 	if err != nil {

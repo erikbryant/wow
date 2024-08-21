@@ -209,12 +209,14 @@ func main() {
 		usage()
 	}
 
-	accessToken, ok := wowAPI.AccessToken(*passPhrase)
+	wowAPI.Init(*passPhrase)
+
+	accessToken, ok := wowAPI.AccessToken()
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain access token.")
 	}
 
-	profileAccessToken, ok := wowAPI.ProfileAccessToken(*passPhrase)
+	profileAccessToken, ok := wowAPI.ProfileAccessToken()
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain profile access token.")
 	}
