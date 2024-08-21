@@ -7,4 +7,8 @@ require (
 	github.com/erikbryant/web v0.9.0
 )
 
-require golang.org/x/oauth2 v0.22.0 // indirect
+require (
+	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c // indirect
+	golang.org/x/oauth2 v0.22.0 // indirect
+	golang.org/x/sys v0.1.0 // indirect
+)

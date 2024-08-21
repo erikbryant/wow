@@ -24,15 +24,17 @@ var (
 		Scopes:       []string{"wow.profile", "sc2.profile"},
 		Endpoint:     endpoints.Battlenet,
 	}
-	server             = &http.Server{}
-	profileAccessToken = ""
+	server = &http.Server{}
 )
 
 func generateStateOauthCookie(w http.ResponseWriter) string {
 	var expiration = time.Now().Add(20 * time.Minute)
 
 	b := make([]byte, 16)
-	rand.Read(b)
+	_, err := rand.Read(b)
+	if err != nil {
+		log.Fatal(err)
+	}
 	state := base64.URLEncoding.EncodeToString(b)
 	cookie := http.Cookie{Name: "oauthstate", Value: state, Expires: expiration}
 	http.SetCookie(w, &cookie)
@@ -88,7 +90,6 @@ func oauthBlizzardCallback(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(string(contents))
 
 	var jsonObject map[string]interface{}
 
@@ -97,12 +98,9 @@ func oauthBlizzardCallback(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	profileAccessToken = jsonObject["access_token"].(string)
-
-	err = server.Shutdown(context.Background())
-	if err != nil {
-		log.Fatal("server shutdown failed", err)
-	}
+	profileAccessToken := jsonObject["access_token"].(string)
+	w.Write([]byte("success!\n"))
+	w.Write([]byte(profileAccessToken))
 }
 
 func handlers() http.Handler {
@@ -117,7 +115,10 @@ func handlers() http.Handler {
 	return mux
 }
 
-func sendRequest() {
+func Start(clientID, clientSecret string) {
+	blizzardOauthConfig.ClientID = clientID
+	blizzardOauthConfig.ClientSecret = clientSecret
+
 	server = &http.Server{
 		Addr:    fmt.Sprintf(":8888"),
 		Handler: handlers(),
@@ -128,11 +129,9 @@ func sendRequest() {
 	log.Printf("%v", err)
 }
 
-func GetToken(clientID, clientSecret string) string {
-	blizzardOauthConfig.ClientID = clientID
-	blizzardOauthConfig.ClientSecret = clientSecret
-
-	sendRequest()
-	fmt.Println(profileAccessToken)
-	return profileAccessToken
+func Shutdown() {
+	err := server.Shutdown(context.Background())
+	if err != nil {
+		log.Printf("server shutdown failed: %v\n", err)
+	}
 }
