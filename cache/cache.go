@@ -13,7 +13,6 @@ var (
 	itemCache     = map[int64]item.Item{}
 	itemCacheFile = "./generated/itemCache.gob"
 	readDisabled  = false
-	writeDisabled = false
 )
 
 func init() {
@@ -40,10 +39,6 @@ func load() {
 
 // Save writes the in-memory cache file to disk
 func Save() {
-	if writeDisabled {
-		return
-	}
-
 	file, err := os.Create(itemCacheFile)
 	if err != nil {
 		log.Fatalf("error creating itemCache file: %v", err)
@@ -68,7 +63,6 @@ func Read(id int64) (item.Item, bool) {
 // Write writes an entry to the in-memory cache
 func Write(id int64, i item.Item) {
 	itemCache[id] = i
-	Save()
 }
 
 // IDs returns the sorted list of keys from itemCache
@@ -103,14 +97,6 @@ func DisableRead() {
 
 func EnableRead() {
 	readDisabled = false
-}
-
-func DisableWrite() {
-	writeDisabled = true
-}
-
-func EnableWrite() {
-	writeDisabled = false
 }
 
 // LuaVendorPrice writes the cached vendor sell prices to stdout as a lua table and accessor

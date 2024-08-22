@@ -14,10 +14,9 @@ import (
 )
 
 var (
-	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	readThrough = flag.Bool("readThrough", false, "Read live values")
-	realms      = flag.String("realms", "Drak'thul,Eitrigg,IceCrown,Kul Tiras,Sisters of Elune,Commodities", "WoW realms")
-	realmsUS    = flag.Bool("realmsUS", false, "Scan all US realms")
+	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
+	realms     = flag.String("realms", "Drak'thul,Eitrigg,IceCrown,Kul Tiras,Sisters of Elune,Commodities", "WoW realms")
+	realmsUS   = flag.Bool("realmsUS", false, "Scan all US realms")
 
 	restOfUS = []string{ // US realms not in the default realm list
 		"Aegwynn",
@@ -163,7 +162,6 @@ func printBargains(auctions map[int64][]auction.Auction) {
 
 // scanRealm downloads the available auctions and prints any bargains/arbitrages
 func scanRealm(realm string) {
-	cache.DisableWrite()
 	auctions, ok := auction.GetAuctions(realm)
 	if !ok {
 		return
@@ -171,7 +169,6 @@ func scanRealm(realm string) {
 	fmt.Printf("===========>  %s (%d unique items)  <===========\n\n", realm, len(auctions))
 	printBargains(auctions)
 	printPetBargains(auctions)
-	cache.EnableWrite()
 	cache.Save()
 }
 
@@ -197,7 +194,7 @@ func generateLua() {
 // usage prints a usage message and terminates the program with an error
 func usage() {
 	log.Fatal(`Usage:
-  wow -passPhrase <phrase> [-realms <realms>] [-readThrough]
+  wow -passPhrase <phrase> [-realmsUS|-realms <realms>]
 `)
 }
 
@@ -217,11 +214,6 @@ func main() {
 	}
 
 	battlePet.Init(profileAccessToken)
-
-	if *readThrough {
-		// Get the latest values
-		cache.DisableRead()
-	}
 
 	var realmsToScan []string
 	if *realmsUS {

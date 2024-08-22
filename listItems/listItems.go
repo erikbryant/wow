@@ -29,9 +29,6 @@ func refreshCache() {
 		}
 	}
 
-	// We'll write all the updates at once when we are done
-	cache.DisableWrite()
-
 	for _, i := range cache.Items() {
 		if wowAPI.Stale(i, maxAge) {
 			wowAPI.LookupItem(i.Id(), maxAge)
@@ -42,7 +39,6 @@ func refreshCache() {
 		}
 	}
 
-	cache.EnableWrite()
 	cache.Save()
 
 	fmt.Printf("Refreshed %d/%d items\n", refreshCount, needsRefresh)
