@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/erikbryant/wow/cache"
-	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
 	"time"
@@ -17,39 +16,45 @@ var (
 	itemId      = flag.Int64("id", 0, "Item ID to look up")
 )
 
-// usage prints a usage message and terminates the program with an error
-func usage() {
-	log.Fatal("Usage: listItems -passPhrase <phrase>")
-}
-
-// stale returns whether the item is older than an arbitrary time
-func stale(i item.Item) bool {
-	return time.Now().Sub(i.Updated()) > 1*24*time.Hour
-}
-
 // refreshCache refreshes any cached items older than 1 day
 func refreshCache() {
+	maxAge := 24 * time.Hour
+	needsRefresh := 0
 	refreshCount := 0
 	maxRefreshCount := 1000
 
-	cache.DisableWrite()
 	for _, i := range cache.Items() {
-		if stale(i) {
-			fmt.Println("Refreshing stale item:", i.Format())
-			cache.DisableRead()
-			wowAPI.LookupItem(i.Id())
-			cache.EnableRead()
+		if wowAPI.Stale(i, maxAge) {
+			needsRefresh++
+		}
+	}
+
+	// We'll write all the updates at once when we are done
+	cache.DisableWrite()
+
+	for _, i := range cache.Items() {
+		if wowAPI.Stale(i, maxAge) {
+			wowAPI.LookupItem(i.Id(), maxAge)
 			refreshCount++
 		}
 		if refreshCount >= maxRefreshCount {
 			break
 		}
 	}
-	cache.EnableWrite()
 
+	cache.EnableWrite()
 	cache.Save()
 
-	fmt.Printf("Refreshed %d/%d items\n", refreshCount, maxRefreshCount)
+	fmt.Printf("Refreshed %d/%d items\n", refreshCount, needsRefresh)
+}
+
+// usage prints a usage message and terminates the program with an error
+func usage() {
+	log.Fatal(`Usage:
+  listItems											# Print the entire item cache
+  listItems -passPhrase <phrase> -itemId <itemId>	# Print a single item
+  listItems -passPhrase <phrase> -refresh			# Refresh the cache
+`)
 }
 
 func main() {
@@ -77,7 +82,7 @@ func main() {
 		cache.DisableRead()
 	}
 
-	i, ok := wowAPI.LookupItem(*itemId)
+	i, ok := wowAPI.LookupItem(*itemId, 0)
 	if !ok {
 		return
 	}

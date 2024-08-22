@@ -76,7 +76,7 @@ func findBargains(goods map[int64]int64, auctions map[int64][]auction.Auction) [
 	bargains := []string{}
 
 	for itemId, maxPrice := range goods {
-		item, ok := wowAPI.LookupItem(itemId)
+		item, ok := wowAPI.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}
@@ -102,7 +102,7 @@ func findArbitrages(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for itemId, itemAuctions := range auctions {
-		item, ok := wowAPI.LookupItem(itemId)
+		item, ok := wowAPI.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}

@@ -252,17 +252,18 @@ func wowItem(id string) (map[string]interface{}, bool) {
 	return response, true
 }
 
-// stale returns whether the item is older than an arbitrary time
-func stale(i item.Item) bool {
-	return time.Now().Sub(i.Updated()) > 14*24*time.Hour
+// Stale returns whether the item is older than a given number of days
+func Stale(i item.Item, age time.Duration) bool {
+	return time.Now().Sub(i.Updated()) > age
 }
 
 // LookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
-func LookupItem(id int64) (item.Item, bool) {
+func LookupItem(id int64, age time.Duration) (item.Item, bool) {
 	// Use the cached value if exists and not stale
 	i, ok := cache.Read(id)
-	if ok {
-		if !stale(i) {
+	if ok && age > 0 {
+		// A cache hit, but is the cache stale?
+		if !Stale(i, age) {
 			return i, true
 		}
 		fmt.Println("Refreshing stale item:", i.Format())
