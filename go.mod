@@ -9,4 +9,4 @@ require (
 	golang.org/x/oauth2 v0.22.0
 )
 
-require golang.org/x/sys v0.1.0 // indirect
+require golang.org/x/sys v0.24.0 // indirect
