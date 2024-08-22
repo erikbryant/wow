@@ -84,6 +84,11 @@ func IDs() []int64 {
 	return ids
 }
 
+// Items returns the map of cached items
+func Items() map[int64]item.Item {
+	return itemCache
+}
+
 // Print writes a text version of the in-memory cache to stdout
 func Print() {
 	for _, id := range IDs() {
