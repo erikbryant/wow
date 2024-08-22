@@ -47,9 +47,9 @@ func refreshCache() {
 // usage prints a usage message and terminates the program with an error
 func usage() {
 	log.Fatal(`Usage:
-  listItems											# Print the entire item cache
-  listItems -passPhrase <phrase> -itemId <itemId>	# Print a single item
-  listItems -passPhrase <phrase> -refresh			# Refresh the cache
+  listItems                                     # Print the entire item cache
+  listItems -passPhrase <phrase> -id <itemId>   # Print a single item
+  listItems -passPhrase <phrase> -refresh       # Refresh the cache
 `)
 }
 
