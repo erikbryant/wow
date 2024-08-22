@@ -131,14 +131,14 @@ func UnpackAuctions(auctions []interface{}) map[int64][]Auction {
 }
 
 // GetAuctions returns the current auctions and their hash
-func GetAuctions(realm, accessToken string) (map[int64][]Auction, bool) {
+func GetAuctions(realm string) (map[int64][]Auction, bool) {
 	var ok bool
 	var auctions []interface{}
 
 	if strings.ToLower(realm) == "commodities" {
-		auctions, ok = wowAPI.Commodities(accessToken)
+		auctions, ok = wowAPI.Commodities()
 	} else {
-		auctions, ok = wowAPI.Auctions(realm, accessToken)
+		auctions, ok = wowAPI.Auctions(realm)
 	}
 	if !ok {
 		log.Println("ERROR: Unable to obtain auctions for", realm)

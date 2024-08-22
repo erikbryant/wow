@@ -34,17 +34,12 @@ func main() {
 
 	wowAPI.Init(*passPhrase)
 
-	accessToken, ok := wowAPI.AccessToken()
-	if !ok {
-		log.Fatal("ERROR: Unable to obtain access token.")
-	}
-
 	if *readThrough {
 		// Get the latest values
 		cache.DisableRead()
 	}
 
-	i, ok := wowAPI.LookupItem(*itemId, accessToken)
+	i, ok := wowAPI.LookupItem(*itemId)
 	if !ok {
 		return
 	}

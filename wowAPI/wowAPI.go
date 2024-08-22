@@ -21,6 +21,7 @@ var (
 	clientSecretCrypt = "CtJH62iU6V3ZeqiHyKItECHahdUYgAFyfHmQ4DRabhWIv6JeK5K4dT7aiybot6MS4JitmDzuWSz1UHHv"
 	clientID          string
 	clientSecret      string
+	accessToken       string
 
 	skipItems = map[int64]bool{
 		// Items not found in the WoW database
@@ -71,6 +72,11 @@ func Init(passPhrase string) {
 	if err != nil {
 		log.Fatal("unable to decrypt clientSecret", err)
 	}
+
+	accessToken, err = wowAccessToken()
+	if err != nil {
+		log.Fatal("unable to get access token", err)
+	}
 }
 
 // SkipItem returns true if the caller should ignore this item
@@ -92,8 +98,8 @@ func ProfileAccessToken() (string, bool) {
 	return oauth2.ProfileAccessToken(clientID, clientSecret)
 }
 
-// AccessToken retrieves an access token. This token is used to authenticate API calls.
-func AccessToken() (string, bool) {
+// wowAccessToken retrieves an access token. This token is used to authenticate API calls.
+func wowAccessToken() (string, error) {
 	grantString := "grant_type=client_credentials"
 	request, err := http.NewRequest("POST", "https://oauth.battle.net/token", bytes.NewBuffer([]byte(grantString)))
 	if err != nil {
@@ -112,21 +118,21 @@ func AccessToken() (string, bool) {
 
 	contents, err := io.ReadAll(response.Body)
 	if err != nil {
-		return "", false
+		return "", err
 	}
 
 	var jsonObject map[string]interface{}
 
 	err = json.Unmarshal(contents, &jsonObject)
 	if err != nil {
-		return "", false
+		return "", err
 	}
 
-	return jsonObject["access_token"].(string), true
+	return jsonObject["access_token"].(string), nil
 }
 
 // ConnectedRealm returns all realms connected to the given realm ID
-func ConnectedRealm(realmId, accessToken string) map[string]interface{} {
+func ConnectedRealm(realmId string) map[string]interface{} {
 	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + realmId + "?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
 
 	response, err := web.RequestJSON(url, map[string]string{})
@@ -143,7 +149,7 @@ func ConnectedRealm(realmId, accessToken string) map[string]interface{} {
 }
 
 // ConnectedRealmSearch returns the set of all connected realms
-func ConnectedRealmSearch(accessToken string) map[string]interface{} {
+func ConnectedRealmSearch() map[string]interface{} {
 	url := "https://us.api.blizzard.com/data/wow/search/connected-realm?namespace=dynamic-us&status.type=UP&access_token=" + accessToken
 	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
@@ -159,8 +165,8 @@ func ConnectedRealmSearch(accessToken string) map[string]interface{} {
 }
 
 // ConnectedRealmId returns the connected realm ID of the given realm
-func ConnectedRealmId(realm, accessToken string) (string, bool) {
-	connectedRealms := ConnectedRealmSearch(accessToken)
+func ConnectedRealmId(realm string) (string, bool) {
+	connectedRealms := ConnectedRealmSearch()
 	if connectedRealms == nil {
 		return "", false
 	}
@@ -172,7 +178,7 @@ func ConnectedRealmId(realm, accessToken string) (string, bool) {
 		r := result.(map[string]interface{})
 		data := r["data"].(map[string]interface{})
 		cRealmId := web.ToString(data["id"])
-		cr := ConnectedRealm(cRealmId, accessToken)
+		cr := ConnectedRealm(cRealmId)
 		if cr == nil {
 			return "", false
 		}
@@ -190,8 +196,8 @@ func ConnectedRealmId(realm, accessToken string) (string, bool) {
 }
 
 // Auctions returns the current auctions from the auction house
-func Auctions(realm, accessToken string) ([]interface{}, bool) {
-	connectedRealmId, ok := ConnectedRealmId(realm, accessToken)
+func Auctions(realm string) ([]interface{}, bool) {
+	connectedRealmId, ok := ConnectedRealmId(realm)
 	if !ok {
 		fmt.Println("Auctions: no connected realm id found")
 		return nil, false
@@ -214,7 +220,7 @@ func Auctions(realm, accessToken string) ([]interface{}, bool) {
 }
 
 // Commodities returns the current commodity auctions from the auction house
-func Commodities(accessToken string) ([]interface{}, bool) {
+func Commodities() ([]interface{}, bool) {
 	url := "https://us.api.blizzard.com/data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
 	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
@@ -226,7 +232,7 @@ func Commodities(accessToken string) ([]interface{}, bool) {
 }
 
 // wowItem retrieves a single item from the WoW web API
-func wowItem(id, accessToken string) (map[string]interface{}, bool) {
+func wowItem(id string) (map[string]interface{}, bool) {
 	url := "https://us.api.blizzard.com/data/wow/item/" + id + "?namespace=static-us&locale=en_US&access_token=" + accessToken
 	response, err := web.RequestJSON(url, map[string]string{})
 	if err != nil {
@@ -246,12 +252,13 @@ func wowItem(id, accessToken string) (map[string]interface{}, bool) {
 	return response, true
 }
 
+// stale returns whether the item is older than an arbitrary time
 func stale(i item.Item) bool {
 	return time.Now().Sub(i.Updated()) > 7*24*time.Hour
 }
 
 // LookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
-func LookupItem(id int64, accessToken string) (item.Item, bool) {
+func LookupItem(id int64) (item.Item, bool) {
 	// Use the cached value if exists and not stale
 	i, ok := cache.Read(id)
 	if ok {
@@ -261,7 +268,7 @@ func LookupItem(id int64, accessToken string) (item.Item, bool) {
 		fmt.Println("Refreshing stale item:", i.Format())
 	}
 
-	result, ok := wowItem(web.ToString(id), accessToken)
+	result, ok := wowItem(web.ToString(id))
 	if !ok {
 		return item.Item{}, false
 	}
@@ -272,7 +279,7 @@ func LookupItem(id int64, accessToken string) (item.Item, bool) {
 }
 
 // Pets returns a list of all battle pets in the game
-func Pets(accessToken string) ([]interface{}, bool) {
+func Pets() ([]interface{}, bool) {
 	url := "https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US&access_token=" + accessToken
 
 	response, err := web.RequestJSON(url, map[string]string{})

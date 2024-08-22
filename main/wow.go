@@ -72,11 +72,11 @@ var (
 )
 
 // findBargains returns auctions for which the goods are below our desired prices
-func findBargains(goods map[int64]int64, auctions map[int64][]auction.Auction, accessToken string) []string {
+func findBargains(goods map[int64]int64, auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for itemId, maxPrice := range goods {
-		item, ok := wowAPI.LookupItem(itemId, accessToken)
+		item, ok := wowAPI.LookupItem(itemId)
 		if !ok {
 			continue
 		}
@@ -98,11 +98,11 @@ func findBargains(goods map[int64]int64, auctions map[int64][]auction.Auction, a
 }
 
 // findArbitrages returns auctions selling for lower than vendor prices
-func findArbitrages(auctions map[int64][]auction.Auction, accessToken string) []string {
+func findArbitrages(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for itemId, itemAuctions := range auctions {
-		item, ok := wowAPI.LookupItem(itemId, accessToken)
+		item, ok := wowAPI.LookupItem(itemId)
 		if !ok {
 			continue
 		}
@@ -154,22 +154,22 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 }
 
 // printBargains prints the bargains found in the auction house
-func printBargains(auctions map[int64][]auction.Auction, accessToken string) {
-	toBuy := findBargains(usefulGoods, auctions, accessToken)
+func printBargains(auctions map[int64][]auction.Auction) {
+	toBuy := findBargains(usefulGoods, auctions)
 	printShoppingList("Bargains", toBuy)
-	toBuy = findArbitrages(auctions, accessToken)
+	toBuy = findArbitrages(auctions)
 	printShoppingList("Arbitrages", toBuy)
 }
 
 // scanRealm downloads the available auctions and prints any bargains/arbitrages
-func scanRealm(accessToken string, realm string) {
+func scanRealm(realm string) {
 	cache.DisableWrite()
-	auctions, ok := auction.GetAuctions(realm, accessToken)
+	auctions, ok := auction.GetAuctions(realm)
 	if !ok {
 		return
 	}
 	fmt.Printf("===========>  %s (%d unique items)  <===========\n\n", realm, len(auctions))
-	printBargains(auctions, accessToken)
+	printBargains(auctions)
 	printPetBargains(auctions)
 	cache.EnableWrite()
 	cache.Save()
@@ -211,17 +211,12 @@ func main() {
 
 	wowAPI.Init(*passPhrase)
 
-	accessToken, ok := wowAPI.AccessToken()
-	if !ok {
-		log.Fatal("ERROR: Unable to obtain access token.")
-	}
-
 	profileAccessToken, ok := wowAPI.ProfileAccessToken()
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain profile access token.")
 	}
 
-	battlePet.Init(accessToken, profileAccessToken)
+	battlePet.Init(profileAccessToken)
 
 	if *readThrough {
 		// Get the latest values
@@ -235,7 +230,7 @@ func main() {
 		realmsToScan = strings.Split(*realms, ",")
 	}
 	for _, realm := range realmsToScan {
-		scanRealm(accessToken, realm)
+		scanRealm(realm)
 		fmt.Println()
 	}
 

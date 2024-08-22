@@ -62,10 +62,10 @@ func Owned(profileAccessToken string) map[int64][]item.PetInfo {
 }
 
 // PetNames returns a map of all battle pet names by petId
-func PetNames(accessToken string) map[int64]string {
+func PetNames() map[int64]string {
 	pets := map[int64]string{}
 
-	allPets, ok := wowAPI.Pets(accessToken)
+	allPets, ok := wowAPI.Pets()
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain pets.")
 	}
@@ -93,9 +93,9 @@ func Own(petId int64) bool {
 	return len(owned[petId]) > 0
 }
 
-func Init(accessToken, profileAccessToken string) {
+func Init(profileAccessToken string) {
 	owned = Owned(profileAccessToken)
-	allNames = PetNames(accessToken)
+	allNames = PetNames()
 }
 
 func LuaPetId() string {
