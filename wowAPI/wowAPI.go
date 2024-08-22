@@ -254,7 +254,7 @@ func wowItem(id string) (map[string]interface{}, bool) {
 
 // stale returns whether the item is older than an arbitrary time
 func stale(i item.Item) bool {
-	return time.Now().Sub(i.Updated()) > 7*24*time.Hour
+	return time.Now().Sub(i.Updated()) > 14*24*time.Hour
 }
 
 // LookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
