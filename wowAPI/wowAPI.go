@@ -9,7 +9,6 @@ import (
 	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/oauth2"
-	"github.com/pkg/browser"
 	"io"
 	"log"
 	"net/http"
@@ -88,21 +87,9 @@ func realmToSlug(realm string) string {
 	return slug
 }
 
-// ProfileAccessToken retrieves a profile access token. This token is used to authenticate user profile API calls.
+// ProfileAccessToken returns a profile access token (to authenticate user profile API calls)
 func ProfileAccessToken() (string, bool) {
-	go oauth2.Start(clientID, clientSecret)
-	defer oauth2.Shutdown()
-	url := "http://localhost:8888/auth/blizzard/login"
-	err := browser.OpenURL(url)
-	if err != nil {
-		log.Fatal("unable to open browser", err)
-	}
-	fmt.Println("Enter the authorization code:")
-	var authCode string
-	if _, err := fmt.Scan(&authCode); err != nil {
-		log.Fatal("could not read authorization code", err)
-	}
-	return authCode, true
+	return oauth2.ProfileAccessToken(clientID, clientSecret)
 }
 
 // AccessToken retrieves an access token. This token is used to authenticate API calls.

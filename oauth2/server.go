@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/pkg/browser"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/endpoints"
 	"io"
@@ -28,6 +29,8 @@ var (
 	}
 	// server is a reference to the webserver
 	server = &http.Server{}
+	// paToken stores the last-known profile access token
+	paToken = ""
 )
 
 const (
@@ -114,9 +117,8 @@ func oauthBlizzardCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Exchange the token we got for an actual profile access token
-	pat := tokenToPAT(r.FormValue("code"))
+	paToken = tokenToPAT(r.FormValue("code"))
 	w.Write([]byte("success!\n"))
-	w.Write([]byte(pat))
 }
 
 // handlers registers the OAUTH endpoints
@@ -142,7 +144,7 @@ func Start(clientID, clientSecret string) {
 		Handler: handlers(),
 	}
 
-	log.Printf("Starting HTTP Server. Listening at %v", server.Addr)
+	//log.Printf("Starting HTTP Server. Listening at %v", server.Addr)
 	err := server.ListenAndServe()
 	if !errors.Is(err, http.ErrServerClosed) {
 		log.Printf("%v", err)
@@ -155,4 +157,20 @@ func Shutdown() {
 	if err != nil {
 		log.Printf("server shutdown failed: %v\n", err)
 	}
+}
+
+// ProfileAccessToken returns a profile access token (to authenticate user profile API calls)
+func ProfileAccessToken(clientID, clientSecret string) (string, bool) {
+	go Start(clientID, clientSecret)
+	defer Shutdown()
+	uri := "http://localhost:8888/auth/blizzard/login"
+	err := browser.OpenURL(uri)
+	if err != nil {
+		log.Fatal("unable to open browser", err)
+		return "", false
+	}
+	for paToken == "" {
+		time.Sleep(time.Second)
+	}
+	return paToken, true
 }
