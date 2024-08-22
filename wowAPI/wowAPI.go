@@ -261,9 +261,9 @@ func Stale(i item.Item, age time.Duration) bool {
 func LookupItem(id int64, age time.Duration) (item.Item, bool) {
 	// Use the cached value if exists and not stale
 	i, ok := cache.Read(id)
-	if ok && age > 0 {
+	if ok {
 		// A cache hit, but is the cache stale?
-		if !Stale(i, age) {
+		if age == 0 || !Stale(i, age) {
 			return i, true
 		}
 		fmt.Println("Refreshing stale item:", i.Format())
