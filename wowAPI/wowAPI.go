@@ -25,13 +25,7 @@ var (
 
 	skipItems = map[int64]bool{
 		// Items not found in the WoW database
-		12034:  true,
-		25308:  true,
-		38517:  true,
 		54629:  true,
-		56054:  true,
-		56055:  true,
-		56056:  true,
 		60390:  true,
 		60405:  true,
 		60406:  true,
@@ -42,9 +36,7 @@ var (
 		123869: true,
 		147455: true,
 		158078: true,
-		159217: true,
 		178149: true,
-		178150: true,
 		201420: true,
 		201421: true,
 		203932: true,
@@ -53,7 +45,6 @@ var (
 		204836: true,
 		204837: true,
 		204838: true,
-		204839: true,
 		204840: true,
 		204841: true,
 		204842: true,
