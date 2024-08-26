@@ -15,7 +15,7 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms", "Drak'thul,Eitrigg,IceCrown,Kul Tiras,Sisters of Elune,Commodities", "WoW realms")
+	realms     = flag.String("realms", "Cairne,Drak'thul,Eitrigg,IceCrown,Kul Tiras,Sisters of Elune,Commodities", "WoW realms")
 	realmsUS   = flag.Bool("realmsUS", false, "Scan all US realms")
 
 	restOfUS = []string{ // US realms not in the default realm list
@@ -39,7 +39,6 @@ var (
 		"Bloodhoof",
 		"Bloodscalp",
 		"Bronzebeard",
-		"Cairne",
 		"Coilfang",
 		"Darrowmere",
 		"Deathwing",
@@ -136,7 +135,10 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 		if battlePet.Own(petAuction.Pet.SpeciesId) {
 			continue
 		}
-		if petAuction.Buyout > 1000000 {
+		if petAuction.Buyout <= 0 {
+			continue
+		}
+		if petAuction.Buyout > 3000000 {
 			continue
 		}
 		if petAuction.Pet.QualityId < common.QualityId("Rare") {
