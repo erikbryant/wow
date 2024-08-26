@@ -49,6 +49,7 @@ var (
 		204841: true,
 		204842: true,
 		// New during TWW prerelease; reconfirm these after a week
+		43557:  true,
 		56055:  true,
 		29566:  true,
 		204839: true,
@@ -100,6 +101,7 @@ var (
 		224154: true,
 		224155: true,
 		225218: true,
+		225236: true,
 		225237: true,
 		225784: true,
 		225787: true,
