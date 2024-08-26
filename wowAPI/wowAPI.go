@@ -25,7 +25,10 @@ var (
 
 	skipItems = map[int64]bool{
 		// Items not found in the WoW database
+		29566:  true,
+		43557:  true,
 		54629:  true,
+		56055:  true,
 		60390:  true,
 		60405:  true,
 		60406:  true,
@@ -45,14 +48,10 @@ var (
 		204836: true,
 		204837: true,
 		204838: true,
+		204839: true,
 		204840: true,
 		204841: true,
 		204842: true,
-		// New during TWW prerelease; reconfirm these after a week
-		43557:  true,
-		56055:  true,
-		29566:  true,
-		204839: true,
 		212531: true,
 		212533: true,
 		212534: true,
