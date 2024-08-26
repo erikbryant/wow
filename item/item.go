@@ -99,6 +99,15 @@ func (i Item) Name() string {
 	return i.XItem["name"].(string)
 }
 
+func (i Item) previewPrice() (int64, error) {
+	value, err := web.MsiValue(i.XItem, []string{"preview_item", "sell_price", "value"})
+	if err != nil {
+		return 0, err
+	}
+
+	return web.ToInt64(value), nil
+}
+
 // SellPriceAdvertised returns the vendor sell price listed in the JSON
 func (i Item) SellPriceAdvertised() int64 {
 	switch i.Id() {
@@ -107,7 +116,14 @@ func (i Item) SellPriceAdvertised() int64 {
 		return 10000
 	}
 
-	return web.ToInt64(i.XItem["sell_price"])
+	sp := web.ToInt64(i.XItem["sell_price"])
+
+	pp, err := i.previewPrice()
+	if err != nil {
+		return sp
+	}
+
+	return pp
 }
 
 // SellPriceRealizable returns the actual price the vendor will offer for this specific item
@@ -122,6 +138,15 @@ func (i Item) SellPriceRealizable() int64 {
 // Updated returns the last time this item was updated in the cache
 func (i Item) Updated() time.Time {
 	return i.XUpdated
+}
+
+func Quality(qualityId int64) string {
+	quality := []string{"Poor", "Common", "Uncommon", "Rare", "Legendary?"}
+	if qualityId < 0 || qualityId >= int64(len(quality)) {
+		fmt.Printf("qualityId %d not found in quality list", qualityId)
+		return "UNKNOWN"
+	}
+	return quality[qualityId]
 }
 
 // Format returns a formatted string representing the item
