@@ -23,3 +23,7 @@ This callback has been registered with Blizzard for this client ID:
 ```text
 redirect_uri = 'http://localhost:8000/auth/wow/callback'
 ```
+
+## Oddities
+
+Why does 'Strong Sniffin' Soup for Niffen' (204790) have a sell price, but is not sellable?
