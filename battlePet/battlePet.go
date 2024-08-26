@@ -17,6 +17,11 @@ var (
 	owned         = map[int64][]item.PetInfo{}
 )
 
+func Init(profileAccessToken string) {
+	allNames = PetNames()
+	owned = Owned(profileAccessToken)
+}
+
 // Owned returns the pets I own
 func Owned(profileAccessToken string) map[int64][]item.PetInfo {
 	myPets := map[int64][]item.PetInfo{}
@@ -93,9 +98,8 @@ func Own(petId int64) bool {
 	return len(owned[petId]) > 0
 }
 
-func Init(profileAccessToken string) {
-	owned = Owned(profileAccessToken)
-	allNames = PetNames()
+func Format(pet item.PetInfo) string {
+	return fmt.Sprintf("%4d  %2d  %-8s  %s", pet.SpeciesId, pet.Level, item.Quality(pet.QualityId), allNames[pet.SpeciesId])
 }
 
 func LuaPetId() string {
