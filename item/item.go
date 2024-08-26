@@ -140,15 +140,6 @@ func (i Item) Updated() time.Time {
 	return i.XUpdated
 }
 
-func Quality(qualityId int64) string {
-	quality := []string{"Poor", "Common", "Uncommon", "Rare", "Legendary?"}
-	if qualityId < 0 || qualityId >= int64(len(quality)) {
-		fmt.Printf("qualityId %d not found in quality list", qualityId)
-		return "UNKNOWN"
-	}
-	return quality[qualityId]
-}
-
 // Format returns a formatted string representing the item
 func (i Item) Format() string {
 	equippable := "F"

@@ -21,26 +21,31 @@ func Gold(price int64) string {
 	return fmt.Sprintf("%d.%02d.%02d", gold, silver, copper)
 }
 
-// QualityId return the integer id of the given quality name string
-func QualityId(quality string) int64 {
-	switch strings.ToLower(quality) {
-	case "poor":
-		return 0
-	case "common":
-		return 1
-	case "uncommon":
-		return 2
-	case "rare":
-		return 3
-	case "epic":
-		return 4
-	case "legendary":
-		return 5
-	case "artifact":
-		return 6
+var (
+	qualities = map[int64]string{
+		0: "Poor",
+		1: "Common",
+		2: "Uncommon",
+		3: "Rare",
+		4: "Epic",
+		5: "Legendary",
+		6: "Artifact",
 	}
+)
 
-	fmt.Println("ERROR: Unknown quality", quality)
+// QualityName return the quality name of the given id
+func QualityName(qualityId int64) string {
+	return qualities[qualityId]
+}
+
+// QualityId return the integer id of the given quality name string
+func QualityId(qualityName string) int64 {
+	for qId, qName := range qualities {
+		if strings.ToLower(qName) == strings.ToLower(qualityName) {
+			return qId
+		}
+	}
+	fmt.Println("ERROR: Unknown quality", qualityName)
 	return -1
 }
 

@@ -99,7 +99,7 @@ func Own(petId int64) bool {
 }
 
 func Format(pet item.PetInfo) string {
-	return fmt.Sprintf("%4d  %2d  %-8s  %s", pet.SpeciesId, pet.Level, item.Quality(pet.QualityId), allNames[pet.SpeciesId])
+	return fmt.Sprintf("%4d  %2d  %-8s  %s", pet.SpeciesId, pet.Level, common.QualityName(pet.QualityId), allNames[pet.SpeciesId])
 }
 
 func LuaPetId() string {
