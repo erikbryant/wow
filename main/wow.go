@@ -15,7 +15,7 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms", "Aegwynn,Cairne,Drak'thul,Eitrigg,IceCrown,Kul Tiras,Sisters of Elune,Commodities", "WoW realms")
+	realms     = flag.String("realms", "Aegwynn,Cairne,Drak'thul,Eitrigg,Farstriders,IceCrown,Kul Tiras,Sisters of Elune,Commodities", "WoW realms")
 	realmsUS   = flag.Bool("realmsUS", false, "Scan all US realms")
 
 	restOfUS = []string{ // US realms not in the default realm list
@@ -47,7 +47,6 @@ var (
 		"Durotan",
 		"Elune",
 		"Eredar",
-		"Farstriders",
 		"Feathermoon",
 		"Frostwolf",
 		"Ghostlands",
