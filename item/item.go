@@ -116,11 +116,10 @@ func (i Item) SellPriceAdvertised() int64 {
 		return 10000
 	}
 
-	sp := web.ToInt64(i.XItem["sell_price"])
-
 	pp, err := i.previewPrice()
 	if err != nil {
-		return sp
+		// Items with no preview price don't sell
+		return 0
 	}
 
 	return pp
