@@ -15,10 +15,11 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms", "Aegwynn,Cairne,Drak'thul,Eitrigg,Farstriders,IceCrown,Kul Tiras,Sisters of Elune,Commodities", "WoW realms")
-	realmsUS   = flag.Bool("realmsUS", false, "Scan all US realms")
+	realms     = flag.String("realms", "Aegwynn,Andorhal,Cairne,Drak'thul,Eitrigg,Farstriders,IceCrown,Kul Tiras,Sisters of Elune,Commodities", "WoW realms")
+	realmsUS   = flag.Bool("realmsUS", false, "Scan all the other US realms")
 
-	restOfUS = []string{ // US realms not in the default realm list
+	// restOfUS is the rest of the realms in the US
+	restOfUS = []string{
 		"Agamaggan",
 		"Aggramar",
 		"Akama",
@@ -26,7 +27,6 @@ var (
 		"Alleria",
 		"Altar of Storms",
 		"Alterac Mountains",
-		"Andorhal",
 		"Anub'arak",
 		"Argent Dawn",
 		"Azgalor",
@@ -61,8 +61,8 @@ var (
 		"Runetotem",
 	}
 
+	// Generally useful items to keep a watch on
 	usefulGoods = map[int64]int64{
-		// Generally useful items
 		92741: common.Coins(5000, 0, 0), // Flawless Battle-Stone
 	}
 )
