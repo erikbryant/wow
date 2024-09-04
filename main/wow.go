@@ -20,6 +20,7 @@ var (
 
 	// restOfUS is the rest of the realms in the US
 	restOfUS = []string{
+		"Commodities",
 		"Agamaggan",
 		"Aggramar",
 		"Akama",
@@ -57,7 +58,6 @@ var (
 		"Nazgrel",
 		"Ravencrest",
 		"Runetotem",
-		//"Commodities",
 	}
 
 	// Generally useful items to keep a watch on
