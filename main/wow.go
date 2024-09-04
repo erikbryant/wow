@@ -15,7 +15,7 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms", "Aegwynn,Andorhal,Azgalor,Bloodhoof,Cairne,Drak'thul,Eitrigg,Farstriders,IceCrown,Kul Tiras,Sisters of Elune,Commodities", "WoW realms")
+	realms     = flag.String("realms", "Aegwynn,Andorhal,Azgalor,Bloodhoof,Cairne,Drak'thul,Eitrigg,Farstriders,IceCrown,Kul Tiras,Sisters of Elune", "WoW realms")
 	realmsUS   = flag.Bool("realmsUS", false, "Scan all the other US realms")
 
 	// restOfUS is the rest of the realms in the US
@@ -57,6 +57,7 @@ var (
 		"Nazgrel",
 		"Ravencrest",
 		"Runetotem",
+		//"Commodities",
 	}
 
 	// Generally useful items to keep a watch on
