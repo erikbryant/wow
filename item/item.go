@@ -94,6 +94,13 @@ func (i Item) ItemClassName() string {
 	return value.(string)
 }
 
+// RelicType returns the relic type
+func (i Item) RelicType() string {
+	// The key is only sometimes there; do not error if it is missing
+	value, _ := web.MsiValued(i.XItem, []string{"preview_item", "gem_properties", "relic_type"}, "")
+	return value.(string)
+}
+
 // Name returns the item name
 func (i Item) Name() string {
 	return i.XItem["name"].(string)
