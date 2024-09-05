@@ -62,7 +62,7 @@ var (
 
 	// Generally useful items to keep a watch on
 	usefulGoods = map[int64]int64{
-		92741: common.Coins(5000, 0, 0), // Flawless Battle-Stone
+		92741: common.Coins(1000, 0, 0), // Flawless Battle-Stone
 	}
 )
 
