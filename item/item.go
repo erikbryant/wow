@@ -117,12 +117,6 @@ func (i Item) previewPrice() (int64, error) {
 
 // SellPriceAdvertised returns the vendor sell price listed in the JSON
 func (i Item) SellPriceAdvertised() int64 {
-	switch i.Id() {
-	case 194829:
-		// Fated Fortune Card (only gets a price assigned after the card is read)
-		return 10000
-	}
-
 	pp, err := i.previewPrice()
 	if err != nil {
 		// Items with no preview price don't sell
