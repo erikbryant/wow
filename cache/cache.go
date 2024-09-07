@@ -116,13 +116,32 @@ func LuaVendorPrice() string {
 	lua += fmt.Sprintf("}\n")
 
 	lua += fmt.Sprintf(`
+-- VendorSellPrice returns the cached vendor sell price
 local function VendorSellPrice(itemID)
     return VendorSellPriceCache[tostring(itemID)] or 0
 end
-`)
 
-	lua += fmt.Sprintf(`
-PriceCache = {
+-- validatePriceCache verifies each cached sell price matches the actual sell price
+local function validatePriceCache()
+    for itemID, cachedPrice in pairs(VendorSellPriceCache) do
+        itemID = tonumber(itemID)
+        local item = Item:CreateFromItemID(itemID)
+        item:ContinueOnItemLoad(
+                function()
+                    local itemInfo = { C_Item.GetItemInfo(itemID) }
+                    local sellPrice = itemInfo[11]
+                    if cachedPrice ~= sellPrice then
+                        Util.PrettyPrint("Cached price mismatch!", itemID, GetCoinTextureString(cachedPrice), "~=", GetCoinTextureString(sellPrice))
+                    end
+                end
+        )
+    end
+end
+
+-- Validate the sell price cache
+C_Timer.After(1, validatePriceCache)
+
+AhaPriceCache = {
   VendorSellPrice = VendorSellPrice,
 }
 `)
