@@ -8,6 +8,7 @@ import (
 	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/wowAPI"
+	"github.com/fatih/color"
 	"log"
 	"os"
 	"strings"
@@ -135,7 +136,9 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 		if petAuction.Buyout <= 0 {
 			continue
 		}
-		if petAuction.Buyout > 3000000 {
+		petLevel := petAuction.Pet.Level
+		valueForLevel := 4000000 + 2000000*(petLevel-1)/24
+		if petAuction.Buyout > valueForLevel {
 			continue
 		}
 		if petAuction.Pet.QualityId < common.QualityId("Rare") {
@@ -146,7 +149,8 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 
 	if len(bargains) > 0 {
 		fmt.Println("--- Pet auction bargains ---")
-		fmt.Println(strings.Join(common.SortUnique(bargains), "\n"))
+		c := color.New(color.FgGreen)
+		c.Println(strings.Join(common.SortUnique(bargains), "\n"))
 		fmt.Println()
 	}
 }
@@ -165,7 +169,8 @@ func scanRealm(realm string) {
 	if !ok {
 		return
 	}
-	fmt.Printf("===========>  %s (%d unique items)  <===========\n\n", realm, len(auctions))
+	c := color.New(color.FgCyan)
+	c.Printf("===========>  %s (%d unique items)  <===========\n\n", realm, len(auctions))
 	printBargains(auctions)
 	printPetBargains(auctions)
 	cache.Save()
