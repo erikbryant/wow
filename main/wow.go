@@ -16,8 +16,8 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms", "Aegwynn,Andorhal,Azgalor,Azuremyst,Bloodhoof,Cairne,Drak'thul,Eitrigg,Farstriders,IceCrown,Kul Tiras,Sisters of Elune", "WoW realms")
-	realmsUS   = flag.Bool("realmsUS", false, "Scan all the other US realms")
+	realms     = flag.String("realms", "Aegwynn,Andorhal,Anub'arak,Azgalor,Azuremyst,Bloodhoof,Cairne,Drak'thul,Eitrigg,Farstriders,IceCrown,Kul Tiras,Sisters of Elune", "WoW realms")
+	realmsUS   = flag.Bool("realmsUS", false, "Scan all other US realms")
 
 	// restOfUS is the rest of the realms in the US
 	restOfUS = []string{
@@ -29,7 +29,6 @@ var (
 		"Alleria",
 		"Altar of Storms",
 		"Alterac Mountains",
-		"Anub'arak",
 		"Argent Dawn",
 		"Azjol-Nerub",
 		"Baelgun",
@@ -62,7 +61,18 @@ var (
 
 	// Generally useful items to keep a watch on
 	usefulGoods = map[int64]int64{
-		92741: common.Coins(1000, 0, 0), // Flawless Battle-Stone
+		92665: common.Coins(3000, 0, 0), // Flawless Elemental Battle-Stone
+		92675: common.Coins(3000, 0, 0), // Flawless Beast Battle-Stone
+		92676: common.Coins(3000, 0, 0), // Flawless Critter Battle-Stone
+		92677: common.Coins(3000, 0, 0), // Flawless Flying Battle-Stone
+		92678: common.Coins(3000, 0, 0), // Flawless Magic Battle-Stone
+		92679: common.Coins(3000, 0, 0), // Flawless Aquatic Battle-Stone
+		92680: common.Coins(3000, 0, 0), // Flawless Mechanical Battle-Stone
+		92681: common.Coins(3000, 0, 0), // Flawless Undead Battle-Stone
+		92682: common.Coins(3000, 0, 0), // Flawless Humanoid Battle-Stone
+		92683: common.Coins(3000, 0, 0), // Flawless Dragonkin Battle-Stone
+		98715: common.Coins(3000, 0, 0), // Marked Flawless Battle-Stone
+		92741: common.Coins(3000, 0, 0), // Flawless Battle-Stone
 	}
 )
 
@@ -124,6 +134,14 @@ func printShoppingList(label string, names []string) {
 	}
 }
 
+// petValue returns the amount I'm willing to pay for a pet of a given level
+func petValue(petLevel int64) int64 {
+	level1Max := common.Coins(499, 0, 0)
+	level25Max := common.Coins(1000, 0, 0)
+	extraPerLevel := (level25Max - level1Max) / 24
+	return level1Max + extraPerLevel*(petLevel-1)
+}
+
 // printPetBargains prints a list of pets the user should buy
 func printPetBargains(auctions map[int64][]auction.Auction) {
 	bargains := []string{}
@@ -136,8 +154,7 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 			continue
 		}
 		petLevel := petAuction.Pet.Level
-		valueForLevel := 4000000 + 2000000*(petLevel-1)/24
-		if petAuction.Buyout > valueForLevel {
+		if petAuction.Buyout > petValue(petLevel) {
 			continue
 		}
 		if petAuction.Pet.QualityId < common.QualityId("Rare") {
