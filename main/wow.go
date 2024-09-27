@@ -16,7 +16,7 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms", "Aegwynn,Andorhal,Anub'arak,Azgalor,Azuremyst,Bloodhoof,Cairne,Drak'thul,Eitrigg,Farstriders,IceCrown,Kul Tiras,Sisters of Elune", "WoW realms")
+	realms     = flag.String("realms", "Aegwynn,Akama,Andorhal,Anub'arak,Azgalor,Azuremyst,Bloodhoof,Cairne,Drak'thul,Eitrigg,Farstriders,IceCrown,Kul Tiras,Sisters of Elune", "WoW realms")
 	realmsUS   = flag.Bool("realmsUS", false, "Scan all other US realms")
 
 	// restOfUS is the rest of the realms in the US
@@ -24,7 +24,6 @@ var (
 		"Commodities",
 		"Agamaggan",
 		"Aggramar",
-		"Akama",
 		"Alexstrasza",
 		"Alleria",
 		"Altar of Storms",
@@ -136,8 +135,8 @@ func printShoppingList(label string, names []string) {
 
 // petValue returns the amount I'm willing to pay for a pet of a given level
 func petValue(petLevel int64) int64 {
-	level1Max := common.Coins(499, 0, 0)
-	level25Max := common.Coins(1000, 0, 0)
+	level1Max := common.Coins(399, 0, 0)
+	level25Max := common.Coins(800, 0, 0)
 	extraPerLevel := (level25Max - level1Max) / 24
 	return level1Max + extraPerLevel*(petLevel-1)
 }
