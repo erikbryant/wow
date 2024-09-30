@@ -11,7 +11,7 @@ import (
 
 // Item holds values about a WoW item
 type Item struct {
-	// WARNING: Changing this struct invalidates the cache
+	// WARNING: Changing this struct invalidates the cache.
 	// The members have to be public to write to a gob file,
 	// but only use the accessor functions!
 	XId      int64
