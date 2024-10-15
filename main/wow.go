@@ -16,7 +16,7 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms", "Aegwynn,Akama,Andorhal,Anub'arak,Azgalor,Azuremyst,Bloodhoof,Cairne,Drak'thul,Eitrigg,Farstriders,IceCrown,Kul Tiras", "WoW realms")
+	realms     = flag.String("realms", "Aegwynn,Akama,Andorhal,Anub'arak,Azgalor,Azuremyst,Bloodhoof,Cairne,Drak'thul,Eitrigg,Farstriders,Greymane,IceCrown,Kul Tiras", "WoW realms")
 	realmsUS   = flag.Bool("realmsUS", false, "Scan all other US realms")
 
 	// restOfUS is the rest of the realms in the US
@@ -47,7 +47,6 @@ var (
 		"Feathermoon",
 		"Frostwolf",
 		"Ghostlands",
-		"Greymane",
 		"Kilrogg",
 		"Kirin Tor",
 		"Lightninghoof",
@@ -107,7 +106,7 @@ func findBargains(goods map[int64]int64, auctions map[int64][]auction.Auction) [
 
 // findArbitrages returns auctions selling for lower than vendor prices
 func findArbitrages(auctions map[int64][]auction.Auction) []string {
-	bargains := []string{}
+	arbitrages := map[string]int64{}
 
 	for itemId, itemAuctions := range auctions {
 		item, ok := wowAPI.LookupItem(itemId, 0)
@@ -121,8 +120,14 @@ func findArbitrages(auctions map[int64][]auction.Auction) []string {
 			if auc.Buyout >= item.SellPriceRealizable() {
 				continue
 			}
-			bargains = append(bargains, item.Name())
+			arbitrages[item.Name()] += (item.SellPriceRealizable() - auc.Buyout) * auc.Quantity
 		}
+	}
+
+	bargains := []string{}
+	for name, profit := range arbitrages {
+		str := fmt.Sprintf("%s   %s", name, common.Gold(profit))
+		bargains = append(bargains, str)
 	}
 
 	return bargains
@@ -139,8 +144,8 @@ func printShoppingList(label string, names []string) {
 
 // petValue returns the amount I'm willing to pay for a pet of a given level
 func petValue(petLevel int64) int64 {
-	level1Max := common.Coins(499, 0, 0)
-	level25Max := common.Coins(800, 0, 0)
+	level1Max := common.Coins(599, 0, 0)
+	level25Max := common.Coins(900, 0, 0)
 	extraPerLevel := (level25Max - level1Max) / 24
 	return level1Max + extraPerLevel*(petLevel-1)
 }
