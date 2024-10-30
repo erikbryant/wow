@@ -25,6 +25,7 @@ var (
 
 	skipItems = map[int64]bool{
 		// Items not found in the WoW database
+		56056:  true,
 		23968:  true,
 		29566:  true,
 		43557:  true,
@@ -191,9 +192,13 @@ func wowAccessToken() (string, error) {
 
 // ConnectedRealm returns all realms connected to the given realm ID
 func ConnectedRealm(realmId string) map[string]interface{} {
-	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + realmId + "?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
+	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + realmId + "?namespace=dynamic-us&locale=en_US"
 
-	response, err := web.RequestJSON(url, map[string]string{})
+	headers := map[string]string{
+		"Authorization": "Bearer " + accessToken,
+	}
+
+	response, err := web.RequestJSON(url, headers)
 	if err != nil {
 		fmt.Println("ConnectedRealm: Error getting connected realm:", err)
 		return nil
@@ -208,8 +213,13 @@ func ConnectedRealm(realmId string) map[string]interface{} {
 
 // ConnectedRealmSearch returns the set of all connected realms
 func ConnectedRealmSearch() map[string]interface{} {
-	url := "https://us.api.blizzard.com/data/wow/search/connected-realm?namespace=dynamic-us&status.type=UP&access_token=" + accessToken
-	response, err := web.RequestJSON(url, map[string]string{})
+	url := "https://us.api.blizzard.com/data/wow/search/connected-realm?namespace=dynamic-us&status.type=UP"
+
+	headers := map[string]string{
+		"Authorization": "Bearer " + accessToken,
+	}
+
+	response, err := web.RequestJSON(url, headers)
 	if err != nil {
 		fmt.Println("ConnectedRealmSearch: Error getting connected realms:", err)
 		return nil
@@ -261,8 +271,13 @@ func Auctions(realm string) ([]interface{}, bool) {
 		return nil, false
 	}
 
-	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + connectedRealmId + "/auctions?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
-	response, err := web.RequestJSON(url, map[string]string{})
+	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + connectedRealmId + "/auctions?namespace=dynamic-us&locale=en_US"
+
+	headers := map[string]string{
+		"Authorization": "Bearer " + accessToken,
+	}
+
+	response, err := web.RequestJSON(url, headers)
 	if err != nil {
 		fmt.Println("Auctions: no auction data returned:", err)
 		return nil, false
@@ -279,8 +294,13 @@ func Auctions(realm string) ([]interface{}, bool) {
 
 // Commodities returns the current commodity auctions from the auction house
 func Commodities() ([]interface{}, bool) {
-	url := "https://us.api.blizzard.com/data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US&access_token=" + accessToken
-	response, err := web.RequestJSON(url, map[string]string{})
+	url := "https://us.api.blizzard.com/data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US"
+
+	headers := map[string]string{
+		"Authorization": "Bearer " + accessToken,
+	}
+
+	response, err := web.RequestJSON(url, headers)
 	if err != nil {
 		fmt.Println("Commodities: no auction data returned:", err)
 		return nil, false
@@ -291,8 +311,13 @@ func Commodities() ([]interface{}, bool) {
 
 // wowItem retrieves a single item from the WoW web API
 func wowItem(id string) (map[string]interface{}, bool) {
-	url := "https://us.api.blizzard.com/data/wow/item/" + id + "?namespace=static-us&locale=en_US&access_token=" + accessToken
-	response, err := web.RequestJSON(url, map[string]string{})
+	url := "https://us.api.blizzard.com/data/wow/item/" + id + "?namespace=static-us&locale=en_US"
+
+	headers := map[string]string{
+		"Authorization": "Bearer " + accessToken,
+	}
+
+	response, err := web.RequestJSON(url, headers)
 	if err != nil {
 		fmt.Println("ItemId: failed to retrieve item:", err)
 		return nil, false
@@ -339,9 +364,13 @@ func LookupItem(id int64, age time.Duration) (item.Item, bool) {
 
 // Pets returns a list of all battle pets in the game
 func Pets() ([]interface{}, bool) {
-	url := "https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US&access_token=" + accessToken
+	url := "https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US"
 
-	response, err := web.RequestJSON(url, map[string]string{})
+	headers := map[string]string{
+		"Authorization": "Bearer " + accessToken,
+	}
+
+	response, err := web.RequestJSON(url, headers)
 	if err != nil {
 		fmt.Println("Pets: no data returned:", err)
 		return nil, false
@@ -352,9 +381,13 @@ func Pets() ([]interface{}, bool) {
 
 // CollectionsPets returns the battle pets the user owns
 func CollectionsPets(profileAccessToken string) ([]interface{}, bool) {
-	url := "https://us.api.blizzard.com/profile/user/wow/collections/pets?namespace=profile-us&locale=en_US&access_token=" + profileAccessToken
+	url := "https://us.api.blizzard.com/profile/user/wow/collections/pets?namespace=profile-us&locale=en_US"
 
-	response, err := web.RequestJSON(url, map[string]string{})
+	headers := map[string]string{
+		"Authorization": "Bearer " + profileAccessToken,
+	}
+
+	response, err := web.RequestJSON(url, headers)
 	if err != nil {
 		fmt.Println("CollectionsPets: no data returned:", err)
 		return nil, false
