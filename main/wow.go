@@ -16,7 +16,7 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms", "Aegwynn,Akama,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azuremyst,Baelgun,Bloodhoof,Bronzebeard,Cairne,Drak'thul,Eitrigg,Farstriders,Greymane,IceCrown,Kul Tiras", "WoW realms")
+	realms     = flag.String("realms", "Aegwynn,Akama,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azuremyst,Baelgun,Bloodhoof,Bronzebeard,Cairne,Drak'thul,Eitrigg,Farstriders,Ghostlands,Greymane,IceCrown,Kul Tiras", "WoW realms")
 	realmsUS   = flag.Bool("realmsUS", false, "Scan all other US realms")
 
 	// restOfUS is the rest of the realms in the US
@@ -43,7 +43,6 @@ var (
 		"Eredar",
 		"Feathermoon",
 		"Frostwolf",
-		"Ghostlands",
 		"Kilrogg",
 		"Kirin Tor",
 		"Lightninghoof",
