@@ -16,7 +16,7 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms", "Aegwynn,Akama,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azuremyst,Baelgun,Bloodhoof,Bronzebeard,Cairne,Drak'thul,Eitrigg,Farstriders,Greymane,IceCrown,Kul Tiras,Sisters of Elune", "WoW realms")
+	realms     = flag.String("realms", "Aegwynn,Akama,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azuremyst,Baelgun,Bloodhoof,Bronzebeard,Cairne,Drak'thul,Eitrigg,Farstriders,Greymane,IceCrown,Kul Tiras", "WoW realms")
 	realmsUS   = flag.Bool("realmsUS", false, "Scan all other US realms")
 
 	// restOfUS is the rest of the realms in the US
@@ -52,6 +52,7 @@ var (
 		"Nazgrel",
 		"Ravencrest",
 		"Runetotem",
+		"Sisters of Elune",
 	}
 
 	// Generally useful items to keep a watch on
@@ -150,6 +151,7 @@ func petValue(petLevel int64) int64 {
 func printPetBargains(auctions map[int64][]auction.Auction) {
 	bargains := []string{}
 
+	// Pets I do not own yet
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
 		if battlePet.Own(petAuction.Pet.SpeciesId) {
 			continue
@@ -157,14 +159,32 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 		if petAuction.Buyout <= 0 {
 			continue
 		}
+		if petAuction.Pet.QualityId < common.QualityId("Rare") {
+			continue
+		}
 		petLevel := petAuction.Pet.Level
 		if petAuction.Buyout > petValue(petLevel) {
+			continue
+		}
+		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId))
+	}
+
+	// Pets that might make a good resell
+	for _, petAuction := range auctions[battlePet.PetCageItemId] {
+		if petAuction.Buyout <= 0 {
 			continue
 		}
 		if petAuction.Pet.QualityId < common.QualityId("Rare") {
 			continue
 		}
-		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId))
+		petLevel := petAuction.Pet.Level
+		if petLevel < 25 {
+			continue
+		}
+		if petAuction.Buyout > common.Coins(100, 0, 0) {
+			continue
+		}
+		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId)+" (resell)")
 	}
 
 	if len(bargains) > 0 {
