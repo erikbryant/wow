@@ -169,7 +169,14 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 	}
 
 	// Pets that might make a good resell
+	skipPets := map[int64]bool{
+		153: true, // Wolpertinger
+		162: true, // Sinister Squashling
+	}
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
+		if skipPets[petAuction.Pet.SpeciesId] {
+			continue
+		}
 		if petAuction.Buyout <= 0 {
 			continue
 		}
