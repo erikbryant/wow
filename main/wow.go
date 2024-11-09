@@ -168,10 +168,11 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId))
 	}
 
-	// Pets that might make a good resell
+	// SpeciesId of pets that do not resell well
 	skipPets := map[int64]bool{
-		153: true, // Wolpertinger
-		162: true, // Sinister Squashling
+		153:  true, // Wolpertinger
+		162:  true, // Sinister Squashling
+		1687: true, // Left Shark
 	}
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
 		if skipPets[petAuction.Pet.SpeciesId] {
@@ -190,7 +191,8 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 		if petAuction.Buyout > common.Coins(100, 0, 0) {
 			continue
 		}
-		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId)+" (resell)")
+		note := fmt.Sprintf("%s (resell %d)", battlePet.Name(petAuction.Pet.SpeciesId), petAuction.Pet.SpeciesId)
+		bargains = append(bargains, note)
 	}
 
 	if len(bargains) > 0 {
