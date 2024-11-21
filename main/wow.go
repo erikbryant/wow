@@ -140,7 +140,7 @@ func printShoppingList(label string, names []string) {
 
 // petValue returns the amount I'm willing to pay for a pet of a given level
 func petValue(petLevel int64) int64 {
-	level1Max := common.Coins(599, 0, 0)
+	level1Max := common.Coins(799, 0, 0)
 	level25Max := common.Coins(900, 0, 0)
 	extraPerLevel := (level25Max - level1Max) / 24
 	return level1Max + extraPerLevel*(petLevel-1)
@@ -172,6 +172,7 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 	skipPets := map[int64]bool{
 		153:  true, // Wolpertinger
 		162:  true, // Sinister Squashling
+		211:  true, // Strand Crawler
 		1687: true, // Left Shark
 	}
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
