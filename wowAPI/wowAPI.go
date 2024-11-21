@@ -25,6 +25,7 @@ var (
 
 	skipItems = map[int64]bool{
 		// Items not found in the WoW database
+		44699:  true,
 		56056:  true,
 		23968:  true,
 		29566:  true,
@@ -117,6 +118,7 @@ var (
 		226004: true,
 		226005: true,
 		228386: true,
+		228953: true,
 		229199: true,
 		229207: true,
 		229208: true,
@@ -126,6 +128,11 @@ var (
 		229213: true,
 		229219: true,
 		229225: true,
+		232005: true,
+		232006: true,
+		232007: true,
+		232009: true,
+		232011: true,
 	}
 )
 
@@ -242,8 +249,64 @@ func ConnectedRealmSearch() map[string]interface{} {
 	return response
 }
 
+var crIDs = map[string]string{
+	"Aegwynn":           "1136",
+	"Agamaggan":         "1129",
+	"Aggramar":          "106",
+	"Akama":             "84",
+	"Alexstrasza":       "1070",
+	"Alleria":           "52",
+	"Altar of Storms":   "78",
+	"Alterac Mountains": "71",
+	"Andorhal":          "96",
+	"Anub'arak":         "1138",
+	"Argent Dawn":       "75",
+	"Azgalor":           "77",
+	"Azjol-Nerub":       "121",
+	"Azuremyst":         "160",
+	"Baelgun":           "1190",
+	"Blackhand":         "54",
+	"Blackwing Lair":    "154",
+	"Bloodhoof":         "64",
+	"Bloodscalp":        "1185",
+	"Bronzebeard":       "117",
+	"Cairne":            "1168",
+	"Coilfang":          "157",
+	"Darrowmere":        "113",
+	"Deathwing":         "155",
+	"Dentarg":           "55",
+	"Draenor":           "115",
+	"Dragonblight":      "114",
+	"Drak'thul":         "86",
+	"Durotan":           "63",
+	"Eitrigg":           "47",
+	"Elune":             "67",
+	"Eredar":            "53",
+	"Farstriders":       "12",
+	"Feathermoon":       "118",
+	"Frostwolf":         "127",
+	"Ghostlands":        "1175",
+	"Greymane":          "158",
+	"IceCrown":          "104",
+	"Kilrogg":           "4",
+	"Kirin Tor":         "1071",
+	"Kul Tiras":         "1147",
+	"Lightninghoof":     "163",
+	"Llane":             "99",
+	"Misha":             "1151",
+	"Nazgrel":           "1184",
+	"Ravencrest":        "1072",
+	"Runetotem":         "151",
+	"Sisters of Elune":  "125",
+}
+
 // ConnectedRealmId returns the connected realm ID of the given realm
 func ConnectedRealmId(realm string) (string, bool) {
+	id, ok := crIDs[realm]
+	if ok {
+		return id, true
+	}
+
 	connectedRealms := ConnectedRealmSearch()
 	if connectedRealms == nil {
 		return "", false
@@ -258,12 +321,15 @@ func ConnectedRealmId(realm string) (string, bool) {
 		cRealmId := web.ToString(data["id"])
 		cr := ConnectedRealm(cRealmId)
 		if cr == nil {
-			return "", false
+			continue
+			//return "", false
 		}
 		realms := cr["realms"].([]interface{})
-		for _, realm := range realms {
-			realmSlug := realm.(map[string]interface{})["slug"].(string)
+		for _, cRealm := range realms {
+			realmSlug := cRealm.(map[string]interface{})["slug"].(string)
 			if slug == realmSlug {
+				mapItem := fmt.Sprintf("  \"%s\": \"%s\",\n", realm, cRealmId)
+				fmt.Println(mapItem)
 				return cRealmId, true
 			}
 		}
