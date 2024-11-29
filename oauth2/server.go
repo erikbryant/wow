@@ -101,11 +101,16 @@ func tokenToPAT(code string) string {
 
 // oauthBlizzardCallback receives the token, converts it to a PAT, and passes that to the webpage requester
 func oauthBlizzardCallback(w http.ResponseWriter, r *http.Request) {
-	// Read oauthState from Cookie
-	oauthState, _ := r.Cookie(cookieName)
-
 	if r == nil {
 		log.Println("oauthBlizzardCallback: Empty request")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
+	// Read oauthState from Cookie
+	oauthState, err := r.Cookie(cookieName)
+	if err != nil {
+		log.Println("oauthBlizzardCallback: Cookie Error:", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
