@@ -68,6 +68,8 @@ func (i Item) Equippable() bool {
 		equippable = false
 	case "TO_ACCOUNT":
 		equippable = false
+	case "ON_ACQUIRE":
+		equippable = false
 	case "":
 		equippable = false
 	default:
