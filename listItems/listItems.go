@@ -83,4 +83,5 @@ func main() {
 		return
 	}
 	fmt.Println(i.Format())
+	cache.Save()
 }
