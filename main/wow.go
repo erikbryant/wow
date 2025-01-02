@@ -16,7 +16,7 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bronzebeard,Cairne,Deathwing,Drak'thul,Eitrigg,Farstriders,Ghostlands,Greymane,IceCrown,Kul Tiras,Llane", "WoW realms")
+	realms     = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bronzebeard,Cairne,Deathwing,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Ghostlands,Greymane,IceCrown,Kul Tiras,Llane", "WoW realms")
 	realmsUS   = flag.Bool("realmsUS", false, "Scan all other US realms")
 
 	// restOfUS is the rest of the realms in the US
@@ -32,8 +32,6 @@ var (
 		"Dentarg",
 		"Draenor",
 		"Dragonblight",
-		"Durotan",
-		"Elune",
 		"Eredar",
 		"Feathermoon",
 		"Frostwolf",
@@ -167,6 +165,7 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 		162:  true, // Sinister Squashling
 		211:  true, // Strand Crawler
 		1687: true, // Left Shark
+		1706: true, // Ashmaw Cub
 	}
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
 		if skipPets[petAuction.Pet.SpeciesId] {
@@ -182,7 +181,7 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 		if petLevel < 25 {
 			continue
 		}
-		if petAuction.Buyout > common.Coins(100, 0, 0) {
+		if petAuction.Buyout > common.Coins(90, 0, 0) {
 			continue
 		}
 		note := fmt.Sprintf("%s (resell %d)", battlePet.Name(petAuction.Pet.SpeciesId), petAuction.Pet.SpeciesId)
