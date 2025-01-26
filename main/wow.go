@@ -16,7 +16,7 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bronzebeard,Cairne,Deathwing,Dentarg,Draenor,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Ghostlands,Greymane,IceCrown,Kul Tiras,Llane", "WoW realms")
+	realms     = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bronzebeard,Cairne,Deathwing,Dentarg,Draenor,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Ghostlands,Greymane,IceCrown,Kul Tiras,Llane,Misha", "WoW realms")
 	realmsUS   = flag.Bool("realmsUS", false, "Scan all other US realms")
 
 	// restOfUS is the rest of the realms in the US
@@ -25,7 +25,6 @@ var (
 		"Aggramar",
 		"Alleria",
 		"Alterac Mountains",
-		"Azjol-Nerub",
 		"Bloodscalp",
 		"Coilfang",
 		"Darrowmere",
@@ -35,7 +34,6 @@ var (
 		"Kilrogg",
 		"Kirin Tor",
 		"Lightninghoof",
-		"Misha",
 		"Nazgrel",
 		"Ravencrest",
 		"Runetotem",
@@ -56,7 +54,14 @@ var (
 		92682: common.Coins(3000, 0, 0),  // Flawless Humanoid Battle-Stone
 		92683: common.Coins(3000, 0, 0),  // Flawless Dragonkin Battle-Stone
 		98715: common.Coins(3000, 0, 0),  // Marked Flawless Battle-Stone
-		92741: common.Coins(3000, 0, 0),  // Flawless Battle-Stone
+		92741: common.Coins(5000, 0, 0),  // Flawless Battle-Stone
+
+		114821: common.Coins(130, 0, 0), // Hexweave Bag (30 slot)
+
+		194019: common.Coins(110, 0, 0), // Simply Stitched Reagent Bag (32 slot)
+		194020: common.Coins(110, 0, 0), // Chronocloth Reagent Bag (36 slot)
+		222855: common.Coins(110, 0, 0), // Weavercloth Reagent Bag (36 slot)
+		222854: common.Coins(110, 0, 0), // Dawnweave Reagent Bag (38 slot)
 	}
 )
 
@@ -67,10 +72,6 @@ func findBargains(goods map[int64]int64, auctions map[int64][]auction.Auction) [
 	for itemId, maxPrice := range goods {
 		item, ok := wowAPI.LookupItem(itemId, 0)
 		if !ok {
-			continue
-		}
-		if item.Equippable() {
-			// Don't know how to price these
 			continue
 		}
 		for _, auc := range auctions[itemId] {
