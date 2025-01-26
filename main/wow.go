@@ -111,6 +111,10 @@ func findArbitrages(auctions map[int64][]auction.Auction) []string {
 
 	bargains := []string{}
 	for name, profit := range arbitrages {
+		if profit <= 2000 {
+			// Too small to bother with, would just clutter the output
+			continue
+		}
 		str := fmt.Sprintf("%s   %s", name, common.Gold(profit))
 		bargains = append(bargains, str)
 	}
