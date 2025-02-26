@@ -7,7 +7,7 @@ require (
 	github.com/erikbryant/web v0.9.0
 	github.com/fatih/color v1.18.0
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
-	golang.org/x/oauth2 v0.26.0
+	golang.org/x/oauth2 v0.27.0
 )
 
 require (
