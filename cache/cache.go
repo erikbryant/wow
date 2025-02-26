@@ -131,7 +131,7 @@ local function validatePriceCache()
                     local itemInfo = { C_Item.GetItemInfo(itemID) }
                     local sellPrice = itemInfo[11]
                     if cachedPrice ~= sellPrice then
-                        Util.PrettyPrint("Cached price mismatch!", itemID, GetCoinTextureString(cachedPrice), "~=", GetCoinTextureString(sellPrice))
+                        AhaUtil.PrettyPrint("Cached price mismatch!", itemID, GetCoinTextureString(cachedPrice), "~=", GetCoinTextureString(sellPrice))
                     end
                 end
         )
