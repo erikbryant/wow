@@ -25,6 +25,7 @@ var (
 
 	skipItems = map[int64]bool{
 		// Items not found in the WoW database
+		29557:  true,
 		42929:  true,
 		44699:  true,
 		56056:  true,
