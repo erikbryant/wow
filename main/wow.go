@@ -16,12 +16,11 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bronzebeard,Cairne,Coilfang,Deathwing,Dentarg,Draenor,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Ghostlands,Greymane,IceCrown,Kilrogg,Kul Tiras,Llane,Misha", "WoW realms")
+	realms     = flag.String("realms", "Commodities,Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bronzebeard,Cairne,Coilfang,Deathwing,Dentarg,Draenor,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kul Tiras,Llane,Misha", "WoW realms")
 	realmsUS   = flag.Bool("realmsUS", false, "Scan all other US realms")
 
 	// restOfUS is the rest of the realms in the US
 	restOfUS = []string{
-		"Commodities",
 		"Aggramar",
 		"Alleria",
 		"Alterac Mountains",
@@ -29,7 +28,6 @@ var (
 		"Darrowmere",
 		"Dragonblight",
 		"Eredar",
-		"Frostwolf",
 		"Kirin Tor",
 		"Lightninghoof",
 		"Nazgrel",
@@ -57,9 +55,9 @@ var (
 		114821: common.Coins(130, 0, 0), // Hexweave Bag (30 slot)
 
 		//194019: common.Coins(110, 0, 0), // Simply Stitched Reagent Bag (32 slot)
-		//194020: common.Coins(110, 0, 0), // Chronocloth Reagent Bag (36 slot)
-		//222855: common.Coins(110, 0, 0), // Weavercloth Reagent Bag (36 slot)
-		//222854: common.Coins(110, 0, 0), // Dawnweave Reagent Bag (38 slot)
+		194020: common.Coins(110, 0, 0), // Chronocloth Reagent Bag (36 slot)
+		222855: common.Coins(110, 0, 0), // Weavercloth Reagent Bag (36 slot)
+		222854: common.Coins(110, 0, 0), // Dawnweave Reagent Bag (38 slot)
 	}
 )
 
