@@ -3,7 +3,7 @@ module github.com/erikbryant/wow
 go 1.24.1
 
 require (
-	github.com/erikbryant/aes v0.3.0
+	github.com/erikbryant/aes v0.4.0
 	github.com/erikbryant/web v0.9.0
 	github.com/fatih/color v1.18.0
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
