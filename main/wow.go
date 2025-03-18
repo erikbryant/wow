@@ -16,7 +16,7 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms", "Commodities,Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bronzebeard,Cairne,Coilfang,Deathwing,Dentarg,Draenor,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kul Tiras,Llane,Misha,Sisters of Elune", "WoW realms")
+	realms     = flag.String("realms", "Commodities,Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bronzebeard,Cairne,Coilfang,Deathwing,Dentarg,Draenor,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kul Tiras,Llane,Misha,Ravencrest,Sisters of Elune", "WoW realms")
 	realmsUS   = flag.Bool("realmsUS", false, "Scan all other US realms")
 
 	// restOfUS is the rest of the realms in the US
@@ -31,24 +31,13 @@ var (
 		"Kirin Tor",
 		"Lightninghoof",
 		"Nazgrel",
-		"Ravencrest",
 		"Runetotem",
 	}
 
 	// Generally useful items to keep a watch on
 	usefulGoods = map[int64]int64{
 		//65891: common.Coins(30000, 0, 0), // Vial of the Sands (2-person flying mount)
-		92665: common.Coins(3000, 0, 0), // Flawless Elemental Battle-Stone
-		92675: common.Coins(3000, 0, 0), // Flawless Beast Battle-Stone
-		92676: common.Coins(3000, 0, 0), // Flawless Critter Battle-Stone
-		92677: common.Coins(3000, 0, 0), // Flawless Flying Battle-Stone
-		92678: common.Coins(3000, 0, 0), // Flawless Magic Battle-Stone
-		92679: common.Coins(3000, 0, 0), // Flawless Aquatic Battle-Stone
-		92680: common.Coins(3000, 0, 0), // Flawless Mechanical Battle-Stone
-		92681: common.Coins(3000, 0, 0), // Flawless Undead Battle-Stone
-		92682: common.Coins(3000, 0, 0), // Flawless Humanoid Battle-Stone
-		92683: common.Coins(3000, 0, 0), // Flawless Dragonkin Battle-Stone
-		98715: common.Coins(3000, 0, 0), // Marked Flawless Battle-Stone
+		98715: common.Coins(5000, 0, 0), // Marked Flawless Battle-Stone
 		92741: common.Coins(5000, 0, 0), // Flawless Battle-Stone
 
 		114821: common.Coins(130, 0, 0), // Hexweave Bag (30 slot)
