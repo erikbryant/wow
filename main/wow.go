@@ -16,30 +16,27 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bronzebeard,Cairne,Coilfang,Deathwing,Dentarg,Draenor,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kul Tiras,Llane,Misha,Ravencrest,Sisters of Elune", "WoW realms")
+	realms     = flag.String("realms with alts", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kul Tiras,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities", "WoW realms")
 	realmsUS   = flag.Bool("realmsUS", false, "Scan all other US realms")
 
 	// restOfUS is the rest of the realms in the US
 	restOfUS = []string{
-		//"Commodities",
-		"Aggramar",
 		"Alleria",
-		"Alterac Mountains",
 		"Bloodscalp",
-		"Darrowmere",
-		"Dragonblight",
-		"Eredar",
 		"Kirin Tor",
 		"Lightninghoof",
-		"Nazgrel",
-		"Runetotem",
+
+		// Full
+		//"Aggramar",
+		//"Alterac Mountains",
+		//"Eredar",
 	}
 
 	// Generally useful items to keep a watch on
 	usefulGoods = map[int64]int64{
-		//65891: common.Coins(30000, 0, 0), // Vial of the Sands (2-person flying mount)
-		98715: common.Coins(5000, 0, 0), // Marked Flawless Battle-Stone
-		92741: common.Coins(5000, 0, 0), // Flawless Battle-Stone
+		65891: common.Coins(30000, 0, 0), // Vial of the Sands (2-person flying mount)
+		98715: common.Coins(8000, 0, 0),  // Marked Flawless Battle-Stone
+		92741: common.Coins(8000, 0, 0),  // Flawless Battle-Stone
 
 		114821: common.Coins(130, 0, 0), // Hexweave Bag (30 slot)
 
@@ -148,16 +145,8 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 
 	// SpeciesId of pets that do not resell well
 	skipPets := map[int64]bool{
-		//117:  true, // Tiny Snowman
-		//119:  true, // Father Winter's Helper
-		//120:  true, // Winter's Little Helper
-		//153:  true, // Wolpertinger
-		//162:  true, // Sinister Squashling
-		//211:  true, // Strand Crawler
-		//1662: true, // Cinder Pup
-		//1687: true, // Left Shark
-		//1706: true, // Ashmaw Cub
-
+		162: true, // Sinister Squashling
+		251: true, // Toxic Wasteling
 	}
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
 		if skipPets[petAuction.Pet.SpeciesId] {
