@@ -16,17 +16,16 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms with alts", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kul Tiras,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities", "WoW realms")
+	realms     = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kul Tiras,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities", "WoW realms to scan")
 	realmsUS   = flag.Bool("realmsUS", false, "Scan all other US realms")
 
 	// restOfUS is the rest of the realms in the US
 	restOfUS = []string{
 		"Alleria",
-		"Bloodscalp",
 		"Kirin Tor",
 		"Lightninghoof",
 
-		// Full
+		// These realms are distinct from the others, but are full
 		//"Aggramar",
 		//"Alterac Mountains",
 		//"Eredar",
@@ -44,6 +43,10 @@ var (
 		194020: common.Coins(110, 0, 0), // Chronocloth Reagent Bag (36 slot)
 		222855: common.Coins(110, 0, 0), // Weavercloth Reagent Bag (36 slot)
 		222854: common.Coins(110, 0, 0), // Dawnweave Reagent Bag (38 slot)
+
+		// Cats I need for "Crazy Cat Lady" title
+		8491:  common.Coins(10000, 0, 0), // Black Tabby
+		72068: common.Coins(10000, 0, 0), // Guardian Cub
 	}
 )
 
@@ -143,12 +146,35 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId))
 	}
 
+	// Specialty pets I want
+	var premiumPets = map[int64]int64{
+		// Needed for "Crazy Cat Lady" title
+		42:  common.Coins(5000, 0, 0), // Black Tabby Cat
+		242: common.Coins(5000, 0, 0), // Spectral Tiger Cub
+		303: common.Coins(5000, 0, 0), // Nightsaber Cub
+		311: common.Coins(5000, 0, 0), // Guardian Cub
+
+		// Collecting it earns a cat battle pet
+		93039: common.Coins(5000, 0, 0), // Viscidus Globule (not a cat, but gets there...)
+
+		// Pets that make good gifts
+		1890: common.Coins(1000, 0, 0), // Corgi Pup
+		1929: common.Coins(1000, 0, 0), // Corgnelius
+	}
 	// SpeciesId of pets that do not resell well
 	skipPets := map[int64]bool{
 		162: true, // Sinister Squashling
 		251: true, // Toxic Wasteling
 	}
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
+		// Premium pets trump any other criteria
+		premiumPetPrice := premiumPets[petAuction.Pet.SpeciesId]
+		if petAuction.Buyout <= premiumPetPrice {
+			namePrice := fmt.Sprintf("%s %d %s", battlePet.Name(petAuction.Pet.SpeciesId), petAuction.Pet.QualityId, common.Gold(premiumPetPrice))
+			bargains = append(bargains, namePrice)
+			continue
+		}
+
 		if skipPets[petAuction.Pet.SpeciesId] {
 			continue
 		}
