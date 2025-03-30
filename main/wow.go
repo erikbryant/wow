@@ -16,63 +16,9 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms     = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kul Tiras,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities", "WoW realms to scan")
-	realmsUS   = flag.Bool("realmsUS", false, "Scan all other US realms")
-
-	// restOfUS is the rest of the realms in the US
-	restOfUS = []string{
-		"Alleria",
-		"Kirin Tor",
-		"Lightninghoof",
-
-		// These realms are distinct from the others, but are full
-		//"Aggramar",
-		//"Alterac Mountains",
-		//"Eredar",
-	}
-
-	// Generally useful items to keep a watch on
-	usefulGoods = map[int64]int64{
-		65891: common.Coins(30000, 0, 0), // Vial of the Sands (2-person flying mount)
-		98715: common.Coins(8000, 0, 0),  // Marked Flawless Battle-Stone
-		92741: common.Coins(8000, 0, 0),  // Flawless Battle-Stone
-
-		114821: common.Coins(130, 0, 0), // Hexweave Bag (30 slot)
-
-		//194019: common.Coins(110, 0, 0), // Simply Stitched Reagent Bag (32 slot)
-		194020: common.Coins(110, 0, 0), // Chronocloth Reagent Bag (36 slot)
-		222855: common.Coins(110, 0, 0), // Weavercloth Reagent Bag (36 slot)
-		222854: common.Coins(110, 0, 0), // Dawnweave Reagent Bag (38 slot)
-
-		// Cats I need for "Crazy Cat Lady" title
-		8491:  common.Coins(10000, 0, 0), // Black Tabby
-		72068: common.Coins(10000, 0, 0), // Guardian Cub
-	}
+	// These realms are distinct from the others, but are currently full: Aggramar,Alterac Mountains,Eredar
+	realms = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kul Tiras,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities,Alleria,Kirin Tor,Lightninghoof", "WoW realms to scan")
 )
-
-// findBargains returns auctions for which the goods are below our desired prices
-func findBargains(goods map[int64]int64, auctions map[int64][]auction.Auction) []string {
-	bargains := []string{}
-
-	for itemId, maxPrice := range goods {
-		item, ok := wowAPI.LookupItem(itemId, 0)
-		if !ok {
-			continue
-		}
-		for _, auc := range auctions[itemId] {
-			if auc.Buyout <= 0 {
-				continue
-			}
-			if auc.Buyout < maxPrice {
-				c := color.New(color.FgRed)
-				str := c.Sprintf("%s %s", item.Name(), common.Gold(auc.Buyout))
-				bargains = append(bargains, str)
-			}
-		}
-	}
-
-	return bargains
-}
 
 // findArbitrages returns auctions selling for lower than vendor prices
 func findArbitrages(auctions map[int64][]auction.Auction) []string {
@@ -107,13 +53,45 @@ func findArbitrages(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-// printShoppingList prints a list of auctions the user should buy
-func printShoppingList(label string, names []string) {
-	if len(names) > 0 {
-		fmt.Printf("--- %s ---\n", label)
-		fmt.Println(strings.Join(common.SortUnique(names), "\n"))
-		fmt.Println()
+// findBargains returns auctions for which the goods are below our desired prices
+func findBargains(auctions map[int64][]auction.Auction) []string {
+	bargains := []string{}
+
+	// Generally useful items to keep a watch on
+	goods := map[int64]int64{
+		65891: common.Coins(30000, 0, 0), // Vial of the Sands (2-person flying mount)
+		98715: common.Coins(8000, 0, 0),  // Marked Flawless Battle-Stone
+		92741: common.Coins(8000, 0, 0),  // Flawless Battle-Stone
+
+		114821: common.Coins(130, 0, 0), // Hexweave Bag (30 slot)
+
+		//194019: common.Coins(110, 0, 0), // Simply Stitched Reagent Bag (32 slot)
+		194020: common.Coins(110, 0, 0), // Chronocloth Reagent Bag (36 slot)
+		222855: common.Coins(110, 0, 0), // Weavercloth Reagent Bag (36 slot)
+		222854: common.Coins(110, 0, 0), // Dawnweave Reagent Bag (38 slot)
+
+		// Cats I need for "Crazy Cat Lady" title
+		8491:  common.Coins(10000, 0, 0), // Black Tabby
+		72068: common.Coins(10000, 0, 0), // Guardian Cub
 	}
+
+	for itemId, maxPrice := range goods {
+		item, ok := wowAPI.LookupItem(itemId, 0)
+		if !ok {
+			continue
+		}
+		for _, auc := range auctions[itemId] {
+			if auc.Buyout <= 0 {
+				continue
+			}
+			if auc.Buyout < maxPrice {
+				str := fmt.Sprintf("%s   %s", item.Name(), common.Gold(auc.Buyout))
+				bargains = append(bargains, str)
+			}
+		}
+	}
+
+	return bargains
 }
 
 // petValue returns the amount I'm willing to pay for a pet of a given level
@@ -124,8 +102,41 @@ func petValue(petLevel int64) int64 {
 	return level1Max + extraPerLevel*(petLevel-1)
 }
 
-// printPetBargains prints a list of pets the user should buy
-func printPetBargains(auctions map[int64][]auction.Auction) {
+// findPetBargains returns a list of pets that sell for more than they are listed
+func findPetBargains(auctions map[int64][]auction.Auction) []string {
+	bargains := []string{}
+
+	// SpeciesId of pets that do not resell well
+	skipPets := map[int64]bool{
+		162: true, // Sinister Squashling
+		251: true, // Toxic Wasteling
+	}
+
+	for _, petAuction := range auctions[battlePet.PetCageItemId] {
+		if skipPets[petAuction.Pet.SpeciesId] {
+			continue
+		}
+		if petAuction.Buyout <= 0 {
+			continue
+		}
+		if petAuction.Pet.QualityId < common.QualityId("Rare") {
+			continue
+		}
+		if petAuction.Pet.Level < 25 {
+			continue
+		}
+		if petAuction.Buyout > common.Coins(100, 0, 0) {
+			continue
+		}
+
+		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId))
+	}
+
+	return bargains
+}
+
+// findPetNeeded returns a list of pets I do not have
+func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	// Pets I do not own yet
@@ -146,8 +157,14 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId))
 	}
 
-	// Specialty pets I want
-	var premiumPets = map[int64]int64{
+	return bargains
+}
+
+// findPetSpecialty returns a list of pets I am looking for
+func findPetSpecialty(auctions map[int64][]auction.Auction) []string {
+	bargains := []string{}
+
+	var specialtyPets = map[int64]int64{
 		// Needed for "Crazy Cat Lady" title
 		42:  common.Coins(5000, 0, 0), // Black Tabby Cat
 		242: common.Coins(5000, 0, 0), // Spectral Tiger Cub
@@ -161,54 +178,27 @@ func printPetBargains(auctions map[int64][]auction.Auction) {
 		1890: common.Coins(1000, 0, 0), // Corgi Pup
 		1929: common.Coins(1000, 0, 0), // Corgnelius
 	}
-	// SpeciesId of pets that do not resell well
-	skipPets := map[int64]bool{
-		162: true, // Sinister Squashling
-		251: true, // Toxic Wasteling
-	}
+
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
-		// Premium pets trump any other criteria
-		premiumPetPrice := premiumPets[petAuction.Pet.SpeciesId]
-		if petAuction.Buyout <= premiumPetPrice {
-			namePrice := fmt.Sprintf("%s %d %s", battlePet.Name(petAuction.Pet.SpeciesId), petAuction.Pet.QualityId, common.Gold(premiumPetPrice))
-			bargains = append(bargains, namePrice)
+		premiumPetPrice := specialtyPets[petAuction.Pet.SpeciesId]
+		if petAuction.Buyout > premiumPetPrice {
 			continue
 		}
 
-		if skipPets[petAuction.Pet.SpeciesId] {
-			continue
-		}
-		if petAuction.Buyout <= 0 {
-			continue
-		}
-		if petAuction.Pet.QualityId < common.QualityId("Rare") {
-			continue
-		}
-		petLevel := petAuction.Pet.Level
-		if petLevel < 25 {
-			continue
-		}
-		if petAuction.Buyout > common.Coins(90, 0, 0) {
-			continue
-		}
-		note := fmt.Sprintf("%s (resell %d)", battlePet.Name(petAuction.Pet.SpeciesId), petAuction.Pet.SpeciesId)
-		bargains = append(bargains, note)
+		namePrice := fmt.Sprintf("%s   %d   %s", battlePet.Name(petAuction.Pet.SpeciesId), petAuction.Pet.QualityId, common.Gold(premiumPetPrice))
+		bargains = append(bargains, namePrice)
 	}
 
-	if len(bargains) > 0 {
-		fmt.Println("--- Pet auction bargains ---")
-		c := color.New(color.FgGreen)
-		c.Println(strings.Join(common.SortUnique(bargains), "\n"))
-		fmt.Println()
-	}
+	return bargains
 }
 
-// printBargains prints the bargains found in the auction house
-func printBargains(auctions map[int64][]auction.Auction) {
-	toBuy := findBargains(usefulGoods, auctions)
-	printShoppingList("Bargains", toBuy)
-	toBuy = findArbitrages(auctions)
-	printShoppingList("Arbitrages", toBuy)
+// printShoppingList prints a list of auctions the user may want to buy
+func printShoppingList(label string, names []string, c *color.Color) {
+	if len(names) == 0 {
+		return
+	}
+	fmt.Printf("--- %s ---\n", label)
+	c.Println(strings.Join(common.SortUnique(names), "\n"))
 }
 
 // scanRealm downloads the available auctions and prints any bargains/arbitrages
@@ -217,11 +207,27 @@ func scanRealm(realm string) {
 	if !ok {
 		return
 	}
-	c := color.New(color.FgCyan)
-	c.Printf("===========>  %s (%d unique items)  <===========\n\n", realm, len(auctions))
-	printBargains(auctions)
-	printPetBargains(auctions)
+
+	arbitrages := findArbitrages(auctions)
+	bargains := findBargains(auctions)
+	petBargains := findPetBargains(auctions)
+	petNeeded := findPetNeeded(auctions)
+	petSpecialty := findPetSpecialty(auctions)
+
 	cache.Save()
+
+	if len(arbitrages) == 0 && len(bargains) == 0 && len(petBargains) == 0 && len(petNeeded) == 0 && len(petSpecialty) == 0 {
+		// Skip realms that have nothing to buy
+		return
+	}
+
+	c := color.New(color.FgCyan)
+	c.Printf("\n===========>  %s (%d unique items)  <===========\n\n", realm, len(auctions))
+	printShoppingList("Pet Needed", petNeeded, color.New(color.FgMagenta))
+	printShoppingList("Pet Bargains", petBargains, color.New(color.FgGreen))
+	printShoppingList("Arbitrages", arbitrages, color.New(color.FgWhite))
+	printShoppingList("Bargains", bargains, color.New(color.FgRed))
+	printShoppingList("Pet Specialty", petSpecialty, color.New(color.FgRed))
 }
 
 // writeFile writes contents to file
@@ -257,25 +263,16 @@ func main() {
 		fmt.Println("ERROR: You must specify -passPhrase to unlock the client Id/secret")
 		usage()
 	}
-
 	wowAPI.Init(*passPhrase)
 
 	profileAccessToken, ok := wowAPI.ProfileAccessToken()
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain profile access token.")
 	}
-
 	battlePet.Init(profileAccessToken)
 
-	var realmsToScan []string
-	if *realmsUS {
-		realmsToScan = restOfUS
-	} else {
-		realmsToScan = strings.Split(*realms, ",")
-	}
-	for _, realm := range realmsToScan {
+	for _, realm := range strings.Split(*realms, ",") {
 		scanRealm(realm)
-		fmt.Println()
 	}
 
 	generateLua()
