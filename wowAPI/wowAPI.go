@@ -301,6 +301,12 @@ var crIDs = map[string]string{
 	"Ravencrest":        "1072",
 	"Runetotem":         "151",
 	"Sisters of Elune":  "125",
+
+	// Remote realms (Oceana and Brazil)
+	"Caelestrasz": "3721",
+	"Dath'Remar":  "3726",
+	"Gundrak":     "3725",
+	"Nemesis":     "3208",
 }
 
 // ConnectedRealmId returns the connected realm ID of the given realm
