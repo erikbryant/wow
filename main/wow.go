@@ -57,22 +57,18 @@ func findArbitrages(auctions map[int64][]auction.Auction) []string {
 func findBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
-	// Generally useful items to keep a watch on
+	// Generally useful items to keep a watch for
 	goods := map[int64]int64{
-		65891: common.Coins(30000, 0, 0), // Vial of the Sands (2-person flying mount)
+		65891: common.Coins(25000, 0, 0), // Vial of the Sands (2-person flying mount)
 		98715: common.Coins(8000, 0, 0),  // Marked Flawless Battle-Stone
 		92741: common.Coins(8000, 0, 0),  // Flawless Battle-Stone
 
-		114821: common.Coins(130, 0, 0), // Hexweave Bag (30 slot)
+		114821: common.Coins(120, 0, 0), // Hexweave Bag (30 slot)
 
-		//194019: common.Coins(110, 0, 0), // Simply Stitched Reagent Bag (32 slot)
-		194020: common.Coins(110, 0, 0), // Chronocloth Reagent Bag (36 slot)
-		222855: common.Coins(110, 0, 0), // Weavercloth Reagent Bag (36 slot)
-		222854: common.Coins(110, 0, 0), // Dawnweave Reagent Bag (38 slot)
-
-		// Cats I need for "Crazy Cat Lady" title
-		8491:  common.Coins(10000, 0, 0), // Black Tabby
-		72068: common.Coins(10000, 0, 0), // Guardian Cub
+		194019: common.Coins(100, 0, 0), // Simply Stitched Reagent Bag (32 slot)
+		194020: common.Coins(100, 0, 0), // Chronocloth Reagent Bag (36 slot)
+		222855: common.Coins(100, 0, 0), // Weavercloth Reagent Bag (36 slot)
+		222854: common.Coins(100, 0, 0), // Dawnweave Reagent Bag (38 slot)
 	}
 
 	for itemId, maxPrice := range goods {
@@ -162,17 +158,17 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 
 var specialtyPets = map[int64]int64{
 	// Needed for "Crazy Cat Lady" title
-	42:  common.Coins(5000, 0, 0), // Black Tabby Cat
-	242: common.Coins(5000, 0, 0), // Spectral Tiger Cub
-	303: common.Coins(5000, 0, 0), // Nightsaber Cub
-	311: common.Coins(5000, 0, 0), // Guardian Cub
+	42:  common.Coins(10000, 0, 0), // Black Tabby Cat
+	242: common.Coins(10000, 0, 0), // Spectral Tiger Cub
+	303: common.Coins(10000, 0, 0), // Nightsaber Cub
+	311: common.Coins(10000, 0, 0), // Guardian Cub
 
 	// Collecting it earns a cat battle pet
-	93039: common.Coins(5000, 0, 0), // Viscidus Globule (not a cat, but gets there...)
+	93039: common.Coins(20000, 0, 0), // Viscidus Globule
 
 	// Pets that make good gifts
-	1890: common.Coins(1000, 0, 0), // Corgi Pup
-	1929: common.Coins(1000, 0, 0), // Corgnelius
+	1890: common.Coins(2000, 0, 0), // Corgi Pup
+	1929: common.Coins(2000, 0, 0), // Corgnelius
 }
 
 // findPetSpell returns a list of pet spells for sale
