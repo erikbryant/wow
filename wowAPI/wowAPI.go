@@ -302,11 +302,31 @@ var crIDs = map[string]string{
 	"Runetotem":         "151",
 	"Sisters of Elune":  "125",
 
-	// Remote realms (Oceana and Brazil)
+	// Remote realms: Oceanic
+	"Aman'Thul":   "3726",
+	"Barthilas":   "3723",
 	"Caelestrasz": "3721",
 	"Dath'Remar":  "3726",
+	"Dreadmaul":   "3725",
+	"Frostmourne": "3725",
 	"Gundrak":     "3725",
-	"Nemesis":     "3208",
+	"Jubei'Thos":  "3725",
+	"Khaz'goroth": "3726",
+	"Nagrand":     "3721",
+	"Saurfang":    "3721",
+	"Thaurissan":  "3725",
+
+	// Remote realms: Brazil
+	"Azralon":   "3209",
+	"Gallywix":  "3234",
+	"Goldrinn":  "3207",
+	"Nemesis":   "3208",
+	"Tol Barad": "3208",
+
+	// Remote realms: Latin America
+	"Drakkari":    "1425",
+	"Quel'Thalas": "1428",
+	"Ragnaros":    "1427",
 }
 
 // ConnectedRealmId returns the connected realm ID of the given realm
