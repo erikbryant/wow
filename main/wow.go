@@ -16,8 +16,8 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	// These realms are distinct from the others, but are currently full: Aggramar,Alterac Mountains,Eredar
-	realms = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kul Tiras,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities,Alleria,Kirin Tor,Lightninghoof", "WoW realms to scan")
+	// These are distinct from the other realms, but are currently full: Aggramar,Alterac Mountains,Eredar
+	realms = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities,Alleria,Lightninghoof", "WoW realms to scan")
 )
 
 // findArbitrages returns auctions selling for lower than vendor prices
@@ -94,14 +94,6 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-// petValue returns the amount I'm willing to pay for a pet of a given level
-func petValue(petLevel int64) int64 {
-	level1Max := common.Coins(799, 0, 0)
-	level25Max := common.Coins(900, 0, 0)
-	extraPerLevel := (level25Max - level1Max) / 24
-	return level1Max + extraPerLevel*(petLevel-1)
-}
-
 // findPetBargains returns a list of pets that sell for more than they are listed
 func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
@@ -135,6 +127,14 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
+// petValue returns the amount I'm willing to pay for a pet of a given level
+func petValue(petLevel int64) int64 {
+	level1Max := common.Coins(900, 0, 0)
+	level25Max := common.Coins(1000, 0, 0)
+	extraPerLevel := (level25Max - level1Max) / 24
+	return level1Max + extraPerLevel*(petLevel-1)
+}
+
 // findPetNeeded returns a list of pets I do not have
 func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
@@ -160,26 +160,63 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
+var specialtyPets = map[int64]int64{
+	// Needed for "Crazy Cat Lady" title
+	42:  common.Coins(5000, 0, 0), // Black Tabby Cat
+	242: common.Coins(5000, 0, 0), // Spectral Tiger Cub
+	303: common.Coins(5000, 0, 0), // Nightsaber Cub
+	311: common.Coins(5000, 0, 0), // Guardian Cub
+
+	// Collecting it earns a cat battle pet
+	93039: common.Coins(5000, 0, 0), // Viscidus Globule (not a cat, but gets there...)
+
+	// Pets that make good gifts
+	1890: common.Coins(1000, 0, 0), // Corgi Pup
+	1929: common.Coins(1000, 0, 0), // Corgnelius
+}
+
+// findPetSpell returns a list of pet spells for sale
+func findPetSpell(auctions map[int64][]auction.Auction) []string {
+	bargains := []string{}
+
+	for itemId, itemAuctions := range auctions {
+		item, ok := wowAPI.LookupItem(itemId, 0)
+		if !ok {
+			continue
+		}
+		petId, ok := battlePet.IsPetSpell(item)
+		if !ok {
+			continue
+		}
+		if specialtyPets[petId] > 0 {
+			bargains = append(bargains, battlePet.Name(petId)+"   (specialty)")
+		}
+		//if common.QualityId(item.Quality()) < common.QualityId("Rare") {
+		//	continue
+		//}
+		if battlePet.Own(petId) {
+			continue
+		}
+
+		for _, auc := range itemAuctions {
+			if auc.Buyout >= common.Coins(1000, 0, 0) {
+				continue
+			}
+			bargains = append(bargains, battlePet.Name(petId)+"   "+common.Gold(auc.Buyout))
+		}
+	}
+
+	return bargains
+}
+
 // findPetSpecialty returns a list of pets I am looking for
 func findPetSpecialty(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
-	var specialtyPets = map[int64]int64{
-		// Needed for "Crazy Cat Lady" title
-		42:  common.Coins(5000, 0, 0), // Black Tabby Cat
-		242: common.Coins(5000, 0, 0), // Spectral Tiger Cub
-		303: common.Coins(5000, 0, 0), // Nightsaber Cub
-		311: common.Coins(5000, 0, 0), // Guardian Cub
-
-		// Collecting it earns a cat battle pet
-		93039: common.Coins(5000, 0, 0), // Viscidus Globule (not a cat, but gets there...)
-
-		// Pets that make good gifts
-		1890: common.Coins(1000, 0, 0), // Corgi Pup
-		1929: common.Coins(1000, 0, 0), // Corgnelius
-	}
-
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
+		if petAuction.Buyout <= 0 {
+			continue
+		}
 		premiumPetPrice := specialtyPets[petAuction.Pet.SpeciesId]
 		if petAuction.Buyout > premiumPetPrice {
 			continue
@@ -213,10 +250,11 @@ func scanRealm(realm string) {
 	petBargains := findPetBargains(auctions)
 	petNeeded := findPetNeeded(auctions)
 	petSpecialty := findPetSpecialty(auctions)
+	petSpell := findPetSpell(auctions)
 
 	cache.Save()
 
-	if len(arbitrages) == 0 && len(bargains) == 0 && len(petBargains) == 0 && len(petNeeded) == 0 && len(petSpecialty) == 0 {
+	if len(arbitrages) == 0 && len(bargains) == 0 && len(petBargains) == 0 && len(petNeeded) == 0 && len(petSpecialty) == 0 && len(petSpell) == 0 {
 		// Skip realms that have nothing to buy
 		return
 	}
@@ -228,6 +266,7 @@ func scanRealm(realm string) {
 	printShoppingList("Arbitrages", arbitrages, color.New(color.FgWhite))
 	printShoppingList("Bargains", bargains, color.New(color.FgRed))
 	printShoppingList("Pet Specialty", petSpecialty, color.New(color.FgRed))
+	printShoppingList("Pet Spell", petSpell, color.New(color.FgBlue))
 }
 
 // writeFile writes contents to file
