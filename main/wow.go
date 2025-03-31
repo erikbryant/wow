@@ -19,9 +19,9 @@ var (
 	// Full:    Aggramar,Alterac Mountains,Eredar
 	// Oceanic: Caelestrasz,Dath'Remar,Gundrak
 	// Brazil:  Nemesis
-	realms          = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities,Alleria,Gundrak", "WoW realms to scan")
+	realms          = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Alleria,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities,Gundrak", "WoW realms to scan")
 	untracked       = flag.Bool("untracked", false, "Scan all untracked items")
-	untrackedRealms = "Caelestrasz,Dath'Remar,Nemesis"
+	untrackedRealms = "Azralon,Barthilas,Caelestrasz,Dath'Remar,Drakkari,Gallywix,Goldrinn,Nemesis,Quel'Thalas,Ragnaros"
 )
 
 // findArbitrages returns auctions selling for lower than vendor prices
@@ -261,6 +261,7 @@ func scanRealm(realm string) {
 
 	c := color.New(color.FgCyan)
 	c.Printf("\n===========>  %s (%d unique items)  <===========\n\n", realm, len(auctions))
+
 	printShoppingList("Pet Needed", petNeeded, color.New(color.FgMagenta))
 	printShoppingList("Pet Bargains", petBargains, color.New(color.FgGreen))
 	printShoppingList("Arbitrages", arbitrages, color.New(color.FgWhite))
