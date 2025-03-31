@@ -84,6 +84,25 @@ func PetNames() map[int64]string {
 	return pets
 }
 
+// IsPetSpell returns true and the corresponding pet ID if the item is a pet summoning spell
+func IsPetSpell(i item.Item) (int64, bool) {
+	if len(allNames) == 0 {
+		log.Fatal("ERROR: You must call battlePet.Init() before calling battlePet.IsPetSpell()")
+	}
+
+	if i.ItemSubclassName() != "Companion Pets" {
+		return 0, false
+	}
+
+	for petId, petName := range allNames {
+		if i.Name() == petName {
+			return petId, true
+		}
+	}
+
+	return 0, false
+}
+
 func Name(petId int64) string {
 	if len(allNames) == 0 {
 		log.Fatal("ERROR: You must call battlePet.Init() before calling battlePet.Name()")
