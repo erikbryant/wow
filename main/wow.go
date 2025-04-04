@@ -16,12 +16,10 @@ import (
 
 var (
 	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	// Full:    Aggramar,Alterac Mountains,Eredar
-	// Oceanic: Caelestrasz,Dath'Remar,Gundrak
-	// Brazil:  Nemesis
-	realms          = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Alleria,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities,Gundrak", "WoW realms to scan")
+	// Full:    Aggramar,Alterac Mountains,Azralon,Eredar,Quel'Thalas,Ragnaros
+	realms          = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Alleria,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities,Barthilas,Gundrak,Nemesis", "WoW realms to scan")
 	untracked       = flag.Bool("untracked", false, "Scan all untracked items")
-	untrackedRealms = "Azralon,Barthilas,Caelestrasz,Dath'Remar,Drakkari,Gallywix,Goldrinn,Nemesis,Quel'Thalas,Ragnaros"
+	untrackedRealms = "Caelestrasz,Dath'Remar,Drakkari,Gallywix,Goldrinn"
 )
 
 // findArbitrages returns auctions selling for lower than vendor prices
