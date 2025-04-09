@@ -16,9 +16,9 @@ import (
 
 var (
 	passPhrase      = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms          = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities,Aggramar,Barthilas,Gundrak,Nemesis,Quel'Thalas,Ragnaros", "WoW realms to scan")
+	realms          = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities,Aggramar,Barthilas,Eredar,Gundrak,Nemesis,Quel'Thalas,Ragnaros", "WoW realms to scan")
 	untracked       = flag.Bool("untracked", false, "Scan all untracked items")
-	untrackedRealms = "Alleria,Alterac Mountains,Azralon,Eredar,Caelestrasz,Dath'Remar,Drakkari,Gallywix,Goldrinn"
+	untrackedRealms = "Alleria,Alterac Mountains,Azralon,Caelestrasz,Dath'Remar,Drakkari,Gallywix,Goldrinn"
 )
 
 // findArbitrages returns auctions selling for lower than vendor prices
@@ -187,6 +187,9 @@ func findPetSpell(auctions map[int64][]auction.Auction) []string {
 			if specialtyPets[petId] > 0 {
 				stats := fmt.Sprintf("%s %s %s (specialty)", battlePet.Name(petId), common.Gold(auc.Buyout), item.Quality())
 				bargains = append(bargains, stats)
+			}
+			if auc.Buyout <= 0 {
+				continue
 			}
 			if auc.Buyout >= common.Coins(1000, 0, 0) {
 				continue
