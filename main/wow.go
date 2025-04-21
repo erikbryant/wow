@@ -16,9 +16,9 @@ import (
 
 var (
 	passPhrase      = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms          = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Alleria,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities,Aggramar,Alterac Mountains,Barthilas,Eredar,Gundrak,Nemesis,Quel'Thalas,Ragnaros", "WoW realms to scan")
+	realms          = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Alleria,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities,Aggramar,Alterac Mountains,Barthilas,Eredar,Goldrinn,Gundrak,Nemesis,Quel'Thalas,Ragnaros", "WoW realms to scan")
 	untracked       = flag.Bool("untracked", false, "Scan all untracked items")
-	untrackedRealms = "Azralon,Caelestrasz,Dath'Remar,Drakkari,Gallywix,Goldrinn"
+	untrackedRealms = "Azralon,Caelestrasz,Dath'Remar,Drakkari,Gallywix"
 )
 
 // findArbitrages returns auctions selling for lower than vendor prices
@@ -63,6 +63,8 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 		65891: common.Coins(25000, 0, 0), // Vial of the Sands (2-person flying mount)
 		98715: common.Coins(6000, 0, 0),  // Marked Flawless Battle-Stone
 		92741: common.Coins(6000, 0, 0),  // Flawless Battle-Stone
+
+		44554: common.Coins(200, 0, 0), // Flying Carpet
 
 		114821: common.Coins(120, 0, 0), // Hexweave Bag (30 slot)
 
