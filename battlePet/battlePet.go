@@ -57,7 +57,10 @@ func Owned(profileAccessToken string) map[int64][]item.PetInfo {
 		p.SpeciesId = web.ToInt64(species["id"])
 
 		_, ok = myPets[p.SpeciesId]
-		if !ok {
+		if ok {
+			name, _ := pet["species"].(map[string]interface{})
+			fmt.Println("Duplicate pet:", name)
+		} else {
 			myPets[p.SpeciesId] = []item.PetInfo{}
 		}
 		myPets[p.SpeciesId] = append(myPets[p.SpeciesId], p)
