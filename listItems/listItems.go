@@ -16,9 +16,9 @@ var (
 	itemId      = flag.Int64("id", 0, "Item ID to look up")
 )
 
-// refreshCache refreshes any cached items older than 1 day
+// refreshCache refreshes any cached items older than a certain age
 func refreshCache() {
-	maxAge := 24 * time.Hour
+	maxAge := 24 * time.Hour * 7 // 1 week
 	needsRefresh := 0
 	refreshCount := 0
 	maxRefreshCount := 1000
