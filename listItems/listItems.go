@@ -13,6 +13,7 @@ var (
 	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
 	readThrough = flag.Bool("readThrough", false, "Read live values")
 	refresh     = flag.Bool("refresh", false, "Refresh cached values")
+	delete      = flag.Bool("delete", false, "Delete cached value")
 	itemId      = flag.Int64("id", 0, "Item ID to look up")
 )
 
@@ -47,26 +48,39 @@ func refreshCache() {
 // usage prints a usage message and terminates the program with an error
 func usage() {
 	log.Fatal(`Usage:
-  listItems                                     # Print the entire item cache
-  listItems -passPhrase <phrase> -id <itemId>   # Print a single item
-  listItems -passPhrase <phrase> -refresh       # Refresh the cache
+  listItems                                             # Print the entire cache
+  listItems -passPhrase <phrase> -id <itemId>           # Print a single item
+  listItems -passPhrase <phrase> -refresh               # Refresh items in the cache
+  listItems -passPhrase <phrase> -delete -id <itemId>   # Delete <itemId> from the cache
 `)
 }
 
 func main() {
 	flag.Parse()
 
-	if *itemId == 0 && !*refresh {
+	if *itemId == 0 && !*refresh && !*delete {
+		// If no flags, list the whole cache
 		cache.Print()
 		return
 	}
 
 	if *passPhrase == "" {
-		fmt.Println("ERROR: You must specify -passPhrase to unlock the client Id/secret")
+		fmt.Println("ERROR: You must specify `-passPhrase <phrase>`")
 		usage()
 	}
 
 	wowAPI.Init(*passPhrase)
+
+	if *delete {
+		if *itemId == 0 {
+			fmt.Println("You must specify `-id <itemId>`")
+			usage()
+		}
+		fmt.Println("Deleting itemId:", *itemId)
+		cache.Delete(*itemId)
+		cache.Save()
+		return
+	}
 
 	if *refresh {
 		refreshCache()
@@ -80,8 +94,9 @@ func main() {
 
 	i, ok := wowAPI.LookupItem(*itemId, 0)
 	if !ok {
-		return
+		log.Fatal("Failed to LookupItem: ", *itemId)
 	}
+
 	fmt.Println(i.Format())
 	cache.Save()
 }

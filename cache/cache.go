@@ -65,6 +65,11 @@ func Write(id int64, i item.Item) {
 	itemCache[id] = i
 }
 
+// Delete deletes an entry from the in-memory cache
+func Delete(id int64) {
+	delete(itemCache, id)
+}
+
 // IDs returns the sorted list of keys from itemCache
 func IDs() []int64 {
 	ids := []int64{}
