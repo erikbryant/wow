@@ -60,16 +60,18 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 
 	// Generally useful items to keep a watch for
 	goods := map[int64]int64{
-		65891: common.Coins(25000, 0, 0), // Vial of the Sands (2-person flying mount)
-		98715: common.Coins(6000, 0, 0),  // Marked Flawless Battle-Stone
-		92741: common.Coins(6000, 0, 0),  // Flawless Battle-Stone
+		//65891: common.Coins(25000, 0, 0), // Vial of the Sands (2-person flying mount)
+		98715: common.Coins(6000, 0, 0), // Marked Flawless Battle-Stone
+		92741: common.Coins(6000, 0, 0), // Flawless Battle-Stone
+
+		204818: common.Coins(1000, 0, 0), // Mallard Mortar
 
 		114821: common.Coins(120, 0, 0), // Hexweave Bag (30 slot)
 
-		194019: common.Coins(90, 0, 0), // Simply Stitched Reagent Bag (32 slot)
-		194020: common.Coins(90, 0, 0), // Chronocloth Reagent Bag (36 slot)
-		222855: common.Coins(90, 0, 0), // Weavercloth Reagent Bag (36 slot)
-		222854: common.Coins(90, 0, 0), // Dawnweave Reagent Bag (38 slot)
+		//194019: common.Coins(90, 0, 0), // Simply Stitched Reagent Bag (32 slot)
+		//194020: common.Coins(90, 0, 0), // Chronocloth Reagent Bag (36 slot)
+		//222855: common.Coins(90, 0, 0), // Weavercloth Reagent Bag (36 slot)
+		//222854: common.Coins(90, 0, 0), // Dawnweave Reagent Bag (38 slot)
 	}
 
 	for itemId, maxPrice := range goods {
