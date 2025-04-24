@@ -7,6 +7,7 @@ import (
 	"github.com/erikbryant/wow/battlePet"
 	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/common"
+	"github.com/erikbryant/wow/toy"
 	"github.com/erikbryant/wow/wowAPI"
 	"github.com/fatih/color"
 	"log"
@@ -74,16 +75,26 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 		//222854: common.Coins(90, 0, 0), // Dawnweave Reagent Bag (38 slot)
 	}
 
-	for itemId, maxPrice := range goods {
+	for itemId, itemAuctions := range auctions {
 		item, ok := wowAPI.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}
-		for _, auc := range auctions[itemId] {
+		for _, auc := range itemAuctions {
 			if auc.Buyout <= 0 {
 				continue
 			}
-			if auc.Buyout < maxPrice {
+
+			// Bargains on toys
+			maxPrice := common.Coins(100, 0, 0)
+			if item.Toy() && !toy.Own(item) && auc.Buyout <= maxPrice {
+				str := fmt.Sprintf("%s   %s", item.Name(), common.Gold(auc.Buyout))
+				bargains = append(bargains, str)
+			}
+
+			// Bargains on specific goods
+			maxPrice, ok := goods[itemId]
+			if ok && auc.Buyout < maxPrice {
 				str := fmt.Sprintf("%s   %s", item.Name(), common.Gold(auc.Buyout))
 				bargains = append(bargains, str)
 			}
@@ -304,7 +315,9 @@ func main() {
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain profile access token.")
 	}
+
 	battlePet.Init(profileAccessToken)
+	toy.Init(profileAccessToken)
 
 	realmsToScan := *realms
 	if *untracked {
