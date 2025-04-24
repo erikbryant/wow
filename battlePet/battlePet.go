@@ -14,16 +14,16 @@ import (
 var (
 	PetCageItemId = int64(82800)
 	allNames      = map[int64]string{}
-	owned         = map[int64][]item.PetInfo{}
+	allOwned      = map[int64][]item.PetInfo{}
 )
 
 func Init(profileAccessToken string) {
-	allNames = PetNames()
-	owned = Owned(profileAccessToken)
+	allNames = petNames()
+	allOwned = owned(profileAccessToken)
 }
 
-// Owned returns the pets I own
-func Owned(profileAccessToken string) map[int64][]item.PetInfo {
+// owned returns the pets I own
+func owned(profileAccessToken string) map[int64][]item.PetInfo {
 	myPets := map[int64][]item.PetInfo{}
 
 	pets, ok := wowAPI.CollectionsPets(profileAccessToken)
@@ -69,8 +69,8 @@ func Owned(profileAccessToken string) map[int64][]item.PetInfo {
 	return myPets
 }
 
-// PetNames returns a map of all battle pet names by petId
-func PetNames() map[int64]string {
+// petNames returns a map of all battle pet names by petId
+func petNames() map[int64]string {
 	pets := map[int64]string{}
 
 	allPets, ok := wowAPI.Pets()
@@ -114,10 +114,10 @@ func Name(petId int64) string {
 }
 
 func Own(petId int64) bool {
-	if len(owned) == 0 {
-		log.Fatal("ERROR: You must call battlePet.Init() before calling battlePet.OwnPet()")
+	if len(allOwned) == 0 {
+		log.Fatal("ERROR: You must call battlePet.Init() before calling battlePet.Own()")
 	}
-	return len(owned[petId]) > 0
+	return len(allOwned[petId]) > 0
 }
 
 func Format(pet item.PetInfo) string {
@@ -146,7 +146,7 @@ end
 	lua += "\n"
 
 	highestLevelOwned := map[int64]int64{}
-	for id, pets := range owned {
+	for id, pets := range allOwned {
 		for _, pet := range pets {
 			if pet.Level > highestLevelOwned[id] {
 				highestLevelOwned[id] = pet.Level
