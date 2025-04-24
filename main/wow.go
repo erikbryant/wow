@@ -75,6 +75,19 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 		//222854: common.Coins(90, 0, 0), // Dawnweave Reagent Bag (38 slot)
 	}
 
+	// Toys I am not interested in
+	skipToys := map[int64]bool{
+		// Already have it, have not installed it yet
+		40768: true, // MOLL-E
+		48933: true, // Wormhole Generator: Northrend
+
+		// Creepy
+		101571: true, // Moonfang Shroud (creepy)
+
+		// Too fiddly
+		109167: true, // Findle's Loot-A-Rang
+	}
+
 	for itemId, itemAuctions := range auctions {
 		item, ok := wowAPI.LookupItem(itemId, 0)
 		if !ok {
@@ -86,8 +99,8 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 			}
 
 			// Bargains on toys
-			maxPrice := common.Coins(100, 0, 0)
-			if item.Toy() && !toy.Own(item) && auc.Buyout <= maxPrice {
+			maxPrice := common.Coins(200, 0, 0)
+			if item.Toy() && !toy.Own(item) && !skipToys[item.Id()] && auc.Buyout <= maxPrice {
 				str := fmt.Sprintf("%s   %s", item.Name(), common.Gold(auc.Buyout))
 				bargains = append(bargains, str)
 			}
