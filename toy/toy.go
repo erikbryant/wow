@@ -58,9 +58,9 @@ func Own(i item.Item) bool {
 		log.Fatal("ERROR: You must call toy.Init() before calling toy.Own()")
 	}
 
-	for _, name := range allNames {
+	for toyId, name := range allNames {
 		if i.Name() == name {
-			return true
+			return allOwned[toyId]
 		}
 	}
 
