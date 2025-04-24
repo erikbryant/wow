@@ -161,6 +161,11 @@ func (i Item) Quality() string {
 	return web.ToString(q)
 }
 
+func (i Item) Toy() bool {
+	q, _ := web.MsiValued(i.XItem, []string{"preview_item", "toy"}, "")
+	return web.ToString(q) == "Toy"
+}
+
 // Format returns a formatted string representing the item
 func (i Item) Format() string {
 	equippable := "F"
