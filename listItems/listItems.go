@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/erikbryant/wow/cache"
@@ -13,8 +14,9 @@ var (
 	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
 	readThrough = flag.Bool("readThrough", false, "Read live values")
 	refresh     = flag.Bool("refresh", false, "Refresh cached values")
-	delete      = flag.Bool("delete", false, "Delete cached value")
+	delItem     = flag.Bool("delItem", false, "Delete cached value")
 	itemId      = flag.Int64("id", 0, "Item ID to look up")
+	full        = flag.Bool("full", false, "Display item details")
 )
 
 // refreshCache refreshes any cached items older than a certain age
@@ -51,14 +53,14 @@ func usage() {
   listItems                                             # Print the entire cache
   listItems -passPhrase <phrase> -id <itemId>           # Print a single item
   listItems -passPhrase <phrase> -refresh               # Refresh items in the cache
-  listItems -passPhrase <phrase> -delete -id <itemId>   # Delete <itemId> from the cache
+  listItems -passPhrase <phrase> -delItem -id <itemId>   # Delete <itemId> from the cache
 `)
 }
 
 func main() {
 	flag.Parse()
 
-	if *itemId == 0 && !*refresh && !*delete {
+	if *itemId == 0 && !*refresh && !*delItem {
 		// If no flags, list the whole cache
 		cache.Print()
 		return
@@ -71,7 +73,7 @@ func main() {
 
 	wowAPI.Init(*passPhrase)
 
-	if *delete {
+	if *delItem {
 		if *itemId == 0 {
 			fmt.Println("You must specify `-id <itemId>`")
 			usage()
@@ -97,6 +99,12 @@ func main() {
 		log.Fatal("Failed to LookupItem: ", *itemId)
 	}
 
-	fmt.Println(i.Format())
+	if *full {
+		bytes, _ := json.MarshalIndent(i.XItem, "\t", "\t")
+		fmt.Println(string(bytes))
+	} else {
+		fmt.Println(i.Format())
+	}
+
 	cache.Save()
 }
