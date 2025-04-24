@@ -500,3 +500,37 @@ func CollectionsPets(profileAccessToken string) ([]interface{}, bool) {
 
 	return response["pets"].([]interface{}), true
 }
+
+// Toys returns a list of all toys in the game
+func Toys() ([]interface{}, bool) {
+	url := "https://us.api.blizzard.com/data/wow/toy/index?namespace=static-us&locale=en_US"
+
+	headers := map[string]string{
+		"Authorization": "Bearer " + accessToken,
+	}
+
+	response, err := web.RequestJSON(url, headers)
+	if err != nil {
+		fmt.Println("Toys: no data returned:", err)
+		return nil, false
+	}
+
+	return response["toys"].([]interface{}), true
+}
+
+// CollectionsToys returns the toys the user owns
+func CollectionsToys(profileAccessToken string) ([]interface{}, bool) {
+	url := "https://us.api.blizzard.com/profile/user/wow/collections/toys?namespace=profile-us&locale=en_US"
+
+	headers := map[string]string{
+		"Authorization": "Bearer " + profileAccessToken,
+	}
+
+	response, err := web.RequestJSON(url, headers)
+	if err != nil {
+		fmt.Println("CollectionsToys: no data returned:", err)
+		return nil, false
+	}
+
+	return response["toys"].([]interface{}), true
+}
