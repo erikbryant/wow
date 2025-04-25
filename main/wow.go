@@ -8,6 +8,7 @@ import (
 	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/toy"
+	"github.com/erikbryant/wow/transmog"
 	"github.com/erikbryant/wow/wowAPI"
 	"github.com/fatih/color"
 	"log"
@@ -77,10 +78,6 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 
 	// Toys I am not interested in
 	skipToys := map[int64]bool{
-		// Already have it, have not installed it yet
-		40768: true, // MOLL-E
-		48933: true, // Wormhole Generator: Northrend
-
 		// Creepy
 		101571: true, // Moonfang Shroud (creepy)
 
@@ -331,6 +328,7 @@ func main() {
 
 	battlePet.Init(profileAccessToken)
 	toy.Init(profileAccessToken)
+	transmog.Init(profileAccessToken)
 
 	realmsToScan := *realms
 	if *untracked {

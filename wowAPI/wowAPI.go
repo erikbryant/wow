@@ -534,3 +534,37 @@ func CollectionsToys(profileAccessToken string) ([]interface{}, bool) {
 
 	return response["toys"].([]interface{}), true
 }
+
+// CollectionsTransmogs returns the transmogs the user owns
+func CollectionsTransmogs(profileAccessToken string) (interface{}, bool) {
+	url := "https://us.api.blizzard.com/profile/user/wow/collections/transmogs?namespace=profile-us&locale=en_US"
+
+	headers := map[string]string{
+		"Authorization": "Bearer " + profileAccessToken,
+	}
+
+	response, err := web.RequestJSON(url, headers)
+	if err != nil {
+		fmt.Println("CollectionsTransmogs: no data returned:", err)
+		return nil, false
+	}
+
+	return response, true
+}
+
+// Transmogs returns the transmogs the user owns
+func Transmogs(profileAccessToken string, transmogId int64) (interface{}, bool) {
+	url := fmt.Sprintf("https://us.api.blizzard.com/data/wow/item-appearance/%d?namespace=static-11.1.5_60179-us", transmogId)
+
+	headers := map[string]string{
+		"Authorization": "Bearer " + profileAccessToken,
+	}
+
+	response, err := web.RequestJSON(url, headers)
+	if err != nil {
+		fmt.Println("Transmogs: no data returned:", err)
+		return nil, false
+	}
+
+	return response, true
+}
