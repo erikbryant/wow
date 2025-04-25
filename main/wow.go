@@ -83,6 +83,18 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 
 		// Too fiddly
 		109167: true, // Findle's Loot-A-Rang
+
+		// Only usable by engineers
+		34060:  true, // Flying Machine
+		34061:  true, // Turbo-Charged Flying Machine
+		48933:  true, // Wormhole Generator: Northrend
+		87215:  true, // Wormhole Generator: Pandaria
+		151652: true, // Wormhole Generator: Argus
+		168807: true, // Wormhole Generator: Kul Tiras
+		168808: true, // Wormhole Generator: Zandalar
+		172924: true, // Wormhole Generator: Shadowlands
+		198156: true, // Wyrmhole Generator: Dragon Isles
+		221966: true, // Wormhole Generator: Khaz Algar
 	}
 
 	for itemId, itemAuctions := range auctions {
