@@ -181,10 +181,6 @@ func realmToSlug(realm string) string {
 	return slug
 }
 
-func ProfileAccessToken() (string, bool) {
-	return wowProfileAccessToken()
-}
-
 // wowProfileAccessToken returns a profile access token (to authenticate user profile API calls)
 func wowProfileAccessToken() (string, bool) {
 	return oauth2.ProfileAccessToken(clientID, clientSecret)
@@ -614,13 +610,6 @@ func ItemAppearance(itemAppearanceId int64) (interface{}, bool) {
 	}
 
 	return response, true
-}
-
-// Appearances returns a list of all item appearance IDs
-func Appearances() ([]int64, bool) {
-	ids := []int64{}
-
-	return ids, true
 }
 
 // CollectionsTransmogs returns the transmogs the user owns
