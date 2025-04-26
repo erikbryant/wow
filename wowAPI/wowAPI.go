@@ -181,6 +181,29 @@ func realmToSlug(realm string) string {
 	return slug
 }
 
+func request(url, token, caller string) (interface{}, bool) {
+	headers := map[string]string{
+		"Authorization": "Bearer " + token,
+	}
+
+	response, err := web.RequestJSON(url, headers)
+	if err != nil {
+		fmt.Printf("%s: no data returned: %s", caller, err)
+		return nil, false
+	}
+
+	return response, true
+}
+
+func requestKey(url, token, key, caller string) ([]interface{}, bool) {
+	r, ok := request(url, token, caller)
+	if !ok {
+		return nil, false
+	}
+	response := r.(map[string]interface{})
+	return response[key].([]interface{}), true
+}
+
 // wowProfileAccessToken returns a profile access token (to authenticate user profile API calls)
 func wowProfileAccessToken() (string, bool) {
 	return oauth2.ProfileAccessToken(clientID, clientSecret)
@@ -222,16 +245,12 @@ func wowAccessToken() (string, error) {
 // ConnectedRealm returns all realms connected to the given realm ID
 func ConnectedRealm(realmId string) map[string]interface{} {
 	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + realmId + "?namespace=dynamic-us&locale=en_US"
-
-	headers := map[string]string{
-		"Authorization": "Bearer " + accessToken,
-	}
-
-	response, err := web.RequestJSON(url, headers)
-	if err != nil {
-		fmt.Println("ConnectedRealm: Error getting connected realm:", err)
+	r, ok := request(url, accessToken, "ConnectedRealm")
+	if !ok {
 		return nil
 	}
+
+	response := r.(map[string]interface{})
 	if response["code"] != nil {
 		fmt.Println("ConnectedRealm: Failed to get connected realm:", response)
 		return nil
@@ -243,16 +262,12 @@ func ConnectedRealm(realmId string) map[string]interface{} {
 // ConnectedRealmSearch returns the set of all connected realms
 func ConnectedRealmSearch() map[string]interface{} {
 	url := "https://us.api.blizzard.com/data/wow/search/connected-realm?namespace=dynamic-us&status.type=UP"
-
-	headers := map[string]string{
-		"Authorization": "Bearer " + accessToken,
-	}
-
-	response, err := web.RequestJSON(url, headers)
-	if err != nil {
-		fmt.Println("ConnectedRealmSearch: Error getting connected realms:", err)
+	r, ok := request(url, accessToken, "ConnectedRealm")
+	if !ok {
 		return nil
 	}
+
+	response := r.(map[string]interface{})
 	if response["code"] != nil {
 		fmt.Println("ConnectedRealmSearch: Failed to get connected realms:", response)
 		return nil
@@ -386,17 +401,12 @@ func Auctions(realm string) ([]interface{}, bool) {
 	}
 
 	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + connectedRealmId + "/auctions?namespace=dynamic-us&locale=en_US"
-
-	headers := map[string]string{
-		"Authorization": "Bearer " + accessToken,
-	}
-
-	response, err := web.RequestJSON(url, headers)
-	if err != nil {
-		fmt.Println("Auctions: no auction data returned:", err)
+	r, ok := request(url, accessToken, "Auctions")
+	if !ok {
 		return nil, false
 	}
 
+	response := r.(map[string]interface{})
 	if response["code"] != nil {
 		fmt.Println("Auctions: HTTP error:", response)
 		return nil, false
@@ -404,34 +414,6 @@ func Auctions(realm string) ([]interface{}, bool) {
 
 	auctions := response["auctions"].([]interface{})
 	return auctions, true
-}
-
-func request(url, token, caller string) (interface{}, bool) {
-	headers := map[string]string{
-		"Authorization": "Bearer " + token,
-	}
-
-	response, err := web.RequestJSON(url, headers)
-	if err != nil {
-		fmt.Printf("%s: no data returned: %s", caller, err)
-		return nil, false
-	}
-
-	return response, true
-}
-
-func requestKey(url, token, key, caller string) ([]interface{}, bool) {
-	headers := map[string]string{
-		"Authorization": "Bearer " + token,
-	}
-
-	response, err := web.RequestJSON(url, headers)
-	if err != nil {
-		fmt.Printf("%s: no data returned: %s", caller, err)
-		return nil, false
-	}
-
-	return response[key].([]interface{}), true
 }
 
 // Commodities returns the current commodity auctions from the auction house
@@ -443,21 +425,17 @@ func Commodities() ([]interface{}, bool) {
 // wowItem retrieves a single item from the WoW web API
 func wowItem(id string) (map[string]interface{}, bool) {
 	url := "https://us.api.blizzard.com/data/wow/item/" + id + "?namespace=static-us&locale=en_US"
-
-	headers := map[string]string{
-		"Authorization": "Bearer " + accessToken,
-	}
-
-	response, err := web.RequestJSON(url, headers)
-	if err != nil {
-		fmt.Println("ItemId: failed to retrieve item:", err)
+	r, ok := request(url, accessToken, "Auctions")
+	if !ok {
 		return nil, false
 	}
+
+	response := r.(map[string]interface{})
 	if response["status"] == "nok" {
 		fmt.Println("INFO: ", response["reason"], "id: ", id)
 		return nil, false
 	}
-	_, ok := response["code"]
+	_, ok = response["code"]
 	if ok {
 		fmt.Println("Error retrieving id: ", id, response)
 		return nil, false
