@@ -100,8 +100,8 @@ func main() {
 	}
 
 	if *full {
-		bytes, _ := json.MarshalIndent(i.XItem, "\t", "\t")
-		fmt.Println(string(bytes))
+		b, _ := json.MarshalIndent(i.XItem, "\t", "\t")
+		fmt.Println(string(b))
 	} else {
 		fmt.Println(i.Format())
 	}
