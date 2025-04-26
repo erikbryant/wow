@@ -2,6 +2,7 @@ package transmog
 
 import (
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
 )
@@ -116,16 +117,18 @@ func owned() map[int64]bool {
 	return myTransmogs
 }
 
-//func Own(i item.Item) bool {
-//	if len(allOwned) == 0 {
-//		log.Fatal("ERROR: You must call transmog.Init() before calling transmog.Own()")
-//	}
-//
-//	for transmogId, name := range allNames {
-//		if i.Name() == name {
-//			return allOwned[transmogId]
-//		}
-//	}
-//
-//	return false
-//}
+// NeedId returns true if I need this transmog
+func NeedId(id int64) bool {
+	if len(allOwned) == 0 {
+		log.Fatal("ERROR: You must call transmog.Init() before calling transmog.NeedId()")
+	}
+	if id <= 0 {
+		return false
+	}
+	return !allOwned[id]
+}
+
+// Need returns true if I need this transmog
+func Need(i item.Item) bool {
+	return NeedId(i.Appearances())
+}
