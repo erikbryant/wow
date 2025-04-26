@@ -166,6 +166,18 @@ func (i Item) Toy() bool {
 	return web.ToString(q) == "Toy"
 }
 
+// Appearances returns the first appearance ID for this item
+func (i Item) Appearances() int64 {
+	q, _ := web.MsiValued(i.XItem, []string{"appearances"}, nil)
+	if q == nil {
+		// Most items do not have appearances
+		return -1
+	}
+	appearances := q.([]interface{})
+	id := appearances[0].(map[string]interface{})["id"]
+	return web.ToInt64(id)
+}
+
 // Format returns a formatted string representing the item
 func (i Item) Format() string {
 	equippable := "F"
