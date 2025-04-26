@@ -7,6 +7,7 @@ import (
 	"github.com/erikbryant/wow/battlePet"
 	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/common"
+	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/toy"
 	"github.com/erikbryant/wow/transmog"
 	"github.com/erikbryant/wow/wowAPI"
@@ -121,6 +122,48 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 				bargains = append(bargains, str)
 			}
 		}
+	}
+
+	return bargains
+}
+
+type Candidate struct {
+	item  item.Item
+	price int64
+}
+
+// findTransmogBargains returns auctions for which the goods are below our desired prices
+func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
+	candidates := map[int64]Candidate{}
+
+	for itemId, itemAuctions := range auctions {
+		i, ok := wowAPI.LookupItem(itemId, 0)
+		if !ok {
+			continue
+		}
+		for _, auc := range itemAuctions {
+			if auc.Buyout <= 0 {
+				continue
+			}
+
+			maxPrice := common.Coins(10, 0, 0)
+			if transmog.Need(i) && auc.Buyout <= maxPrice {
+				transmogId := i.Appearances()
+				previous, ok := candidates[transmogId]
+				if ok && auc.Buyout >= previous.price {
+					continue
+				}
+				candidates[transmogId] = Candidate{
+					i,
+					auc.Buyout,
+				}
+			}
+		}
+	}
+
+	bargains := []string{}
+	for _, candidate := range candidates {
+		bargains = append(bargains, candidate.item.Name())
 	}
 
 	return bargains
@@ -279,10 +322,11 @@ func scanRealm(realm string) {
 	petNeeded := findPetNeeded(auctions)
 	petSpecialty := findPetSpecialty(auctions)
 	petSpell := findPetSpell(auctions)
+	transmogBargains := findTransmogBargains(auctions)
 
 	cache.Save()
 
-	if len(arbitrages) == 0 && len(bargains) == 0 && len(petBargains) == 0 && len(petNeeded) == 0 && len(petSpecialty) == 0 && len(petSpell) == 0 {
+	if len(arbitrages) == 0 && len(bargains) == 0 && len(petBargains) == 0 && len(petNeeded) == 0 && len(petSpecialty) == 0 && len(petSpell) == 0 && len(transmogBargains) == 0 {
 		// Skip realms that have nothing to buy
 		return
 	}
@@ -296,6 +340,7 @@ func scanRealm(realm string) {
 	printShoppingList("Bargains", bargains, color.New(color.FgRed))
 	printShoppingList("Pet Specialty", petSpecialty, color.New(color.FgRed))
 	printShoppingList("Pet Spell", petSpell, color.New(color.FgBlue))
+	printShoppingList("Transmog Bargains", transmogBargains, color.New(color.FgBlue))
 }
 
 // writeFile writes contents to file
