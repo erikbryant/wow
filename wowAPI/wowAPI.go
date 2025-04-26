@@ -406,21 +406,38 @@ func Auctions(realm string) ([]interface{}, bool) {
 	return auctions, true
 }
 
-// Commodities returns the current commodity auctions from the auction house
-func Commodities() ([]interface{}, bool) {
-	url := "https://us.api.blizzard.com/data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US"
-
+func request(url, token, caller string) (interface{}, bool) {
 	headers := map[string]string{
-		"Authorization": "Bearer " + accessToken,
+		"Authorization": "Bearer " + token,
 	}
 
 	response, err := web.RequestJSON(url, headers)
 	if err != nil {
-		fmt.Println("Commodities: no auction data returned:", err)
+		fmt.Printf("%s: no data returned: %s", caller, err)
 		return nil, false
 	}
 
-	return response["auctions"].([]interface{}), true
+	return response, true
+}
+
+func requestKey(url, token, key, caller string) ([]interface{}, bool) {
+	headers := map[string]string{
+		"Authorization": "Bearer " + token,
+	}
+
+	response, err := web.RequestJSON(url, headers)
+	if err != nil {
+		fmt.Printf("%s: no data returned: %s", caller, err)
+		return nil, false
+	}
+
+	return response[key].([]interface{}), true
+}
+
+// Commodities returns the current commodity auctions from the auction house
+func Commodities() ([]interface{}, bool) {
+	url := "https://us.api.blizzard.com/data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US"
+	return requestKey(url, accessToken, "auctions", "Commodities")
 }
 
 // wowItem retrieves a single item from the WoW web API
@@ -479,69 +496,25 @@ func LookupItem(id int64, age time.Duration) (item.Item, bool) {
 // Pets returns a list of all battle pets in the game
 func Pets() ([]interface{}, bool) {
 	url := "https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US"
-
-	headers := map[string]string{
-		"Authorization": "Bearer " + accessToken,
-	}
-
-	response, err := web.RequestJSON(url, headers)
-	if err != nil {
-		fmt.Println("Pets: no data returned:", err)
-		return nil, false
-	}
-
-	return response["pets"].([]interface{}), true
+	return requestKey(url, profileAccessToken, "pets", "Pets")
 }
 
 // CollectionsPets returns the battle pets the user owns
 func CollectionsPets() ([]interface{}, bool) {
 	url := "https://us.api.blizzard.com/profile/user/wow/collections/pets?namespace=profile-us&locale=en_US"
-
-	headers := map[string]string{
-		"Authorization": "Bearer " + profileAccessToken,
-	}
-
-	response, err := web.RequestJSON(url, headers)
-	if err != nil {
-		fmt.Println("CollectionsPets: no data returned:", err)
-		return nil, false
-	}
-
-	return response["pets"].([]interface{}), true
+	return requestKey(url, profileAccessToken, "pets", "CollectionsPets")
 }
 
 // Toys returns a list of all toys in the game
 func Toys() ([]interface{}, bool) {
 	url := "https://us.api.blizzard.com/data/wow/toy/index?namespace=static-us&locale=en_US"
-
-	headers := map[string]string{
-		"Authorization": "Bearer " + accessToken,
-	}
-
-	response, err := web.RequestJSON(url, headers)
-	if err != nil {
-		fmt.Println("Toys: no data returned:", err)
-		return nil, false
-	}
-
-	return response["toys"].([]interface{}), true
+	return requestKey(url, profileAccessToken, "toys", "Toys")
 }
 
 // CollectionsToys returns the toys the user owns
 func CollectionsToys() ([]interface{}, bool) {
 	url := "https://us.api.blizzard.com/profile/user/wow/collections/toys?namespace=profile-us&locale=en_US"
-
-	headers := map[string]string{
-		"Authorization": "Bearer " + profileAccessToken,
-	}
-
-	response, err := web.RequestJSON(url, headers)
-	if err != nil {
-		fmt.Println("CollectionsToys: no data returned:", err)
-		return nil, false
-	}
-
-	return response["toys"].([]interface{}), true
+	return requestKey(url, profileAccessToken, "toys", "CollectionsToys")
 }
 
 // ItemAppearanceSlotIndex returns a list of slot names
@@ -581,50 +554,17 @@ func ItemAppearanceSlotIndex() []string {
 // ItemAppearanceSlot returns a list of appearances for a given slot
 func ItemAppearanceSlot(slotName string) ([]interface{}, bool) {
 	url := "https://us.api.blizzard.com/data/wow/item-appearance/slot/" + slotName + "?namespace=static-us&locale=en_US"
-
-	headers := map[string]string{
-		"Authorization": "Bearer " + profileAccessToken,
-	}
-
-	response, err := web.RequestJSON(url, headers)
-	if err != nil {
-		fmt.Println("ItemAppearanceSlot: no data returned:", err)
-		return nil, false
-	}
-
-	return response["appearances"].([]interface{}), true
+	return requestKey(url, profileAccessToken, "appearances", "ItemAppearanceSlot")
 }
 
 // ItemAppearance returns the details of a given item appearance ID
 func ItemAppearance(itemAppearanceId int64) (interface{}, bool) {
 	url := fmt.Sprintf("https://us.api.blizzard.com/data/wow/item-appearance/%d?namespace=static-us", itemAppearanceId)
-
-	headers := map[string]string{
-		"Authorization": "Bearer " + profileAccessToken,
-	}
-
-	response, err := web.RequestJSON(url, headers)
-	if err != nil {
-		fmt.Println("ItemAppearance: no data returned:", err)
-		return nil, false
-	}
-
-	return response, true
+	return request(url, profileAccessToken, "ItemAppearance")
 }
 
 // CollectionsTransmogs returns the transmogs the user owns
 func CollectionsTransmogs() (interface{}, bool) {
 	url := "https://us.api.blizzard.com/profile/user/wow/collections/transmogs?namespace=profile-us&locale=en_US"
-
-	headers := map[string]string{
-		"Authorization": "Bearer " + profileAccessToken,
-	}
-
-	response, err := web.RequestJSON(url, headers)
-	if err != nil {
-		fmt.Println("CollectionsTransmogs: no data returned:", err)
-		return nil, false
-	}
-
-	return response, true
+	return request(url, profileAccessToken, "CollectionsTransmogs")
 }
