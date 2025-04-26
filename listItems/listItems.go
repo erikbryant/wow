@@ -71,7 +71,7 @@ func main() {
 		usage()
 	}
 
-	wowAPI.Init(*passPhrase)
+	wowAPI.Init(*passPhrase, false)
 
 	if *delItem {
 		if *itemId == 0 {

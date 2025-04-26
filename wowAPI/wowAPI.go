@@ -17,11 +17,12 @@ import (
 )
 
 var (
-	clientIDCrypt     = "f7FhewxUd0lWQz/zPb27ZcwI/ZqkaMyd5YyuskFyEugQEeiKsfL7dvr11Kx1Y+Mi23qMciOAPe5ksCOy"
-	clientSecretCrypt = "CtJH62iU6V3ZeqiHyKItECHahdUYgAFyfHmQ4DRabhWIv6JeK5K4dT7aiybot6MS4JitmDzuWSz1UHHv"
-	clientID          string
-	clientSecret      string
-	accessToken       string
+	clientIDCrypt      = "f7FhewxUd0lWQz/zPb27ZcwI/ZqkaMyd5YyuskFyEugQEeiKsfL7dvr11Kx1Y+Mi23qMciOAPe5ksCOy"
+	clientSecretCrypt  = "CtJH62iU6V3ZeqiHyKItECHahdUYgAFyfHmQ4DRabhWIv6JeK5K4dT7aiybot6MS4JitmDzuWSz1UHHv"
+	clientID           string
+	clientSecret       string
+	accessToken        string
+	profileAccessToken string
 
 	skipItems = map[int64]bool{
 		// Items not found in the WoW database
@@ -139,7 +140,7 @@ var (
 	}
 )
 
-func Init(passPhrase string) {
+func Init(passPhrase string, profile bool) {
 	var err error
 
 	clientID, err = aes.Decrypt(clientIDCrypt, passPhrase)
@@ -155,6 +156,14 @@ func Init(passPhrase string) {
 	accessToken, err = wowAccessToken()
 	if err != nil {
 		log.Fatal("unable to get access token", err)
+	}
+
+	if profile {
+		var ok bool
+		profileAccessToken, ok = wowProfileAccessToken()
+		if !ok {
+			log.Fatal("unable to get profile access token", err)
+		}
 	}
 }
 
@@ -172,8 +181,12 @@ func realmToSlug(realm string) string {
 	return slug
 }
 
-// ProfileAccessToken returns a profile access token (to authenticate user profile API calls)
 func ProfileAccessToken() (string, bool) {
+	return wowProfileAccessToken()
+}
+
+// wowProfileAccessToken returns a profile access token (to authenticate user profile API calls)
+func wowProfileAccessToken() (string, bool) {
 	return oauth2.ProfileAccessToken(clientID, clientSecret)
 }
 
@@ -485,7 +498,7 @@ func Pets() ([]interface{}, bool) {
 }
 
 // CollectionsPets returns the battle pets the user owns
-func CollectionsPets(profileAccessToken string) ([]interface{}, bool) {
+func CollectionsPets() ([]interface{}, bool) {
 	url := "https://us.api.blizzard.com/profile/user/wow/collections/pets?namespace=profile-us&locale=en_US"
 
 	headers := map[string]string{
@@ -519,7 +532,7 @@ func Toys() ([]interface{}, bool) {
 }
 
 // CollectionsToys returns the toys the user owns
-func CollectionsToys(profileAccessToken string) ([]interface{}, bool) {
+func CollectionsToys() ([]interface{}, bool) {
 	url := "https://us.api.blizzard.com/profile/user/wow/collections/toys?namespace=profile-us&locale=en_US"
 
 	headers := map[string]string{
@@ -535,8 +548,83 @@ func CollectionsToys(profileAccessToken string) ([]interface{}, bool) {
 	return response["toys"].([]interface{}), true
 }
 
+// ItemAppearanceSlotIndex returns a list of slot names
+func ItemAppearanceSlotIndex() []string {
+	// This would query the Blizzard URL:
+	//url := "https://us.api.blizzard.com/data/wow/item-appearance/slot/index?namespace=static-us&locale=en_US"
+	// But that returns a static list, so we cache the results and return those.
+
+	return []string{
+		"HEAD",
+		"SHOULDER",
+		"BODY",
+		"CHEST",
+		"WAIST",
+		"LEGS",
+		"FEET",
+		"WRIST",
+		"HAND",
+		"WEAPON",
+		"SHIELD",
+		"RANGED",
+		"CLOAK",
+		"TWOHWEAPON",
+		"TABARD",
+		"ROBE",
+		"WEAPONMAINHAND",
+		"WEAPONOFFHAND",
+		"HOLDABLE",
+		"AMMO",
+		"RANGEDRIGHT",
+		"PROFESSION_TOOL",
+		"PROFESSION_GEAR",
+		"EQUIPABLESPELL_WEAPON",
+	}
+}
+
+// ItemAppearanceSlot returns a list of appearances for a given slot
+func ItemAppearanceSlot(slotName string) ([]interface{}, bool) {
+	url := "https://us.api.blizzard.com/data/wow/item-appearance/slot/" + slotName + "?namespace=static-us&locale=en_US"
+
+	headers := map[string]string{
+		"Authorization": "Bearer " + profileAccessToken,
+	}
+
+	response, err := web.RequestJSON(url, headers)
+	if err != nil {
+		fmt.Println("ItemAppearanceSlot: no data returned:", err)
+		return nil, false
+	}
+
+	return response["appearances"].([]interface{}), true
+}
+
+// ItemAppearance returns the details of a given item appearance ID
+func ItemAppearance(itemAppearanceId int64) (interface{}, bool) {
+	url := fmt.Sprintf("https://us.api.blizzard.com/data/wow/item-appearance/%d?namespace=static-us", itemAppearanceId)
+
+	headers := map[string]string{
+		"Authorization": "Bearer " + profileAccessToken,
+	}
+
+	response, err := web.RequestJSON(url, headers)
+	if err != nil {
+		fmt.Println("ItemAppearance: no data returned:", err)
+		return nil, false
+	}
+
+	return response, true
+}
+
+// Appearances returns a list of all item appearance IDs
+func Appearances() ([]int64, bool) {
+	ids := []int64{}
+
+	return ids, true
+}
+
 // CollectionsTransmogs returns the transmogs the user owns
-func CollectionsTransmogs(profileAccessToken string) (interface{}, bool) {
+func CollectionsTransmogs() (interface{}, bool) {
 	url := "https://us.api.blizzard.com/profile/user/wow/collections/transmogs?namespace=profile-us&locale=en_US"
 
 	headers := map[string]string{
@@ -546,23 +634,6 @@ func CollectionsTransmogs(profileAccessToken string) (interface{}, bool) {
 	response, err := web.RequestJSON(url, headers)
 	if err != nil {
 		fmt.Println("CollectionsTransmogs: no data returned:", err)
-		return nil, false
-	}
-
-	return response, true
-}
-
-// Transmogs returns the transmogs the user owns
-func Transmogs(profileAccessToken string, transmogId int64) (interface{}, bool) {
-	url := fmt.Sprintf("https://us.api.blizzard.com/data/wow/item-appearance/%d?namespace=static-11.1.5_60179-us", transmogId)
-
-	headers := map[string]string{
-		"Authorization": "Bearer " + profileAccessToken,
-	}
-
-	response, err := web.RequestJSON(url, headers)
-	if err != nil {
-		fmt.Println("Transmogs: no data returned:", err)
 		return nil, false
 	}
 

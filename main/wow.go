@@ -331,16 +331,11 @@ func main() {
 		fmt.Println("ERROR: You must specify -passPhrase to unlock the client Id/secret")
 		usage()
 	}
-	wowAPI.Init(*passPhrase)
+	wowAPI.Init(*passPhrase, true)
 
-	profileAccessToken, ok := wowAPI.ProfileAccessToken()
-	if !ok {
-		log.Fatal("ERROR: Unable to obtain profile access token.")
-	}
-
-	battlePet.Init(profileAccessToken)
-	toy.Init(profileAccessToken)
-	transmog.Init(profileAccessToken)
+	battlePet.Init()
+	toy.Init()
+	transmog.Init()
 
 	realmsToScan := *realms
 	if *untracked {

@@ -10,15 +10,15 @@ var (
 	allOwned = map[int64]bool{}
 )
 
-func Init(profileAccessToken string) {
-	allOwned = owned(profileAccessToken)
+func Init() {
+	allOwned = owned()
 }
 
 // owned returns the transmogs I own
-func owned(profileAccessToken string) map[int64]bool {
+func owned() map[int64]bool {
 	myTransmogs := map[int64]bool{}
 
-	transmogs, ok := wowAPI.CollectionsTransmogs(profileAccessToken)
+	transmogs, ok := wowAPI.CollectionsTransmogs()
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain transmogs owned.")
 	}

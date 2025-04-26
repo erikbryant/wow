@@ -12,16 +12,16 @@ var (
 	allOwned = map[int64]bool{}
 )
 
-func Init(profileAccessToken string) {
+func Init() {
 	allNames = toyNames()
-	allOwned = owned(profileAccessToken)
+	allOwned = owned()
 }
 
 // owned returns the toys I own
-func owned(profileAccessToken string) map[int64]bool {
+func owned() map[int64]bool {
 	myToys := map[int64]bool{}
 
-	toys, ok := wowAPI.CollectionsToys(profileAccessToken)
+	toys, ok := wowAPI.CollectionsToys()
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain toys owned.")
 	}
