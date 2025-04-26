@@ -146,7 +146,7 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 				continue
 			}
 
-			maxPrice := common.Coins(10, 0, 0)
+			maxPrice := common.Coins(5, 0, 0)
 			if transmog.NeedItem(i) && auc.Buyout <= maxPrice {
 				transmogId := i.Appearances()
 				previous, ok := candidates[transmogId]
@@ -254,9 +254,9 @@ func findPetSpell(auctions map[int64][]auction.Auction) []string {
 		if !ok {
 			continue
 		}
-		//if common.QualityId(item.Quality()) < common.QualityId("Rare") {
-		//	continue
-		//}
+		if common.QualityId(item.Quality()) < common.QualityId("Rare") {
+			continue
+		}
 		if battlePet.Own(petId) {
 			continue
 		}
