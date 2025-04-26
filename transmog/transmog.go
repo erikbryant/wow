@@ -114,6 +114,11 @@ func owned() map[int64]bool {
 		}
 	}
 
+	// Problematic transmog IDs. Pretend we already own them.
+	myTransmogs[573] = true  // Blacksmith Hammer
+	myTransmogs[577] = true  // Arclight Spanner, Shoni's Disarming Tool, Tork Wrench
+	myTransmogs[2016] = true // {17,19,22,26,32} Pound Catfish, {15,18,22,25,29,32} Pound Salmon, OldCrafty
+
 	return myTransmogs
 }
 
@@ -128,7 +133,7 @@ func NeedId(id int64) bool {
 	return !allOwned[id]
 }
 
-// Need returns true if I need this transmog
-func Need(i item.Item) bool {
+// NeedItem returns true if I need the transmog this item provides
+func NeedItem(i item.Item) bool {
 	return NeedId(i.Appearances())
 }

@@ -147,7 +147,7 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 			}
 
 			maxPrice := common.Coins(10, 0, 0)
-			if transmog.Need(i) && auc.Buyout <= maxPrice {
+			if transmog.NeedItem(i) && auc.Buyout <= maxPrice {
 				transmogId := i.Appearances()
 				previous, ok := candidates[transmogId]
 				if ok && auc.Buyout >= previous.price {
