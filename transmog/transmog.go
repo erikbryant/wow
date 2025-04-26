@@ -1,38 +1,48 @@
 package transmog
 
 import (
-	"fmt"
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
 )
 
 var (
-	allOwned = map[int64]bool{}
+	allTransmogs = map[int64]bool{}
+	allOwned     = map[int64]bool{}
 )
 
 func Init() {
+	allTransmogs = appearances()
 	allOwned = owned()
+
+	// I own some transmogs that are no longer in the API.
+	// Delete them so they do not cause lookup errors.
+	for id := range allOwned {
+		if !allTransmogs[id] {
+			delete(allOwned, id)
+		}
+	}
 }
 
-// Appearances returns a list of all item appearance IDs
-func Appearances() ([]int64, bool) {
-	ids := []int64{}
+// appearances returns a list of all item appearance IDs
+func appearances() map[int64]bool {
+	ids := map[int64]bool{}
 
 	for _, slot := range wowAPI.ItemAppearanceSlotIndex() {
 		appearances, ok := wowAPI.ItemAppearanceSlot(slot)
 		if !ok {
-			return nil, false
+			log.Fatal("ERROR: Unable to obtain appearances for slot:", slot)
 		}
 		if appearances == nil {
-			fmt.Println("Error: Appearances: no appearances for slot:", slot)
+			log.Fatal("ERROR: no appearances for slot:", slot)
 		}
 		for _, appearance := range appearances {
 			id := web.ToInt64(appearance.(map[string]interface{})["id"])
-			ids = append(ids, id)
+			ids[id] = true
 		}
 	}
-	return ids, true
+
+	return ids
 }
 
 // ItemIdsForAppearance returns a list of item IDs that have the given appearance
@@ -54,26 +64,54 @@ func ItemIdsForAppearance(appearanceId int64) ([]int64, bool) {
 	return ids, true
 }
 
-// owned returns the transmogs I own
+// owned returns the IDs of the transmogs I own
 func owned() map[int64]bool {
 	myTransmogs := map[int64]bool{}
 
-	transmogs, ok := wowAPI.CollectionsTransmogs()
+	t, ok := wowAPI.CollectionsTransmogs()
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain transmogs owned.")
 	}
 
-	fmt.Printf("Transmogs keys:")
-	for key := range transmogs.(map[string]interface{}) {
-		fmt.Printf(" %s", key)
-	}
-	fmt.Println()
+	transmogs := t.(map[string]interface{})
 
-	//for _, transmogRaw := range transmogs {
-	//	transmog := transmogRaw.(map[string]interface{})
-	//	id, _ := web.MsiValued(transmog, []string{"transmog", "id"}, 0)
-	//	myTransmogs[web.ToInt64(id)] = true
-	//}
+	// Appearance sets
+	for _, appearanceSet := range transmogs["appearance_sets"].([]interface{}) {
+		appearanceSet := appearanceSet.(map[string]interface{})
+		id := web.ToInt64(appearanceSet["id"])
+		myTransmogs[id] = true
+	}
+
+	//	"slots": [
+	//	{
+	//		"slot": {
+	//			"type": "HEAD",
+	//			"name": "Head"
+	//		},
+	//		"appearances": [
+	//		{
+	//			"key": {
+	//				"href": "https://us.api.blizzard.com/data/wow/item-appearance/358?namespace=static-11.1.5_60179-us"
+	//			},
+	//			"id": 358
+	//		},
+	//		{
+	//			"key": {
+	//				"href": "https://us.api.blizzard.com/data/wow/item-appearance/476?namespace=static-11.1.5_60179-us"
+	//			},
+	//			"id": 476
+	//		},
+	//	},
+	//	...
+	//	]
+	for _, slot := range transmogs["slots"].([]interface{}) {
+		slot := slot.(map[string]interface{})
+		for _, appearance := range slot["appearances"].([]interface{}) {
+			appearance := appearance.(map[string]interface{})
+			id := web.ToInt64(appearance["id"])
+			myTransmogs[id] = true
+		}
+	}
 
 	return myTransmogs
 }
