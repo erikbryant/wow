@@ -167,15 +167,22 @@ func (i Item) Toy() bool {
 }
 
 // Appearances returns the first appearance ID for this item
-func (i Item) Appearances() int64 {
+func (i Item) Appearances() []int64 {
+	appearanceIds := []int64{}
+
 	q, _ := web.MsiValued(i.XItem, []string{"appearances"}, nil)
 	if q == nil {
 		// Most items do not have appearances
-		return -1
+		return nil
 	}
+
 	appearances := q.([]interface{})
-	id := appearances[0].(map[string]interface{})["id"]
-	return web.ToInt64(id)
+	for _, appearance := range appearances {
+		id := appearance.(map[string]interface{})["id"]
+		appearanceIds = append(appearanceIds, web.ToInt64(id))
+	}
+
+	return appearanceIds
 }
 
 // Format returns a formatted string representing the item

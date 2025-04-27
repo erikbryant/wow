@@ -96,6 +96,9 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 		172924: true, // Wormhole Generator: Shadowlands
 		198156: true, // Wyrmhole Generator: Dragon Isles
 		221966: true, // Wormhole Generator: Khaz Algar
+
+		// Just not interested
+		119212: true, // Winning Hand
 	}
 
 	for itemId, itemAuctions := range auctions {
@@ -148,7 +151,11 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 
 			maxPrice := common.Coins(5, 0, 0)
 			if transmog.NeedItem(i) && auc.Buyout <= maxPrice {
-				transmogId := i.Appearances()
+				t := i.Appearances()
+				if t == nil {
+					continue
+				}
+				transmogId := t[0] // There may be multiple, but we'll just look at the first
 				previous, ok := candidates[transmogId]
 				if ok && auc.Buyout >= previous.price {
 					continue

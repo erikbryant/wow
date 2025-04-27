@@ -135,5 +135,10 @@ func NeedId(id int64) bool {
 
 // NeedItem returns true if I need the transmog this item provides
 func NeedItem(i item.Item) bool {
-	return NeedId(i.Appearances())
+	for _, id := range i.Appearances() {
+		if NeedId(id) {
+			return true
+		}
+	}
+	return false
 }
