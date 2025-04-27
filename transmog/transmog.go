@@ -115,9 +115,14 @@ func owned() map[int64]bool {
 	}
 
 	// Problematic transmog IDs. Pretend we already own them.
-	myTransmogs[573] = true  // Blacksmith Hammer
-	myTransmogs[577] = true  // Arclight Spanner, Shoni's Disarming Tool, Tork Wrench
-	myTransmogs[2016] = true // {17,19,22,26,32} Pound Catfish, {15,18,22,25,29,32} Pound Salmon, OldCrafty
+	myTransmogs[573] = true    // Blacksmith Hammer
+	myTransmogs[577] = true    // Arclight Spanner, Shoni's Disarming Tool, Tork Wrench
+	myTransmogs[2016] = true   // {17,19,22,26,32} Pound Catfish, {15,18,22,25,29,32} Pound Salmon, OldCrafty
+	myTransmogs[200472] = true // Scepter of Spectacle: Fire
+	myTransmogs[200535] = true // Scepter of Spectacle: Frost
+	myTransmogs[201158] = true // Scepter of Spectacle: Order
+	myTransmogs[201160] = true // Scepter of Spectacle: Earth
+	myTransmogs[201161] = true // Scepter of Spectacle: Air
 
 	return myTransmogs
 }
