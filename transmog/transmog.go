@@ -1,6 +1,7 @@
 package transmog
 
 import (
+	"fmt"
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/wowAPI"
@@ -23,6 +24,8 @@ func Init() {
 			delete(allOwned, id)
 		}
 	}
+
+	fmt.Printf("Transmogs: %d/%d\n", len(allOwned), len(allTransmogs))
 }
 
 // appearances returns a list of all item appearance IDs
@@ -115,14 +118,15 @@ func owned() map[int64]bool {
 	}
 
 	// Problematic transmog IDs. Pretend we already own them.
-	myTransmogs[573] = true    // Blacksmith Hammer
-	myTransmogs[577] = true    // Arclight Spanner, Shoni's Disarming Tool, Tork Wrench
-	myTransmogs[2016] = true   // {17,19,22,26,32} Pound Catfish, {15,18,22,25,29,32} Pound Salmon, OldCrafty
-	myTransmogs[200472] = true // Scepter of Spectacle: Fire
-	myTransmogs[200535] = true // Scepter of Spectacle: Frost
-	myTransmogs[201158] = true // Scepter of Spectacle: Order
-	myTransmogs[201160] = true // Scepter of Spectacle: Earth
-	myTransmogs[201161] = true // Scepter of Spectacle: Air
+	myTransmogs[573] = true   // Blacksmith Hammer
+	myTransmogs[577] = true   // Arclight Spanner, Shoni's Disarming Tool, Tork Wrench
+	myTransmogs[2016] = true  // {17,19,22,26,32} Pound Catfish, {15,18,22,25,29,32} Pound Salmon, OldCrafty
+	myTransmogs[2019] = true  // {70,85,92} Pound Mightfish
+	myTransmogs[78157] = true // Scepter of Spectacle: Fire
+	myTransmogs[78158] = true // Scepter of Spectacle: Frost
+	myTransmogs[78228] = true // Scepter of Spectacle: Air
+	myTransmogs[78229] = true // Scepter of Spectacle: Earth
+	myTransmogs[78230] = true // Scepter of Spectacle: Order
 
 	return myTransmogs
 }
