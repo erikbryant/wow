@@ -495,6 +495,52 @@ func CollectionsToys() ([]interface{}, bool) {
 	return requestKey(url, profileAccessToken, "toys", "CollectionsToys")
 }
 
+// ItemAppearanceSetsIndex returns IDs of each appearance set
+func ItemAppearanceSetsIndex() ([]interface{}, bool) {
+	url := "https://us.api.blizzard.com/data/wow/item-appearance/set/index?namespace=static-us&locale=en_US"
+	return requestKey(url, accessToken, "appearance_sets", "ItemAppearanceSetsIndex")
+}
+
+// ItemAppearanceSetsIndexIds returns the ID and name of each appearance set
+func ItemAppearanceSetsIndexIds() map[int64]string {
+	index, ok := ItemAppearanceSetsIndex()
+	if !ok {
+		return nil
+	}
+
+	indexMap := map[int64]string{}
+	for _, i := range index {
+		i := i.(map[string]interface{})
+		id := web.ToInt64(i["id"])
+		name := web.ToString(i["name"])
+		indexMap[id] = name
+	}
+
+	return indexMap
+}
+
+// ItemAppearanceSet returns the appearance IDs of the given appearance set
+func ItemAppearanceSet(appearanceId int64) ([]interface{}, bool) {
+	url := fmt.Sprintf("https://us.api.blizzard.com/data/wow/item-appearance/set/%d?namespace=static-us&locale=en_US", appearanceId)
+	return requestKey(url, accessToken, "appearances", "ItemAppearanceSet")
+}
+
+// ItemAppearanceSetIds returns a slice of the IDs for the given appearance set
+func ItemAppearanceSetIds(appearanceId int64) []int64 {
+	itemSet, ok := ItemAppearanceSet(appearanceId)
+	if !ok {
+		return nil
+	}
+
+	ids := []int64{}
+	for _, i := range itemSet {
+		i := i.(map[string]interface{})
+		ids = append(ids, web.ToInt64(i["id"]))
+	}
+
+	return ids
+}
+
 // ItemAppearanceSlotIndex returns a list of slot names
 func ItemAppearanceSlotIndex() []string {
 	// This would query the Blizzard URL:
