@@ -46,8 +46,8 @@ func findArbitrages(auctions map[int64][]auction.Auction) []string {
 
 	bargains := []string{}
 	for name, profit := range arbitrages {
-		if profit < common.Coins(1, 0, 0) {
-			// Too small to bother with, would just clutter the output
+		if profit < common.Coins(2, 0, 0) {
+			// Too small to bother with
 			continue
 		}
 		str := fmt.Sprintf("%s   %s", name, common.Gold(profit))
@@ -63,11 +63,8 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 
 	// Generally useful items to keep a watch for
 	goods := map[int64]int64{
-		//65891: common.Coins(25000, 0, 0), // Vial of the Sands (2-person flying mount)
-		98715: common.Coins(6000, 0, 0), // Marked Flawless Battle-Stone
-		92741: common.Coins(6000, 0, 0), // Flawless Battle-Stone
-
-		204818: common.Coins(1000, 0, 0), // Mallard Mortar
+		98715: common.Coins(5000, 0, 0), // Marked Flawless Battle-Stone
+		92741: common.Coins(5000, 0, 0), // Flawless Battle-Stone
 
 		114821: common.Coins(120, 0, 0), // Hexweave Bag (30 slot)
 
@@ -86,10 +83,14 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 		109167: true, // Findle's Loot-A-Rang
 
 		// Only usable by engineers
+		17716:  true, // Snowmaster 9000
+		18984:  true, // Dimensional Ripper - Everlook
+		30542:  true, // Dimensional Ripper - Area 52
 		34060:  true, // Flying Machine
 		34061:  true, // Turbo-Charged Flying Machine
 		48933:  true, // Wormhole Generator: Northrend
 		87215:  true, // Wormhole Generator: Pandaria
+		112059: true, // Wormhole Centrifuge
 		151652: true, // Wormhole Generator: Argus
 		168807: true, // Wormhole Generator: Kul Tiras
 		168808: true, // Wormhole Generator: Zandalar
@@ -99,10 +100,13 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 
 		// Just not interested
 		119212: true, // Winning Hand
+		194057: true, // Cushion of Time Travel
+		194058: true, // Cold Cushion
+		198227: true, // Giggle Goggles
 	}
 
 	for itemId, itemAuctions := range auctions {
-		item, ok := wowAPI.LookupItem(itemId, 0)
+		i, ok := wowAPI.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}
@@ -112,16 +116,16 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 			}
 
 			// Bargains on toys
-			maxPrice := common.Coins(200, 0, 0)
-			if item.Toy() && !toy.Own(item) && !skipToys[item.Id()] && auc.Buyout <= maxPrice {
-				str := fmt.Sprintf("%s   %s", item.Name(), common.Gold(auc.Buyout))
+			maxPrice := common.Coins(400, 0, 0)
+			if i.Toy() && !toy.Own(i) && !skipToys[i.Id()] && auc.Buyout <= maxPrice {
+				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 				bargains = append(bargains, str)
 			}
 
 			// Bargains on specific goods
 			maxPrice, ok := goods[itemId]
 			if ok && auc.Buyout < maxPrice {
-				str := fmt.Sprintf("%s   %s", item.Name(), common.Gold(auc.Buyout))
+				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 				bargains = append(bargains, str)
 			}
 		}
@@ -149,8 +153,8 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 				continue
 			}
 
-			maxPrice := common.Coins(5, 0, 0)
-			if transmog.NeedItem(i) && auc.Buyout <= maxPrice {
+			maxPrice := common.Coins(30, 0, 0)
+			if transmog.NeedItem(i) && auc.Buyout < maxPrice {
 				t := i.Appearances()
 				if t == nil {
 					continue
@@ -173,6 +177,10 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 		bargains = append(bargains, candidate.item.Name())
 	}
 
+	if len(bargains) < 5 {
+		return nil
+	}
+
 	return bargains
 }
 
@@ -183,6 +191,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	// SpeciesId of pets that do not resell well
 	skipPets := map[int64]bool{
 		162: true, // Sinister Squashling
+		191: true, // Clockwork Rocket Bot
 		251: true, // Toxic Wasteling
 	}
 
