@@ -99,6 +99,7 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 		221966: true, // Wormhole Generator: Khaz Algar
 
 		// Just not interested
+		116690: true, // Safari Lounge Cushion
 		119212: true, // Winning Hand
 		194057: true, // Cushion of Time Travel
 		194058: true, // Cold Cushion
