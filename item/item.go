@@ -166,7 +166,7 @@ func (i Item) Toy() bool {
 	return web.ToString(q) == "Toy"
 }
 
-// Appearances returns the first appearance ID for this item
+// Appearances returns the appearance IDs this item provides
 func (i Item) Appearances() []int64 {
 	appearanceIds := []int64{}
 
