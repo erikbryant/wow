@@ -19,7 +19,7 @@ func init() {
 	gob.Register(map[string]interface{}{})
 	gob.Register([]interface{}{})
 	load()
-	fmt.Printf("-- #items in cache: %d\n\n", len(itemCache))
+	fmt.Printf("-- #Items in cache: %d\n", len(itemCache))
 }
 
 // load loads the disk cache file into memory
