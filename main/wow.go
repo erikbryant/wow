@@ -46,7 +46,7 @@ func findArbitrages(auctions map[int64][]auction.Auction) []string {
 
 	bargains := []string{}
 	for name, profit := range arbitrages {
-		if profit < common.Coins(2, 0, 0) {
+		if profit < common.Coins(5, 0, 0) {
 			// Too small to bother with
 			continue
 		}
@@ -136,8 +136,9 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 }
 
 type Candidate struct {
-	item  item.Item
-	price int64
+	item            item.Item
+	price           int64
+	inAppearanceSet bool
 }
 
 // findTransmogBargains returns auctions for which the goods are below our desired prices
@@ -154,31 +155,47 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 				continue
 			}
 
+			if !transmog.NeedItem(i) {
+				continue
+			}
+
 			maxPrice := common.Coins(30, 0, 0)
-			if transmog.NeedItem(i) && auc.Buyout < maxPrice {
-				t := i.Appearances()
-				if t == nil {
-					continue
-				}
-				transmogId := t[0] // There may be multiple, but we'll just look at the first
-				previous, ok := candidates[transmogId]
-				if ok && auc.Buyout >= previous.price {
-					continue
-				}
-				candidates[transmogId] = Candidate{
-					i,
-					auc.Buyout,
-				}
+			if transmog.InAppearanceSet(i) {
+				maxPrice = common.Coins(30, 0, 0)
+			}
+			if auc.Buyout > maxPrice {
+				continue
+			}
+
+			t := i.Appearances()
+			if t == nil {
+				continue
+			}
+			transmogId := t[0] // There may be multiple, but we'll just look at the first
+			previous, ok := candidates[transmogId]
+			if ok && auc.Buyout >= previous.price {
+				continue
+			}
+			candidates[transmogId] = Candidate{
+				i,
+				auc.Buyout,
+				transmog.InAppearanceSet(i),
 			}
 		}
 	}
 
+	foundAppearanceSet := false
 	bargains := []string{}
 	for _, candidate := range candidates {
-		bargains = append(bargains, candidate.item.Name())
+		name := candidate.item.Name()
+		if candidate.inAppearanceSet {
+			name += "   " + common.Gold(candidate.price)
+			foundAppearanceSet = true
+		}
+		bargains = append(bargains, name)
 	}
 
-	if len(bargains) < 5 {
+	if len(bargains) < 5 && !foundAppearanceSet {
 		return nil
 	}
 
@@ -221,10 +238,11 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 
 // petValue returns the amount I'm willing to pay for a pet of a given level
 func petValue(petLevel int64) int64 {
-	level1Max := common.Coins(900, 0, 0)
-	level25Max := common.Coins(1000, 0, 0)
-	extraPerLevel := (level25Max - level1Max) / 24
-	return level1Max + extraPerLevel*(petLevel-1)
+	return 2000
+	//level1Max := common.Coins(900, 0, 0)
+	//level25Max := common.Coins(1000, 0, 0)
+	//extraPerLevel := (level25Max - level1Max) / 24
+	//return level1Max + extraPerLevel*(petLevel-1)
 }
 
 // findPetNeeded returns a list of pets I do not have

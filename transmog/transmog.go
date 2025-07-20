@@ -1,23 +1,74 @@
 package transmog
 
 import (
+	"encoding/gob"
 	"fmt"
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
+	"os"
 )
 
 var (
-	//allTransmogs = map[int64]bool{}
-	allOwned = map[int64]bool{}
+	allOwned            = map[int64]bool{}
+	appearanceCacheFile = "./generated/appearanceCache.gob"
+	allSetIds           = map[int64]bool{}
 )
 
 func Init() {
-	// Nifty, and works fine, but no use case for it
-	//allTransmogs = appearances()
 	allOwned = owned()
-	fmt.Printf("Transmogs: %d/%d\n", len(allOwned), 44344)
+	fmt.Printf("-- #Transmogs: %d/%d\n", len(allOwned), 44344)
+	gob.Register(map[string]interface{}{})
+	gob.Register([]interface{}{})
+	load()
+	fmt.Printf("-- #Appearance set cache: %d\n", len(allSetIds))
+}
+
+// load loads the disk cache file into memory
+func load() {
+	file, err := os.Open(appearanceCacheFile)
+	if err != nil {
+		fmt.Printf("*** error opening appearance cache file: %v, creating new one\n", err)
+		allItemAppearanceSetIds()
+		fmt.Printf("Found %d appearance set IDs\n", len(allSetIds))
+		save()
+		return
+	}
+	defer file.Close()
+	decoder := gob.NewDecoder(file)
+	err = decoder.Decode(&allSetIds)
+	if err != nil {
+		log.Fatalf("error reading itemCache: %v", err)
+	}
+}
+
+// save writes the in-memory cache file to disk
+func save() {
+	file, err := os.Create(appearanceCacheFile)
+	if err != nil {
+		log.Fatalf("error creating appearance cache file: %v", err)
+	}
+	defer file.Close()
+	encoder := gob.NewEncoder(file)
+	err = encoder.Encode(allSetIds)
+	if err != nil {
+		log.Fatalf("error encoding allSetIds: %v", err)
+	}
+}
+
+// allItemAppearanceSetIds returns a map of all item IDs that are in appearance sets
+func allItemAppearanceSetIds() {
+	ids := wowAPI.ItemAppearanceSetsIndexIds()
+	count := len(ids)
+	for setId, setName := range ids {
+		fmt.Printf("%d\tAppearance set: %d   %s\n", count, setId, setName)
+		count--
+		for _, id := range wowAPI.ItemAppearanceSetIds(setId) {
+			fmt.Printf("   Appearance: %d\n", id)
+			allSetIds[id] = true
+		}
+	}
 }
 
 // appearances returns a list of all item appearance IDs
@@ -139,6 +190,19 @@ func NeedId(id int64) bool {
 func NeedItem(i item.Item) bool {
 	for _, id := range i.Appearances() {
 		if NeedId(id) {
+			return true
+		}
+	}
+	return false
+}
+
+// InAppearanceSet returns true if this item is in an appearance set
+func InAppearanceSet(i item.Item) bool {
+	if len(allSetIds) == 0 {
+		Init()
+	}
+	for _, id := range i.Appearances() {
+		if allSetIds[id] {
 			return true
 		}
 	}
