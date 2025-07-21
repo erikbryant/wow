@@ -166,6 +166,15 @@ func owned() map[int64]bool {
 	myTransmogs[870] = true   // Solid Shot
 	myTransmogs[2016] = true  // {17,19,22,26,32} Pound Catfish, {15,18,22,25,29,32} Pound Salmon, OldCrafty
 	myTransmogs[2019] = true  // {70,85,92} Pound Mightfish
+	myTransmogs[23130] = true // Throat-Ripper Gauntlets
+	myTransmogs[23137] = true // Throat-Ripper Gauntlets
+	myTransmogs[23488] = true // Throat-Ripper Gauntlets
+	myTransmogs[56684] = true // Choral Amice
+	myTransmogs[56702] = true // Anthemic Gauntlets
+	myTransmogs[57213] = true // Anthemic Gauntlets
+	myTransmogs[57211] = true // Anthemic Greaves
+	myTransmogs[57229] = true // Anthemic Greaves
+	myTransmogs[57231] = true // Choral Amice
 	myTransmogs[78157] = true // Scepter of Spectacle: Fire
 	myTransmogs[78158] = true // Scepter of Spectacle: Frost
 	myTransmogs[78228] = true // Scepter of Spectacle: Air
