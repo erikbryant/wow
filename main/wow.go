@@ -21,7 +21,7 @@ var (
 	passPhrase      = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
 	realms          = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Alleria,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities,Aggramar,Alterac Mountains,Azralon,Barthilas,Caelestrasz,Dath'Remar,Drakkari,Eredar,Goldrinn,Gundrak,Nemesis,Quel'Thalas,Ragnaros", "WoW realms to scan")
 	untracked       = flag.Bool("untracked", false, "Scan all untracked items")
-	untrackedRealms = "Caelestrasz,Dath'Remar,Drakkari,Gallywix"
+	untrackedRealms = "Gallywix"
 )
 
 // findArbitrages returns auctions selling for lower than vendor prices
