@@ -46,7 +46,7 @@ func findArbitrages(auctions map[int64][]auction.Auction) []string {
 
 	bargains := []string{}
 	for name, profit := range arbitrages {
-		if profit < common.Coins(5, 0, 0) {
+		if profit < common.Coins(3, 0, 0) {
 			// Too small to bother with
 			continue
 		}
