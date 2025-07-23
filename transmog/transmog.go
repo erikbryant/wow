@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
@@ -174,31 +175,31 @@ func NeedId(id int64) bool {
 	return !allOwned[id]
 }
 
+// flaky contains item IDs for which WoW says I own the transmogs, but this app says I don't
+var flaky = map[int64]bool{
+	cache.Search("Light Shot").Id():                    true,
+	cache.Search("Solid Shot").Id():                    true,
+	cache.Search("Exploding Shot").Id():                true,
+	cache.Search("Blacksmith Hammer").Id():             true,
+	cache.Search("Arclight Spanner").Id():              true,
+	cache.Search("17 Pound Catfish").Id():              true,
+	cache.Search("19 Pound Catfish").Id():              true,
+	cache.Search("22 Pound Catfish").Id():              true,
+	cache.Search("15 Pound Salmon").Id():               true,
+	cache.Search("18 Pound Salmon").Id():               true,
+	cache.Search("Shatter Rounds").Id():                true,
+	cache.Search("Waistclasp of Unethical Power").Id(): true,
+	cache.Search("Choral Slippers").Id():               true,
+	cache.Search("Choral Sash").Id():                   true,
+	cache.Search("Staccato Belt").Id():                 true,
+	cache.Search("Anthemic Cuirass").Id():              true,
+	cache.Search("Anthemic Gauntlets").Id():            true,
+	cache.Search("Anthemic Bracers").Id():              true,
+	cache.Search("Choral Amice").Id():                  true,
+}
+
 // NeedItem returns true if I need any of the transmogs this item provides
 func NeedItem(i item.Item) bool {
-	// WoW says I have these transmogs, but this app says I don't. Ignore them.
-	flaky := map[int64]bool{
-		2516:   true, // Light Shot
-		3033:   true, // Solid Shot
-		3465:   true, // Exploding Shot
-		5956:   true, // Blacksmith Hammer
-		6219:   true, // Arclight Spanner
-		6309:   true, // 17 Pound Catfish
-		6310:   true, // 19 Pound Catfish
-		6311:   true, // 22 Pound Catfish
-		13901:  true, // 15 Pound Salmon
-		13902:  true, // 18 Pound Salmon
-		52020:  true, // Shatter Rounds
-		144405: true, // Waistclasp of Unethical Power
-		188007: true, // Choral Slippers
-		188011: true, // Choral Sash
-		188017: true, // Staccato Belt
-		188019: true, // Anthemic Cuirass
-		188021: true, // Anthemic Gauntlets
-		188026: true, // Anthemic Bracers
-		188037: true, // Choral Armice
-	}
-
 	if flaky[i.Id()] {
 		return false
 	}
