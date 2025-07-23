@@ -160,27 +160,6 @@ func owned() map[int64]bool {
 		}
 	}
 
-	// Problematic transmog IDs. Pretend we already own them.
-	myTransmogs[573] = true   // Blacksmith Hammer
-	myTransmogs[577] = true   // Arclight Spanner, Shoni's Disarming Tool, Tork Wrench
-	myTransmogs[870] = true   // Solid Shot
-	myTransmogs[2016] = true  // {17,19,22,26,32} Pound Catfish, {15,18,22,25,29,32} Pound Salmon, OldCrafty
-	myTransmogs[2019] = true  // {70,85,92} Pound Mightfish
-	myTransmogs[23130] = true // Throat-Ripper Gauntlets
-	myTransmogs[23137] = true // Throat-Ripper Gauntlets
-	myTransmogs[23488] = true // Throat-Ripper Gauntlets
-	myTransmogs[56684] = true // Choral Amice
-	myTransmogs[56702] = true // Anthemic Gauntlets
-	myTransmogs[57213] = true // Anthemic Gauntlets
-	myTransmogs[57211] = true // Anthemic Greaves
-	myTransmogs[57229] = true // Anthemic Greaves
-	myTransmogs[57231] = true // Choral Amice
-	myTransmogs[78157] = true // Scepter of Spectacle: Fire
-	myTransmogs[78158] = true // Scepter of Spectacle: Frost
-	myTransmogs[78228] = true // Scepter of Spectacle: Air
-	myTransmogs[78229] = true // Scepter of Spectacle: Earth
-	myTransmogs[78230] = true // Scepter of Spectacle: Order
-
 	return myTransmogs
 }
 
@@ -197,6 +176,33 @@ func NeedId(id int64) bool {
 
 // NeedItem returns true if I need any of the transmogs this item provides
 func NeedItem(i item.Item) bool {
+	// WoW says I have these transmogs, but this app says I don't. Ignore them.
+	flaky := map[int64]bool{
+		2516:   true, // Light Shot
+		3033:   true, // Solid Shot
+		3465:   true, // Exploding Shot
+		5956:   true, // Blacksmith Hammer
+		6219:   true, // Arclight Spanner
+		6309:   true, // 17 Pound Catfish
+		6310:   true, // 19 Pound Catfish
+		6311:   true, // 22 Pound Catfish
+		13901:  true, // 15 Pound Salmon
+		13902:  true, // 18 Pound Salmon
+		52020:  true, // Shatter Rounds
+		144405: true, // Waistclasp of Unethical Power
+		188007: true, // Choral Slippers
+		188011: true, // Choral Sash
+		188017: true, // Staccato Belt
+		188019: true, // Anthemic Cuirass
+		188021: true, // Anthemic Gauntlets
+		188026: true, // Anthemic Bracers
+		188037: true, // Choral Armice
+	}
+
+	if flaky[i.Id()] {
+		return false
+	}
+
 	for _, id := range i.Appearances() {
 		if NeedId(id) {
 			return true
