@@ -63,6 +63,7 @@ func oauthBlizzardLogin(w http.ResponseWriter, r *http.Request) {
 	// You must always provide a non-empty string and validate it matches the state query
 	// parameter on your redirect callback.
 	u := blizzardOauthConfig.AuthCodeURL(oauthState)
+	fmt.Printf("Visiting URL: %s\n", u)
 	http.Redirect(w, r, u, http.StatusTemporaryRedirect)
 }
 
@@ -73,6 +74,7 @@ func tokenToPAT(code string) string {
 		"grant_type":   {"authorization_code"},
 		"code":         {code},
 	}
+
 	request, err := http.NewRequest("POST", "https://oauth.battle.net/token", strings.NewReader(data.Encode()))
 	if err != nil {
 		log.Fatal(err)
@@ -139,8 +141,8 @@ func handlers() http.Handler {
 	return mux
 }
 
-// Start starts the webserver
-func Start(clientID, clientSecret string) {
+// start starts the webserver
+func start(clientID, clientSecret string) {
 	blizzardOauthConfig.ClientID = clientID
 	blizzardOauthConfig.ClientSecret = clientSecret
 
@@ -156,8 +158,8 @@ func Start(clientID, clientSecret string) {
 	}
 }
 
-// Shutdown terminates the webserver
-func Shutdown() {
+// shutdown terminates the webserver
+func shutdown() {
 	err := server.Shutdown(context.Background())
 	if err != nil {
 		log.Printf("server shutdown failed: %v\n", err)
@@ -166,8 +168,8 @@ func Shutdown() {
 
 // ProfileAccessToken returns a profile access token (to authenticate user profile API calls)
 func ProfileAccessToken(clientID, clientSecret string) (string, bool) {
-	go Start(clientID, clientSecret)
-	defer Shutdown()
+	go start(clientID, clientSecret)
+	defer shutdown()
 	uri := "http://localhost:8888/auth/blizzard/login"
 	err := browser.OpenURL(uri)
 	if err != nil {
