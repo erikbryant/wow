@@ -177,25 +177,25 @@ func NeedId(id int64) bool {
 
 // flaky contains item IDs for which WoW says I own the transmogs, but this app says I don't
 var flaky = map[int64]bool{
-	cache.Search("Light Shot").Id():                    true,
-	cache.Search("Solid Shot").Id():                    true,
-	cache.Search("Exploding Shot").Id():                true,
-	cache.Search("Blacksmith Hammer").Id():             true,
-	cache.Search("Arclight Spanner").Id():              true,
+	cache.Search("15 Pound Salmon").Id():               true,
 	cache.Search("17 Pound Catfish").Id():              true,
+	cache.Search("18 Pound Salmon").Id():               true,
 	cache.Search("19 Pound Catfish").Id():              true,
 	cache.Search("22 Pound Catfish").Id():              true,
-	cache.Search("15 Pound Salmon").Id():               true,
-	cache.Search("18 Pound Salmon").Id():               true,
-	cache.Search("Shatter Rounds").Id():                true,
-	cache.Search("Waistclasp of Unethical Power").Id(): true,
-	cache.Search("Choral Slippers").Id():               true,
-	cache.Search("Choral Sash").Id():                   true,
-	cache.Search("Staccato Belt").Id():                 true,
+	cache.Search("Anthemic Bracers").Id():              true,
 	cache.Search("Anthemic Cuirass").Id():              true,
 	cache.Search("Anthemic Gauntlets").Id():            true,
-	cache.Search("Anthemic Bracers").Id():              true,
+	cache.Search("Arclight Spanner").Id():              true,
+	cache.Search("Blacksmith Hammer").Id():             true,
 	cache.Search("Choral Amice").Id():                  true,
+	cache.Search("Choral Sash").Id():                   true,
+	cache.Search("Choral Slippers").Id():               true,
+	cache.Search("Exploding Shot").Id():                true,
+	cache.Search("Light Shot").Id():                    true,
+	cache.Search("Shatter Rounds").Id():                true,
+	cache.Search("Solid Shot").Id():                    true,
+	cache.Search("Staccato Belt").Id():                 true,
+	cache.Search("Waistclasp of Unethical Power").Id(): true,
 }
 
 // NeedItem returns true if I need any of the transmogs this item provides
