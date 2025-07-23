@@ -57,54 +57,49 @@ func findArbitrages(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
+// goods are generally useful items to keep a watch for
+var goods = map[int64]int64{
+	cache.Search("Flawless Battle-Stone").Id():        common.Coins(5000, 0, 0),
+	cache.Search("Marked Flawless Battle-Stone").Id(): common.Coins(5000, 0, 0),
+
+	cache.Search("Hexweave Bag").Id(): common.Coins(120, 0, 0), // 30 slot
+	//cache.Search("Chronocloth Reagent Bag").Id():     common.Coins(90, 0, 0), // 36 slot
+	//cache.Search("Dawnweave Reagent Bag").Id():       common.Coins(90, 0, 0), // 38 slot
+	//cache.Search("Simply Stitched Reagent Bag").Id(): common.Coins(90, 0, 0), // 32 slot
+	//cache.Search("Weavercloth Reagent Bag").Id():     common.Coins(90, 0, 0), // 36 slot
+}
+
+// skipToys are toys I am not interested in
+var skipToys = map[int64]bool{
+	// Only usable by engineers
+	cache.Search("Dimensional Ripper - Area 52").Id():     true,
+	cache.Search("Dimensional Ripper - Everlook").Id():    true,
+	cache.Search("Flying Machine").Id():                   true,
+	cache.Search("Snowmaster 9000").Id():                  true,
+	cache.Search("Turbo-Charged Flying Machine").Id():     true,
+	cache.Search("Wormhole Centrifuge").Id():              true,
+	cache.Search("Wormhole Generator: Argus").Id():        true,
+	cache.Search("Wormhole Generator: Khaz Algar").Id():   true,
+	cache.Search("Wormhole Generator: Kul Tiras").Id():    true,
+	cache.Search("Wormhole Generator: Northrend").Id():    true,
+	cache.Search("Wormhole Generator: Pandaria").Id():     true,
+	cache.Search("Wormhole Generator: Shadowlands").Id():  true,
+	cache.Search("Wormhole Generator: Zandalar").Id():     true,
+	cache.Search("Wyrmhole Generator: Dragon Isles").Id(): true,
+
+	// Just not interested
+	cache.Search("Cold Cushion").Id():           true,
+	cache.Search("Cushion of Time Travel").Id(): true,
+	cache.Search("Findle's Loot-A-Rang").Id():   true,
+	cache.Search("Giggle Goggles").Id():         true,
+	cache.Search("Moonfang Shroud").Id():        true,
+	cache.Search("Safari Lounge Cushion").Id():  true,
+	cache.Search("Winning Hand").Id():           true,
+}
+
 // findBargains returns auctions for which the goods are below our desired prices
 func findBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
-
-	// Generally useful items to keep a watch for
-	goods := map[int64]int64{
-		98715: common.Coins(5000, 0, 0), // Marked Flawless Battle-Stone
-		92741: common.Coins(5000, 0, 0), // Flawless Battle-Stone
-
-		114821: common.Coins(120, 0, 0), // Hexweave Bag (30 slot)
-
-		//194019: common.Coins(90, 0, 0), // Simply Stitched Reagent Bag (32 slot)
-		//194020: common.Coins(90, 0, 0), // Chronocloth Reagent Bag (36 slot)
-		//222855: common.Coins(90, 0, 0), // Weavercloth Reagent Bag (36 slot)
-		//222854: common.Coins(90, 0, 0), // Dawnweave Reagent Bag (38 slot)
-	}
-
-	// Toys I am not interested in
-	skipToys := map[int64]bool{
-		// Creepy
-		101571: true, // Moonfang Shroud (creepy)
-
-		// Too fiddly
-		109167: true, // Findle's Loot-A-Rang
-
-		// Only usable by engineers
-		17716:  true, // Snowmaster 9000
-		18984:  true, // Dimensional Ripper - Everlook
-		30542:  true, // Dimensional Ripper - Area 52
-		34060:  true, // Flying Machine
-		34061:  true, // Turbo-Charged Flying Machine
-		48933:  true, // Wormhole Generator: Northrend
-		87215:  true, // Wormhole Generator: Pandaria
-		112059: true, // Wormhole Centrifuge
-		151652: true, // Wormhole Generator: Argus
-		168807: true, // Wormhole Generator: Kul Tiras
-		168808: true, // Wormhole Generator: Zandalar
-		172924: true, // Wormhole Generator: Shadowlands
-		198156: true, // Wyrmhole Generator: Dragon Isles
-		221966: true, // Wormhole Generator: Khaz Algar
-
-		// Just not interested
-		116690: true, // Safari Lounge Cushion
-		119212: true, // Winning Hand
-		194057: true, // Cushion of Time Travel
-		194058: true, // Cold Cushion
-		198227: true, // Giggle Goggles
-	}
 
 	for itemId, itemAuctions := range auctions {
 		i, ok := wowAPI.LookupItem(itemId, 0)
@@ -184,20 +179,14 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 		}
 	}
 
-	//foundAppearanceSet := false
 	bargains := []string{}
 	for _, candidate := range candidates {
 		name := candidate.item.Name()
 		if candidate.inAppearanceSet {
 			name += "   " + common.Gold(candidate.price)
-			//foundAppearanceSet = true
 		}
 		bargains = append(bargains, name)
 	}
-
-	//if len(bargains) < 5 && !foundAppearanceSet {
-	//	return nil
-	//}
 
 	return bargains
 }
@@ -251,7 +240,7 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Pet.QualityId < common.QualityId("Rare") {
 			continue
 		}
-		if petAuction.Buyout > common.Coins(2000, 0, 0) {
+		if petAuction.Buyout > common.Coins(1000, 0, 0) {
 			continue
 		}
 		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId))
