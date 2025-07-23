@@ -63,7 +63,8 @@ func oauthBlizzardLogin(w http.ResponseWriter, r *http.Request) {
 	// You must always provide a non-empty string and validate it matches the state query
 	// parameter on your redirect callback.
 	u := blizzardOauthConfig.AuthCodeURL(oauthState)
-	fmt.Printf("Visiting URL: %s\n", u)
+	// My account is homed in the US. battle.net resolves to whatever local country. Force it to use 'us'.
+	u = strings.Replace(u, "/battle.net/", "/us.battle.net/", 1)
 	http.Redirect(w, r, u, http.StatusTemporaryRedirect)
 }
 
