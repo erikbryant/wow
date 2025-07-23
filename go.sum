@@ -1,3 +1,5 @@
+cloud.google.com/go/compute/metadata v0.3.0 h1:Tz+eQXMEqDIKRsmY3cHTL6FVaynIjX2QxYC4trgAKZc=
+cloud.google.com/go/compute/metadata v0.3.0/go.mod h1:zFmK7XCadkQkj6TtorcaGlCW1hT1fIilQDwofLpJ20k=
 github.com/erikbryant/aes v0.4.0 h1:obZHjv5b+cxyGocqvKMiCpN4QGjRwG5r7vPrYtWT3nA=
 github.com/erikbryant/aes v0.4.0/go.mod h1:Awmp9n4/zhnQgZ/YmkotbY2TEKFLi9Zh87cRbw5WdhM=
 github.com/erikbryant/web v0.10.0 h1:pVq1phHzm0xigWBY7qGxTqg5Cd3qA60N9X/ZIdLfI0g=
