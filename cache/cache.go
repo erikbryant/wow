@@ -96,6 +96,18 @@ func Print() {
 	}
 }
 
+// Search returns the item with name 's' or an empty item if not found
+func Search(s string) item.Item {
+	for id := range itemCache {
+		if itemCache[id].Name() == s {
+			return itemCache[id]
+		}
+	}
+
+	fmt.Println("Did not find item for search string: ", s)
+	return item.Item{}
+}
+
 func DisableRead() {
 	readDisabled = true
 }
