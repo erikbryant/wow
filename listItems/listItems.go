@@ -44,15 +44,15 @@ func refreshCache() {
 
 	cache.Save()
 
-	fmt.Printf("Refreshed %d/%d items\n", refreshCount, needsRefresh)
+	fmt.Printf("Refreshed %d of %d stale items\n", refreshCount, needsRefresh)
 }
 
 // usage prints a usage message and terminates the program with an error
 func usage() {
 	log.Fatal(`Usage:
-  listItems                                             # Print the entire cache
-  listItems -passPhrase <phrase> -id <itemId>           # Print a single item
-  listItems -passPhrase <phrase> -refresh               # Refresh items in the cache
+  listItems                                              # Print the entire cache
+  listItems -passPhrase <phrase> -id <itemId>            # Print a single item
+  listItems -passPhrase <phrase> -refresh                # Refresh items in the cache
   listItems -passPhrase <phrase> -delItem -id <itemId>   # Delete <itemId> from the cache
 `)
 }
