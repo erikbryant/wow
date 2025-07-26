@@ -231,39 +231,6 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-// findPetNeeded returns any pets for sale that I do not own
-func findPetNeeded(auctions map[int64][]auction.Auction) []string {
-	if !*oauthAvailable {
-		return nil
-	}
-
-	bargains := []string{}
-
-	for _, petAuction := range auctions[battlePet.PetCageItemId] {
-		if battlePet.Own(petAuction.Pet.SpeciesId) {
-			continue
-		}
-		if petAuction.Buyout <= 0 {
-			continue
-		}
-		if petAuction.Pet.QualityId < common.QualityId("Rare") {
-			continue
-		}
-		if petAuction.Buyout > common.Coins(1000, 0, 0) {
-			continue
-		}
-		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId))
-	}
-
-	return bargains
-}
-
-var specialtyPets = map[int64]int64{
-	// Pets that make good gifts
-	//1890: common.Coins(1000, 0, 0), // Corgi Pup
-	//1929: common.Coins(1000, 0, 0), // Corgnelius
-}
-
 // findPetSpellNeeded returns any pet spells for sale that I do not own
 func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 	if !*oauthAvailable {
@@ -289,10 +256,6 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 		}
 
 		for _, auc := range itemAuctions {
-			if specialtyPets[petId] > 0 {
-				stats := fmt.Sprintf("%s %s %s (specialty)", battlePet.Name(petId), common.Gold(auc.Buyout), i.Quality())
-				bargains = append(bargains, stats)
-			}
 			if auc.Buyout <= 0 {
 				continue
 			}
@@ -305,6 +268,43 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 	}
 
 	return bargains
+}
+
+// findPetNeeded returns any pets for sale that I do not own
+func findPetNeeded(auctions map[int64][]auction.Auction) []string {
+	if !*oauthAvailable {
+		return nil
+	}
+
+	bargains := []string{}
+
+	for _, petAuction := range auctions[battlePet.PetCageItemId] {
+		if battlePet.Own(petAuction.Pet.SpeciesId) {
+			continue
+		}
+		if petAuction.Buyout <= 0 {
+			continue
+		}
+		if petAuction.Pet.QualityId < common.QualityId("Rare") {
+			continue
+		}
+		if petAuction.Buyout > common.Coins(1000, 0, 0) {
+			continue
+		}
+		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId))
+	}
+
+	// Include any pets available via spells
+	spellBargains := findPetSpellNeeded(auctions)
+	bargains = append(bargains, spellBargains...)
+
+	return bargains
+}
+
+var specialtyPets = map[int64]int64{
+	// Pets that make good gifts
+	//1890: common.Coins(1000, 0, 0), // Corgi Pup
+	//1929: common.Coins(1000, 0, 0), // Corgnelius
 }
 
 // findPetSpecialty returns a list of specialty pets I am looking for (whether I own them or not)
@@ -345,12 +345,11 @@ func scanRealm(realm string) {
 	cache.Save()
 
 	results := ""
-	results += fmtShoppingList("Pet Needed", findPetNeeded(auctions), color.New(color.FgMagenta))
-	results += fmtShoppingList("Pet Bargains", findPetBargains(auctions), color.New(color.FgGreen))
+	results += fmtShoppingList("Pets I Need", findPetNeeded(auctions), color.New(color.FgMagenta))
+	results += fmtShoppingList("Pets to Resell", findPetBargains(auctions), color.New(color.FgGreen))
 	results += fmtShoppingList("Arbitrages", findArbitrages(auctions), color.New(color.FgWhite))
-	results += fmtShoppingList("Bargains", findBargains(auctions), color.New(color.FgRed))
+	results += fmtShoppingList("Useful Items Bargains", findBargains(auctions), color.New(color.FgRed))
 	results += fmtShoppingList("Pet Specialty", findPetSpecialty(auctions), color.New(color.FgRed))
-	results += fmtShoppingList("Pet Spell", findPetSpellNeeded(auctions), color.New(color.FgBlue))
 	results += fmtShoppingList("Transmog Bargains", findTransmogBargains(auctions), color.New(color.FgBlue))
 
 	if len(results) == 0 {
