@@ -391,8 +391,6 @@ func usage() {
 func main() {
 	flag.Parse()
 
-	fmt.Println(*oauthAvailable)
-
 	if *passPhrase == "" {
 		fmt.Println("ERROR: You must specify -passPhrase to unlock the client Id/secret")
 		usage()
