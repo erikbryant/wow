@@ -18,10 +18,10 @@ import (
 )
 
 var (
-	passPhrase      = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms          = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Alleria,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities,Aggramar,Alterac Mountains,Azralon,Barthilas,Caelestrasz,Dath'Remar,Drakkari,Eredar,Goldrinn,Gundrak,Nemesis,Quel'Thalas,Ragnaros", "WoW realms to scan")
-	untracked       = flag.Bool("untracked", false, "Scan all untracked items")
-	untrackedRealms = "Gallywix"
+	passPhrase = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
+	// Linked realms still to populate: Gallywix
+	realms         = flag.String("realms", "Aegwynn,Agamaggan,Akama,Alexstrasza,Alleria,Altar of Storms,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azuremyst,Baelgun,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Cairne,Coilfang,Darrowmere,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Durotan,Eitrigg,Elune,Farstriders,Feathermoon,Frostwolf,Ghostlands,Greymane,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Ravencrest,Runetotem,Sisters of Elune,Commodities,Aggramar,Alterac Mountains,Azralon,Barthilas,Caelestrasz,Dath'Remar,Drakkari,Eredar,Goldrinn,Gundrak,Nemesis,Quel'Thalas,Ragnaros", "WoW realm(s) to scan")
+	oauthAvailable = flag.Bool("oauth", true, "Is OAuth authentication available?")
 )
 
 // findArbitrages returns auctions selling for lower than vendor prices
@@ -57,8 +57,8 @@ func findArbitrages(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-// goods are generally useful items to keep a watch for
-var goods = map[int64]int64{
+// usefulGoods are generally-useful items to keep an eye out for
+var usefulGoods = map[int64]int64{
 	cache.Search("Flawless Battle-Stone").Id():        common.Coins(5000, 0, 0),
 	cache.Search("Marked Flawless Battle-Stone").Id(): common.Coins(5000, 0, 0),
 
@@ -87,7 +87,7 @@ var skipToys = map[int64]bool{
 	cache.Search("Wormhole Generator: Zandalar").Id():     true,
 	cache.Search("Wyrmhole Generator: Dragon Isles").Id(): true,
 
-	// Just not interested
+	// I am not interested in these
 	cache.Search("Cold Cushion").Id():           true,
 	cache.Search("Cushion of Time Travel").Id(): true,
 	cache.Search("Findle's Loot-A-Rang").Id():   true,
@@ -97,7 +97,7 @@ var skipToys = map[int64]bool{
 	cache.Search("Winning Hand").Id():           true,
 }
 
-// findBargains returns auctions for which the goods are below our desired prices
+// findBargains returns auctions for which the items are below our desired prices
 func findBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
@@ -112,14 +112,16 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 			}
 
 			// Bargains on toys
-			maxPrice := common.Coins(400, 0, 0)
-			if i.Toy() && !toy.Own(i) && !skipToys[i.Id()] && auc.Buyout <= maxPrice {
-				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
-				bargains = append(bargains, str)
+			if *oauthAvailable {
+				maxPrice := common.Coins(400, 0, 0)
+				if i.Toy() && !toy.Own(i) && !skipToys[i.Id()] && auc.Buyout <= maxPrice {
+					str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
+					bargains = append(bargains, str)
+				}
 			}
 
-			// Bargains on specific goods
-			maxPrice, ok := goods[itemId]
+			// Bargains on specific items
+			maxPrice, ok := usefulGoods[itemId]
 			if ok && auc.Buyout < maxPrice {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 				bargains = append(bargains, str)
@@ -136,8 +138,12 @@ type Candidate struct {
 	inAppearanceSet bool
 }
 
-// findTransmogBargains returns auctions for which the goods are below our desired prices
+// findTransmogBargains returns auctions for which the transmog is below our desired price
 func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
+	if !*oauthAvailable {
+		return nil
+	}
+
 	candidates := map[int64]Candidate{}
 
 	for itemId, itemAuctions := range auctions {
@@ -191,7 +197,7 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-// findPetBargains returns a list of pets that sell for more than they are listed
+// findPetBargains returns a list of pets that are likely to sell for more than they are listed
 func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
@@ -225,11 +231,14 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-// findPetNeeded returns a list of pets I do not have
+// findPetNeeded returns any pets for sale that I do not own
 func findPetNeeded(auctions map[int64][]auction.Auction) []string {
+	if !*oauthAvailable {
+		return nil
+	}
+
 	bargains := []string{}
 
-	// Pets I do not own yet
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
 		if battlePet.Own(petAuction.Pet.SpeciesId) {
 			continue
@@ -255,8 +264,12 @@ var specialtyPets = map[int64]int64{
 	//1929: common.Coins(1000, 0, 0), // Corgnelius
 }
 
-// findPetSpell returns a list of pet spells for sale
-func findPetSpell(auctions map[int64][]auction.Auction) []string {
+// findPetSpellNeeded returns any pet spells for sale that I do not own
+func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
+	if !*oauthAvailable {
+		return nil
+	}
+
 	bargains := []string{}
 
 	for itemId, itemAuctions := range auctions {
@@ -294,7 +307,7 @@ func findPetSpell(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-// findPetSpecialty returns a list of pets I am looking for
+// findPetSpecialty returns a list of specialty pets I am looking for (whether I own them or not)
 func findPetSpecialty(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
@@ -314,47 +327,39 @@ func findPetSpecialty(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-// printShoppingList prints a list of auctions the user may want to buy
-func printShoppingList(label string, names []string, c *color.Color) {
-	if len(names) == 0 {
-		return
+// fmtShoppingList returns a formatted string of the given items or "" if none
+func fmtShoppingList(label string, items []string, c *color.Color) string {
+	if len(items) == 0 {
+		return ""
 	}
-	fmt.Printf("--- %s ---\n", label)
-	c.Println(strings.Join(common.SortUnique(names), "\n"))
+	return c.Sprintf("--- %s ---\n%s\n", label, strings.Join(common.SortUnique(items), "\n"))
 }
 
-// scanRealm downloads the available auctions and prints any bargains/arbitrages
+// scanRealm retrieves auctions and prints any bargains/arbitrages to go buy
 func scanRealm(realm string) {
 	auctions, ok := auction.GetAuctions(realm)
 	if !ok {
 		return
 	}
 
-	arbitrages := findArbitrages(auctions)
-	bargains := findBargains(auctions)
-	petBargains := findPetBargains(auctions)
-	petNeeded := findPetNeeded(auctions)
-	petSpecialty := findPetSpecialty(auctions)
-	petSpell := findPetSpell(auctions)
-	transmogBargains := findTransmogBargains(auctions)
-
 	cache.Save()
 
-	if len(arbitrages) == 0 && len(bargains) == 0 && len(petBargains) == 0 && len(petNeeded) == 0 && len(petSpecialty) == 0 && len(petSpell) == 0 && len(transmogBargains) == 0 {
-		// Skip realms that have nothing to buy
+	results := ""
+	results += fmtShoppingList("Pet Needed", findPetNeeded(auctions), color.New(color.FgMagenta))
+	results += fmtShoppingList("Pet Bargains", findPetBargains(auctions), color.New(color.FgGreen))
+	results += fmtShoppingList("Arbitrages", findArbitrages(auctions), color.New(color.FgWhite))
+	results += fmtShoppingList("Bargains", findBargains(auctions), color.New(color.FgRed))
+	results += fmtShoppingList("Pet Specialty", findPetSpecialty(auctions), color.New(color.FgRed))
+	results += fmtShoppingList("Pet Spell", findPetSpellNeeded(auctions), color.New(color.FgBlue))
+	results += fmtShoppingList("Transmog Bargains", findTransmogBargains(auctions), color.New(color.FgBlue))
+
+	if len(results) == 0 {
+		// Nothing to buy
 		return
 	}
 
 	c := color.New(color.FgCyan)
-	c.Printf("\n===========>  %s (%d unique items)  <===========\n\n", realm, len(auctions))
-
-	printShoppingList("Pet Needed", petNeeded, color.New(color.FgMagenta))
-	printShoppingList("Pet Bargains", petBargains, color.New(color.FgGreen))
-	printShoppingList("Arbitrages", arbitrages, color.New(color.FgWhite))
-	printShoppingList("Bargains", bargains, color.New(color.FgRed))
-	printShoppingList("Pet Specialty", petSpecialty, color.New(color.FgRed))
-	printShoppingList("Pet Spell", petSpell, color.New(color.FgBlue))
-	printShoppingList("Transmog Bargains", transmogBargains, color.New(color.FgBlue))
+	c.Printf("\n===========>  %s (%d unique items)  <===========\n\n%s", realm, len(auctions), results)
 }
 
 // writeFile writes contents to file
@@ -386,23 +391,25 @@ func usage() {
 func main() {
 	flag.Parse()
 
+	fmt.Println(*oauthAvailable)
+
 	if *passPhrase == "" {
 		fmt.Println("ERROR: You must specify -passPhrase to unlock the client Id/secret")
 		usage()
 	}
-	wowAPI.Init(*passPhrase, true)
+	wowAPI.Init(*passPhrase, *oauthAvailable)
 
-	battlePet.Init()
-	toy.Init()
-	transmog.Init()
-
-	realmsToScan := *realms
-	if *untracked {
-		realmsToScan = untrackedRealms
+	battlePet.Init(*oauthAvailable)
+	if *oauthAvailable {
+		toy.Init()
+		transmog.Init()
 	}
-	for _, realm := range strings.Split(realmsToScan, ",") {
+
+	for _, realm := range strings.Split(*realms, ",") {
 		scanRealm(realm)
 	}
 
-	generateLua()
+	if *oauthAvailable {
+		generateLua()
+	}
 }

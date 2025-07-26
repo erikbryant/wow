@@ -1,25 +1,62 @@
 package battlePet
 
 import (
+	"encoding/gob"
 	"fmt"
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
+	"os"
 	"sort"
 	"strings"
 )
 
 var (
-	PetCageItemId = int64(82800)
-	allNames      = map[int64]string{}
-	allOwned      = map[int64][]item.PetInfo{}
+	PetCageItemId    = int64(82800)
+	petNameCacheFile = "./generated/petNameCache.gob"
+	allNames         = map[int64]string{}
+	allOwned         = map[int64][]item.PetInfo{}
 )
 
-func Init() {
-	allNames = petNames()
-	allOwned = owned()
+func Init(oauthAvailable bool) {
+	load()
+	if oauthAvailable {
+		allOwned = owned()
+	}
+	fmt.Printf("-- #Pets owned %d/%d\n", len(allOwned), len(allNames))
+}
+
+// load loads the disk cache file into memory
+func load() {
+	file, err := os.Open(petNameCacheFile)
+	if err != nil {
+		fmt.Printf("*** error opening petNameCache: %v, creating new one\n", err)
+		allNames = petNames()
+		save()
+		return
+	}
+	defer file.Close()
+	decoder := gob.NewDecoder(file)
+	err = decoder.Decode(&allNames)
+	if err != nil {
+		log.Fatalf("error reading petNameCache: %v", err)
+	}
+}
+
+// save writes the in-memory cache file to disk
+func save() {
+	file, err := os.Create(petNameCacheFile)
+	if err != nil {
+		log.Fatalf("error creating appearance cache file: %v", err)
+	}
+	defer file.Close()
+	encoder := gob.NewEncoder(file)
+	err = encoder.Encode(allNames)
+	if err != nil {
+		log.Fatalf("error encoding allSetIds: %v", err)
+	}
 }
 
 // owned returns the pets I own
