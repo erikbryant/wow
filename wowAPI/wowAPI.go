@@ -161,7 +161,6 @@ func Init(passPhrase string, oauthAvailable bool) {
 	}
 
 	if !oauthAvailable {
-		fmt.Println("OAuth unavailable. Some features may be missing.")
 		return
 	}
 
