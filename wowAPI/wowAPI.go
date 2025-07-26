@@ -142,7 +142,7 @@ var (
 	}
 )
 
-func Init(passPhrase string, profile bool) {
+func Init(passPhrase string, oauthAvailable bool) {
 	var err error
 
 	clientID, err = aes.Decrypt(clientIDCrypt, passPhrase)
@@ -160,12 +160,15 @@ func Init(passPhrase string, profile bool) {
 		log.Fatal("unable to get access token", err)
 	}
 
-	if profile {
-		var ok bool
-		profileAccessToken, ok = wowProfileAccessToken()
-		if !ok {
-			log.Fatal("unable to get profile access token", err)
-		}
+	if !oauthAvailable {
+		fmt.Println("OAuth unavailable. Some features may be missing.")
+		return
+	}
+
+	var ok bool
+	profileAccessToken, ok = wowProfileAccessToken()
+	if !ok {
+		log.Fatal("unable to get oauthAvailable access token", err)
 	}
 }
 
