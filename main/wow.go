@@ -70,7 +70,7 @@ var skipToys = map[int64]bool{
 	cache.Search("Winning Hand").Id():           true,
 }
 
-// findPetSpellNeeded returns any pet spells for sale that I do not own
+// findPetSpellNeeded returns pet spells for sale that I do not own
 func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 	if !*oauthAvailable {
 		return nil
@@ -109,7 +109,7 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-// findPetNeeded returns any pets for sale that I do not own
+// findPetNeeded returns pets for sale that I do not own
 func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 	if !*oauthAvailable {
 		return nil
@@ -140,7 +140,7 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-// findPetBargains returns a list of pets that are likely to sell for more than they are listed
+// findPetBargains returns pets that are likely to sell for more than they are listed
 func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
@@ -207,7 +207,7 @@ func findArbitrages(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-// findBargains returns auctions for which the items are below our desired prices
+// findBargains returns auctions selling below our desired prices
 func findBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
@@ -242,7 +242,7 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-// findPetSpecialty returns a list of specialty pets I am looking for (whether I own them or not)
+// findPetSpecialty returns specialty pets I am looking for (whether I own them or not)
 func findPetSpecialty(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
@@ -268,7 +268,7 @@ func findPetSpecialty(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-// findTransmogBargains returns auctions for which the transmog is below our desired price
+// findTransmogBargains returns transmog auctions selling below our desired price
 func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 	if !*oauthAvailable {
 		return nil
@@ -335,7 +335,7 @@ func fmtShoppingList(label string, items []string, c *color.Color) string {
 	return c.Sprintf("--- %s ---\n%s\n", label, strings.Join(common.SortUnique(items), "\n"))
 }
 
-// scanRealm retrieves auctions and prints any bargains/arbitrages to go buy
+// scanRealm retrieves auctions and prints suggestions for what to buy
 func scanRealm(realm string) {
 	auctions, ok := auction.GetAuctions(realm)
 	if !ok {
@@ -361,7 +361,7 @@ func scanRealm(realm string) {
 	c.Printf("\n===========>  %s (%d unique items)  <===========\n\n%s", realm, len(auctions), results)
 }
 
-// writeFile writes contents to file
+// writeFile writes 'contents' to file
 func writeFile(file, contents string) {
 	f, err := os.Create(file)
 	if err != nil {
@@ -374,7 +374,7 @@ func writeFile(file, contents string) {
 	}
 }
 
-// generateLua writes the WoW addon lua files
+// generateLua writes the WoW 'Arbitrage' addon lua files
 func generateLua() {
 	writeFile("./generated/PriceCache.lua", cache.LuaVendorPrice())
 	writeFile("./generated/PetCache.lua", battlePet.LuaPetId())
