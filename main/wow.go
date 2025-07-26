@@ -24,37 +24,10 @@ var (
 	oauthAvailable = flag.Bool("oauth", true, "Is OAuth authentication available?")
 )
 
-// findArbitrages returns auctions selling for lower than vendor prices
-func findArbitrages(auctions map[int64][]auction.Auction) []string {
-	arbitrages := map[string]int64{}
-
-	for itemId, itemAuctions := range auctions {
-		i, ok := wowAPI.LookupItem(itemId, 0)
-		if !ok {
-			continue
-		}
-		for _, auc := range itemAuctions {
-			if auc.Buyout <= 0 {
-				continue
-			}
-			if auc.Buyout >= i.SellPriceRealizable() {
-				continue
-			}
-			arbitrages[i.Name()] += (i.SellPriceRealizable() - auc.Buyout) * auc.Quantity
-		}
-	}
-
-	bargains := []string{}
-	for name, profit := range arbitrages {
-		if profit < common.Coins(3, 0, 0) {
-			// Too small to bother with
-			continue
-		}
-		str := fmt.Sprintf("%s   %s", name, common.Gold(profit))
-		bargains = append(bargains, str)
-	}
-
-	return bargains
+type Candidate struct {
+	item            item.Item
+	price           int64
+	inAppearanceSet bool
 }
 
 // usefulGoods are generally-useful items to keep an eye out for
@@ -95,140 +68,6 @@ var skipToys = map[int64]bool{
 	cache.Search("Moonfang Shroud").Id():        true,
 	cache.Search("Safari Lounge Cushion").Id():  true,
 	cache.Search("Winning Hand").Id():           true,
-}
-
-// findBargains returns auctions for which the items are below our desired prices
-func findBargains(auctions map[int64][]auction.Auction) []string {
-	bargains := []string{}
-
-	for itemId, itemAuctions := range auctions {
-		i, ok := wowAPI.LookupItem(itemId, 0)
-		if !ok {
-			continue
-		}
-		for _, auc := range itemAuctions {
-			if auc.Buyout <= 0 {
-				continue
-			}
-
-			// Bargains on toys
-			if *oauthAvailable {
-				maxPrice := common.Coins(400, 0, 0)
-				if i.Toy() && !toy.Own(i) && !skipToys[i.Id()] && auc.Buyout <= maxPrice {
-					str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
-					bargains = append(bargains, str)
-				}
-			}
-
-			// Bargains on specific items
-			maxPrice, ok := usefulGoods[itemId]
-			if ok && auc.Buyout < maxPrice {
-				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
-				bargains = append(bargains, str)
-			}
-		}
-	}
-
-	return bargains
-}
-
-type Candidate struct {
-	item            item.Item
-	price           int64
-	inAppearanceSet bool
-}
-
-// findTransmogBargains returns auctions for which the transmog is below our desired price
-func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
-	if !*oauthAvailable {
-		return nil
-	}
-
-	candidates := map[int64]Candidate{}
-
-	for itemId, itemAuctions := range auctions {
-		i, ok := wowAPI.LookupItem(itemId, 0)
-		if !ok {
-			continue
-		}
-		for _, auc := range itemAuctions {
-			if auc.Buyout <= 0 {
-				continue
-			}
-
-			if !transmog.NeedItem(i) {
-				continue
-			}
-
-			maxPrice := common.Coins(30, 0, 0)
-			if transmog.InAppearanceSet(i) {
-				maxPrice = common.Coins(40, 0, 0)
-			}
-			if auc.Buyout > maxPrice {
-				continue
-			}
-
-			t := i.Appearances()
-			if t == nil {
-				continue
-			}
-			transmogId := t[0] // There may be multiple, but we'll just look at the first
-			previous, ok := candidates[transmogId]
-			if ok && auc.Buyout >= previous.price {
-				continue
-			}
-			candidates[transmogId] = Candidate{
-				i,
-				auc.Buyout,
-				transmog.InAppearanceSet(i),
-			}
-		}
-	}
-
-	bargains := []string{}
-	for _, candidate := range candidates {
-		name := candidate.item.Name()
-		if candidate.inAppearanceSet {
-			name += "   " + common.Gold(candidate.price)
-		}
-		bargains = append(bargains, name)
-	}
-
-	return bargains
-}
-
-// findPetBargains returns a list of pets that are likely to sell for more than they are listed
-func findPetBargains(auctions map[int64][]auction.Auction) []string {
-	bargains := []string{}
-
-	// SpeciesId of pets that do not resell well
-	skipPets := map[int64]bool{
-		162: true, // Sinister Squashling
-		191: true, // Clockwork Rocket Bot
-		251: true, // Toxic Wasteling
-	}
-
-	for _, petAuction := range auctions[battlePet.PetCageItemId] {
-		if skipPets[petAuction.Pet.SpeciesId] {
-			continue
-		}
-		if petAuction.Buyout <= 0 {
-			continue
-		}
-		if petAuction.Pet.QualityId < common.QualityId("Rare") {
-			continue
-		}
-		if petAuction.Pet.Level < 25 {
-			continue
-		}
-		if petAuction.Buyout > common.Coins(100, 0, 0) {
-			continue
-		}
-
-		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId))
-	}
-
-	return bargains
 }
 
 // findPetSpellNeeded returns any pet spells for sale that I do not own
@@ -301,15 +140,117 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-var specialtyPets = map[int64]int64{
-	// Pets that make good gifts
-	//1890: common.Coins(1000, 0, 0), // Corgi Pup
-	//1929: common.Coins(1000, 0, 0), // Corgnelius
+// findPetBargains returns a list of pets that are likely to sell for more than they are listed
+func findPetBargains(auctions map[int64][]auction.Auction) []string {
+	bargains := []string{}
+
+	// SpeciesId of pets that do not resell well
+	skipPets := map[int64]bool{
+		162: true, // Sinister Squashling
+		191: true, // Clockwork Rocket Bot
+		251: true, // Toxic Wasteling
+	}
+
+	for _, petAuction := range auctions[battlePet.PetCageItemId] {
+		if skipPets[petAuction.Pet.SpeciesId] {
+			continue
+		}
+		if petAuction.Buyout <= 0 {
+			continue
+		}
+		if petAuction.Pet.QualityId < common.QualityId("Rare") {
+			continue
+		}
+		if petAuction.Pet.Level < 25 {
+			continue
+		}
+		if petAuction.Buyout > common.Coins(100, 0, 0) {
+			continue
+		}
+
+		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId))
+	}
+
+	return bargains
+}
+
+// findArbitrages returns auctions selling for lower than vendor prices
+func findArbitrages(auctions map[int64][]auction.Auction) []string {
+	arbitrages := map[string]int64{}
+
+	for itemId, itemAuctions := range auctions {
+		i, ok := wowAPI.LookupItem(itemId, 0)
+		if !ok {
+			continue
+		}
+		for _, auc := range itemAuctions {
+			if auc.Buyout <= 0 {
+				continue
+			}
+			if auc.Buyout >= i.SellPriceRealizable() {
+				continue
+			}
+			arbitrages[i.Name()] += (i.SellPriceRealizable() - auc.Buyout) * auc.Quantity
+		}
+	}
+
+	bargains := []string{}
+	for name, profit := range arbitrages {
+		if profit < common.Coins(3, 0, 0) {
+			// Too small to bother with
+			continue
+		}
+		str := fmt.Sprintf("%s   %s", name, common.Gold(profit))
+		bargains = append(bargains, str)
+	}
+
+	return bargains
+}
+
+// findBargains returns auctions for which the items are below our desired prices
+func findBargains(auctions map[int64][]auction.Auction) []string {
+	bargains := []string{}
+
+	for itemId, itemAuctions := range auctions {
+		i, ok := wowAPI.LookupItem(itemId, 0)
+		if !ok {
+			continue
+		}
+		for _, auc := range itemAuctions {
+			if auc.Buyout <= 0 {
+				continue
+			}
+
+			// Bargains on toys
+			if *oauthAvailable {
+				maxPrice := common.Coins(400, 0, 0)
+				if i.Toy() && !toy.Own(i) && !skipToys[i.Id()] && auc.Buyout <= maxPrice {
+					str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
+					bargains = append(bargains, str)
+				}
+			}
+
+			// Bargains on specific items
+			maxPrice, ok := usefulGoods[itemId]
+			if ok && auc.Buyout < maxPrice {
+				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
+				bargains = append(bargains, str)
+			}
+		}
+	}
+
+	return bargains
 }
 
 // findPetSpecialty returns a list of specialty pets I am looking for (whether I own them or not)
 func findPetSpecialty(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
+
+	var specialtyPets = map[int64]int64{
+		// Pets that make good gifts
+		//1890: common.Coins(1000, 0, 0), // Corgi Pup
+		//1929: common.Coins(1000, 0, 0), // Corgnelius
+	}
 
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
 		if petAuction.Buyout <= 0 {
@@ -322,6 +263,65 @@ func findPetSpecialty(auctions map[int64][]auction.Auction) []string {
 
 		namePrice := fmt.Sprintf("%s   %d   %s", battlePet.Name(petAuction.Pet.SpeciesId), petAuction.Pet.QualityId, common.Gold(premiumPetPrice))
 		bargains = append(bargains, namePrice)
+	}
+
+	return bargains
+}
+
+// findTransmogBargains returns auctions for which the transmog is below our desired price
+func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
+	if !*oauthAvailable {
+		return nil
+	}
+
+	candidates := map[int64]Candidate{}
+
+	for itemId, itemAuctions := range auctions {
+		i, ok := wowAPI.LookupItem(itemId, 0)
+		if !ok {
+			continue
+		}
+		for _, auc := range itemAuctions {
+			if auc.Buyout <= 0 {
+				continue
+			}
+
+			if !transmog.NeedItem(i) {
+				continue
+			}
+
+			maxPrice := common.Coins(30, 0, 0)
+			if transmog.InAppearanceSet(i) {
+				maxPrice = common.Coins(40, 0, 0)
+			}
+			if auc.Buyout > maxPrice {
+				continue
+			}
+
+			t := i.Appearances()
+			if t == nil {
+				continue
+			}
+			transmogId := t[0] // There may be multiple, but we'll just look at the first
+			previous, ok := candidates[transmogId]
+			if ok && auc.Buyout >= previous.price {
+				continue
+			}
+			candidates[transmogId] = Candidate{
+				i,
+				auc.Buyout,
+				transmog.InAppearanceSet(i),
+			}
+		}
+	}
+
+	bargains := []string{}
+	for _, candidate := range candidates {
+		name := candidate.item.Name()
+		if candidate.inAppearanceSet {
+			name += "   " + common.Gold(candidate.price)
+		}
+		bargains = append(bargains, name)
 	}
 
 	return bargains
@@ -348,8 +348,8 @@ func scanRealm(realm string) {
 	results += fmtShoppingList("Pets I Need", findPetNeeded(auctions), color.New(color.FgMagenta))
 	results += fmtShoppingList("Pets to Resell", findPetBargains(auctions), color.New(color.FgGreen))
 	results += fmtShoppingList("Arbitrages", findArbitrages(auctions), color.New(color.FgWhite))
-	results += fmtShoppingList("Useful Items Bargains", findBargains(auctions), color.New(color.FgRed))
-	results += fmtShoppingList("Pet Specialty", findPetSpecialty(auctions), color.New(color.FgRed))
+	results += fmtShoppingList("Useful Item Bargains", findBargains(auctions), color.New(color.FgRed))
+	results += fmtShoppingList("Specialty Pets", findPetSpecialty(auctions), color.New(color.FgRed))
 	results += fmtShoppingList("Transmog Bargains", findTransmogBargains(auctions), color.New(color.FgBlue))
 
 	if len(results) == 0 {
@@ -394,12 +394,14 @@ func main() {
 		fmt.Println("ERROR: You must specify -passPhrase to unlock the client Id/secret")
 		usage()
 	}
-	wowAPI.Init(*passPhrase, *oauthAvailable)
 
+	wowAPI.Init(*passPhrase, *oauthAvailable)
 	battlePet.Init(*oauthAvailable)
-	if *oauthAvailable {
-		toy.Init()
-		transmog.Init()
+	toy.Init(*oauthAvailable)
+	transmog.Init(*oauthAvailable)
+
+	if !*oauthAvailable {
+		fmt.Printf("\n*** OAuth unavailable. Some features may be missing.\n")
 	}
 
 	for _, realm := range strings.Split(*realms, ",") {

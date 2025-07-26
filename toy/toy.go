@@ -12,7 +12,11 @@ var (
 	allOwned = map[int64]bool{}
 )
 
-func Init() {
+func Init(oauthAvailable bool) {
+	if !oauthAvailable {
+		return
+	}
+
 	allNames = toyNames()
 	allOwned = owned()
 }

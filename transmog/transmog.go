@@ -17,7 +17,11 @@ var (
 	allSetIds           = map[int64]bool{}
 )
 
-func Init() {
+func Init(oauthAvailable bool) {
+	if !oauthAvailable {
+		return
+	}
+
 	allOwned = owned()
 	fmt.Printf("-- #Transmogs: %d/%d\n", len(allOwned), 44344)
 	gob.Register(map[string]interface{}{})
@@ -70,46 +74,6 @@ func allItemAppearanceSetIds() {
 			allSetIds[id] = true
 		}
 	}
-}
-
-// appearances returns a list of all item appearance IDs
-func appearances() map[int64]bool {
-	ids := map[int64]bool{}
-
-	for _, slot := range wowAPI.ItemAppearanceSlotIndex() {
-		appearances, ok := wowAPI.ItemAppearanceSlot(slot)
-		if !ok {
-			log.Fatal("ERROR: Unable to obtain appearances for slot:", slot)
-		}
-		if appearances == nil {
-			log.Fatal("ERROR: no appearances for slot:", slot)
-		}
-		for _, appearance := range appearances {
-			id := web.ToInt64(appearance.(map[string]interface{})["id"])
-			ids[id] = true
-		}
-	}
-
-	return ids
-}
-
-// ItemIdsForAppearance returns a list of item IDs that have the given appearance
-func ItemIdsForAppearance(appearanceId int64) ([]int64, bool) {
-	ids := []int64{}
-
-	appearance, ok := wowAPI.ItemAppearance(appearanceId)
-	if !ok {
-		return nil, false
-	}
-
-	items := appearance.(map[string]interface{})["items"].([]interface{})
-
-	for _, i := range items {
-		id := web.ToInt64(i.(map[string]interface{})["id"])
-		ids = append(ids, id)
-	}
-
-	return ids, true
 }
 
 // owned returns the IDs of the transmogs I own
@@ -167,7 +131,7 @@ func owned() map[int64]bool {
 // NeedId returns true if I need this transmog
 func NeedId(id int64) bool {
 	if len(allOwned) == 0 {
-		Init()
+		Init(true)
 	}
 	if id <= 0 {
 		return false
@@ -215,7 +179,7 @@ func NeedItem(i item.Item) bool {
 // InAppearanceSet returns true if this item is in an appearance set
 func InAppearanceSet(i item.Item) bool {
 	if len(allSetIds) == 0 {
-		Init()
+		Init(true)
 	}
 	for _, id := range i.Appearances() {
 		if allSetIds[id] {
