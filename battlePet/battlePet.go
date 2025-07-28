@@ -9,8 +9,6 @@ import (
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
 	"os"
-	"sort"
-	"strings"
 )
 
 var (
@@ -159,59 +157,4 @@ func Own(petId int64) bool {
 
 func Format(pet item.PetInfo) string {
 	return fmt.Sprintf("%4d  %2d  %-8s  %s", pet.SpeciesId, pet.Level, common.QualityName(pet.QualityId), allNames[pet.SpeciesId])
-}
-
-func LuaPetId() string {
-	lua := ""
-
-	rows := []string{}
-	lua += fmt.Sprintf("local SpeciesIdCache = {\n")
-	for petId, name := range allNames {
-		row := fmt.Sprintf("  [\"%s\"] = %d,", name, petId)
-		rows = append(rows, row)
-	}
-	sort.Strings(rows)
-	lua += strings.Join(rows, "\n")
-
-	lua += fmt.Sprintf("\n}\n")
-	lua += fmt.Sprintf(`
-local function SpeciesId(name)
-    return SpeciesIdCache[name] or 0
-end
-`)
-
-	lua += "\n"
-
-	highestLevelOwned := map[int64]int64{}
-	for id, pets := range allOwned {
-		for _, pet := range pets {
-			if pet.Level > highestLevelOwned[id] {
-				highestLevelOwned[id] = pet.Level
-			}
-		}
-	}
-
-	rows = []string{}
-	lua += fmt.Sprintf("local OwnedLevelCache = {\n")
-	for petId, level := range highestLevelOwned {
-		name := allNames[petId]
-		row := fmt.Sprintf("  [\"%s\"] = %d,", name, level)
-		rows = append(rows, row)
-	}
-	sort.Strings(rows)
-	lua += strings.Join(rows, "\n")
-
-	lua += fmt.Sprintf("\n}\n")
-	lua += fmt.Sprintf(`
-local function OwnedLevel(speciesID)
-    return OwnedLevelCache[speciesID] or 0
-end
-
-AhaPetCache = {
-  SpeciesId = SpeciesId,
-  OwnedLevel = OwnedLevel,
-}
-`)
-
-	return lua
 }

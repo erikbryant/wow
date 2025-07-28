@@ -403,7 +403,6 @@ func writeFile(file, contents string) {
 // generateLua writes the WoW 'Arbitrage' addon lua files
 func generateLua() {
 	writeFile("./generated/PriceCache.lua", cache.LuaVendorPrice())
-	writeFile("./generated/PetCache.lua", battlePet.LuaPetId())
 }
 
 // usage prints a usage message and terminates the program with an error
