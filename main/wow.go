@@ -430,7 +430,7 @@ func main() {
 		fmt.Printf("\n*** OAuth unavailable. Some features may be missing.\n")
 	}
 
-	fmt.Println(scanRealms(*realms))
+	scanRealms(*realms)
 
 	if *oauthAvailable {
 		generateLua()
