@@ -14,6 +14,7 @@ import (
 	"github.com/fatih/color"
 	"log"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -336,13 +337,12 @@ func fmtShoppingList(label string, items []string, c *color.Color) string {
 }
 
 // scanRealm retrieves auctions and prints suggestions for what to buy
-func scanRealm(realm string) {
+func scanRealm(realm string, c chan<- string) {
 	auctions, ok := auction.GetAuctions(realm)
 	if !ok {
+		c <- ""
 		return
 	}
-
-	cache.Save()
 
 	results := ""
 	results += fmtShoppingList("Pets I Need", findPetNeeded(auctions), color.New(color.FgMagenta))
@@ -354,11 +354,37 @@ func scanRealm(realm string) {
 
 	if len(results) == 0 {
 		// Nothing to buy
+		c <- ""
 		return
 	}
 
-	c := color.New(color.FgCyan)
-	c.Printf("\n===========>  %s (%d unique items)  <===========\n\n%s", realm, len(auctions), results)
+	col := color.New(color.FgCyan)
+	c <- col.Sprintf("\n===========>  %s (%d unique items)  <===========\n\n%s", realm, len(auctions), results)
+}
+
+func scanRealms(r string) {
+	realms := strings.Split(r, ",")
+	results := []string{}
+	c := make(chan string)
+
+	for _, realm := range realms {
+		go scanRealm(realm, c)
+	}
+
+	for range len(realms) {
+		s := <-c
+		if s == "" {
+			continue
+		}
+		// Hack to get Commodities to sort to end of slice
+		s = strings.Replace(s, " Commodities ", " _Commodities_ ", 1)
+		results = append(results, s)
+	}
+
+	sort.Strings(results)
+	fmt.Println(results)
+
+	cache.Save()
 }
 
 // writeFile writes 'contents' to file
@@ -404,9 +430,7 @@ func main() {
 		fmt.Printf("\n*** OAuth unavailable. Some features may be missing.\n")
 	}
 
-	for _, realm := range strings.Split(*realms, ",") {
-		scanRealm(realm)
-	}
+	fmt.Println(scanRealms(*realms))
 
 	if *oauthAvailable {
 		generateLua()
