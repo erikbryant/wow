@@ -7,7 +7,6 @@ import (
 	"github.com/erikbryant/wow/battlePet"
 	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/common"
-	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/toy"
 	"github.com/erikbryant/wow/transmog"
 	"github.com/erikbryant/wow/wowAPI"
@@ -24,16 +23,10 @@ var (
 	oauthAvailable = flag.Bool("oauth", true, "Is OAuth authentication available?")
 )
 
-type Candidate struct {
-	item            item.Item
-	price           int64
-	inAppearanceSet bool
-}
-
-// usefulGoods are generally-useful items to keep an eye out for
+// usefulGoods are useful items I want
 var usefulGoods = map[int64]int64{
-	cache.Search("Flawless Battle-Stone").Id():        common.Coins(5000, 0, 0),
-	cache.Search("Marked Flawless Battle-Stone").Id(): common.Coins(5000, 0, 0),
+	cache.Search("Flawless Battle-Stone").Id():        common.Coins(4000, 0, 0),
+	cache.Search("Marked Flawless Battle-Stone").Id(): common.Coins(4000, 0, 0),
 	cache.Search("Hexweave Bag").Id():                 common.Coins(120, 0, 0), // 30 slot
 	cache.Search("Chronocloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
 	cache.Search("Dawnweave Reagent Bag").Id():        common.Coins(90, 0, 0),  // 38 slot
@@ -274,7 +267,7 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 		return nil
 	}
 
-	candidates := map[int64]Candidate{}
+	needed := map[string]bool{}
 
 	for itemId, itemAuctions := range auctions {
 		i, ok := wowAPI.LookupItem(itemId, 0)
@@ -290,37 +283,23 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 				continue
 			}
 
-			maxPrice := common.Coins(25, 0, 0)
+			maxPrice := common.Coins(30, 0, 0)
+			suffix := ""
 			if transmog.InAppearanceSet(i) {
-				maxPrice = common.Coins(100, 0, 0)
+				maxPrice = common.Coins(120, 0, 0)
+				suffix = "    ***"
 			}
+
 			if auc.Buyout > maxPrice {
 				continue
 			}
 
-			t := i.Appearances()
-			if t == nil {
-				continue
-			}
-			transmogId := t[0] // There may be multiple, but we'll just look at the first
-			previous, ok := candidates[transmogId]
-			if ok && auc.Buyout >= previous.price {
-				continue
-			}
-			candidates[transmogId] = Candidate{
-				i,
-				auc.Buyout,
-				transmog.InAppearanceSet(i),
-			}
+			needed[i.Name()+suffix] = true
 		}
 	}
 
 	bargains := []string{}
-	for _, candidate := range candidates {
-		name := candidate.item.Name()
-		if candidate.inAppearanceSet {
-			name += "   " + common.Gold(candidate.price)
-		}
+	for name, _ := range needed {
 		bargains = append(bargains, name)
 	}
 
