@@ -34,12 +34,11 @@ type Candidate struct {
 var usefulGoods = map[int64]int64{
 	cache.Search("Flawless Battle-Stone").Id():        common.Coins(5000, 0, 0),
 	cache.Search("Marked Flawless Battle-Stone").Id(): common.Coins(5000, 0, 0),
-
-	cache.Search("Hexweave Bag").Id(): common.Coins(120, 0, 0), // 30 slot
-	//cache.Search("Chronocloth Reagent Bag").Id():     common.Coins(90, 0, 0), // 36 slot
-	//cache.Search("Dawnweave Reagent Bag").Id():       common.Coins(90, 0, 0), // 38 slot
-	//cache.Search("Simply Stitched Reagent Bag").Id(): common.Coins(90, 0, 0), // 32 slot
-	//cache.Search("Weavercloth Reagent Bag").Id():     common.Coins(90, 0, 0), // 36 slot
+	cache.Search("Hexweave Bag").Id():                 common.Coins(120, 0, 0), // 30 slot
+	cache.Search("Chronocloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
+	cache.Search("Dawnweave Reagent Bag").Id():        common.Coins(90, 0, 0),  // 38 slot
+	cache.Search("Simply Stitched Reagent Bag").Id():  common.Coins(90, 0, 0),  // 32 slot
+	cache.Search("Weavercloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
 }
 
 // skipToys are toys I am not interested in
@@ -147,8 +146,9 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	// SpeciesId of pets that do not resell well
 	skipPets := map[int64]bool{
 		162: true, // Sinister Squashling
-		191: true, // Clockwork Rocket Bot
-		251: true, // Toxic Wasteling
+		//191:  true, // Clockwork Rocket Bot
+		//251:  true, // Toxic Wasteling
+		4489: true, // Bouncer
 	}
 
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
@@ -232,7 +232,7 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 
 			// Bargains on specific items
 			maxPrice, ok := usefulGoods[itemId]
-			if ok && auc.Buyout < maxPrice {
+			if ok && auc.Buyout <= maxPrice {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 				bargains = append(bargains, str)
 			}
@@ -290,9 +290,9 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 				continue
 			}
 
-			maxPrice := common.Coins(30, 0, 0)
+			maxPrice := common.Coins(25, 0, 0)
 			if transmog.InAppearanceSet(i) {
-				maxPrice = common.Coins(40, 0, 0)
+				maxPrice = common.Coins(100, 0, 0)
 			}
 			if auc.Buyout > maxPrice {
 				continue
