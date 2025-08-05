@@ -141,18 +141,29 @@ func NeedId(id int64) bool {
 
 // flaky item IDs; WoW says I own the transmogs, but this app says I don't
 var flaky = map[int64]bool{
-	cache.Search("15 Pound Salmon").Id():   true,
-	cache.Search("17 Pound Catfish").Id():  true,
-	cache.Search("18 Pound Salmon").Id():   true,
-	cache.Search("19 Pound Catfish").Id():  true,
-	cache.Search("22 Pound Catfish").Id():  true,
-	cache.Search("Arclight Spanner").Id():  true,
-	cache.Search("Blacksmith Hammer").Id(): true,
-	cache.Search("Exploding Shot").Id():    true,
-	cache.Search("Heavy Shot").Id():        true,
-	cache.Search("Light Shot").Id():        true,
-	cache.Search("Shatter Rounds").Id():    true,
-	cache.Search("Solid Shot").Id():        true,
+	// I don't think these have appearances
+	cache.Search("15 Pound Salmon").Id():             true,
+	cache.Search("17 Pound Catfish").Id():            true,
+	cache.Search("18 Pound Salmon").Id():             true,
+	cache.Search("19 Pound Catfish").Id():            true,
+	cache.Search("22 Pound Catfish").Id():            true,
+	cache.Search("Arclight Spanner").Id():            true,
+	cache.Search("Blacksmith Hammer").Id():           true,
+	cache.Search("Brumdysla, Hammer of Vrorsk").Id(): true,
+	cache.Search("Exploding Shot").Id():              true,
+	cache.Search("Heavy Shot").Id():                  true,
+	cache.Search("Light Shot").Id():                  true,
+	cache.Search("Shatter Rounds").Id():              true,
+	cache.Search("Solid Shot").Id():                  true,
+
+	// These give false negatives
+	cache.Search("Anthemic Legguards").Id():            true,
+	cache.Search("City Crusher Sabatons").Id():         true,
+	cache.Search("Feathermane Feather Cloak").Id():     true,
+	cache.Search("Grips of Vicious Mauling").Id():      true,
+	cache.Search("Inquisitor's Battle Cowl").Id():      true,
+	cache.Search("Staccato Helm").Id():                 true,
+	cache.Search("Waistclasp of Unethical Power").Id(): true,
 }
 
 // NeedItem returns true if I need any of the transmogs this item provides
