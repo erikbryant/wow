@@ -53,6 +53,7 @@ var skipToys = map[int64]bool{
 	cache.Search("Wyrmhole Generator: Dragon Isles").Id(): true,
 
 	// I am not interested in these
+	cache.Search("Artisan's Sign").Id():         true,
 	cache.Search("Cold Cushion").Id():           true,
 	cache.Search("Cushion of Time Travel").Id(): true,
 	cache.Search("Findle's Loot-A-Rang").Id():   true,
