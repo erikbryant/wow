@@ -70,7 +70,7 @@ func allItemAppearanceSetIds() {
 		fmt.Printf("%d\tAppearance set: %d   %s\n", count, setId, setName)
 		count--
 		for _, id := range wowAPI.ItemAppearanceSetIds(setId) {
-			fmt.Printf("   Appearance: %d\n", id)
+			//fmt.Printf("   Appearance: %d\n", id)
 			allSetIds[id] = true
 		}
 	}
