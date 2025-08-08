@@ -143,6 +143,7 @@ func NeedId(id int64) bool {
 var flaky = map[int64]bool{
 	// I don't think these have appearances
 	cache.Search("15 Pound Salmon").Id():             true,
+	cache.Search("22 Pound Salmon").Id():             true,
 	cache.Search("17 Pound Catfish").Id():            true,
 	cache.Search("18 Pound Salmon").Id():             true,
 	cache.Search("19 Pound Catfish").Id():            true,
