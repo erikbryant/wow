@@ -284,7 +284,7 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 				continue
 			}
 
-			maxPrice := common.Coins(25, 0, 0)
+			maxPrice := common.Coins(15, 0, 0)
 			suffix := ""
 			if transmog.InAppearanceSet(i) {
 				maxPrice = common.Coins(90, 0, 0)
