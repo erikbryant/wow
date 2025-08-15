@@ -158,13 +158,13 @@ var flaky = map[int64]bool{
 	cache.Search("Solid Shot").Id():                  true,
 
 	// These give false negatives
-	cache.Search("Anthemic Legguards").Id():            true,
-	cache.Search("City Crusher Sabatons").Id():         true,
-	cache.Search("Feathermane Feather Cloak").Id():     true,
-	cache.Search("Grips of Vicious Mauling").Id():      true,
-	cache.Search("Inquisitor's Battle Cowl").Id():      true,
-	cache.Search("Staccato Helm").Id():                 true,
-	cache.Search("Waistclasp of Unethical Power").Id(): true,
+	//cache.Search("Anthemic Legguards").Id():            true,
+	//cache.Search("City Crusher Sabatons").Id():         true,
+	//cache.Search("Feathermane Feather Cloak").Id():     true,
+	//cache.Search("Grips of Vicious Mauling").Id():      true,
+	//cache.Search("Inquisitor's Battle Cowl").Id():      true,
+	//cache.Search("Staccato Helm").Id():                 true,
+	//cache.Search("Waistclasp of Unethical Power").Id(): true,
 }
 
 // NeedItem returns true if I need any of the transmogs this item provides
