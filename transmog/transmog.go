@@ -3,12 +3,13 @@ package transmog
 import (
 	"encoding/gob"
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/wowAPI"
-	"log"
-	"os"
 )
 
 var (
@@ -148,6 +149,7 @@ var flaky = map[int64]bool{
 	cache.Search("18 Pound Salmon").Id():             true,
 	cache.Search("19 Pound Catfish").Id():            true,
 	cache.Search("22 Pound Catfish").Id():            true,
+	cache.Search("26 Pound Catfish").Id():            true,
 	cache.Search("Arclight Spanner").Id():            true,
 	cache.Search("Blacksmith Hammer").Id():           true,
 	cache.Search("Brumdysla, Hammer of Vrorsk").Id(): true,
@@ -158,13 +160,21 @@ var flaky = map[int64]bool{
 	cache.Search("Solid Shot").Id():                  true,
 
 	// These give false negatives
-	//cache.Search("Anthemic Legguards").Id():            true,
-	//cache.Search("City Crusher Sabatons").Id():         true,
-	//cache.Search("Feathermane Feather Cloak").Id():     true,
-	//cache.Search("Grips of Vicious Mauling").Id():      true,
-	//cache.Search("Inquisitor's Battle Cowl").Id():      true,
-	//cache.Search("Staccato Helm").Id():                 true,
-	//cache.Search("Waistclasp of Unethical Power").Id(): true,
+	cache.Search("Anthemic Gauntlets").Id():               true,
+	cache.Search("Anthemic Shoulders").Id():               true,
+	cache.Search("Boots of the Dark Iron Raider").Id():    true,
+	cache.Search("Choral Amice").Id():                     true,
+	cache.Search("Choral Wraps").Id():                     true,
+	cache.Search("Fashionable Autumn Cloak").Id():         true,
+	cache.Search("Feathermane Feather Cloak").Id():        true,
+	cache.Search("Gleaming Celestial Waistguard").Id():    true,
+	cache.Search("Reinforced Test Subject Shackles").Id(): true,
+	cache.Search("Waistclasp of Unethical Power").Id():    true,
+	//cache.Search("").Id():                  true,
+	//cache.Search("").Id():                  true,
+	//cache.Search("").Id():                  true,
+	//cache.Search("").Id():                  true,
+	//cache.Search("").Id():                  true,
 }
 
 // NeedItem returns true if I need any of the transmogs this item provides
