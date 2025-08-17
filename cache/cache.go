@@ -3,11 +3,12 @@ package cache
 import (
 	"encoding/gob"
 	"fmt"
-	"github.com/erikbryant/wow/item"
 	"log"
 	"os"
 	"sort"
 	"sync"
+
+	"github.com/erikbryant/wow/item"
 )
 
 var (
@@ -171,7 +172,7 @@ local function validatePriceCache()
                     local itemInfo = { C_Item.GetItemInfo(itemID) }
                     local sellPrice = itemInfo[11]
                     if cachedPrice ~= sellPrice then
-                        AhaUtil.PrettyPrint("Cached price mismatch!", itemID, GetCoinTextureString(cachedPrice), "~=", GetCoinTextureString(sellPrice))
+                        MerchUtil.PrettyPrint("Cached price mismatch!", itemID, GetCoinTextureString(cachedPrice), "~=", GetCoinTextureString(sellPrice))
                     end
                 end
         )
