@@ -3,6 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
+	"os"
+	"sort"
+	"strings"
+
 	"github.com/erikbryant/wow/auction"
 	"github.com/erikbryant/wow/battlePet"
 	"github.com/erikbryant/wow/cache"
@@ -11,10 +16,6 @@ import (
 	"github.com/erikbryant/wow/transmog"
 	"github.com/erikbryant/wow/wowAPI"
 	"github.com/fatih/color"
-	"log"
-	"os"
-	"sort"
-	"strings"
 )
 
 var (
@@ -139,9 +140,8 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 
 	// SpeciesId of pets that do not resell well
 	skipPets := map[int64]bool{
-		162: true, // Sinister Squashling
-		//191:  true, // Clockwork Rocket Bot
-		//251:  true, // Toxic Wasteling
+		162:  true, // Sinister Squashling
+		1964: true, // Blood Boil
 		4489: true, // Bouncer
 	}
 
@@ -284,10 +284,10 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 				continue
 			}
 
-			maxPrice := common.Coins(15, 0, 0)
+			maxPrice := common.Coins(10, 0, 0)
 			suffix := ""
 			if transmog.InAppearanceSet(i) {
-				maxPrice = common.Coins(90, 0, 0)
+				maxPrice = common.Coins(100, 0, 0)
 				suffix = "    ---"
 			}
 
