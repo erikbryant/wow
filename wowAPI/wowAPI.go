@@ -4,16 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/erikbryant/aes"
-	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/cache"
-	"github.com/erikbryant/wow/item"
-	"github.com/erikbryant/wow/oauth2"
 	"io"
 	"log"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/erikbryant/aes"
+	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/cache"
+	"github.com/erikbryant/wow/item"
+	"github.com/erikbryant/wow/oauth2"
 )
 
 var (
@@ -45,6 +46,7 @@ var (
 		203932: true,
 		204838: true,
 		204839: true,
+		204841: true,
 		204842: true,
 		212531: true,
 		212533: true,
