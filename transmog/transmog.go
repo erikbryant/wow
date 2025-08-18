@@ -144,12 +144,18 @@ func NeedId(id int64) bool {
 var flaky = map[int64]bool{
 	// I don't think these have appearances
 	cache.Search("15 Pound Salmon").Id():             true,
-	cache.Search("22 Pound Salmon").Id():             true,
-	cache.Search("17 Pound Catfish").Id():            true,
 	cache.Search("18 Pound Salmon").Id():             true,
+	cache.Search("22 Pound Salmon").Id():             true,
+	cache.Search("25 Pound Salmon").Id():             true,
+	cache.Search("29 Pound Salmon").Id():             true,
+	cache.Search("17 Pound Catfish").Id():            true,
 	cache.Search("19 Pound Catfish").Id():            true,
 	cache.Search("22 Pound Catfish").Id():            true,
 	cache.Search("26 Pound Catfish").Id():            true,
+	cache.Search("32 Pound Catfish").Id():            true,
+	cache.Search("70 Pound Mightfish").Id():          true,
+	cache.Search("85 Pound Mightfish").Id():          true,
+	cache.Search("92 Pound Mightfish").Id():          true,
 	cache.Search("Arclight Spanner").Id():            true,
 	cache.Search("Blacksmith Hammer").Id():           true,
 	cache.Search("Brumdysla, Hammer of Vrorsk").Id(): true,
@@ -160,7 +166,9 @@ var flaky = map[int64]bool{
 	cache.Search("Solid Shot").Id():                  true,
 
 	// These give false negatives
+	cache.Search("Anthemic Bracers").Id():                 true,
 	cache.Search("Anthemic Gauntlets").Id():               true,
+	cache.Search("Anthemic Links").Id():                   true,
 	cache.Search("Anthemic Shoulders").Id():               true,
 	cache.Search("Boots of the Dark Iron Raider").Id():    true,
 	cache.Search("Choral Amice").Id():                     true,
@@ -170,7 +178,6 @@ var flaky = map[int64]bool{
 	cache.Search("Gleaming Celestial Waistguard").Id():    true,
 	cache.Search("Reinforced Test Subject Shackles").Id(): true,
 	cache.Search("Waistclasp of Unethical Power").Id():    true,
-	//cache.Search("").Id():                  true,
 	//cache.Search("").Id():                  true,
 	//cache.Search("").Id():                  true,
 	//cache.Search("").Id():                  true,
