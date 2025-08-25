@@ -162,8 +162,8 @@ local function VendorSellPrice(itemID)
     return VendorSellPriceCache[tostring(itemID)] or 0
 end
 
--- validatePriceCache verifies each cached sell price matches the actual sell price
-local function validatePriceCache()
+-- ValidatePriceCache verifies each cached sell price matches the actual sell price
+local function ValidatePriceCache()
     for itemID, cachedPrice in pairs(VendorSellPriceCache) do
         itemID = tonumber(itemID)
         local item = Item:CreateFromItemID(itemID)
@@ -179,10 +179,8 @@ local function validatePriceCache()
     end
 end
 
--- Validate the sell price cache
-C_Timer.After(1, validatePriceCache)
-
 AhaPriceCache = {
+  ValidatePriceCache = ValidatePriceCache,
   VendorSellPrice = VendorSellPrice,
 }
 `)
