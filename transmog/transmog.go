@@ -166,7 +166,9 @@ var flaky = map[int64]bool{
 	cache.Search("Solid Shot").Id():                  true,
 
 	// These give false negatives
+	cache.Search("Antecedent Drape").Id():                 true,
 	cache.Search("Anthemic Bracers").Id():                 true,
+	cache.Search("Anthemic Coif").Id():                    true,
 	cache.Search("Anthemic Gauntlets").Id():               true,
 	cache.Search("Anthemic Links").Id():                   true,
 	cache.Search("Anthemic Shoulders").Id():               true,
@@ -176,10 +178,11 @@ var flaky = map[int64]bool{
 	cache.Search("Fashionable Autumn Cloak").Id():         true,
 	cache.Search("Feathermane Feather Cloak").Id():        true,
 	cache.Search("Gleaming Celestial Waistguard").Id():    true,
+	cache.Search("Harmonium Percussive Stompers").Id():    true,
 	cache.Search("Reinforced Test Subject Shackles").Id(): true,
+	cache.Search("Staccato Belt").Id():                    true,
+	cache.Search("Staccato Helm").Id():                    true,
 	cache.Search("Waistclasp of Unethical Power").Id():    true,
-	//cache.Search("").Id():                  true,
-	//cache.Search("").Id():                  true,
 	//cache.Search("").Id():                  true,
 	//cache.Search("").Id():                  true,
 }
