@@ -2,11 +2,12 @@ package item
 
 import (
 	"fmt"
-	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/common"
 	"log"
 	"strings"
 	"time"
+
+	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/common"
 )
 
 // Item holds values about a WoW item
