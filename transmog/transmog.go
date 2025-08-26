@@ -174,6 +174,8 @@ var flaky = map[int64]bool{
 	cache.Search("Anthemic Shoulders").Id():               true,
 	cache.Search("Boots of the Dark Iron Raider").Id():    true,
 	cache.Search("Choral Amice").Id():                     true,
+	cache.Search("Choral Sash").Id():                      true,
+	cache.Search("Choral Slippers").Id():                  true,
 	cache.Search("Choral Wraps").Id():                     true,
 	cache.Search("Fashionable Autumn Cloak").Id():         true,
 	cache.Search("Feathermane Feather Cloak").Id():        true,
