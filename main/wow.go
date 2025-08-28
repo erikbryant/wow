@@ -7,6 +7,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/erikbryant/wow/auction"
 	"github.com/erikbryant/wow/battlePet"
@@ -19,6 +20,7 @@ import (
 )
 
 var (
+	mu             sync.Mutex
 	passPhrase     = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
 	realms         = flag.String("realms", "Aegwynn,Agamaggan,Aggramar,Akama,Alexstrasza,Alleria,Altar of Storms,Alterac Mountains,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azralon,Azuremyst,Baelgun,Barthilas,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Caelestrasz,Cairne,Coilfang,Darrowmere,Dath'Remar,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Drakkari,Durotan,Eitrigg,Elune,Eredar,Farstriders,Feathermoon,Frostwolf,Gallywix,Ghostlands,Goldrinn,Greymane,Gundrak,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Nemesis,Quel'Thalas,Ragnaros,Ravencrest,Runetotem,Sisters of Elune,Commodities", "WoW realm(s) to scan")
 	oauthAvailable = flag.Bool("oauth", true, "Is OAuth authentication available?")
@@ -26,13 +28,13 @@ var (
 
 // usefulGoods are useful items I want
 var usefulGoods = map[int64]int64{
-	cache.Search("Flawless Battle-Stone").Id():        common.Coins(4000, 0, 0),
-	cache.Search("Marked Flawless Battle-Stone").Id(): common.Coins(4000, 0, 0),
-	cache.Search("Hexweave Bag").Id():                 common.Coins(120, 0, 0), // 30 slot
-	cache.Search("Chronocloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
-	cache.Search("Dawnweave Reagent Bag").Id():        common.Coins(90, 0, 0),  // 38 slot
-	cache.Search("Simply Stitched Reagent Bag").Id():  common.Coins(90, 0, 0),  // 32 slot
-	cache.Search("Weavercloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
+	cache.Search("Flawless Battle-Stone").Id():        common.Coins(3000, 0, 0),
+	cache.Search("Marked Flawless Battle-Stone").Id(): common.Coins(3000, 0, 0),
+	//cache.Search("Hexweave Bag").Id():                 common.Coins(120, 0, 0), // 30 slot
+	//cache.Search("Chronocloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
+	//cache.Search("Dawnweave Reagent Bag").Id():        common.Coins(90, 0, 0),  // 38 slot
+	//cache.Search("Simply Stitched Reagent Bag").Id():  common.Coins(90, 0, 0),  // 32 slot
+	//cache.Search("Weavercloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
 }
 
 // skipToys are toys I am not interested in
@@ -171,6 +173,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 // findArbitrages returns auctions selling for lower than vendor prices
 func findArbitrages(auctions map[int64][]auction.Auction) []string {
 	arbitrages := map[string]int64{}
+	arbitrageIds := map[string]int64{}
 
 	for itemId, itemAuctions := range auctions {
 		i, ok := wowAPI.LookupItem(itemId, 0)
@@ -185,15 +188,20 @@ func findArbitrages(auctions map[int64][]auction.Auction) []string {
 				continue
 			}
 			arbitrages[i.Name()] += (i.SellPriceRealizable() - auc.Buyout) * auc.Quantity
+			arbitrageIds[i.Name()] = i.Id()
 		}
 	}
 
 	bargains := []string{}
 	for name, profit := range arbitrages {
-		if profit < common.Coins(3, 0, 0) {
+		if profit < common.Coins(5, 0, 0) {
 			// Too small to bother with
 			continue
 		}
+
+		logEntry := fmt.Sprintf("    %d, -- %s\n", arbitrageIds[name], name)
+		appendFile("./generated/arbitrage.log", logEntry)
+
 		str := fmt.Sprintf("%s   %s", name, common.Gold(profit))
 		bargains = append(bargains, str)
 	}
@@ -366,16 +374,42 @@ func scanRealms(r string) {
 	cache.Save()
 }
 
+func appendFile(file, contents string) {
+	mu.Lock()
+	f, err := os.OpenFile(file, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		log.Fatal("Failed to open file:", file, err)
+	}
+	defer f.Close()
+
+	_, err = f.WriteString(contents)
+	if err != nil {
+		log.Fatal("Failed to append file:", file, err)
+	}
+
+	err = f.Close()
+	if err != nil {
+		log.Fatal("Failed to close file:", file, err)
+	}
+	mu.Unlock()
+}
+
 // writeFile writes 'contents' to file
 func writeFile(file, contents string) {
 	f, err := os.Create(file)
 	if err != nil {
 		log.Fatal("Failed to create file:", file, err)
 	}
+	defer f.Close()
+
 	_, err = f.WriteString(contents)
+	if err != nil {
+		log.Fatal("Failed to write file:", file, err)
+	}
+
 	err = f.Close()
 	if err != nil {
-		fmt.Println("Failed to close file:", file, err)
+		log.Fatal("Failed to close file:", file, err)
 	}
 }
 
