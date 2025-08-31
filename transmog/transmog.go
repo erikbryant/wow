@@ -159,6 +159,7 @@ var flaky = map[int64]bool{
 	cache.Search("Arclight Spanner").Id():            true,
 	cache.Search("Blacksmith Hammer").Id():           true,
 	cache.Search("Brumdysla, Hammer of Vrorsk").Id(): true,
+	cache.Search("Crafted Light Shot").Id():          true,
 	cache.Search("Exploding Shot").Id():              true,
 	cache.Search("Heavy Shot").Id():                  true,
 	cache.Search("Light Shot").Id():                  true,
