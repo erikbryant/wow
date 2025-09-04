@@ -177,11 +177,13 @@ var flaky = map[int64]bool{
 	cache.Search("Choral Sash").Id():                   true,
 	cache.Search("Choral Slippers").Id():               true,
 	cache.Search("Choral Wraps").Id():                  true,
+	cache.Search("Harmonium Gauntlets").Id():           true,
 	cache.Search("Harmonium Percussive Stompers").Id(): true,
 	cache.Search("Harmonium Spaulders").Id():           true,
 	cache.Search("Harmonium Vambrace").Id():            true,
 	cache.Search("Staccato Belt").Id():                 true,
 	cache.Search("Staccato Helm").Id():                 true,
+	cache.Search("Staccato Mantle").Id():               true,
 	//cache.Search("").Id():                  true,
 	//cache.Search("").Id():                  true,
 }
