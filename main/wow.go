@@ -24,6 +24,7 @@ var (
 	passPhrase     = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
 	realms         = flag.String("realms", "Aegwynn,Agamaggan,Aggramar,Akama,Alexstrasza,Alleria,Altar of Storms,Alterac Mountains,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azralon,Azuremyst,Baelgun,Barthilas,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Caelestrasz,Cairne,Coilfang,Darrowmere,Dath'Remar,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Drakkari,Durotan,Eitrigg,Elune,Eredar,Farstriders,Feathermoon,Frostwolf,Gallywix,Ghostlands,Goldrinn,Greymane,Gundrak,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Nemesis,Quel'Thalas,Ragnaros,Ravencrest,Runetotem,Sisters of Elune,Commodities", "WoW realm(s) to scan")
 	oauthAvailable = flag.Bool("oauth", true, "Is OAuth authentication available?")
+	summarize      = flag.Bool("summarize", true, "Summarize arbitrages?")
 )
 
 // usefulGoods are useful items I want
@@ -171,9 +172,10 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 }
 
 // findArbitrages returns auctions selling for lower than vendor prices
-func findArbitrages(auctions map[int64][]auction.Auction) []string {
+func findArbitrages(auctions map[int64][]auction.Auction) ([]string, int64) {
 	arbitrages := map[string]int64{}
 	arbitrageIds := map[string]int64{}
+	totalProfit := int64(0)
 
 	for itemId, itemAuctions := range auctions {
 		i, ok := wowAPI.LookupItem(itemId, 0)
@@ -198,6 +200,7 @@ func findArbitrages(auctions map[int64][]auction.Auction) []string {
 			// Too small to bother with
 			continue
 		}
+		totalProfit += profit
 
 		logEntry := fmt.Sprintf("    %d, -- %s\n", arbitrageIds[name], name)
 		appendFile("./generated/arbitrage.log", logEntry)
@@ -206,7 +209,7 @@ func findArbitrages(auctions map[int64][]auction.Auction) []string {
 		bargains = append(bargains, str)
 	}
 
-	return bargains
+	return bargains, totalProfit
 }
 
 // findBargains returns auctions selling below our desired prices
@@ -239,32 +242,6 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 				bargains = append(bargains, str)
 			}
 		}
-	}
-
-	return bargains
-}
-
-// findPetSpecialty returns specialty pets I am looking for (whether I own them or not)
-func findPetSpecialty(auctions map[int64][]auction.Auction) []string {
-	bargains := []string{}
-
-	var specialtyPets = map[int64]int64{
-		// Pets that make good gifts
-		//1890: common.Coins(1000, 0, 0), // Corgi Pup
-		//1929: common.Coins(1000, 0, 0), // Corgnelius
-	}
-
-	for _, petAuction := range auctions[battlePet.PetCageItemId] {
-		if petAuction.Buyout <= 0 {
-			continue
-		}
-		premiumPetPrice := specialtyPets[petAuction.Pet.SpeciesId]
-		if petAuction.Buyout > premiumPetPrice {
-			continue
-		}
-
-		namePrice := fmt.Sprintf("%s   %d   %s", battlePet.Name(petAuction.Pet.SpeciesId), petAuction.Pet.QualityId, common.Gold(premiumPetPrice))
-		bargains = append(bargains, namePrice)
 	}
 
 	return bargains
@@ -308,7 +285,7 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 	}
 
 	bargains := []string{}
-	for name, _ := range needed {
+	for name := range needed {
 		bargains = append(bargains, name)
 	}
 
@@ -316,15 +293,19 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 }
 
 // fmtShoppingList returns a formatted string of the given items or "" if none
-func fmtShoppingList(label string, items []string, c *color.Color) string {
+func fmtShoppingList(label string, items []string, c *color.Color, summarize bool) string {
 	if len(items) == 0 {
 		return ""
 	}
-	return c.Sprintf("--- %s ---\n%s\n", label, strings.Join(common.SortUnique(items), "\n"))
+	header := ""
+	if !summarize {
+		header = fmt.Sprintf("--- %s ---\n", label)
+	}
+	return c.Sprintf("%s%s\n", header, strings.Join(common.SortUnique(items), "\n"))
 }
 
 // scanRealm retrieves auctions and prints suggestions for what to buy
-func scanRealm(realm string, c chan<- string) {
+func scanRealm(realm string, c chan<- string, summarize bool) {
 	auctions, ok := auction.GetAuctions(realm)
 	if !ok {
 		c <- ""
@@ -332,12 +313,23 @@ func scanRealm(realm string, c chan<- string) {
 	}
 
 	results := ""
-	results += fmtShoppingList("Pets I Need", findPetNeeded(auctions), color.New(color.FgMagenta))
-	results += fmtShoppingList("Pets to Resell", findPetBargains(auctions), color.New(color.FgGreen))
-	results += fmtShoppingList("Arbitrages", findArbitrages(auctions), color.New(color.FgWhite))
-	results += fmtShoppingList("Useful Item Bargains", findBargains(auctions), color.New(color.FgRed))
-	results += fmtShoppingList("Specialty Pets", findPetSpecialty(auctions), color.New(color.FgRed))
-	results += fmtShoppingList("Transmog Bargains", findTransmogBargains(auctions), color.New(color.FgBlue))
+	results += fmtShoppingList("Pets I Need", findPetNeeded(auctions), color.New(color.FgMagenta), summarize)
+	results += fmtShoppingList("Pets to Resell", findPetBargains(auctions), color.New(color.FgGreen), summarize)
+	results += fmtShoppingList("Useful Item Bargains", findBargains(auctions), color.New(color.FgRed), summarize)
+	results += fmtShoppingList("Transmog Bargains", findTransmogBargains(auctions), color.New(color.FgBlue), summarize)
+	a, p := findArbitrages(auctions)
+	if summarize {
+		if p > common.Coins(20, 0, 0) {
+			// Only show arbitrages if there is some actual amount of money
+			if len(results) > 0 || p > common.Coins(90, 0, 0) {
+				// If the arbitrages are the only things on this realm, only show if worthwhile to visit
+				c := color.New(color.FgWhite)
+				results += c.Sprintf("Arbitrages: %s\n", common.Gold(p))
+			}
+		}
+	} else {
+		results += fmtShoppingList("Arbitrages", a, color.New(color.FgWhite), summarize)
+	}
 
 	if len(results) == 0 {
 		// Nothing to buy
@@ -346,16 +338,16 @@ func scanRealm(realm string, c chan<- string) {
 	}
 
 	col := color.New(color.FgCyan)
-	c <- col.Sprintf("\n===========>  %s (%d unique items)  <===========\n\n%s", realm, len(auctions), results)
+	c <- col.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", realm, len(auctions), results)
 }
 
-func scanRealms(r string) {
+func scanRealms(r string, summarize bool) {
 	realms := strings.Split(r, ",")
 	results := []string{}
 	c := make(chan string)
 
 	for _, realm := range realms {
-		go scanRealm(realm, c)
+		go scanRealm(realm, c, summarize)
 	}
 
 	for range len(realms) {
@@ -442,7 +434,7 @@ func main() {
 		fmt.Printf("\n*** OAuth unavailable. Some features may be missing.\n")
 	}
 
-	scanRealms(*realms)
+	scanRealms(*realms, *summarize)
 
 	if *oauthAvailable {
 		generateLua()
