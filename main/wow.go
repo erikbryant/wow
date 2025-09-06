@@ -11,8 +11,8 @@ import (
 
 	"github.com/erikbryant/wow/auction"
 	"github.com/erikbryant/wow/battlePet"
-	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/common"
+	"github.com/erikbryant/wow/itemCache"
 	"github.com/erikbryant/wow/toy"
 	"github.com/erikbryant/wow/transmog"
 	"github.com/erikbryant/wow/wowAPI"
@@ -28,8 +28,8 @@ var (
 
 // usefulGoods are useful items I want
 var usefulGoods = map[int64]int64{
-	cache.Search("Flawless Battle-Stone").Id():        common.Coins(3000, 0, 0),
-	cache.Search("Marked Flawless Battle-Stone").Id(): common.Coins(3000, 0, 0),
+	itemCache.Search("Flawless Battle-Stone").Id():        common.Coins(3000, 0, 0),
+	itemCache.Search("Marked Flawless Battle-Stone").Id(): common.Coins(3000, 0, 0),
 	//cache.Search("Hexweave Bag").Id():                 common.Coins(120, 0, 0), // 30 slot
 	//cache.Search("Chronocloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
 	//cache.Search("Dawnweave Reagent Bag").Id():        common.Coins(90, 0, 0),  // 38 slot
@@ -40,30 +40,30 @@ var usefulGoods = map[int64]int64{
 // skipToys are toys I am not interested in
 var skipToys = map[int64]bool{
 	// Only usable by engineers
-	cache.Search("Dimensional Ripper - Area 52").Id():     true,
-	cache.Search("Dimensional Ripper - Everlook").Id():    true,
-	cache.Search("Flying Machine").Id():                   true,
-	cache.Search("Snowmaster 9000").Id():                  true,
-	cache.Search("Turbo-Charged Flying Machine").Id():     true,
-	cache.Search("Wormhole Centrifuge").Id():              true,
-	cache.Search("Wormhole Generator: Argus").Id():        true,
-	cache.Search("Wormhole Generator: Khaz Algar").Id():   true,
-	cache.Search("Wormhole Generator: Kul Tiras").Id():    true,
-	cache.Search("Wormhole Generator: Northrend").Id():    true,
-	cache.Search("Wormhole Generator: Pandaria").Id():     true,
-	cache.Search("Wormhole Generator: Shadowlands").Id():  true,
-	cache.Search("Wormhole Generator: Zandalar").Id():     true,
-	cache.Search("Wyrmhole Generator: Dragon Isles").Id(): true,
+	itemCache.Search("Dimensional Ripper - Area 52").Id():     true,
+	itemCache.Search("Dimensional Ripper - Everlook").Id():    true,
+	itemCache.Search("Flying Machine").Id():                   true,
+	itemCache.Search("Snowmaster 9000").Id():                  true,
+	itemCache.Search("Turbo-Charged Flying Machine").Id():     true,
+	itemCache.Search("Wormhole Centrifuge").Id():              true,
+	itemCache.Search("Wormhole Generator: Argus").Id():        true,
+	itemCache.Search("Wormhole Generator: Khaz Algar").Id():   true,
+	itemCache.Search("Wormhole Generator: Kul Tiras").Id():    true,
+	itemCache.Search("Wormhole Generator: Northrend").Id():    true,
+	itemCache.Search("Wormhole Generator: Pandaria").Id():     true,
+	itemCache.Search("Wormhole Generator: Shadowlands").Id():  true,
+	itemCache.Search("Wormhole Generator: Zandalar").Id():     true,
+	itemCache.Search("Wyrmhole Generator: Dragon Isles").Id(): true,
 
 	// I am not interested in these
-	cache.Search("Artisan's Sign").Id():         true,
-	cache.Search("Cold Cushion").Id():           true,
-	cache.Search("Cushion of Time Travel").Id(): true,
-	cache.Search("Findle's Loot-A-Rang").Id():   true,
-	cache.Search("Giggle Goggles").Id():         true,
-	cache.Search("Moonfang Shroud").Id():        true,
-	cache.Search("Safari Lounge Cushion").Id():  true,
-	cache.Search("Winning Hand").Id():           true,
+	itemCache.Search("Artisan's Sign").Id():         true,
+	itemCache.Search("Cold Cushion").Id():           true,
+	itemCache.Search("Cushion of Time Travel").Id(): true,
+	itemCache.Search("Findle's Loot-A-Rang").Id():   true,
+	itemCache.Search("Giggle Goggles").Id():         true,
+	itemCache.Search("Moonfang Shroud").Id():        true,
+	itemCache.Search("Safari Lounge Cushion").Id():  true,
+	itemCache.Search("Winning Hand").Id():           true,
 }
 
 // findPetSpellNeeded returns pet spells for sale that I do not own
@@ -169,6 +169,12 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 
 	return bargains
 }
+
+//var (
+//	// time *must* be stored in UTC to avoid local/dst issues
+//	auctionDates = map[int64]time.Time{}
+//	itemAuctions = map[int64]int64{}
+//)
 
 // findArbitrages returns auctions selling for lower than vendor prices
 func findArbitrages(auctions map[int64][]auction.Auction) []string {
@@ -371,7 +377,7 @@ func scanRealms(r string) {
 	sort.Strings(results)
 	fmt.Println(results)
 
-	cache.Save()
+	itemCache.Save()
 }
 
 func appendFile(file, contents string) {
@@ -415,7 +421,7 @@ func writeFile(file, contents string) {
 
 // generateLua writes the WoW 'Arbitrage' addon lua files
 func generateLua() {
-	writeFile("./generated/PriceCache.lua", cache.LuaVendorPrice())
+	writeFile("./generated/PriceCache.lua", itemCache.LuaVendorPrice())
 }
 
 // usage prints a usage message and terminates the program with an error

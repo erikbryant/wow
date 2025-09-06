@@ -12,8 +12,8 @@ import (
 
 	"github.com/erikbryant/aes"
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/cache"
 	"github.com/erikbryant/wow/item"
+	"github.com/erikbryant/wow/itemCache"
 	"github.com/erikbryant/wow/oauth2"
 )
 
@@ -425,7 +425,7 @@ func Stale(i item.Item, age time.Duration) bool {
 // LookupItem retrieves the data for a single item. It retrieves from the database if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
 func LookupItem(id int64, age time.Duration) (item.Item, bool) {
 	// Use the cached value if exists and not stale
-	i, ok := cache.Read(id)
+	i, ok := itemCache.Read(id)
 	if ok {
 		// A cache hit, but is the cache stale?
 		if age == 0 || !Stale(i, age) {
@@ -439,7 +439,7 @@ func LookupItem(id int64, age time.Duration) (item.Item, bool) {
 		return item.Item{}, false
 	}
 	i = item.NewItem(result)
-	cache.Write(i.Id(), i)
+	itemCache.Write(i.Id(), i)
 
 	return i, true
 }

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/erikbryant/wow/cache"
+	"github.com/erikbryant/wow/itemCache"
 	"github.com/erikbryant/wow/wowAPI"
 	"log"
 	"time"
@@ -26,13 +26,13 @@ func refreshCache() {
 	refreshCount := 0
 	maxRefreshCount := 1000
 
-	for _, i := range cache.Items() {
+	for _, i := range itemCache.Items() {
 		if wowAPI.Stale(i, maxAge) {
 			needsRefresh++
 		}
 	}
 
-	for _, i := range cache.Items() {
+	for _, i := range itemCache.Items() {
 		if wowAPI.Stale(i, maxAge) {
 			wowAPI.LookupItem(i.Id(), maxAge)
 			refreshCount++
@@ -42,7 +42,7 @@ func refreshCache() {
 		}
 	}
 
-	cache.Save()
+	itemCache.Save()
 
 	fmt.Printf("Refreshed %d of %d stale items\n", refreshCount, needsRefresh)
 }
@@ -62,7 +62,7 @@ func main() {
 
 	if *itemId == 0 && !*refresh && !*delItem {
 		// If no flags, list the whole cache
-		cache.Print()
+		itemCache.Print()
 		return
 	}
 
@@ -79,8 +79,8 @@ func main() {
 			usage()
 		}
 		fmt.Println("Deleting itemId:", *itemId)
-		cache.Delete(*itemId)
-		cache.Save()
+		itemCache.Delete(*itemId)
+		itemCache.Save()
 		return
 	}
 
@@ -91,7 +91,7 @@ func main() {
 
 	if *readThrough {
 		// Get the latest values
-		cache.DisableRead()
+		itemCache.DisableRead()
 	}
 
 	i, ok := wowAPI.LookupItem(*itemId, 0)
@@ -106,5 +106,5 @@ func main() {
 		fmt.Println(i.Format())
 	}
 
-	cache.Save()
+	itemCache.Save()
 }
