@@ -170,12 +170,6 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-//var (
-//	// time *must* be stored in UTC to avoid local/dst issues
-//	auctionDates = map[int64]time.Time{}
-//	itemAuctions = map[int64]int64{}
-//)
-
 // findArbitrages returns auctions selling for lower than vendor prices
 func findArbitrages(auctions map[int64][]auction.Auction) []string {
 	arbitrages := map[string]int64{}
