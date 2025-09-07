@@ -204,6 +204,7 @@ func findArbitrages(auctions map[int64][]auction.Auction) ([]string, int64) {
 
 		logEntry := fmt.Sprintf("    %d, -- %s\n", arbitrageIds[name], name)
 		appendFile("./generated/arbitrage.log", logEntry)
+		appendFile("./generated/arbitrageLatest.log", logEntry)
 
 		str := fmt.Sprintf("%s   %s", name, common.Gold(profit))
 		bargains = append(bargains, str)
@@ -348,6 +349,11 @@ func scanRealms(r string, summarize bool) {
 
 	for _, realm := range realms {
 		go scanRealm(realm, c, summarize)
+	}
+
+	err := os.Remove("./generated/arbitrageLatest.log")
+	if err != nil {
+		fmt.Println(err)
 	}
 
 	for range len(realms) {
