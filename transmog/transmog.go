@@ -183,8 +183,13 @@ var flaky = map[int64]bool{
 	itemCache.Search("Harmonium Spaulders").Id():           true,
 	itemCache.Search("Harmonium Vambrace").Id():            true,
 	itemCache.Search("Staccato Belt").Id():                 true,
+	itemCache.Search("Staccato Boots").Id():                true,
+	itemCache.Search("Staccato Cuffs").Id():                true,
+	itemCache.Search("Staccato Grips").Id():                true,
 	itemCache.Search("Staccato Helm").Id():                 true,
+	itemCache.Search("Staccato Leggings").Id():             true,
 	itemCache.Search("Staccato Mantle").Id():               true,
+	itemCache.Search("Staccato Vest").Id():                 true,
 	//itemCache.Search("").Id():                  true,
 	//itemCache.Search("").Id():                  true,
 }
