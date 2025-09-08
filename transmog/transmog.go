@@ -162,6 +162,7 @@ var flaky = map[int64]bool{
 	itemCache.Search("Crafted Light Shot").Id():          true,
 	itemCache.Search("Exploding Shot").Id():              true,
 	itemCache.Search("Heavy Shot").Id():                  true,
+	itemCache.Search("Huge Spotted Feltail").Id():        true,
 	itemCache.Search("Light Shot").Id():                  true,
 	itemCache.Search("Shatter Rounds").Id():              true,
 	itemCache.Search("Solid Shot").Id():                  true,
