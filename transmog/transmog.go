@@ -190,6 +190,7 @@ var flaky = map[int64]bool{
 	itemCache.Search("Staccato Leggings").Id():             true,
 	itemCache.Search("Staccato Mantle").Id():               true,
 	itemCache.Search("Staccato Vest").Id():                 true,
+	itemCache.Search("Waistclasp of Unethical Power").Id(): true,
 	//itemCache.Search("").Id():                  true,
 	//itemCache.Search("").Id():                  true,
 }
