@@ -172,7 +172,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 }
 
 // findArbitrages returns auctions selling for lower than vendor prices
-func findArbitrages(auctions map[int64][]auction.Auction) ([]string, int64) {
+func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]string, int64) {
 	arbitrages := map[string]int64{}
 	arbitrageIds := map[string]int64{}
 	totalProfit := int64(0)
@@ -202,9 +202,12 @@ func findArbitrages(auctions map[int64][]auction.Auction) ([]string, int64) {
 		}
 		totalProfit += profit
 
-		logEntry := fmt.Sprintf("    %d, -- %s\n", arbitrageIds[name], name)
-		appendFile("./generated/arbitrage.log", logEntry)
-		appendFile("./generated/arbitrageLatest.log", logEntry)
+		if realm != "Commodities" {
+			// Commodities are not worth recording, their prices fluctuate too wildly
+			logEntry := fmt.Sprintf("    %d, -- %s\n", arbitrageIds[name], name)
+			appendFile("./generated/arbitrage.log", logEntry)
+			appendFile("./generated/arbitrageLatest.log", logEntry)
+		}
 
 		str := fmt.Sprintf("%s   %s", name, common.Gold(profit))
 		bargains = append(bargains, str)
@@ -318,7 +321,7 @@ func scanRealm(realm string, c chan<- string, summarize bool) {
 	results += fmtShoppingList("Pets to Resell", findPetBargains(auctions), color.New(color.FgGreen), summarize)
 	results += fmtShoppingList("Useful Item Bargains", findBargains(auctions), color.New(color.FgRed), summarize)
 	results += fmtShoppingList("Transmog Bargains", findTransmogBargains(auctions), color.New(color.FgBlue), summarize)
-	a, p := findArbitrages(auctions)
+	a, p := findArbitrages(auctions, realm)
 	if summarize {
 		if p > common.Coins(20, 0, 0) {
 			// Only show arbitrages if there is some actual amount of money
