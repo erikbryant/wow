@@ -1,0 +1,39 @@
+#!/bin/zsh -eu
+
+waitForInternet () {
+  while [[ true ]] do
+    ping -qc 1 google.com && return
+    sleep 1
+  done
+}
+
+vspace () {
+  echo
+  echo
+  echo
+  echo
+  echo
+  echo
+  echo
+  echo
+  echo
+  echo
+  echo
+  echo
+}
+
+waitForInternet
+
+open -a Battle.net.app
+open -a "Google Chrome"
+
+cd ~/dev/wow
+vspace
+go run main/wow.go -passPhrase unlock -oauth=true
+cd ~/dev/wowMerchant
+
+vspace
+
+make cache
+
+vspace
