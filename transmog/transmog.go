@@ -171,6 +171,7 @@ var flaky = map[int64]bool{
 	itemCache.Search("Anthemic Bracers").Id():               true,
 	itemCache.Search("Anthemic Coif").Id():                  true,
 	itemCache.Search("Anthemic Gauntlets").Id():             true,
+	itemCache.Search("Anthemic Legguards").Id():             true,
 	itemCache.Search("Anthemic Links").Id():                 true,
 	itemCache.Search("Anthemic Shoulders").Id():             true,
 	itemCache.Search("Boots of the Dark Iron Raider").Id():  true,
