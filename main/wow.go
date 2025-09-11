@@ -273,10 +273,10 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 				continue
 			}
 
-			maxPrice := common.Coins(15, 0, 0)
+			maxPrice := common.Coins(20, 0, 0)
 			appearanceSetSuffix := ""
 			if transmog.InAppearanceSet(i) {
-				maxPrice = common.Coins(120, 0, 0)
+				maxPrice = common.Coins(130, 0, 0)
 				appearanceSetSuffix = "    ---"
 			}
 
@@ -318,7 +318,7 @@ func scanRealm(realm string, c chan<- string, summarize bool) {
 
 	results := ""
 	results += fmtShoppingList("Pets I Need", findPetNeeded(auctions), color.New(color.FgMagenta), summarize)
-	results += fmtShoppingList("Pets to Resell", findPetBargains(auctions), color.New(color.FgGreen), summarize)
+	//results += fmtShoppingList("Pets to Resell", findPetBargains(auctions), color.New(color.FgGreen), summarize)
 	results += fmtShoppingList("Useful Item Bargains", findBargains(auctions), color.New(color.FgRed), summarize)
 	results += fmtShoppingList("Transmog Bargains", findTransmogBargains(auctions), color.New(color.FgBlue), summarize)
 	a, p := findArbitrages(auctions, realm)
