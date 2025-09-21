@@ -62,6 +62,8 @@ var skipToys = map[int64]bool{
 	itemCache.Search("Cushion of Time Travel").Id(): true,
 	itemCache.Search("Findle's Loot-A-Rang").Id():   true,
 	itemCache.Search("Giggle Goggles").Id():         true,
+	itemCache.Search("Leather Pet Bed").Id():        true,
+	itemCache.Search("Leather Pet Leash").Id():      true,
 	itemCache.Search("Moonfang Shroud").Id():        true,
 	itemCache.Search("Safari Lounge Cushion").Id():  true,
 	itemCache.Search("Winning Hand").Id():           true,
