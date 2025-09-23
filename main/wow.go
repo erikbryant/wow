@@ -24,6 +24,7 @@ var (
 	passPhrase     = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
 	realms         = flag.String("realms", "Aegwynn,Agamaggan,Aggramar,Akama,Alexstrasza,Alleria,Altar of Storms,Alterac Mountains,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azralon,Azuremyst,Baelgun,Barthilas,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Caelestrasz,Cairne,Coilfang,Darrowmere,Dath'Remar,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Drakkari,Durotan,Eitrigg,Elune,Eredar,Farstriders,Feathermoon,Frostwolf,Gallywix,Ghostlands,Goldrinn,Greymane,Gundrak,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Nemesis,Quel'Thalas,Ragnaros,Ravencrest,Runetotem,Sisters of Elune,Commodities", "WoW realm(s) to scan")
 	oauthAvailable = flag.Bool("oauth", true, "Is OAuth authentication available?")
+	petResell      = flag.Bool("petResell", false, "Suggest pets to resell?")
 	summarize      = flag.Bool("summarize", true, "Summarize arbitrages?")
 )
 
@@ -311,7 +312,7 @@ func fmtShoppingList(label string, items []string, c *color.Color, summarize boo
 }
 
 // scanRealm retrieves auctions and prints suggestions for what to buy
-func scanRealm(realm string, c chan<- string, summarize bool) {
+func scanRealm(realm string, c chan<- string, summarize, includePets bool) {
 	auctions, ok := auction.GetAuctions(realm)
 	if !ok {
 		c <- ""
@@ -320,7 +321,9 @@ func scanRealm(realm string, c chan<- string, summarize bool) {
 
 	results := ""
 	results += fmtShoppingList("Pets I Need", findPetNeeded(auctions), color.New(color.FgMagenta), summarize)
-	//results += fmtShoppingList("Pets to Resell", findPetBargains(auctions), color.New(color.FgGreen), summarize)
+	if includePets {
+		results += fmtShoppingList("Pets to Resell", findPetBargains(auctions), color.New(color.FgGreen), summarize)
+	}
 	results += fmtShoppingList("Useful Item Bargains", findBargains(auctions), color.New(color.FgRed), summarize)
 	results += fmtShoppingList("Transmog Bargains", findTransmogBargains(auctions), color.New(color.FgBlue), summarize)
 	a, p := findArbitrages(auctions, realm)
@@ -347,13 +350,13 @@ func scanRealm(realm string, c chan<- string, summarize bool) {
 	c <- col.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", realm, len(auctions), results)
 }
 
-func scanRealms(r string, summarize bool) {
+func scanRealms(r string, summarize, includePets bool) {
 	realms := strings.Split(r, ",")
 	results := []string{}
 	c := make(chan string)
 
 	for _, realm := range realms {
-		go scanRealm(realm, c, summarize)
+		go scanRealm(realm, c, summarize, includePets)
 	}
 
 	err := os.Remove("./generated/arbitrageLatest.log")
@@ -445,7 +448,7 @@ func main() {
 		fmt.Printf("\n*** OAuth unavailable. Some features may be missing.\n")
 	}
 
-	scanRealms(*realms, *summarize)
+	scanRealms(*realms, *summarize, *petResell)
 
 	if *oauthAvailable {
 		generateLua()
