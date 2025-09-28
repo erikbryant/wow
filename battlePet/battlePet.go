@@ -3,12 +3,13 @@ package battlePet
 import (
 	"encoding/gob"
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/wowAPI"
-	"log"
-	"os"
 )
 
 var (
@@ -23,7 +24,7 @@ func Init(oauthAvailable bool) {
 	if oauthAvailable {
 		allOwned = owned()
 	}
-	fmt.Printf("-- #Pets owned %d/%d\n", len(allOwned), len(allNames))
+	fmt.Printf("-- #Pets owned: %d/%d\n", len(allOwned), len(allNames))
 }
 
 // load loads the disk cache file into memory
