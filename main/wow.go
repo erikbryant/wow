@@ -279,7 +279,7 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 			maxPrice := common.Coins(20, 0, 0)
 			appearanceSetSuffix := ""
 			if transmog.InAppearanceSet(i) {
-				maxPrice = common.Coins(130, 0, 0)
+				maxPrice = common.Coins(140, 0, 0)
 				appearanceSetSuffix = "    ---"
 			}
 
@@ -330,7 +330,7 @@ func scanRealm(realm string, c chan<- string, summarize, includePets bool) {
 	if summarize {
 		if p > common.Coins(20, 0, 0) {
 			// Only show arbitrages if there is some actual amount of money
-			if len(results) > 0 || p > common.Coins(90, 0, 0) {
+			if len(results) > 0 || p > common.Coins(100, 0, 0) {
 				// If the arbitrages are the only things on this realm, only show if worthwhile to visit
 				c := color.New(color.FgWhite)
 				results += c.Sprintf("Arbitrages: %s\n", common.Gold(p))
