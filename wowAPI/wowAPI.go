@@ -38,6 +38,7 @@ var (
 		60405:  true,
 		60406:  true,
 		62370:  true,
+		62770:  true,
 		123865: true,
 		123868: true,
 		123869: true,
