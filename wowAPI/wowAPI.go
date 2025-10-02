@@ -29,6 +29,7 @@ var (
 		// Items not found in the WoW database
 		23972:  true,
 		29566:  true,
+		42929:  true,
 		43557:  true,
 		54629:  true,
 		56054:  true,
