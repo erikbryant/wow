@@ -156,10 +156,12 @@ var flaky = map[int64]bool{
 	itemCache.Search("70 Pound Mightfish").Id():          true,
 	itemCache.Search("85 Pound Mightfish").Id():          true,
 	itemCache.Search("92 Pound Mightfish").Id():          true,
+	itemCache.Search("Accurate Slugs").Id():              true,
 	itemCache.Search("Arclight Spanner").Id():            true,
 	itemCache.Search("Blacksmith Hammer").Id():           true,
 	itemCache.Search("Brumdysla, Hammer of Vrorsk").Id(): true,
 	itemCache.Search("Crafted Light Shot").Id():          true,
+	itemCache.Search("Crafted Heavy Shot").Id():          true,
 	itemCache.Search("Crafted Solid Shot").Id():          true,
 	itemCache.Search("Exploding Shot").Id():              true,
 	itemCache.Search("Flash Pellet").Id():                true,
@@ -171,6 +173,7 @@ var flaky = map[int64]bool{
 	itemCache.Search("Rockshard Pellets").Id():           true,
 	itemCache.Search("Shatter Rounds").Id():              true,
 	itemCache.Search("Solid Shot").Id():                  true,
+	itemCache.Search("Thorium Shells").Id():              true,
 
 	// These give false negatives
 	itemCache.Search("Antecedent Drape").Id():                 true,
@@ -229,6 +232,7 @@ var flaky = map[int64]bool{
 	itemCache.Search("Staccato Vest").Id():                    true,
 	itemCache.Search("Vintage Duskwatch Cinch").Id():          true,
 	itemCache.Search("Waistclasp of Unethical Power").Id():    true,
+	itemCache.Search("Warbeast Hide Cinch").Id():              true,
 	//itemCache.Search("").Id():                  true,
 	//itemCache.Search("").Id():                  true,
 }
