@@ -200,6 +200,7 @@ var flaky = map[int64]bool{
 	itemCache.Search("City Crusher Sabatons").Id():            true,
 	itemCache.Search("Cloak of Multitudinous Sheaths").Id():   true,
 	itemCache.Search("Cord of Zandalari Resolve").Id():        true,
+	itemCache.Search("Cruel Hope Crushers").Id():              true,
 	itemCache.Search("Fashionable Autumn Cloak").Id():         true,
 	itemCache.Search("Feathermane Feather Cloak").Id():        true,
 	itemCache.Search("Gleaming Celestial Waistguard").Id():    true,
