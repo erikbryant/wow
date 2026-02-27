@@ -88,7 +88,7 @@ func (i Item) Level() int64 {
 	return web.ToInt64(value)
 }
 
-// ItemSubclassName returns the item class name
+// ItemSubclassName returns the item subclass name
 func (i Item) ItemSubclassName() string {
 	value, err := web.MsiValue(i.XItem, []string{"item_subclass", "name"})
 	if err != nil {
