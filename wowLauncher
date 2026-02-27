@@ -27,13 +27,14 @@ waitForInternet
 open -a Battle.net.app
 open -a "Google Chrome"
 
+vspace
+
 cd ~/dev/wow
-vspace
 go run main/wow.go -passPhrase unlock -oauth=true
-cd ~/dev/wowMerchant
 
 vspace
 
+cd ~/dev/wowMerchant
 make cache
 
 vspace
