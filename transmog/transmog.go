@@ -175,7 +175,10 @@ var flaky = map[int64]bool{
 	itemCache.Search("Solid Shot").Id():                  true,
 	itemCache.Search("Thorium Shells").Id():              true,
 
-	// These give false negatives
+	// This program reports I need it, but I already have it
+	itemCache.Search("Gleaming Celestial Waistguard").Id(): true,
+
+	// These seem to never be available
 	itemCache.Search("Antecedent Drape").Id():                 true,
 	itemCache.Search("Anthemic Bracers").Id():                 true,
 	itemCache.Search("Anthemic Coif").Id():                    true,
@@ -187,7 +190,6 @@ var flaky = map[int64]bool{
 	itemCache.Search("Anthemic Links").Id():                   true,
 	itemCache.Search("Anthemic Shoulders").Id():               true,
 	itemCache.Search("Aristocrat's Winter Drape").Id():        true,
-	itemCache.Search("Boots of the Dark Iron Raider").Id():    true,
 	itemCache.Search("Brilliant Hexweave Cloak").Id():         true,
 	itemCache.Search("Choral Amice").Id():                     true,
 	itemCache.Search("Choral Handwraps").Id():                 true,
@@ -203,7 +205,6 @@ var flaky = map[int64]bool{
 	itemCache.Search("Cruel Hope Crushers").Id():              true,
 	itemCache.Search("Fashionable Autumn Cloak").Id():         true,
 	itemCache.Search("Feathermane Feather Cloak").Id():        true,
-	itemCache.Search("Gleaming Celestial Waistguard").Id():    true,
 	itemCache.Search("Harmonium Breastplate").Id():            true,
 	itemCache.Search("Harmonium Gauntlets").Id():              true,
 	itemCache.Search("Harmonium Girdle").Id():                 true,
@@ -231,6 +232,7 @@ var flaky = map[int64]bool{
 	itemCache.Search("Staccato Leggings").Id():                true,
 	itemCache.Search("Staccato Mantle").Id():                  true,
 	itemCache.Search("Staccato Vest").Id():                    true,
+	itemCache.Search("Tinker's Handguard").Id():               true,
 	itemCache.Search("Vintage Duskwatch Cinch").Id():          true,
 	itemCache.Search("Waistclasp of Unethical Power").Id():    true,
 	itemCache.Search("Warbeast Hide Cinch").Id():              true,
