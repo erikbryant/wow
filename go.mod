@@ -5,7 +5,7 @@ go 1.25.5
 require (
 	github.com/erikbryant/aes v0.4.0
 	github.com/erikbryant/web v0.10.0
-	github.com/fatih/color v1.18.0
+	github.com/fatih/color v1.19.0
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 	golang.org/x/oauth2 v0.36.0
 )
