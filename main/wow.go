@@ -30,13 +30,43 @@ var (
 
 // usefulGoods are useful items I want
 var usefulGoods = map[int64]int64{
-	itemCache.Search("Flawless Battle-Stone").Id():        common.Coins(3000, 0, 0),
-	itemCache.Search("Marked Flawless Battle-Stone").Id(): common.Coins(3000, 0, 0),
+	itemCache.Search("Flawless Battle-Stone").Id(): common.Coins(300, 0, 0),
+
 	//cache.Search("Hexweave Bag").Id():                 common.Coins(120, 0, 0), // 30 slot
 	//cache.Search("Chronocloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
 	//cache.Search("Dawnweave Reagent Bag").Id():        common.Coins(90, 0, 0),  // 38 slot
 	//cache.Search("Simply Stitched Reagent Bag").Id():  common.Coins(90, 0, 0),  // 32 slot
 	//cache.Search("Weavercloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
+
+	itemCache.Search("Skyless Epaulets").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Skyless Blouse").Id():   common.Coins(1000, 0, 0),
+	itemCache.Search("Skyless Striders").Id(): common.Coins(1000, 0, 0),
+
+	//itemCache.Search("Fire-Runed Spaulders").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Wind Wolf Epaulets").Id(): common.Coins(1000, 0, 0),
+
+	//itemCache.Search("Ignit's Fiery Heart").Id():  common.Coins(1000, 0, 0),
+	itemCache.Search("Wind Wolf Chestpiece").Id(): common.Coins(1000, 0, 0),
+
+	//itemCache.Search("Binds of the Shatterer").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Wind Wolf Cuffs").Id(): common.Coins(1000, 0, 0),
+
+	//itemCache.Search("Piercing Touch of the Vine").Id(): common.Coins(1000, 0, 0),
+	//itemCache.Search("Auburn Scavenger Gauntlets").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Wind Wolf Gauntlets").Id(): common.Coins(1000, 0, 0),
+
+	//itemCache.Search("Sash of the Fruit Thief").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Wind Wolf Chain").Id(): common.Coins(1000, 0, 0),
+
+	itemCache.Search("Boneshatter Pauldrons").Id(): common.Coins(1000, 0, 0),
+
+	itemCache.Search("Wastelander Skirmisher's Cloak").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Infested Breastplate").Id():           common.Coins(1000, 0, 0),
+	itemCache.Search("Emissary's Chestpiece").Id():          common.Coins(1000, 0, 0),
+	itemCache.Search("Konu's Platemail").Id():               common.Coins(1000, 0, 0),
+	itemCache.Search("Telaron's Platemail").Id():            common.Coins(1000, 0, 0),
+
+	itemCache.Search("Xiwyllag ATV").Id(): common.Coins(3999, 0, 0),
 }
 
 // skipToys are toys I am not interested in
@@ -53,6 +83,7 @@ var skipToys = map[int64]bool{
 	itemCache.Search("Wormhole Generator: Kul Tiras").Id():    true,
 	itemCache.Search("Wormhole Generator: Northrend").Id():    true,
 	itemCache.Search("Wormhole Generator: Pandaria").Id():     true,
+	itemCache.Search("Wormhole Generator: Quel'Thalas").Id():  true,
 	itemCache.Search("Wormhole Generator: Shadowlands").Id():  true,
 	itemCache.Search("Wormhole Generator: Zandalar").Id():     true,
 	itemCache.Search("Wyrmhole Generator: Dragon Isles").Id(): true,
@@ -87,9 +118,9 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 		if !ok {
 			continue
 		}
-		if common.QualityId(i.Quality()) < common.QualityId("Rare") {
-			continue
-		}
+		//if common.QualityId(i.Quality()) < common.QualityId("Rare") {
+		//	continue
+		//}
 		if battlePet.Own(petId) {
 			continue
 		}
@@ -124,9 +155,9 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Buyout <= 0 {
 			continue
 		}
-		if petAuction.Pet.QualityId < common.QualityId("Rare") {
-			continue
-		}
+		//if petAuction.Pet.QualityId < common.QualityId("Rare") {
+		//	continue
+		//}
 		if petAuction.Buyout > common.Coins(1000, 0, 0) {
 			continue
 		}
@@ -279,7 +310,7 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 			maxPrice := common.Coins(10, 0, 0)
 			appearanceSetSuffix := ""
 			if transmog.InAppearanceSet(i) {
-				maxPrice = common.Coins(250, 0, 0)
+				maxPrice = common.Coins(300, 0, 0)
 				appearanceSetSuffix = "    ---"
 			}
 

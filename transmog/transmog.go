@@ -176,14 +176,10 @@ var flaky = map[int64]bool{
 	itemCache.Search("Thorium Shells").Id():              true,
 
 	// This program reports I need it, but I already have it
-	itemCache.Search("Gleaming Celestial Waistguard").Id(): true,
-
-	// These seem to never be available
 	itemCache.Search("Antecedent Drape").Id():                 true,
 	itemCache.Search("Anthemic Bracers").Id():                 true,
 	itemCache.Search("Anthemic Coif").Id():                    true,
 	itemCache.Search("Anthemic Cuirass").Id():                 true,
-	itemCache.Search("Anthemic Coif").Id():                    true,
 	itemCache.Search("Anthemic Gauntlets").Id():               true,
 	itemCache.Search("Anthemic Greaves").Id():                 true,
 	itemCache.Search("Anthemic Legguards").Id():               true,
@@ -191,6 +187,7 @@ var flaky = map[int64]bool{
 	itemCache.Search("Anthemic Shoulders").Id():               true,
 	itemCache.Search("Aristocrat's Winter Drape").Id():        true,
 	itemCache.Search("Brilliant Hexweave Cloak").Id():         true,
+	itemCache.Search("Crushproof Vambraces").Id():             true,
 	itemCache.Search("Choral Amice").Id():                     true,
 	itemCache.Search("Choral Handwraps").Id():                 true,
 	itemCache.Search("Choral Hood").Id():                      true,
@@ -200,11 +197,9 @@ var flaky = map[int64]bool{
 	itemCache.Search("Choral Vestments").Id():                 true,
 	itemCache.Search("Choral Wraps").Id():                     true,
 	itemCache.Search("City Crusher Sabatons").Id():            true,
-	itemCache.Search("Cloak of Multitudinous Sheaths").Id():   true,
-	itemCache.Search("Cord of Zandalari Resolve").Id():        true,
-	itemCache.Search("Cruel Hope Crushers").Id():              true,
 	itemCache.Search("Fashionable Autumn Cloak").Id():         true,
 	itemCache.Search("Feathermane Feather Cloak").Id():        true,
+	itemCache.Search("Gleaming Celestial Waistguard").Id():    true,
 	itemCache.Search("Harmonium Breastplate").Id():            true,
 	itemCache.Search("Harmonium Gauntlets").Id():              true,
 	itemCache.Search("Harmonium Girdle").Id():                 true,
@@ -213,8 +208,7 @@ var flaky = map[int64]bool{
 	itemCache.Search("Harmonium Percussive Stompers").Id():    true,
 	itemCache.Search("Harmonium Spaulders").Id():              true,
 	itemCache.Search("Harmonium Vambrace").Id():               true,
-	itemCache.Search("Last Stand Greatbelt").Id():             true,
-	itemCache.Search("Mana-Cord of Deception").Id():           true,
+	itemCache.Search("Cloak of Multitudinous Sheaths").Id():   true,
 	itemCache.Search("Nimble Hexweave Cloak").Id():            true,
 	itemCache.Search("Powerful Hexweave Cloak").Id():          true,
 	itemCache.Search("Reinforced Test Subject Shackles").Id(): true,
@@ -223,7 +217,6 @@ var flaky = map[int64]bool{
 	itemCache.Search("Scepter of Spectacle: Earth").Id():      true,
 	itemCache.Search("Scepter of Spectacle: Fire").Id():       true,
 	itemCache.Search("Scepter of Spectacle: Frost").Id():      true,
-	itemCache.Search("Scepter of Spectacle: Order").Id():      true,
 	itemCache.Search("Staccato Belt").Id():                    true,
 	itemCache.Search("Staccato Boots").Id():                   true,
 	itemCache.Search("Staccato Cuffs").Id():                   true,
@@ -236,6 +229,7 @@ var flaky = map[int64]bool{
 	itemCache.Search("Vintage Duskwatch Cinch").Id():          true,
 	itemCache.Search("Waistclasp of Unethical Power").Id():    true,
 	itemCache.Search("Warbeast Hide Cinch").Id():              true,
+
 	//itemCache.Search("").Id():                  true,
 	//itemCache.Search("").Id():                  true,
 }
