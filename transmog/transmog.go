@@ -159,6 +159,7 @@ var flaky = map[int64]bool{
 	itemCache.Search("Accurate Slugs").Id():              true,
 	itemCache.Search("Arclight Spanner").Id():            true,
 	itemCache.Search("Blacksmith Hammer").Id():           true,
+	itemCache.Search("Bright Linen Enchanting Hat").Id(): true,
 	itemCache.Search("Brumdysla, Hammer of Vrorsk").Id(): true,
 	itemCache.Search("Crafted Light Shot").Id():          true,
 	itemCache.Search("Crafted Heavy Shot").Id():          true,
@@ -174,16 +175,21 @@ var flaky = map[int64]bool{
 	itemCache.Search("Shatter Rounds").Id():              true,
 	itemCache.Search("Solid Shot").Id():                  true,
 	itemCache.Search("Thorium Shells").Id():              true,
+	itemCache.Search("Tinker's Handguard").Id():          true,
 
 	// Need these, but almost never available -- part of an appearance set
-	itemCache.Search("Cruel Hope Crushers").Id():     true,
-	itemCache.Search("Vintage Duskwatch Cinch").Id(): true,
-	itemCache.Search("Warbeast Hide Cinch").Id():     true,
+	itemCache.Search("Cord of Zandalari Resolve").Id():   true,
+	itemCache.Search("Cruel Hope Crushers").Id():         true,
+	itemCache.Search("Mana-Cord of Deception").Id():      true,
+	itemCache.Search("Treads of Violent Intrusion").Id(): true,
+	itemCache.Search("Vintage Duskwatch Cinch").Id():     true,
+	itemCache.Search("Warbeast Hide Cinch").Id():         true,
 
 	// Need these, but almost never available -- NOT part of an appearance set
-	itemCache.Search("Choral Slippers").Id():    true,
-	itemCache.Search("Choral Vestments").Id():   true,
-	itemCache.Search("Tinker's Handguard").Id(): true,
+	itemCache.Search("Choral Slippers").Id():  true,
+	itemCache.Search("Choral Leggings").Id():  true,
+	itemCache.Search("Choral Vestments").Id(): true,
+	itemCache.Search("Staccato Belt").Id():    true,
 
 	//itemCache.Search("").Id():                  true,
 	//itemCache.Search("").Id():                  true,
