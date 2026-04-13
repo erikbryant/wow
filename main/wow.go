@@ -24,7 +24,7 @@ var (
 	passPhrase     = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
 	realms         = flag.String("realms", "Aegwynn,Agamaggan,Aggramar,Akama,Alexstrasza,Alleria,Altar of Storms,Alterac Mountains,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azralon,Azuremyst,Baelgun,Barthilas,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Caelestrasz,Cairne,Coilfang,Darrowmere,Dath'Remar,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Drakkari,Durotan,Eitrigg,Elune,Eredar,Farstriders,Feathermoon,Frostwolf,Gallywix,Ghostlands,Goldrinn,Greymane,Gundrak,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Nemesis,Quel'Thalas,Ragnaros,Ravencrest,Runetotem,Sisters of Elune,Commodities", "WoW realm(s) to scan")
 	oauthAvailable = flag.Bool("oauth", true, "Is OAuth authentication available?")
-	petResell      = flag.Bool("petResell", false, "Suggest pets to resell?")
+	petResell      = flag.Bool("petResell", true, "Suggest pets to resell?")
 	summarize      = flag.Bool("summarize", true, "Summarize arbitrages?")
 )
 
@@ -38,35 +38,7 @@ var usefulGoods = map[int64]int64{
 	//cache.Search("Simply Stitched Reagent Bag").Id():  common.Coins(90, 0, 0),  // 32 slot
 	//cache.Search("Weavercloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
 
-	itemCache.Search("Skyless Epaulets").Id(): common.Coins(1000, 0, 0),
-	itemCache.Search("Skyless Blouse").Id():   common.Coins(1000, 0, 0),
-	itemCache.Search("Skyless Striders").Id(): common.Coins(1000, 0, 0),
-
-	//itemCache.Search("Fire-Runed Spaulders").Id(): common.Coins(1000, 0, 0),
-	itemCache.Search("Wind Wolf Epaulets").Id(): common.Coins(1000, 0, 0),
-
-	//itemCache.Search("Ignit's Fiery Heart").Id():  common.Coins(1000, 0, 0),
-	itemCache.Search("Wind Wolf Chestpiece").Id(): common.Coins(1000, 0, 0),
-
-	//itemCache.Search("Binds of the Shatterer").Id(): common.Coins(1000, 0, 0),
-	itemCache.Search("Wind Wolf Cuffs").Id(): common.Coins(1000, 0, 0),
-
-	//itemCache.Search("Piercing Touch of the Vine").Id(): common.Coins(1000, 0, 0),
-	//itemCache.Search("Auburn Scavenger Gauntlets").Id(): common.Coins(1000, 0, 0),
-	itemCache.Search("Wind Wolf Gauntlets").Id(): common.Coins(1000, 0, 0),
-
-	//itemCache.Search("Sash of the Fruit Thief").Id(): common.Coins(1000, 0, 0),
-	itemCache.Search("Wind Wolf Chain").Id(): common.Coins(1000, 0, 0),
-
-	itemCache.Search("Boneshatter Pauldrons").Id(): common.Coins(1000, 0, 0),
-
-	itemCache.Search("Wastelander Skirmisher's Cloak").Id(): common.Coins(1000, 0, 0),
-	itemCache.Search("Infested Breastplate").Id():           common.Coins(1000, 0, 0),
-	itemCache.Search("Emissary's Chestpiece").Id():          common.Coins(1000, 0, 0),
-	itemCache.Search("Konu's Platemail").Id():               common.Coins(1000, 0, 0),
-	itemCache.Search("Telaron's Platemail").Id():            common.Coins(1000, 0, 0),
-
-	itemCache.Search("Xiwyllag ATV").Id(): common.Coins(3999, 0, 0),
+	//itemCache.Search("Xiwyllag ATV").Id(): common.Coins(3999, 0, 0),
 }
 
 // skipToys are toys I am not interested in
@@ -178,8 +150,13 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	// SpeciesId of pets that do not resell well
 	skipPets := map[int64]bool{
 		162:  true, // Sinister Squashling
+		1205: true, // Direhorn Runt
+		1570: true, // Sunfire Kaliri
+		1662: true, // Cinder Pup
 		1964: true, // Blood Boil
 		4489: true, // Bouncer
+		4537: true, // Chester
+		4647: true, // Mr. DELVER
 	}
 
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
@@ -230,10 +207,6 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 
 	bargains := []string{}
 	for name, profit := range arbitrages {
-		if profit < common.Coins(5, 0, 0) {
-			// Too small to bother with
-			continue
-		}
 		totalProfit += profit
 
 		if realm != "Commodities" {
@@ -350,35 +323,35 @@ func scanRealm(realm string, c chan<- string, summarize, includePets bool) {
 		return
 	}
 
-	results := ""
-	results += fmtShoppingList("Pets I Need", findPetNeeded(auctions), color.New(color.FgMagenta), summarize)
+	shoppingList := ""
+	shoppingList += fmtShoppingList("Pets I Need", findPetNeeded(auctions), color.New(color.FgMagenta), summarize)
 	if includePets {
-		results += fmtShoppingList("Pets to Resell", findPetBargains(auctions), color.New(color.FgGreen), summarize)
+		shoppingList += fmtShoppingList("Pets to Resell", findPetBargains(auctions), color.New(color.FgGreen), summarize)
 	}
-	results += fmtShoppingList("Useful Item Bargains", findBargains(auctions), color.New(color.FgRed), summarize)
-	results += fmtShoppingList("Transmog Bargains", findTransmogBargains(auctions), color.New(color.FgBlue), summarize)
-	a, p := findArbitrages(auctions, realm)
+	shoppingList += fmtShoppingList("Useful Item Bargains", findBargains(auctions), color.New(color.FgRed), summarize)
+	shoppingList += fmtShoppingList("Transmog Bargains", findTransmogBargains(auctions), color.New(color.FgBlue), summarize)
+
+	arbitrages, profit := findArbitrages(auctions, realm)
+
 	if summarize {
-		if p > common.Coins(20, 0, 0) {
+		if profit > common.Coins(20, 0, 0) {
 			// Only show arbitrages if there is some actual amount of money
-			if len(results) > 0 || p > common.Coins(100, 0, 0) {
-				// If the arbitrages are the only things on this realm, only show if worthwhile to visit
-				c := color.New(color.FgWhite)
-				results += c.Sprintf("Arbitrages: %s\n", common.Gold(p))
-			}
+			// If the arbitrages are the only things on this realm, only show if worthwhile to visit
+			c := color.New(color.FgWhite)
+			shoppingList += c.Sprintf("Arbitrages: %s\n", common.Gold(profit))
 		}
 	} else {
-		results += fmtShoppingList("Arbitrages", a, color.New(color.FgWhite), summarize)
+		shoppingList += fmtShoppingList("Arbitrages", arbitrages, color.New(color.FgWhite), summarize)
 	}
 
-	if len(results) == 0 {
+	if len(shoppingList) == 0 {
 		// Nothing to buy
 		c <- ""
 		return
 	}
 
 	col := color.New(color.FgCyan)
-	c <- col.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", realm, len(auctions), results)
+	c <- col.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", realm, len(auctions), shoppingList)
 }
 
 func scanRealms(r string, summarize, includePets bool) {
