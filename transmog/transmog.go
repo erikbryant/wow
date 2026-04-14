@@ -178,18 +178,20 @@ var flaky = map[int64]bool{
 	itemCache.Search("Tinker's Handguard").Id():          true,
 
 	// Need these, but almost never available -- part of an appearance set
-	itemCache.Search("Cord of Zandalari Resolve").Id():   true,
-	itemCache.Search("Cruel Hope Crushers").Id():         true,
-	itemCache.Search("Mana-Cord of Deception").Id():      true,
-	itemCache.Search("Treads of Violent Intrusion").Id(): true,
-	itemCache.Search("Vintage Duskwatch Cinch").Id():     true,
-	itemCache.Search("Warbeast Hide Cinch").Id():         true,
+	itemCache.Search("Cord of Zandalari Resolve").Id():    true,
+	itemCache.Search("Cruel Hope Crushers").Id():          true,
+	itemCache.Search("Mana-Cord of Deception").Id():       true,
+	itemCache.Search("Spiked Terrorwake Greatboots").Id(): true,
+	itemCache.Search("Treads of Violent Intrusion").Id():  true,
+	itemCache.Search("Vintage Duskwatch Cinch").Id():      true,
+	itemCache.Search("Warbeast Hide Cinch").Id():          true,
 
 	// Need these, but almost never available -- NOT part of an appearance set
 	itemCache.Search("Choral Slippers").Id():  true,
 	itemCache.Search("Choral Leggings").Id():  true,
 	itemCache.Search("Choral Vestments").Id(): true,
 	itemCache.Search("Staccato Belt").Id():    true,
+	itemCache.Search("Staccato Mantle").Id():  true,
 
 	//itemCache.Search("").Id():                  true,
 	//itemCache.Search("").Id():                  true,
