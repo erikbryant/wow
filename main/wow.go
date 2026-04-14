@@ -150,10 +150,16 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	// SpeciesId of pets that do not resell well
 	skipPets := map[int64]bool{
 		162:  true, // Sinister Squashling
+		1149: true, // Corefire Imp
 		1205: true, // Direhorn Runt
+		1434: true, // Sun Sproutling
+		1442: true, // Ghastly Kid
+		1545: true, // Firewing
 		1570: true, // Sunfire Kaliri
 		1662: true, // Cinder Pup
+		1687: true, // Left Shark
 		1964: true, // Blood Boil
+		2916: true, // Hungry Burrower
 		4489: true, // Bouncer
 		4537: true, // Chester
 		4647: true, // Mr. DELVER
@@ -423,7 +429,7 @@ func writeFile(file, contents string) {
 	}
 }
 
-// generateLua writes the WoW 'Arbitrage' addon lua files
+// generateLua writes the WoW 'Arbitrage' addon Lua files
 func generateLua() {
 	writeFile("./generated/PriceCache.lua", itemCache.LuaVendorPrice())
 }
