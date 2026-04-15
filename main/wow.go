@@ -149,9 +149,14 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 
 	// SpeciesId of pets that do not resell well
 	skipPets := map[int64]bool{
+		117:  true, // Tiny Snowman
 		162:  true, // Sinister Squashling
+		200:  true, // Spring Rabbit
+		211:  true, // Strand Crawler
+		1147: true, // Harbinger of Flame
 		1149: true, // Corefire Imp
 		1205: true, // Direhorn Runt
+		1385: true, // Albino Chimaeraling
 		1434: true, // Sun Sproutling
 		1442: true, // Ghastly Kid
 		1545: true, // Firewing
@@ -321,7 +326,7 @@ func fmtShoppingList(label string, items []string, c *color.Color, summarize boo
 	return c.Sprintf("%s%s\n", header, strings.Join(common.SortUnique(items), "\n"))
 }
 
-// scanRealm retrieves auctions and prints suggestions for what to buy
+// scanRealm retrieves auctions and prints suggestions for what to buy for a single realm
 func scanRealm(realm string, c chan<- string, summarize, includePets bool) {
 	auctions, ok := auction.GetAuctions(realm)
 	if !ok {
@@ -360,6 +365,7 @@ func scanRealm(realm string, c chan<- string, summarize, includePets bool) {
 	c <- col.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", realm, len(auctions), shoppingList)
 }
 
+// scanRealms processes auctions on all realms in 'r'
 func scanRealms(r string, summarize, includePets bool) {
 	realms := strings.Split(r, ",")
 	results := []string{}
@@ -390,6 +396,7 @@ func scanRealms(r string, summarize, includePets bool) {
 	itemCache.Save()
 }
 
+// appendFile appends 'contents' to a file
 func appendFile(file, contents string) {
 	mu.Lock()
 	f, err := os.OpenFile(file, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
@@ -410,7 +417,7 @@ func appendFile(file, contents string) {
 	mu.Unlock()
 }
 
-// writeFile writes 'contents' to file
+// writeFile writes 'contents' to a new file
 func writeFile(file, contents string) {
 	f, err := os.Create(file)
 	if err != nil {
