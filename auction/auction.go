@@ -1,11 +1,12 @@
 package auction
 
 import (
+	"log"
+	"strings"
+
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/wowAPI"
-	"log"
-	"strings"
 )
 
 // Sample 'commodity auction' response. All have exactly these fields.
