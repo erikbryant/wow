@@ -127,9 +127,6 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Buyout <= 0 {
 			continue
 		}
-		//if petAuction.Pet.QualityId < common.QualityId("Rare") {
-		//	continue
-		//}
 		if petAuction.Buyout > common.Coins(1000, 0, 0) {
 			continue
 		}
