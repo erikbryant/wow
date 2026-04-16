@@ -209,14 +209,15 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 			if auc.Buyout <= 0 {
 				continue
 			}
-			if i.SellPriceRealizable() < common.Coins(0, 50, 0) {
-				// Not enough profit available to make it worth the runtime it takes to scan
-				continue
-			}
 			if auc.Buyout >= i.SellPriceRealizable() {
 				continue
 			}
-			arbitrages[i.Name()] += (i.SellPriceRealizable() - auc.Buyout) * auc.Quantity
+			profit := (i.SellPriceRealizable() - auc.Buyout) * auc.Quantity
+			if profit < common.Coins(0, 50, 0) {
+				// Not enough profit to make it worth the WoW runtime it takes to scan the AH
+				continue
+			}
+			arbitrages[i.Name()] += profit
 			arbitrageIds[i.Name()] = i.Id()
 		}
 	}
@@ -296,7 +297,7 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 				continue
 			}
 
-			maxPrice := common.Coins(10, 0, 0)
+			maxPrice := common.Coins(20, 0, 0)
 			appearanceSetSuffix := ""
 			if transmog.InAppearanceSet(i) {
 				maxPrice = common.Coins(300, 0, 0)
