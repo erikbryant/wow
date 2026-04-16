@@ -187,6 +187,7 @@ var flaky = map[int64]bool{
 	itemCache.Search("Warbeast Hide Cinch").Id():          true,
 
 	// Need these, but almost never available -- NOT part of an appearance set
+	itemCache.Search("Anthemic Links").Id():   true,
 	itemCache.Search("Choral Slippers").Id():  true,
 	itemCache.Search("Choral Leggings").Id():  true,
 	itemCache.Search("Choral Vestments").Id(): true,
