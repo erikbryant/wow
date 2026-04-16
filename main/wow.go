@@ -163,6 +163,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 		1570: true, // Sunfire Kaliri
 		1662: true, // Cinder Pup
 		1687: true, // Left Shark
+		1934: true, // Benax
 		1964: true, // Blood Boil
 		2916: true, // Hungry Burrower
 		4489: true, // Bouncer
@@ -208,6 +209,10 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 			if auc.Buyout <= 0 {
 				continue
 			}
+			if i.SellPriceRealizable() < common.Coins(0, 50, 0) {
+				// Not enough profit available to make it worth the runtime it takes to scan
+				continue
+			}
 			if auc.Buyout >= i.SellPriceRealizable() {
 				continue
 			}
@@ -221,7 +226,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 		totalProfit += profit
 
 		if realm != "Commodities" {
-			// Commodities are not worth recording, their prices fluctuate too wildly
+			// Commodities are not worth recording; their prices fluctuate too wildly
 			logEntry := fmt.Sprintf("    %d, -- %s\n", arbitrageIds[name], name)
 			appendFile("./generated/arbitrage.log", logEntry)
 			appendFile("./generated/arbitrageLatest.log", logEntry)
