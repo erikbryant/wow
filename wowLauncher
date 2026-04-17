@@ -24,7 +24,14 @@ vspace () {
 
 waitForInternet
 
-open -a Battle.net.app
+if pgrep -x "World of Warcraft" > /dev/null; then
+  echo
+  echo "World of Warcraft is already running"
+  echo
+else
+  open -a Battle.net.app
+fi
+
 open -a "Google Chrome"
 
 vspace
