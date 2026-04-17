@@ -180,6 +180,8 @@ var flaky = map[int64]bool{
 	// Need these, but almost never available -- part of an appearance set
 	itemCache.Search("Cord of Zandalari Resolve").Id():    true,
 	itemCache.Search("Cruel Hope Crushers").Id():          true,
+	itemCache.Search("Crushproof Vambraces").Id():         true,
+	itemCache.Search("Fashionable Autumn Cloak").Id():     true,
 	itemCache.Search("Mana-Cord of Deception").Id():       true,
 	itemCache.Search("Spiked Terrorwake Greatboots").Id(): true,
 	itemCache.Search("Treads of Violent Intrusion").Id():  true,
