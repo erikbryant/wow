@@ -12,6 +12,7 @@ import (
 	"github.com/erikbryant/wow/auction"
 	"github.com/erikbryant/wow/battlePet"
 	"github.com/erikbryant/wow/common"
+	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/itemCache"
 	"github.com/erikbryant/wow/toy"
 	"github.com/erikbryant/wow/transmog"
@@ -243,6 +244,14 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 			}
 			arbitrages[i.Name()] += profit
 			arbitrageIds[i.Name()] = i.Id()
+			if realm != "Commodities" && !item.Known(i.Id()) {
+				cn := i.ItemClassName()
+				msg := fmt.Sprintf("%d: {}, // %s (%s)  iLvl: %d\n", i.Id(), i.Name(), cn, i.Level())
+				if cn == "Armor" || cn == "Gem" || cn == "Item Enhancement" || cn == "Profession" || cn == "Weapon" {
+					appendFile("./generated/arbitrageWithiLvl.log", msg)
+					fmt.Println(msg)
+				}
+			}
 		}
 	}
 
