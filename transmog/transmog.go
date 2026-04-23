@@ -179,8 +179,8 @@ var flaky = map[int64]bool{
 	itemCache.Search("Tinker's Handguard").Id():          true,
 
 	// Need these, but almost never available -- part of an appearance set
+	itemCache.Search("Aristocrat's Winter Drape").Id():        true,
 	itemCache.Search("Cord of Zandalari Resolve").Id():        true,
-	itemCache.Search("Cruel Hope Crushers").Id():              true,
 	itemCache.Search("Crushproof Vambraces").Id():             true,
 	itemCache.Search("Fashionable Autumn Cloak").Id():         true,
 	itemCache.Search("Mana-Cord of Deception").Id():           true,
@@ -192,6 +192,7 @@ var flaky = map[int64]bool{
 
 	// Need these, but almost never available -- NOT part of an appearance set
 	itemCache.Search("Anthemic Bracers").Id(): true,
+	itemCache.Search("Anthemic Cuirass").Id(): true,
 	itemCache.Search("Anthemic Links").Id():   true,
 	itemCache.Search("Choral Handwraps").Id(): true,
 	itemCache.Search("Choral Slippers").Id():  true,
