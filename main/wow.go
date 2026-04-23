@@ -262,7 +262,6 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 		if realm != "Commodities" {
 			// Commodities are not worth recording; their prices fluctuate too wildly
 			logEntry := fmt.Sprintf("    %d, -- %s\n", arbitrageIds[name], name)
-			appendFile("./generated/arbitrage.log", logEntry)
 			appendFile("./generated/arbitrageLatest.log", logEntry)
 		}
 
