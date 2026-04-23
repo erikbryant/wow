@@ -39,6 +39,23 @@ var usefulGoods = map[int64]int64{
 	//cache.Search("Weavercloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
 
 	//itemCache.Search("Xiwyllag ATV").Id(): common.Coins(3999, 0, 0),
+
+	// Gun appearances
+	itemCache.Search("Ameelton's Shot-Thrower").Id():  common.Coins(1000, 0, 0),
+	itemCache.Search("Converted Carrot Carbine").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Kickback 5000").Id():            common.Coins(1000, 0, 0),
+
+	// Appearance set appearances
+	itemCache.Search("Tyrhold Epaulets").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Tyrhold Robe").Id():     common.Coins(1000, 0, 0),
+	itemCache.Search("Tyrhold Slippers").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Tyrhold Visage").Id():   common.Coins(1000, 0, 0),
+
+	itemCache.Search("Starless Mantle").Id(): common.Coins(1000, 0, 0),
+
+	itemCache.Search("Shadowghast Breastplate").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Shadowghast Helm").Id():        common.Coins(1000, 0, 0),
+	itemCache.Search("Shadowghast Pauldrons").Id():   common.Coins(1000, 0, 0),
 }
 
 // skipToys are toys I am not interested in
@@ -64,7 +81,6 @@ var skipToys = map[int64]bool{
 	itemCache.Search("Artisan's Sign").Id():         true,
 	itemCache.Search("Cold Cushion").Id():           true,
 	itemCache.Search("Cushion of Time Travel").Id(): true,
-	itemCache.Search("Findle's Loot-A-Rang").Id():   true,
 	itemCache.Search("Giggle Goggles").Id():         true,
 	itemCache.Search("Leather Pet Bed").Id():        true,
 	itemCache.Search("Leather Pet Leash").Id():      true,
@@ -124,6 +140,10 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 		if battlePet.Own(petAuction.Pet.SpeciesId) {
 			continue
 		}
+		if petAuction.Pet.SpeciesId == 3302 {
+			// Pilot - we own this, but he is in the 'penalty box' for being so noisy
+			continue
+		}
 		if petAuction.Buyout <= 0 {
 			continue
 		}
@@ -146,26 +166,33 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 
 	// SpeciesId of pets that do not resell well
 	skipPets := map[int64]bool{
-		117:  true, // Tiny Snowman
+		1385: true, // Albino Chimaeraling
+		1150: true, // Ashstone Core
+		1934: true, // Benax
+		1964: true, // Blood Boil
+		4489: true, // Bouncer
+		4537: true, // Chester
+		1662: true, // Cinder Pup
+		2087: true, // Cinderweb Recluse
+		1149: true, // Corefire Imp
+		1205: true, // Direhorn Runt
+		1545: true, // Firewing
+		1442: true, // Ghastly Kid
+		1147: true, // Harbinger of Flame
+		2916: true, // Hungry Burrower
+		1687: true, // Left Shark
+		4647: true, // Mr. DELVER
+		1568: true, // Puddle Terror
 		162:  true, // Sinister Squashling
 		200:  true, // Spring Rabbit
 		211:  true, // Strand Crawler
-		1147: true, // Harbinger of Flame
-		1149: true, // Corefire Imp
-		1205: true, // Direhorn Runt
-		1385: true, // Albino Chimaeraling
+		2088: true, // Surger
 		1434: true, // Sun Sproutling
-		1442: true, // Ghastly Kid
-		1545: true, // Firewing
 		1570: true, // Sunfire Kaliri
-		1662: true, // Cinder Pup
-		1687: true, // Left Shark
-		1934: true, // Benax
-		1964: true, // Blood Boil
-		2916: true, // Hungry Burrower
-		4489: true, // Bouncer
-		4537: true, // Chester
-		4647: true, // Mr. DELVER
+		117:  true, // Tiny Snowman
+		251:  true, // Toxic Wasteling
+		118:  true, // Winter Reindeer
+		120:  true, // Winter's Little Helper
 	}
 
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
