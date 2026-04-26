@@ -177,6 +177,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 		2087: true, // Cinderweb Recluse
 		1149: true, // Corefire Imp
 		1205: true, // Direhorn Runt
+		119:  true, // Father Winter's Helper
 		1545: true, // Firewing
 		1442: true, // Ghastly Kid
 		1147: true, // Harbinger of Flame
@@ -261,7 +262,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 
 		if realm != "Commodities" {
 			// Commodities are not worth recording; their prices fluctuate too wildly
-			logEntry := fmt.Sprintf("    %d, -- %s\n", arbitrageIds[name], name)
+			logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", arbitrageIds[name], 1, name)
 			appendFile("./generated/arbitrageLatest.log", logEntry)
 		}
 
