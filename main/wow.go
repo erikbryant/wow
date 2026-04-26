@@ -52,7 +52,7 @@ var usefulGoods = map[int64]int64{
 	itemCache.Search("Tyrhold Slippers").Id(): common.Coins(1000, 0, 0),
 	itemCache.Search("Tyrhold Visage").Id():   common.Coins(1000, 0, 0),
 
-	itemCache.Search("Starless Mantle").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Starless Mantle").Id(): common.Coins(5000, 0, 0),
 
 	itemCache.Search("Shadowghast Breastplate").Id(): common.Coins(1000, 0, 0),
 	itemCache.Search("Shadowghast Helm").Id():        common.Coins(1000, 0, 0),
@@ -220,10 +220,14 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
+type Arbitrage struct {
+	item   item.Item
+	profit int64
+}
+
 // findArbitrages returns auctions selling for lower than vendor prices
 func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]string, int64) {
-	arbitrages := map[string]int64{}
-	arbitrageIds := map[string]int64{}
+	arbitrages := []Arbitrage{}
 	totalProfit := int64(0)
 
 	for itemId, itemAuctions := range auctions {
@@ -243,8 +247,9 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 				// Not enough profit to make it worth the WoW runtime it takes to scan the AH
 				continue
 			}
-			arbitrages[i.Name()] += profit
-			arbitrageIds[i.Name()] = i.Id()
+
+			arbitrages = append(arbitrages, Arbitrage{i, profit})
+
 			if realm != "Commodities" && !item.Known(i.Id()) {
 				cn := i.ItemClassName()
 				msg := fmt.Sprintf("%d: {}, // %s (%s)  iLvl: %d\n", i.Id(), i.Name(), cn, i.Level())
@@ -257,16 +262,19 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 	}
 
 	bargains := []string{}
-	for name, profit := range arbitrages {
-		totalProfit += profit
+	for _, arbitrage := range arbitrages {
+		totalProfit += arbitrage.profit
 
 		if realm != "Commodities" {
 			// Commodities are not worth recording; their prices fluctuate too wildly
-			logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", arbitrageIds[name], 1, name)
-			appendFile("./generated/arbitrageLatest.log", logEntry)
+			iLevels := item.ILevels(arbitrage.item.Id(), arbitrage.item.Level())
+			for _, iLevel := range iLevels {
+				logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", arbitrage.item.Id(), iLevel, arbitrage.item.Name())
+				appendFile("./generated/arbitrageLatest.log", logEntry)
+			}
 		}
 
-		str := fmt.Sprintf("%s   %s", name, common.Gold(profit))
+		str := fmt.Sprintf("%s   %s", arbitrage.item.Name(), common.Gold(arbitrage.profit))
 		bargains = append(bargains, str)
 	}
 
