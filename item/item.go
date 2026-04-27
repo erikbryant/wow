@@ -3,7 +3,6 @@ package item
 import (
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/erikbryant/web"
@@ -50,44 +49,66 @@ func (i Item) Binding() string {
 	return value.(string)
 }
 
-// Equippable returns true if the item is equippable
-func (i Item) Equippable() bool {
-	// Is this a regular equippable?
-	equippable := i.XItem["is_equippable"].(bool)
-	if equippable {
-		return true
-	}
-
-	// Is this a special equippable?
-	binding := strings.ToUpper(i.Binding())
-	switch binding {
-	case "ON_EQUIP":
-		equippable = true
-	case "ON_USE":
-		equippable = true
-	case "HEALTH":
-		equippable = false
-	case "TO_ACCOUNT":
-		equippable = false
-	case "ON_ACQUIRE":
-		equippable = false
-	case "":
-		equippable = false
-	default:
-		fmt.Println("LookupItem: Item had unknown binding_type:", i.Id(), binding)
-		equippable = false
-	}
-
-	return equippable
+// InventoryType returns the slot this item equips to, or UNKNOWN
+func (i Item) InventoryType() string {
+	// The key is only sometimes there; do not error if it is missing
+	value, _ := web.MsiValued(i.XItem, []string{"inventory_type"}, "UNKNOWN")
+	return value.(string)
 }
 
-// Level returns the item level
-func (i Item) Level() int64 {
+// EquipSlotTypes is a lookup set for valid gear slots
+var EquipSlotTypes = map[string]struct{}{
+	"HEAD":       {},
+	"NECK":       {},
+	"SHOULDER":   {},
+	"CHEST":      {},
+	"WAIST":      {},
+	"LEGS":       {},
+	"FEET":       {},
+	"WRIST":      {},
+	"HANDS":      {},
+	"FINGER":     {},
+	"TRINKET":    {},
+	"CLOAK":      {},
+	"ONE_HANDED": {},
+	"TWO_HANDED": {},
+	"MAIN_HAND":  {},
+	"OFF_HAND":   {},
+	"RANGED":     {},
+	"SHIELD":     {},
+}
+
+// Equippable returns true if the item is equippable
+func (i Item) Equippable() bool {
+	// Preferred authoritative field
+	if val, ok := i.XItem["is_equippable"]; ok {
+		if b, ok := val.(bool); ok {
+			return b
+		}
+	}
+
+	// Fallback: inventory_type
+	_, isEquipSlot := EquipSlotTypes[i.InventoryType()]
+	return isEquipSlot
+}
+
+// ItemLevel returns the item level
+func (i Item) ItemLevel() int64 {
 	value, err := web.MsiValue(i.XItem, []string{"level"})
 	if err != nil {
 		log.Fatalf("Level: %s in %v", err, i.XItem)
 	}
 	return web.ToInt64(value)
+}
+
+// VariableItemLevel returns true if the item can be enhanced, changing its iLevel
+func (i Item) VariableItemLevel() bool {
+	cn := i.ItemClassName()
+	// Pro tip: In the AH "Item Enhancement" and "Gem" show a iLvl, but this does not
+	// vary with item modifiers (like armor does, for instance). Instead, differing
+	// modifiers are given different item IDs. So, item enhancements and gems do NOT vary
+	// from their base iLevel.
+	return cn == "Armor" || cn == "Profession" || cn == "Weapon"
 }
 
 // ItemSubclassName returns the item subclass name
@@ -194,5 +215,5 @@ func (i Item) Format() string {
 	if i.Equippable() {
 		equippable = "T"
 	}
-	return fmt.Sprintf("%7d  %s %11s   %3d   %-18s   %-8s   %s   %s", i.Id(), equippable, common.Gold(i.SellPriceAdvertised()), i.Level(), i.ItemClassName(), i.Quality(), i.Updated().Format("2006-01-02"), i.Name())
+	return fmt.Sprintf("%7d  %s %11s   %3d   %-18s   %-8s   %s   %s", i.Id(), equippable, common.Gold(i.SellPriceAdvertised()), i.ItemLevel(), i.ItemClassName(), i.Quality(), i.Updated().Format("2006-01-02"), i.Name())
 }
