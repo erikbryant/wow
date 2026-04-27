@@ -250,13 +250,11 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 
 			arbitrages = append(arbitrages, Arbitrage{i, profit})
 
-			if realm != "Commodities" && !item.Known(i.Id()) {
-				cn := i.ItemClassName()
-				msg := fmt.Sprintf("%d: {}, // %s (%s)  iLvl: %d\n", i.Id(), i.Name(), cn, i.Level())
-				if cn == "Armor" || cn == "Gem" || cn == "Item Enhancement" || cn == "Profession" || cn == "Weapon" {
-					appendFile("./generated/arbitrageWithiLvl.log", msg)
-					fmt.Println(msg)
-				}
+			if i.VariableItemLevel() && !item.Known(i.Id()) {
+				// We have not seen this arbitrage before. Add iLevels for it in iLevel.go.
+				msg := fmt.Sprintf("%d: {}, // %s (%s)  iLvl: %d\n", i.Id(), i.Name(), i.ItemClassName(), i.ItemLevel())
+				appendFile("./generated/arbitrageWithiLvl.log", msg)
+				fmt.Println(msg)
 			}
 		}
 	}
@@ -265,17 +263,19 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 	for _, arbitrage := range arbitrages {
 		totalProfit += arbitrage.profit
 
-		if realm != "Commodities" {
-			// Commodities are not worth recording; their prices fluctuate too wildly
-			iLevels := item.ILevels(arbitrage.item.Id(), arbitrage.item.Level())
-			for _, iLevel := range iLevels {
-				logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", arbitrage.item.Id(), iLevel, arbitrage.item.Name())
-				appendFile("./generated/arbitrageLatest.log", logEntry)
-			}
-		}
-
 		str := fmt.Sprintf("%s   %s", arbitrage.item.Name(), common.Gold(arbitrage.profit))
 		bargains = append(bargains, str)
+
+		if realm == "Commodities" {
+			// Commodities are not worth logging; their prices are too volatile
+			continue
+		}
+
+		iLevels := item.ILevels(arbitrage.item.Id(), arbitrage.item.ItemLevel())
+		for _, iLevel := range iLevels {
+			logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", arbitrage.item.Id(), iLevel, arbitrage.item.Name())
+			appendFile("./generated/arbitrageLatest.log", logEntry)
+		}
 	}
 
 	return bargains, totalProfit
