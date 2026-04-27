@@ -14,7 +14,9 @@ var itemLevels = map[int64][]int64{
 	244618: {180, 186, 192, 199, 206}, // Tinker's Handguard (Profession)
 	244619: {180, 186, 192, 199, 206}, // Hideworker's Cover (Profession)
 	244627: {180, 186, 192, 199, 206}, // Apprentice Smith's Apron (Profession)
+	244629: {180, 186, 192, 199, 206}, // Apprentice Jeweler's Apron (Profession)
 
+	// iLvl 80 oddities
 	240955: {180, 183, 186, 189, 193}, // Silvermoon Loupes (Profession)
 
 	// iLvl 106
@@ -34,12 +36,14 @@ var itemLevels = map[int64][]int64{
 	191242: {70, 71, 72, 73, 74}, // Draconium Pickaxe (Profession)
 	193486: {70, 71, 72, 73, 74}, // Resilient Smock (Profession)
 
+	// iLvl 317 oddities
 	224114: {79, 85, 91, 105}, // Runed Bismuth Rod (Profession)
 
 	// iLvl 486
 	215120: {79, 85, 91, 98, 105}, // Radiant Loupes (Profession)
 	221797: {79, 85, 91, 98, 105}, // Bismuth-Fueled Samophlange (Profession)
 
+	// iLvl 486 oddities
 	244709: {180, 186, 192, 206}, // Junker's Junk Visor (Profession)
 
 	// iLvl 535
