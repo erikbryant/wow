@@ -15,7 +15,7 @@ var itemLevels = map[int64][]int64{
 	244619: {180, 186, 192, 199, 206}, // Hideworker's Cover (Profession)
 	244627: {180, 186, 192, 199, 206}, // Apprentice Smith's Apron (Profession)
 	244629: {180, 186, 192, 199, 206}, // Apprentice Jeweler's Apron (Profession)
-	239643: {180, 186, 192, 206},      // Bright Linen Enchanting Hat (Profession)
+	239643: {180, 186, 192, 199, 206}, // Bright Linen Enchanting Hat (Profession)
 
 	// iLvl 80 oddities
 	240955: {180, 183, 186, 189, 193}, // Silvermoon Loupes (Profession)
@@ -61,5 +61,7 @@ func ILevels(itemId, iLevel int64) []int64 {
 	if Known(itemId) {
 		return itemLevels[itemId]
 	}
-	return []int64{iLevel}
+
+	// If there is no *specific* iLvl then use 0 to tell WoW we don't care
+	return []int64{0}
 }
