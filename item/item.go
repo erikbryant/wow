@@ -103,12 +103,11 @@ func (i Item) ItemLevel() int64 {
 
 // VariableItemLevel returns true if the item can be enhanced, changing its iLevel
 func (i Item) VariableItemLevel() bool {
+	if i.Stackable() {
+		return false
+	}
 	cn := i.ItemClassName()
-	// Pro tip: In the AH "Item Enhancement" and "Gem" show a iLvl, but this does not
-	// vary with item modifiers (like armor does, for instance). Instead, differing
-	// modifiers are given different item IDs. So, item enhancements and gems do NOT vary
-	// from their base iLevel.
-	return cn == "Armor" || cn == "Profession" || cn == "Weapon"
+	return cn == "Armor" || cn == "Gem" || cn == "Profession" || cn == "Weapon"
 }
 
 // ItemSubclassName returns the item subclass name
@@ -124,6 +123,15 @@ func (i Item) ItemClassName() string {
 		log.Fatalf("ItemClassName: %s in %v", err, i.XItem)
 	}
 	return value.(string)
+}
+
+// Stackable returns true if the item can be stacked in the inventory
+func (i Item) Stackable() bool {
+	value, err := web.MsiValue(i.XItem, []string{"is_stackable"})
+	if err != nil {
+		log.Fatalf("Stackable: %s in %v", err, i.XItem)
+	}
+	return value.(bool)
 }
 
 // RelicType returns the relic type
@@ -212,5 +220,9 @@ func (i Item) Format() string {
 	if i.Equippable() {
 		equippable = "T"
 	}
-	return fmt.Sprintf("%7d  %s %11s   %3d   %-18s   %-8s   %s   %s", i.Id(), equippable, common.Gold(i.SellPriceAdvertised()), i.ItemLevel(), i.ItemClassName(), i.Quality(), i.Updated().Format("2006-01-02"), i.Name())
+	stackable := "F"
+	if i.Stackable() {
+		stackable = "T"
+	}
+	return fmt.Sprintf("%7d  %s %s %11s   %3d   %-18s   %-8s   %s   %s", i.Id(), equippable, stackable, common.Gold(i.SellPriceAdvertised()), i.ItemLevel(), i.ItemClassName(), i.Quality(), i.Updated().Format("2006-01-02"), i.Name())
 }
