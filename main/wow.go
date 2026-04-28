@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -277,6 +278,9 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 			appendFile("./generated/arbitrageLatest.log", logEntry)
 		}
 	}
+
+	slices.Sort(bargains)
+	bargains = slices.Compact(bargains)
 
 	return bargains, totalProfit
 }
