@@ -113,10 +113,7 @@ func (i Item) VariableItemLevel() bool {
 
 // ItemSubclassName returns the item subclass name
 func (i Item) ItemSubclassName() string {
-	value, err := web.MsiValue(i.XItem, []string{"item_subclass", "name"})
-	if err != nil {
-		log.Fatalf("ItemSubclassName: %s in %v", err, i.XItem)
-	}
+	value, _ := web.MsiValued(i.XItem, []string{"item_subclass", "name"}, "")
 	return value.(string)
 }
 
@@ -163,7 +160,7 @@ func (i Item) SellPriceAdvertised() int64 {
 
 // SellPriceRealizable returns the actual price the vendor will offer for this specific item
 func (i Item) SellPriceRealizable() int64 {
-	if i.ItemClassName() == "Armor" || i.ItemClassName() == "Gem" || i.ItemClassName() == "Weapon" {
+	if i.VariableItemLevel() {
 		// I don't know how to price these
 		return 0
 	}
