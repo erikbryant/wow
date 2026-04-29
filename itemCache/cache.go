@@ -137,8 +137,7 @@ func EnableRead() {
 	readDisabled = false
 }
 
-// LuaVendorPrice writes the cached vendor sell prices to stdout as a lua table and accessor
-func LuaVendorPrice() string {
+func luaVendorPrice() (string, []string) {
 	lua := ""
 
 	lua += fmt.Sprintf("local VendorSellPriceCache = {\n")
@@ -178,12 +177,54 @@ local function ValidatePriceCache()
         )
     end
 end
-
-PriceCache = {
-  ValidatePriceCache = ValidatePriceCache,
-  VendorSellPrice = VendorSellPrice,
-}
 `)
+
+	return lua, []string{"VendorSellPrice", "ValidatePriceCache"}
+}
+
+func luaCosmetic() (string, []string) {
+	lua := ""
+
+	lua += fmt.Sprintf("local Cosmetics = {\n")
+	for _, id := range IDs() {
+		mu.Lock()
+		cosmetic := itemCache[id].ItemSubclassName() == "Cosmetic"
+		mu.Unlock()
+		if !cosmetic {
+			continue
+		}
+		lua += fmt.Sprintf("  [\"%d\"] = true,\n", id)
+	}
+	lua += fmt.Sprintf("}\n")
+
+	lua += fmt.Sprintf(`
+-- Cosmetic returns true if the item is a Cosmetic
+local function Cosmetic(itemID)
+    return Cosmetics[tostring(itemID)] or false
+end
+`)
+
+	return lua, []string{"Cosmetic"}
+}
+
+// Lua the cached vendor sell prices to stdout as a lua table and accessor
+func Lua() string {
+	lua := ""
+
+	lua, fcns := luaVendorPrice()
+
+	lua2, fcns2 := luaCosmetic()
+
+	lua += "\n" + lua2
+	for _, fn := range fcns2 {
+		fcns = append(fcns, fn)
+	}
+
+	lua += fmt.Sprintf("\nPriceCache = {\n")
+	for _, fn := range fcns {
+		lua += fmt.Sprintf("  %s = %s,\n", fn, fn)
+	}
+	lua += fmt.Sprintf("}\n")
 
 	return lua
 }
