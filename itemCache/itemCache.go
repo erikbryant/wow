@@ -188,7 +188,7 @@ func luaCosmetic() (string, []string) {
 	lua += fmt.Sprintf("local Cosmetics = {\n")
 	for _, id := range IDs() {
 		mu.Lock()
-		cosmetic := itemCache[id].ItemSubclassName() == "Cosmetic"
+		cosmetic := itemCache[id].Cosmetic()
 		mu.Unlock()
 		if !cosmetic {
 			continue
