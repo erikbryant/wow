@@ -107,13 +107,24 @@ func (i Item) VariableItemLevel() bool {
 		return false
 	}
 	cn := i.ItemClassName()
-	return cn == "Armor" || cn == "Gem" || cn == "Profession" || cn == "Weapon"
+	return cn == "Armor" || cn == "Gem" || cn == "Weapon"
 }
 
 // ItemSubclassName returns the item subclass name
 func (i Item) ItemSubclassName() string {
 	value, _ := web.MsiValued(i.XItem, []string{"item_subclass", "name"}, "")
 	return value.(string)
+}
+
+// Cosmetic returns true if this item is a cosmetic
+func (i Item) Cosmetic() bool {
+	if i.ItemSubclassName() == "Cosmetic" {
+		return true
+	}
+	if i.ItemLevel() == 1 && (i.Quality() == "Rare" || i.Quality() == "Epic") {
+		return true
+	}
+	return false
 }
 
 // ItemClassName returns the item class name
