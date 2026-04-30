@@ -118,6 +118,9 @@ func (i Item) ItemSubclassName() string {
 
 // Cosmetic returns true if this item is a cosmetic
 func (i Item) Cosmetic() bool {
+	if i.ItemClassName() != "Armor" && i.ItemClassName() != "Weapon" {
+		return false
+	}
 	if i.ItemSubclassName() == "Cosmetic" {
 		return true
 	}
