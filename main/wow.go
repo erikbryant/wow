@@ -167,39 +167,42 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	// SpeciesId of pets that do not resell well
-	skipPets := map[int64]bool{
-		1385: true, // Albino Chimaeraling
-		1150: true, // Ashstone Core
-		1934: true, // Benax
-		1964: true, // Blood Boil
-		4489: true, // Bouncer
-		4537: true, // Chester
-		1662: true, // Cinder Pup
-		2087: true, // Cinderweb Recluse
-		1149: true, // Corefire Imp
-		1205: true, // Direhorn Runt
-		119:  true, // Father Winter's Helper
-		1545: true, // Firewing
-		1442: true, // Ghastly Kid
-		1147: true, // Harbinger of Flame
-		2916: true, // Hungry Burrower
-		1687: true, // Left Shark
-		4647: true, // Mr. DELVER
-		1568: true, // Puddle Terror
-		162:  true, // Sinister Squashling
-		200:  true, // Spring Rabbit
-		211:  true, // Strand Crawler
-		2088: true, // Surger
-		1434: true, // Sun Sproutling
-		1570: true, // Sunfire Kaliri
-		117:  true, // Tiny Snowman
-		251:  true, // Toxic Wasteling
-		118:  true, // Winter Reindeer
-		120:  true, // Winter's Little Helper
+	skipPets := map[int64]struct{}{
+		1385: {}, // Albino Chimaeraling
+		1706: {}, // Ashmaw Cub
+		1150: {}, // Ashstone Core
+		1934: {}, // Benax
+		1964: {}, // Blood Boil
+		4489: {}, // Bouncer
+		4537: {}, // Chester
+		1662: {}, // Cinder Pup
+		2087: {}, // Cinderweb Recluse
+		1149: {}, // Corefire Imp
+		1205: {}, // Direhorn Runt
+		119:  {}, // Father Winter's Helper
+		1545: {}, // Firewing
+		1442: {}, // Ghastly Kid
+		1147: {}, // Harbinger of Flame
+		2916: {}, // Hungry Burrower
+		2089: {}, // Infernal Pyreclaw
+		1687: {}, // Left Shark
+		4647: {}, // Mr. DELVER
+		1568: {}, // Puddle Terror
+		162:  {}, // Sinister Squashling
+		200:  {}, // Spring Rabbit
+		211:  {}, // Strand Crawler
+		2088: {}, // Surger
+		1434: {}, // Sun Sproutling
+		1570: {}, // Sunfire Kaliri
+		117:  {}, // Tiny Snowman
+		251:  {}, // Toxic Wasteling
+		118:  {}, // Winter Reindeer
+		120:  {}, // Winter's Little Helper
 	}
 
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
-		if skipPets[petAuction.Pet.SpeciesId] {
+		_, ok := skipPets[petAuction.Pet.SpeciesId]
+		if ok {
 			continue
 		}
 		if petAuction.Buyout <= 0 {
