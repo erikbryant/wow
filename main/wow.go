@@ -53,11 +53,22 @@ var usefulGoods = map[int64]int64{
 	itemCache.Search("Tyrhold Slippers").Id(): common.Coins(1000, 0, 0),
 	itemCache.Search("Tyrhold Visage").Id():   common.Coins(1000, 0, 0),
 
-	itemCache.Search("Starless Mantle").Id(): common.Coins(5000, 0, 0),
+	itemCache.Search("Starless Mantle").Id(): common.Coins(1000, 0, 0),
 
-	itemCache.Search("Shadowghast Breastplate").Id(): common.Coins(1000, 0, 0),
-	itemCache.Search("Shadowghast Helm").Id():        common.Coins(1000, 0, 0),
-	itemCache.Search("Shadowghast Pauldrons").Id():   common.Coins(1000, 0, 0),
+	itemCache.Search("Harvest Guardian Pauldrons").Id():  common.Coins(1000, 0, 0),
+	itemCache.Search("Harvest Guardian Handguards").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Harvest Guardian Girdle").Id():     common.Coins(1000, 0, 0),
+
+	itemCache.Search("Citadel Crusher's Helm").Id():       common.Coins(1000, 0, 0),
+	itemCache.Search("Citadel Crusher's Cloak").Id():      common.Coins(1000, 0, 0),
+	itemCache.Search("Citadel Crusher's Chestplate").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Citadel Crusher's Gauntlets").Id():  common.Coins(1000, 0, 0),
+	itemCache.Search("Citadel Crusher's Legguards").Id():  common.Coins(1000, 0, 0),
+	itemCache.Search("Citadel Crusher's Footwraps").Id():  common.Coins(1000, 0, 0),
+
+	itemCache.Search("Obsidian Crusher's Bracers").Id(): common.Coins(1000, 0, 0),
+
+	itemCache.Search("Krasari Prowler Belt").Id(): common.Coins(1000, 0, 0),
 }
 
 // skipToys are toys I am not interested in
