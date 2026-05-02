@@ -118,15 +118,19 @@ func (i Item) ItemSubclassName() string {
 
 // Cosmetic returns true if this item is a cosmetic
 func (i Item) Cosmetic() bool {
-	if i.ItemClassName() != "Armor" && i.ItemClassName() != "Weapon" {
-		return false
-	}
+	// Definitely cosmetic
 	if i.ItemSubclassName() == "Cosmetic" {
 		return true
+	}
+
+	// Likely to be cosmetic
+	if i.ItemClassName() != "Armor" && i.ItemClassName() != "Weapon" {
+		return false
 	}
 	if i.ItemLevel() == 1 && (i.Quality() == "Rare" || i.Quality() == "Epic") {
 		return true
 	}
+
 	return false
 }
 
