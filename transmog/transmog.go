@@ -183,7 +183,6 @@ var flaky = map[int64]bool{
 	itemCache.Search("Cord of Zandalari Resolve").Id():        true,
 	itemCache.Search("Crushproof Vambraces").Id():             true,
 	itemCache.Search("Fashionable Autumn Cloak").Id():         true,
-	itemCache.Search("Mana-Cord of Deception").Id():           true,
 	itemCache.Search("Slippers of the Encroaching Tide").Id(): true,
 	itemCache.Search("Spiked Terrorwake Greatboots").Id():     true,
 	itemCache.Search("Treads of Violent Intrusion").Id():      true,
