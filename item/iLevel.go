@@ -36,6 +36,7 @@ var itemLevels = map[int64][]int64{
 	191241: {70, 71, 72, 73, 74}, // Draconium Sickle (Profession)
 	191242: {70, 71, 72, 73, 74}, // Draconium Pickaxe (Profession)
 	193486: {70, 71, 72, 73, 74}, // Resilient Smock (Profession)
+	193612: {72, 73, 74},         // Smithing Apron (Profession)
 
 	// iLvl 317 oddities
 	224114: {79, 85, 91, 105}, // Runed Bismuth Rod (Profession)
@@ -43,9 +44,10 @@ var itemLevels = map[int64][]int64{
 	// iLvl 486
 	215120: {79, 85, 91, 98, 105}, // Radiant Loupes (Profession)
 	221797: {79, 85, 91, 98, 105}, // Bismuth-Fueled Samophlange (Profession)
+	222577: {79, 85, 91, 105},     // Burnt Rolling Pin (Profession)
 
 	// iLvl 486 oddities
-	244709: {180, 186, 192, 206}, // Junker's Junk Visor (Profession)
+	244709: {180, 186, 192, 199, 206}, // Junker's Junk Visor (Profession)
 
 	// iLvl 535
 	244626: {206, 212, 218, 225, 232}, // Sin'dorei Alchemist's Hat (Profession)
