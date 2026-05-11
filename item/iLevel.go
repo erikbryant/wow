@@ -2,55 +2,57 @@ package item
 
 var itemLevels = map[int64][]int64{
 	// iLvl 80
-	237948: {180, 186, 192, 199, 206}, // Thalassian Blacksmith's Toolbox (Profession)
-	238011: {180, 186, 192, 199, 206}, // Thalassian Skinning Knife (Profession)
-	238012: {180, 186, 192, 199, 206}, // Thalassian Leatherworker's Knife (Profession)
-	239641: {180, 186, 192, 199, 206}, // Bright Linen Alchemy Apron (Profession)
-	239642: {180, 186, 192, 199, 206}, // Chef's Bright Linen Cooking Chapeau (Profession)
-	239646: {180, 186, 192, 199, 206}, // Bright Linen Tailoring Robe (Profession)
-	240953: {180, 186, 192, 199, 206}, // Bold Biographer's Bifocals (Profession)
-	240954: {180, 186, 192, 199, 206}, // Fantastic Font Focuser (Profession)
-	244175: {180, 186, 192, 199, 206}, // Runed Refulgent Copper Rod (Profession)
-	244618: {180, 186, 192, 199, 206}, // Tinker's Handguard (Profession)
-	244619: {180, 186, 192, 199, 206}, // Hideworker's Cover (Profession)
-	244627: {180, 186, 192, 199, 206}, // Apprentice Smith's Apron (Profession)
-	244629: {180, 186, 192, 199, 206}, // Apprentice Jeweler's Apron (Profession)
-	239643: {180, 186, 192, 199, 206}, // Bright Linen Enchanting Hat (Profession)
+	237948: {180, 186, 192, 199, 206}, // Thalassian Blacksmith's Toolbox
+	238011: {180, 186, 192, 199, 206}, // Thalassian Skinning Knife
+	238012: {180, 186, 192, 199, 206}, // Thalassian Leatherworker's Knife
+	238013: {180, 186, 192, 199, 206}, // Thalassian Blacksmith's Hammer
+	239641: {180, 186, 192, 199, 206}, // Bright Linen Alchemy Apron
+	239642: {180, 186, 192, 199, 206}, // Chef's Bright Linen Cooking Chapeau
+	239643: {180, 186, 192, 199, 206}, // Bright Linen Enchanting Hat
+	239646: {180, 186, 192, 199, 206}, // Bright Linen Tailoring Robe
+	240953: {180, 186, 192, 199, 206}, // Bold Biographer's Bifocals
+	240954: {180, 186, 192, 199, 206}, // Fantastic Font Focuser
+	244175: {180, 186, 192, 199, 206}, // Runed Refulgent Copper Rod
+	244618: {180, 186, 192, 199, 206}, // Tinker's Handguard
+	244619: {180, 186, 192, 199, 206}, // Hideworker's Cover
+	244627: {180, 186, 192, 199, 206}, // Apprentice Smith's Apron
+	244629: {180, 186, 192, 199, 206}, // Apprentice Jeweler's Apron
+	245775: {180, 186, 192, 199, 206}, // Hobbyist Scribe's Quill
 
 	// iLvl 80 oddities
-	240955: {180, 183, 186, 189, 193}, // Silvermoon Loupes (Profession)
+	240955: {180, 183, 186, 189, 193}, // Silvermoon Loupes
 
 	// iLvl 106
-	237952: {206, 212, 218, 225, 232}, // Sun-Blessed Blacksmith's Toolbox (Profession)
-	238018: {206, 212, 218, 225, 232}, // Sun-Blessed Blacksmith's Hammer (Profession)
-	240959: {206, 212, 218, 225, 232}, // Sin'dorei Jeweler's Loupes (Profession)
-	244718: {206, 212, 218, 225, 232}, // Turbo-Junker's Multitool v1 (Profession)
+	237952: {206, 212, 218, 225, 232}, // Sun-Blessed Blacksmith's Toolbox
+	238018: {206, 212, 218, 225, 232}, // Sun-Blessed Blacksmith's Hammer
+	240959: {206, 212, 218, 225, 232}, // Sin'dorei Jeweler's Loupes
+	244718: {206, 212, 218, 225, 232}, // Turbo-Junker's Multitool v1
 
 	// iLvl 317
-	191235: {70, 71, 72, 73, 74}, // Draconium Blacksmith's Toolbox (Profession)
-	191236: {71, 72, 73, 74},     // Draconium Leatherworker's Toolset (Profession)
-	191237: {70, 71, 72, 73, 74}, // Draconium Blacksmith's Hammer (Profession)
-	191238: {71, 72, 73, 74},     // Draconium Leatherworker's Knife (Profession)
-	191239: {71, 72, 73, 74},     // Draconium Needle Set (Profession)
-	191240: {71, 72, 73, 74},     // Draconium Skinning Knife (Profession)
-	191241: {70, 71, 72, 73, 74}, // Draconium Sickle (Profession)
-	191242: {70, 71, 72, 73, 74}, // Draconium Pickaxe (Profession)
-	193486: {70, 71, 72, 73, 74}, // Resilient Smock (Profession)
-	193612: {72, 73, 74},         // Smithing Apron (Profession)
+	191235: {70, 71, 72, 73, 74}, // Draconium Blacksmith's Toolbox
+	191236: {71, 72, 73, 74},     // Draconium Leatherworker's Toolset
+	191237: {70, 71, 72, 73, 74}, // Draconium Blacksmith's Hammer
+	191238: {71, 72, 73, 74},     // Draconium Leatherworker's Knife
+	191239: {71, 72, 73, 74},     // Draconium Needle Set
+	191240: {71, 72, 73, 74},     // Draconium Skinning Knife
+	191241: {70, 71, 72, 73, 74}, // Draconium Sickle
+	191242: {70, 71, 72, 73, 74}, // Draconium Pickaxe
+	193486: {70, 71, 72, 73, 74}, // Resilient Smock
+	193612: {72, 73, 74},         // Smithing Apron
 
 	// iLvl 317 oddities
-	224114: {79, 85, 91, 105}, // Runed Bismuth Rod (Profession)
+	224114: {79, 85, 91, 105}, // Runed Bismuth Rod
 
 	// iLvl 486
-	215120: {79, 85, 91, 98, 105}, // Radiant Loupes (Profession)
-	221797: {79, 85, 91, 98, 105}, // Bismuth-Fueled Samophlange (Profession)
-	222577: {79, 85, 91, 105},     // Burnt Rolling Pin (Profession)
+	215120: {79, 85, 91, 98, 105}, // Radiant Loupes
+	221797: {79, 85, 91, 98, 105}, // Bismuth-Fueled Samophlange
+	222577: {79, 85, 91, 105},     // Burnt Rolling Pin
 
 	// iLvl 486 oddities
-	244709: {180, 186, 192, 199, 206}, // Junker's Junk Visor (Profession)
+	244709: {180, 186, 192, 199, 206}, // Junker's Junk Visor
 
 	// iLvl 535
-	244626: {206, 212, 218, 225, 232}, // Sin'dorei Alchemist's Hat (Profession)
+	244626: {206, 212, 218, 225, 232}, // Sin'dorei Alchemist's Hat
 }
 
 // Known returns true if the item has an entry in itemLevels
