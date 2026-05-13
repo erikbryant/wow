@@ -29,6 +29,7 @@ var (
 		// Items not found in the WoW database
 		23704:  {},
 		23942:  {},
+		23943:  {},
 		23955:  {},
 		23958:  {},
 		23972:  {},
