@@ -46,29 +46,85 @@ var usefulGoods = map[int64]int64{
 	itemCache.Search("Ameelton's Shot-Thrower").Id():  common.Coins(1000, 0, 0),
 	itemCache.Search("Converted Carrot Carbine").Id(): common.Coins(1000, 0, 0),
 	itemCache.Search("Kickback 5000").Id():            common.Coins(1000, 0, 0),
+}
 
-	// Appearance set appearances
-	itemCache.Search("Tyrhold Epaulets").Id(): common.Coins(1000, 0, 0),
-	itemCache.Search("Tyrhold Robe").Id():     common.Coins(1000, 0, 0),
-	itemCache.Search("Tyrhold Slippers").Id(): common.Coins(1000, 0, 0),
-	itemCache.Search("Tyrhold Visage").Id():   common.Coins(1000, 0, 0),
+var usefulRecipesMaxPrice = common.Coins(10, 99, 0)
 
-	itemCache.Search("Starless Mantle").Id(): common.Coins(1000, 0, 0),
+var usefulRecipes = map[int64]struct{}{
+	// Trainer
+	//itemCache.Search("Recipe: Kaldorei Spider Kabob").Id(): {}, // 10
 
-	itemCache.Search("Harvest Guardian Pauldrons").Id():  common.Coins(1000, 0, 0),
-	itemCache.Search("Harvest Guardian Handguards").Id(): common.Coins(1000, 0, 0),
-	itemCache.Search("Harvest Guardian Girdle").Id():     common.Coins(1000, 0, 0),
+	// Outland cooking
+	//itemCache.Search("Recipe: Blackened Trout").Id():     {}, // 1
+	//itemCache.Search("Recipe: Buzzard Bites").Id():       {}, // 1
+	//itemCache.Search("Recipe: Blackened Sporefish").Id(): {}, // 10
+	//itemCache.Search("Recipe: Grilled Mudfish").Id():     {}, // 20
+	//itemCache.Search("Recipe: Poached Bluefish").Id():    {}, // 20
+	//itemCache.Search("Recipe: Golden Fish Sticks").Id():  {}, // 25
+	//itemCache.Search("Recipe: Roasted Clefthoof").Id():   {}, // 25
+	//itemCache.Search("Recipe: Warp Burger").Id():         {}, // 25
+	//itemCache.Search("Recipe: Spicy Crawdad").Id():       {}, // 50
 
-	itemCache.Search("Citadel Crusher's Helm").Id():       common.Coins(1000, 0, 0),
-	itemCache.Search("Citadel Crusher's Cloak").Id():      common.Coins(1000, 0, 0),
-	itemCache.Search("Citadel Crusher's Chestplate").Id(): common.Coins(1000, 0, 0),
-	itemCache.Search("Citadel Crusher's Gauntlets").Id():  common.Coins(1000, 0, 0),
-	itemCache.Search("Citadel Crusher's Legguards").Id():  common.Coins(1000, 0, 0),
-	itemCache.Search("Citadel Crusher's Footwraps").Id():  common.Coins(1000, 0, 0),
-
-	itemCache.Search("Obsidian Crusher's Bracers").Id(): common.Coins(1000, 0, 0),
-
-	itemCache.Search("Krasari Prowler Belt").Id(): common.Coins(1000, 0, 0),
+	// Classic cooking
+	//itemCache.Search("Recipe: Brilliant Smallfish").Id():          {}, // 1
+	//itemCache.Search("Recipe: Crispy Bat Wing").Id():              {}, // 1
+	//itemCache.Search("Recipe: Extra Lemony Herb Filet").Id():      {}, // 1
+	//itemCache.Search("Recipe: Gingerbread Cookie").Id():           {}, // 1
+	//itemCache.Search("Recipe: Lynx Steak").Id():                   {}, // 1
+	//itemCache.Search("Recipe: Roasted Moongraze Tenderloin").Id(): {}, // 1
+	//itemCache.Search("Recipe: Slitherskin Mackerel").Id():         {}, // 1
+	//itemCache.Search("Recipe: Beer Basted Boar Ribs").Id():        {}, // 10
+	//itemCache.Search("Recipe: Scorpid Surprise").Id():             {}, // 20
+	//itemCache.Search("Recipe: Roasted Kodo Meat").Id():            {}, // 35
+	//itemCache.Search("Recipe: Smoked Bear Meat").Id():             {}, // 40
+	//itemCache.Search("Recipe: Goretusk Liver Pie").Id():           {}, // 50
+	//itemCache.Search("Recipe: Loch Frenzy Delight").Id():          {}, // 50
+	//itemCache.Search("Recipe: Longjaw Mud Snapper").Id():          {}, // 50
+	//itemCache.Search("Recipe: Rainbow Fin Albacore").Id():         {}, // 50
+	//itemCache.Search("Recipe: Bat Bites").Id():                    {}, // 50
+	//itemCache.Search("Recipe: Strider Stew").Id():                 {}, // 50
+	//itemCache.Search("Recipe: Blood Sausage").Id():                {}, // 60
+	//itemCache.Search("Recipe: Crunchy Spider Surprise").Id():      {}, // 60
+	//itemCache.Search("Recipe: Thistle Tea").Id():                  {}, // 60
+	//itemCache.Search("Recipe: Crocolisk Steak").Id():              {}, // 80
+	//itemCache.Search("Recipe: Smoked Sagefish").Id():              {}, // 80
+	//itemCache.Search("Recipe: Savory Deviate Delight").Id():       {}, // 85
+	//itemCache.Search("Recipe: Clam Chowder").Id():                 {}, // 90
+	//itemCache.Search("Recipe: Murloc Fin Soup").Id():              {}, // 90
+	//itemCache.Search("Recipe: Bristle Whisker Catfish").Id():      {}, // 100
+	//itemCache.Search("Recipe: Crispy Lizard Tail").Id():           {}, // 100
+	//itemCache.Search("Recipe: Redridge Goulash").Id():             {}, // 100
+	//itemCache.Search("Recipe: Seasoned Wolf Kabob").Id():          {}, // 100
+	//itemCache.Search("Recipe: Gooey Spider Cake").Id():            {}, // 110
+	//itemCache.Search("Recipe: Succulent Pork Ribs").Id():          {}, // 110
+	//itemCache.Search("Recipe: Crocolisk Gumbo").Id():              {}, // 120
+	//itemCache.Search("Recipe: Hot Lion Chops").Id():               {}, // 125
+	//itemCache.Search("Recipe: Curiously Tasty Omelet").Id():       {}, // 130
+	//itemCache.Search("Recipe: Heavy Crocolisk Stew").Id():         {}, // 150
+	//itemCache.Search("Recipe: Goldthorn Tea").Id():                {}, // 160
+	//itemCache.Search("Recipe: Barbecued Buzzard Wing").Id():       {}, // 175
+	//itemCache.Search("Recipe: Carrion Surprise").Id():             {}, // 175
+	//itemCache.Search("Recipe: Giant Clam Scorcho").Id():           {}, // 175
+	//itemCache.Search("Recipe: Hot Wolf Ribs").Id():                {}, // 175
+	//itemCache.Search("Recipe: Jungle Stew").Id():                  {}, // 175
+	//itemCache.Search("Recipe: Mithril Head Trout").Id():           {}, // 175
+	//itemCache.Search("Recipe: Mystery Stew").Id():                 {}, // 175
+	//itemCache.Search("Recipe: Roast Raptor").Id():                 {}, // 175
+	//itemCache.Search("Recipe: Rockscale Cod").Id():                {}, // 175
+	//itemCache.Search("Recipe: Sagefish Delight").Id():             {}, // 175
+	//itemCache.Search("Recipe: Dragonbreath Chili").Id():           {}, // 200
+	//itemCache.Search("Recipe: Heavy Kodo Stew").Id():              {}, // 200
+	//itemCache.Search("Recipe: Cooked Glossy Mightfish").Id():      {}, // 225
+	//itemCache.Search("Recipe: Filet of Redgill").Id():             {}, // 225
+	//itemCache.Search("Recipe: Monster Omelet").Id():               {}, // 225
+	//itemCache.Search("Recipe: Spiced Chili Crab").Id():            {}, // 225
+	//itemCache.Search("Recipe: Tender Wolf Steak").Id():            {}, // 225
+	//itemCache.Search("Recipe: Undermine Clam Chowder").Id():       {}, // 225
+	//itemCache.Search("Recipe: Hot Smoked Bass").Id():              {}, // 240
+	//itemCache.Search("Recipe: Baked Salmon").Id():                 {}, // 275
+	//itemCache.Search("Recipe: Lemon Herb Filet").Id():             {}, // 275
+	//itemCache.Search("Recipe: Lobster Stew").Id():                 {}, // 275
+	//itemCache.Search("Recipe: Mightfish Steak").Id():              {}, // 275
 }
 
 // skipToys are toys I am not interested in
@@ -79,15 +135,10 @@ var skipToys = map[int64]bool{
 	itemCache.Search("Flying Machine").Id():                   true,
 	itemCache.Search("Snowmaster 9000").Id():                  true,
 	itemCache.Search("Turbo-Charged Flying Machine").Id():     true,
-	itemCache.Search("Wormhole Centrifuge").Id():              true,
 	itemCache.Search("Wormhole Generator: Argus").Id():        true,
 	itemCache.Search("Wormhole Generator: Khaz Algar").Id():   true,
-	itemCache.Search("Wormhole Generator: Kul Tiras").Id():    true,
-	itemCache.Search("Wormhole Generator: Northrend").Id():    true,
 	itemCache.Search("Wormhole Generator: Pandaria").Id():     true,
-	itemCache.Search("Wormhole Generator: Quel'Thalas").Id():  true,
 	itemCache.Search("Wormhole Generator: Shadowlands").Id():  true,
-	itemCache.Search("Wormhole Generator: Zandalar").Id():     true,
 	itemCache.Search("Wyrmhole Generator: Dragon Isles").Id(): true,
 
 	// I am not interested in these
@@ -97,9 +148,7 @@ var skipToys = map[int64]bool{
 	itemCache.Search("Giggle Goggles").Id():         true,
 	itemCache.Search("Leather Pet Bed").Id():        true,
 	itemCache.Search("Leather Pet Leash").Id():      true,
-	itemCache.Search("Moonfang Shroud").Id():        true,
 	itemCache.Search("Safari Lounge Cushion").Id():  true,
-	itemCache.Search("Winning Hand").Id():           true,
 }
 
 // findPetSpellNeeded returns pet spells for sale that I do not own
@@ -130,7 +179,7 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 			if auc.Buyout <= 0 {
 				continue
 			}
-			if auc.Buyout >= common.Coins(1000, 0, 0) {
+			if auc.Buyout >= common.Coins(800, 0, 0) {
 				continue
 			}
 			stats := fmt.Sprintf("%s %s %s", battlePet.Name(petId), common.Gold(auc.Buyout), i.Quality())
@@ -160,7 +209,7 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Buyout <= 0 {
 			continue
 		}
-		if petAuction.Buyout > common.Coins(1000, 0, 0) {
+		if petAuction.Buyout > common.Coins(800, 0, 0) {
 			continue
 		}
 		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId))
@@ -199,6 +248,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 		1687: {}, // Left Shark
 		4647: {}, // Mr. DELVER
 		1568: {}, // Puddle Terror
+		340:  {}, // Sea Pony
 		162:  {}, // Sinister Squashling
 		200:  {}, // Spring Rabbit
 		211:  {}, // Strand Crawler
@@ -209,6 +259,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 		251:  {}, // Toxic Wasteling
 		118:  {}, // Winter Reindeer
 		120:  {}, // Winter's Little Helper
+		153:  {}, // Wolpertinger
 	}
 
 	for _, petAuction := range auctions[battlePet.PetCageItemId] {
@@ -265,7 +316,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 
 			arbitrages = append(arbitrages, Arbitrage{i, profit})
 
-			if i.VariableItemLevel() && !item.Known(i.Id()) {
+			if i.ItemClassName() == "Profession" && !item.Known(i.Id()) {
 				// We have not seen this arbitrage before. Add iLevels for it in iLevel.go.
 				msg := fmt.Sprintf("%d: {}, // %s (%s)  iLvl: %d\n", i.Id(), i.Name(), i.ItemClassName(), i.ItemLevel())
 				appendFile("./generated/arbitrageWithiLvl.log", msg)
@@ -325,6 +376,13 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 			// Bargains on specific items
 			maxPrice, ok := usefulGoods[itemId]
 			if ok && auc.Buyout <= maxPrice {
+				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
+				bargains = append(bargains, str)
+			}
+
+			// Bargains on recipes
+			_, ok = usefulRecipes[itemId]
+			if ok && auc.Buyout <= usefulRecipesMaxPrice {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 				bargains = append(bargains, str)
 			}
