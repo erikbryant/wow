@@ -45,6 +45,7 @@ var itemLevels = map[int64][]int64{
 	224114: {79, 85, 91, 105}, // Runed Bismuth Rod
 
 	// iLvl 486
+	215119: {79, 85, 91, 98, 105}, // Right-Handed Magnifying Glass
 	215120: {79, 85, 91, 98, 105}, // Radiant Loupes
 	221797: {79, 85, 91, 98, 105}, // Bismuth-Fueled Samophlange
 	222577: {79, 85, 91, 105},     // Burnt Rolling Pin
