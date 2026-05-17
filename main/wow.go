@@ -32,8 +32,6 @@ var (
 
 // usefulGoods are useful items I want
 var usefulGoods = map[int64]int64{
-	itemCache.Search("Flawless Battle-Stone").Id(): common.Coins(300, 0, 0),
-
 	//cache.Search("Hexweave Bag").Id():                 common.Coins(120, 0, 0), // 30 slot
 	//cache.Search("Chronocloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
 	//cache.Search("Dawnweave Reagent Bag").Id():        common.Coins(90, 0, 0),  // 38 slot
@@ -42,18 +40,17 @@ var usefulGoods = map[int64]int64{
 
 	//itemCache.Search("Xiwyllag ATV").Id(): common.Coins(3999, 0, 0),
 
+	itemCache.Search("Coalfist Gronnling").Id(): common.Coins(300, 0, 0),
+
 	// Gun appearances
 	itemCache.Search("Ameelton's Shot-Thrower").Id():  common.Coins(1000, 0, 0),
 	itemCache.Search("Converted Carrot Carbine").Id(): common.Coins(1000, 0, 0),
 	itemCache.Search("Kickback 5000").Id():            common.Coins(1000, 0, 0),
 }
 
-var usefulRecipesMaxPrice = common.Coins(10, 99, 0)
+var usefulRecipesMaxPrice = common.Coins(5, 0, 0)
 
 var usefulRecipes = map[int64]struct{}{
-	// Trainer
-	//itemCache.Search("Recipe: Kaldorei Spider Kabob").Id(): {}, // 10
-
 	// Outland cooking
 	//itemCache.Search("Recipe: Blackened Trout").Id():     {}, // 1
 	//itemCache.Search("Recipe: Buzzard Bites").Id():       {}, // 1
@@ -65,44 +62,63 @@ var usefulRecipes = map[int64]struct{}{
 	//itemCache.Search("Recipe: Warp Burger").Id():         {}, // 25
 	//itemCache.Search("Recipe: Spicy Crawdad").Id():       {}, // 50
 
+	// Stormwind Cooking Trainer
+	//itemCache.Search("Recipe: Kaldorei Spider Kabob").Id():   {}, // 10
+	//itemCache.Search("Recipe: Tasty Lion Steak").Id():        {}, // 150
+	//itemCache.Search("Recipe: Barbecued Buzzard Wing").Id():  {}, // 175
+	//itemCache.Search("Recipe: Soothing Turtle Bisque").Id():  {}, // 175
+	//itemCache.Search("Recipe: Spider Sausage").Id():          {}, // 200
+	//itemCache.Search("Recipe: Spotted Yellowtail").Id():      {}, // 225
+	//itemCache.Search("Recipe: Grilled Squid").Id():           {}, // 240
+	//itemCache.Search("Recipe: Charred Bear Kabobs").Id():     {}, // 250
+	//itemCache.Search("Recipe: Juicy Bear Burger").Id():       {}, // 250
+	//itemCache.Search("Recipe: Nightfin Soup").Id():           {}, // 250
+	//itemCache.Search("Recipe: Poached Sunscale Salmon").Id(): {}, // 250
+
+	// Stormwind Recipe Vendor: Kendor Kabonka
+	//itemCache.Search("Recipe: Beer Basted Boar Ribs").Id():  {}, // 10
+	//itemCache.Search("Recipe: Goretusk Liver Pie").Id():     {}, // 50
+	//itemCache.Search("Recipe: Westfall Stew").Id():          {}, // 50
+	//itemCache.Search("Recipe: Blood Sausage").Id():          {}, // 60
+	//itemCache.Search("Recipe: Crocolisk Steak").Id():        {}, // 80
+	//itemCache.Search("Recipe: Cooked Crab Claw").Id():       {}, // 85
+	//itemCache.Search("Recipe: Murloc Fin Soup").Id():        {}, // 90
+	//itemCache.Search("Recipe: Redridge Goulash").Id():       {}, // 100
+	//itemCache.Search("Recipe: Seasoned Wolf Kabob").Id():    {}, // 100
+	//itemCache.Search("Recipe: Gooey Spider Cake").Id():      {}, // 110
+	//itemCache.Search("Recipe: Succulent Pork Ribs").Id():    {}, // 110
+	//itemCache.Search("Recipe: Crocolisk Gumbo").Id():        {}, // 120
+	//itemCache.Search("Recipe: Curiously Tasty Omelet").Id(): {}, // 130
+
+	// Farstriders
+
 	// Classic cooking
-	//itemCache.Search("Recipe: Brilliant Smallfish").Id():          {}, // 1
+	itemCache.Search("Recipe: Brilliant Smallfish").Id(): {}, // 1
 	//itemCache.Search("Recipe: Crispy Bat Wing").Id():              {}, // 1
 	//itemCache.Search("Recipe: Extra Lemony Herb Filet").Id():      {}, // 1
-	//itemCache.Search("Recipe: Gingerbread Cookie").Id():           {}, // 1
-	//itemCache.Search("Recipe: Lynx Steak").Id():                   {}, // 1
-	//itemCache.Search("Recipe: Roasted Moongraze Tenderloin").Id(): {}, // 1
+	itemCache.Search("Recipe: Gingerbread Cookie").Id():           {}, // 1
+	itemCache.Search("Recipe: Lemon Herb Filet").Id():             {}, // 1
+	itemCache.Search("Recipe: Lynx Steak").Id():                   {}, // 1
+	itemCache.Search("Recipe: Roasted Moongraze Tenderloin").Id(): {}, // 1
 	//itemCache.Search("Recipe: Slitherskin Mackerel").Id():         {}, // 1
-	//itemCache.Search("Recipe: Beer Basted Boar Ribs").Id():        {}, // 10
-	//itemCache.Search("Recipe: Scorpid Surprise").Id():             {}, // 20
-	//itemCache.Search("Recipe: Roasted Kodo Meat").Id():            {}, // 35
+	itemCache.Search("Recipe: Scorpid Surprise").Id():  {}, // 20
+	itemCache.Search("Recipe: Roasted Kodo Meat").Id(): {}, // 35
 	//itemCache.Search("Recipe: Smoked Bear Meat").Id():             {}, // 40
-	//itemCache.Search("Recipe: Goretusk Liver Pie").Id():           {}, // 50
 	//itemCache.Search("Recipe: Loch Frenzy Delight").Id():          {}, // 50
 	//itemCache.Search("Recipe: Longjaw Mud Snapper").Id():          {}, // 50
-	//itemCache.Search("Recipe: Rainbow Fin Albacore").Id():         {}, // 50
+	itemCache.Search("Recipe: Rainbow Fin Albacore").Id(): {}, // 50
 	//itemCache.Search("Recipe: Bat Bites").Id():                    {}, // 50
-	//itemCache.Search("Recipe: Strider Stew").Id():                 {}, // 50
-	//itemCache.Search("Recipe: Blood Sausage").Id():                {}, // 60
+	itemCache.Search("Recipe: Strider Stew").Id(): {}, // 50
 	//itemCache.Search("Recipe: Crunchy Spider Surprise").Id():      {}, // 60
 	//itemCache.Search("Recipe: Thistle Tea").Id():                  {}, // 60
-	//itemCache.Search("Recipe: Crocolisk Steak").Id():              {}, // 80
 	//itemCache.Search("Recipe: Smoked Sagefish").Id():              {}, // 80
 	//itemCache.Search("Recipe: Savory Deviate Delight").Id():       {}, // 85
 	//itemCache.Search("Recipe: Clam Chowder").Id():                 {}, // 90
-	//itemCache.Search("Recipe: Murloc Fin Soup").Id():              {}, // 90
 	//itemCache.Search("Recipe: Bristle Whisker Catfish").Id():      {}, // 100
-	//itemCache.Search("Recipe: Crispy Lizard Tail").Id():           {}, // 100
-	//itemCache.Search("Recipe: Redridge Goulash").Id():             {}, // 100
-	//itemCache.Search("Recipe: Seasoned Wolf Kabob").Id():          {}, // 100
-	//itemCache.Search("Recipe: Gooey Spider Cake").Id():            {}, // 110
-	//itemCache.Search("Recipe: Succulent Pork Ribs").Id():          {}, // 110
-	//itemCache.Search("Recipe: Crocolisk Gumbo").Id():              {}, // 120
-	//itemCache.Search("Recipe: Hot Lion Chops").Id():               {}, // 125
-	//itemCache.Search("Recipe: Curiously Tasty Omelet").Id():       {}, // 130
+	itemCache.Search("Recipe: Crispy Lizard Tail").Id(): {}, // 100
+	itemCache.Search("Recipe: Hot Lion Chops").Id():     {}, // 125
 	//itemCache.Search("Recipe: Heavy Crocolisk Stew").Id():         {}, // 150
 	//itemCache.Search("Recipe: Goldthorn Tea").Id():                {}, // 160
-	//itemCache.Search("Recipe: Barbecued Buzzard Wing").Id():       {}, // 175
 	//itemCache.Search("Recipe: Carrion Surprise").Id():             {}, // 175
 	//itemCache.Search("Recipe: Giant Clam Scorcho").Id():           {}, // 175
 	//itemCache.Search("Recipe: Hot Wolf Ribs").Id():                {}, // 175
@@ -122,7 +138,6 @@ var usefulRecipes = map[int64]struct{}{
 	//itemCache.Search("Recipe: Undermine Clam Chowder").Id():       {}, // 225
 	//itemCache.Search("Recipe: Hot Smoked Bass").Id():              {}, // 240
 	//itemCache.Search("Recipe: Baked Salmon").Id():                 {}, // 275
-	//itemCache.Search("Recipe: Lemon Herb Filet").Id():             {}, // 275
 	//itemCache.Search("Recipe: Lobster Stew").Id():                 {}, // 275
 	//itemCache.Search("Recipe: Mightfish Steak").Id():              {}, // 275
 }
