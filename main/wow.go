@@ -40,8 +40,6 @@ var usefulGoods = map[int64]int64{
 
 	//itemCache.Search("Xiwyllag ATV").Id(): common.Coins(3999, 0, 0),
 
-	itemCache.Search("Coalfist Gronnling").Id(): common.Coins(300, 0, 0),
-
 	// Gun appearances
 	itemCache.Search("Ameelton's Shot-Thrower").Id():  common.Coins(1000, 0, 0),
 	itemCache.Search("Converted Carrot Carbine").Id(): common.Coins(1000, 0, 0),
