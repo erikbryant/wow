@@ -81,8 +81,8 @@ var EquipSlotTypes = map[string]struct{}{
 // Equippable returns true if the item is equippable
 func (i Item) Equippable() bool {
 	// Preferred authoritative field
-	if val, ok := i.XItem["is_equippable"]; ok {
-		if b, ok := val.(bool); ok {
+	if v, ok := i.XItem["is_equippable"]; ok {
+		if b, ok := v.(bool); ok {
 			return b
 		}
 	}
@@ -94,11 +94,11 @@ func (i Item) Equippable() bool {
 
 // ItemLevel returns the item level
 func (i Item) ItemLevel() int64 {
-	value, err := web.MsiValue(i.XItem, []string{"level"})
+	v, err := web.MsiValue(i.XItem, []string{"level"})
 	if err != nil {
 		log.Fatalf("Level: %s in %v", err, i.XItem)
 	}
-	return web.ToInt64(value)
+	return web.ToInt64(v)
 }
 
 // VariableItemLevel returns true if the item can be enhanced, changing its iLevel
@@ -112,8 +112,8 @@ func (i Item) VariableItemLevel() bool {
 
 // ItemSubclassName returns the item subclass name
 func (i Item) ItemSubclassName() string {
-	value, _ := web.MsiValued(i.XItem, []string{"item_subclass", "name"}, "")
-	return value.(string)
+	v, _ := web.MsiValued(i.XItem, []string{"item_subclass", "name"}, "")
+	return v.(string)
 }
 
 // Cosmetic returns true if this item is a cosmetic
@@ -136,27 +136,27 @@ func (i Item) Cosmetic() bool {
 
 // ItemClassName returns the item class name
 func (i Item) ItemClassName() string {
-	value, err := web.MsiValue(i.XItem, []string{"item_class", "name"})
+	v, err := web.MsiValue(i.XItem, []string{"item_class", "name"})
 	if err != nil {
 		log.Fatalf("ItemClassName: %s in %v", err, i.XItem)
 	}
-	return value.(string)
+	return v.(string)
 }
 
 // Stackable returns true if the item can be stacked in the inventory
 func (i Item) Stackable() bool {
-	value, err := web.MsiValue(i.XItem, []string{"is_stackable"})
+	v, err := web.MsiValue(i.XItem, []string{"is_stackable"})
 	if err != nil {
 		log.Fatalf("Stackable: %s in %v", err, i.XItem)
 	}
-	return value.(bool)
+	return v.(bool)
 }
 
 // RelicType returns the relic type
 func (i Item) RelicType() string {
 	// The key is only sometimes there; do not error if it is missing
-	value, _ := web.MsiValued(i.XItem, []string{"preview_item", "gem_properties", "relic_type"}, "")
-	return value.(string)
+	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "gem_properties", "relic_type"}, "")
+	return v.(string)
 }
 
 // Name returns the item name
@@ -165,12 +165,12 @@ func (i Item) Name() string {
 }
 
 func (i Item) previewPrice() (int64, error) {
-	value, err := web.MsiValue(i.XItem, []string{"preview_item", "sell_price", "value"})
+	v, err := web.MsiValue(i.XItem, []string{"preview_item", "sell_price", "value"})
 	if err != nil {
 		return 0, err
 	}
 
-	return web.ToInt64(value), nil
+	return web.ToInt64(v), nil
 }
 
 // SellPriceAdvertised returns the vendor sell price listed in the JSON
@@ -199,31 +199,31 @@ func (i Item) Updated() time.Time {
 }
 
 func (i Item) Requirements() string {
-	r, _ := web.MsiValued(i.XItem, []string{"preview_item", "requirements", "skill", "display_string"}, "")
-	return web.ToString(r)
+	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "requirements", "skill", "display_string"}, "")
+	return web.ToString(v)
 }
 
 func (i Item) Quality() string {
-	q, _ := web.MsiValued(i.XItem, []string{"preview_item", "quality", "name"}, "")
-	return web.ToString(q)
+	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "quality", "name"}, "")
+	return web.ToString(v)
 }
 
 func (i Item) Toy() bool {
-	q, _ := web.MsiValued(i.XItem, []string{"preview_item", "toy"}, "")
-	return web.ToString(q) == "Toy"
+	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "toy"}, "")
+	return web.ToString(v) == "Toy"
 }
 
 // Appearances returns the appearance IDs this item provides
 func (i Item) Appearances() []int64 {
 	appearanceIds := []int64{}
 
-	q, _ := web.MsiValued(i.XItem, []string{"appearances"}, nil)
-	if q == nil {
+	v, _ := web.MsiValued(i.XItem, []string{"appearances"}, nil)
+	if v == nil {
 		// Most items do not have appearances
 		return nil
 	}
 
-	appearances := q.([]interface{})
+	appearances := v.([]interface{})
 	for _, appearance := range appearances {
 		id := appearance.(map[string]interface{})["id"]
 		appearanceIds = append(appearanceIds, web.ToInt64(id))
