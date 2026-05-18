@@ -46,7 +46,7 @@ var usefulGoods = map[int64]int64{
 	itemCache.Search("Kickback 5000").Id():            common.Coins(1000, 0, 0),
 }
 
-var usefulRecipesMaxPrice = common.Coins(5, 0, 0)
+var usefulRecipesMaxPrice = common.Coins(10, 0, 0)
 
 var usefulRecipes = map[int64]struct{}{
 	// Outland cooking
