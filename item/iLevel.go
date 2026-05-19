@@ -21,6 +21,7 @@ var itemLevels = map[int64][]int64{
 
 	// iLvl 80 oddities
 	240955: {180, 183, 186, 189, 193}, // Silvermoon Loupes
+	240956: {180, 183, 186, 189, 193}, // Silvermoon Focusing Shard
 
 	// iLvl 106
 	237952: {206, 212, 218, 225, 232}, // Sun-Blessed Blacksmith's Toolbox
