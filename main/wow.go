@@ -41,18 +41,19 @@ var usefulGoods = map[int64]int64{
 	//itemCache.Search("Xiwyllag ATV").Id(): common.Coins(3999, 0, 0),
 
 	// Gun appearances
-	itemCache.Search("Ameelton's Shot-Thrower").Id():  common.Coins(1000, 0, 0),
-	itemCache.Search("Converted Carrot Carbine").Id(): common.Coins(1000, 0, 0),
-	itemCache.Search("Kickback 5000").Id():            common.Coins(1000, 0, 0),
+	itemCache.Search("Ameelton's Shot-Thrower").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Kickback 5000").Id():           common.Coins(1000, 0, 0),
 }
 
-var usefulRecipesMaxPrice = common.Coins(10, 0, 0)
+var usefulRecipesMaxPrice = common.Coins(5, 0, 0)
 
 var usefulRecipes = map[int64]struct{}{
 	// Outland cooking
 	//itemCache.Search("Recipe: Blackened Trout").Id():     {}, // 1
 	//itemCache.Search("Recipe: Buzzard Bites").Id():       {}, // 1
+	//itemCache.Search("Recipe: Clam Bar").Id():            {}, // 1
 	//itemCache.Search("Recipe: Blackened Sporefish").Id(): {}, // 10
+	//itemCache.Search("Recipe: Blackened Basilisk").Id():  {}, // 15
 	//itemCache.Search("Recipe: Grilled Mudfish").Id():     {}, // 20
 	//itemCache.Search("Recipe: Poached Bluefish").Id():    {}, // 20
 	//itemCache.Search("Recipe: Golden Fish Sticks").Id():  {}, // 25
@@ -91,7 +92,7 @@ var usefulRecipes = map[int64]struct{}{
 	// Classic cooking
 	//itemCache.Search("Recipe: Brilliant Smallfish").Id():          {}, // 1
 	//itemCache.Search("Recipe: Crispy Bat Wing").Id():              {}, // 1
-	//itemCache.Search("Recipe: Extra Lemony Herb Filet").Id():      {}, // 1
+	itemCache.Search("Recipe: Extra Lemony Herb Filet").Id(): {}, // 1 Aegwynn
 	//itemCache.Search("Recipe: Gingerbread Cookie").Id():           {}, // 1
 	//itemCache.Search("Recipe: Lemon Herb Filet").Id():             {}, // 1
 	//itemCache.Search("Recipe: Lynx Steak").Id():                   {}, // 1
@@ -118,7 +119,7 @@ var usefulRecipes = map[int64]struct{}{
 	//itemCache.Search("Recipe: Carrion Surprise").Id():             {}, // 175
 	//itemCache.Search("Recipe: Giant Clam Scorcho").Id():           {}, // 175
 	//itemCache.Search("Recipe: Hot Wolf Ribs").Id():                {}, // 175
-	itemCache.Search("Recipe: Jungle Stew").Id(): {}, // 175
+	//itemCache.Search("Recipe: Jungle Stew").Id():                  {}, // 175
 	//itemCache.Search("Recipe: Mithril Head Trout").Id():           {}, // 175
 	//itemCache.Search("Recipe: Mystery Stew").Id():                 {}, // 175
 	//itemCache.Search("Recipe: Roast Raptor").Id():                 {}, // 175
@@ -130,7 +131,7 @@ var usefulRecipes = map[int64]struct{}{
 	//itemCache.Search("Recipe: Filet of Redgill").Id():             {}, // 225
 	itemCache.Search("Recipe: Monster Omelet").Id(): {}, // 225
 	//itemCache.Search("Recipe: Spiced Chili Crab").Id():            {}, // 225
-	itemCache.Search("Recipe: Tender Wolf Steak").Id(): {}, // 225
+	//itemCache.Search("Recipe: Tender Wolf Steak").Id():            {}, // 225
 	//itemCache.Search("Recipe: Undermine Clam Chowder").Id():       {}, // 225
 	//itemCache.Search("Recipe: Hot Smoked Bass").Id():              {}, // 240
 	//itemCache.Search("Recipe: Baked Salmon").Id():                 {}, // 275
