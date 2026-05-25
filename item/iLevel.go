@@ -2,6 +2,7 @@ package item
 
 var itemLevels = map[int64][]int64{
 	// iLvl 80
+	237947: {180, 186, 192, 199, 206}, // Thalassian Leatherworker's Toolset
 	237948: {180, 186, 192, 199, 206}, // Thalassian Blacksmith's Toolbox
 	238011: {180, 186, 192, 199, 206}, // Thalassian Skinning Knife
 	238012: {180, 186, 192, 199, 206}, // Thalassian Leatherworker's Knife
