@@ -129,7 +129,7 @@ var usefulRecipes = map[int64]struct{}{
 	//itemCache.Search("Recipe: Heavy Kodo Stew").Id():              {}, // 200
 	//itemCache.Search("Recipe: Cooked Glossy Mightfish").Id():      {}, // 225
 	//itemCache.Search("Recipe: Filet of Redgill").Id():             {}, // 225
-	itemCache.Search("Recipe: Monster Omelet").Id(): {}, // 225
+	//itemCache.Search("Recipe: Monster Omelet").Id():               {}, // 225
 	//itemCache.Search("Recipe: Spiced Chili Crab").Id():            {}, // 225
 	//itemCache.Search("Recipe: Tender Wolf Steak").Id():            {}, // 225
 	//itemCache.Search("Recipe: Undermine Clam Chowder").Id():       {}, // 225
@@ -429,7 +429,7 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 			maxPrice := common.Coins(20, 0, 0)
 			appearanceSetSuffix := ""
 			if transmog.InAppearanceSet(i) {
-				maxPrice = common.Coins(300, 0, 0)
+				maxPrice = common.Coins(400, 0, 0)
 				appearanceSetSuffix = "    ---"
 			}
 
