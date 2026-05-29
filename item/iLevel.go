@@ -2,6 +2,7 @@ package item
 
 var itemLevels = map[int64][]int64{
 	// iLvl 80
+	237946: {180, 186, 192, 199, 206}, // Thalassian Needle Set
 	237947: {180, 186, 192, 199, 206}, // Thalassian Leatherworker's Toolset
 	237948: {180, 186, 192, 199, 206}, // Thalassian Blacksmith's Toolbox
 	238011: {180, 186, 192, 199, 206}, // Thalassian Skinning Knife
@@ -37,21 +38,22 @@ var itemLevels = map[int64][]int64{
 	191237: {70, 71, 72, 73, 74}, // Draconium Blacksmith's Hammer
 	191238: {71, 72, 73, 74},     // Draconium Leatherworker's Knife
 	191239: {71, 72, 73, 74},     // Draconium Needle Set
-	191240: {71, 72, 73, 74},     // Draconium Skinning Knife
+	191240: {70, 71, 72, 73, 74}, // Draconium Skinning Knife
 	191241: {70, 71, 72, 73, 74}, // Draconium Sickle
 	191242: {70, 71, 72, 73, 74}, // Draconium Pickaxe
 	193486: {70, 71, 72, 73, 74}, // Resilient Smock
-	193612: {72, 73, 74},         // Smithing Apron
+	193487: {71, 72, 73, 74},     // Alchemist's Hat
+	193612: {71, 72, 73, 74},     // Smithing Apron
 
 	// iLvl 317 oddities
-	224114: {79, 85, 91, 105}, // Runed Bismuth Rod
+	224114: {79, 85, 91, 98, 105}, // Runed Bismuth Rod
 
 	// iLvl 486
 	215119: {79, 85, 91, 98, 105}, // Right-Handed Magnifying Glass
 	215120: {79, 85, 91, 98, 105}, // Radiant Loupes
 	221797: {79, 85, 91, 98, 105}, // Bismuth-Fueled Samophlange
-	222575: {79, 85, 91, 105},     // Hasty Alchemist's Mixing Rod
-	222577: {79, 85, 91, 105},     // Burnt Rolling Pin
+	222575: {79, 85, 91, 98, 105}, // Hasty Alchemist's Mixing Rod
+	222577: {79, 85, 91, 98, 105}, // Burnt Rolling Pin
 
 	// iLvl 486 oddities
 	244709: {180, 186, 192, 199, 206}, // Junker's Junk Visor
