@@ -29,6 +29,7 @@ var itemLevels = map[int64][]int64{
 	237952: {206, 212, 218, 225, 232}, // Sun-Blessed Blacksmith's Toolbox
 	238018: {206, 212, 218, 225, 232}, // Sun-Blessed Blacksmith's Hammer
 	240959: {206, 212, 218, 225, 232}, // Sin'dorei Jeweler's Loupes
+	240960: {212, 218, 225, 232},      // Sin'dorei Enchanter's Crystal
 	244718: {206, 212, 218, 225, 232}, // Turbo-Junker's Multitool v1
 	245776: {206, 212, 218, 225, 232}, // Sin'dorei Quill
 
