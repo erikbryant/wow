@@ -192,6 +192,7 @@ var flaky = map[int64]bool{
 	// Need these, but almost never available -- NOT part of an appearance set
 	itemCache.Search("Anthemic Shoulders").Id():    true,
 	itemCache.Search("Choral Handwraps").Id():      true,
+	itemCache.Search("Choral Leggings").Id():       true,
 	itemCache.Search("Choral Slippers").Id():       true,
 	itemCache.Search("Choral Wraps").Id():          true,
 	itemCache.Search("Harmonium Breastplate").Id(): true,
