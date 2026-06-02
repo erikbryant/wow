@@ -45,7 +45,7 @@ var usefulGoods = map[int64]int64{
 	itemCache.Search("Kickback 5000").Id():           common.Coins(1000, 0, 0),
 }
 
-var usefulRecipesMaxPrice = common.Coins(5, 0, 0)
+var usefulRecipesMaxPrice = common.Coins(8, 0, 0)
 
 var usefulRecipes = map[int64]struct{}{
 	// Outland cooking
@@ -135,7 +135,7 @@ var usefulRecipes = map[int64]struct{}{
 	//itemCache.Search("Recipe: Undermine Clam Chowder").Id():       {}, // 225
 	//itemCache.Search("Recipe: Hot Smoked Bass").Id():              {}, // 240
 	//itemCache.Search("Recipe: Baked Salmon").Id():                 {}, // 275
-	//itemCache.Search("Recipe: Lobster Stew").Id():                 {}, // 275
+	itemCache.Search("Recipe: Lobster Stew").Id(): {}, // 275 <all alts>
 	//itemCache.Search("Recipe: Mightfish Steak").Id():              {}, // 275
 }
 
