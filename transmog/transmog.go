@@ -197,6 +197,7 @@ var flaky = map[int64]bool{
 	itemCache.Search("Choral Wraps").Id():          true,
 	itemCache.Search("Harmonium Breastplate").Id(): true,
 	itemCache.Search("Harmonium Gauntlets").Id():   true,
+	itemCache.Search("Harmonium Girdle").Id():      true,
 	itemCache.Search("Protective Gloves").Id():     true,
 	itemCache.Search("Staccato Belt").Id():         true,
 	itemCache.Search("Staccato Cuffs").Id():        true,
