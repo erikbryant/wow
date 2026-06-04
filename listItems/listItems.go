@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/erikbryant/wow/itemCache"
-	"github.com/erikbryant/wow/wowAPI"
 	"log"
 	"time"
+
+	"github.com/erikbryant/wow/itemCache"
+	"github.com/erikbryant/wow/wowAPI"
 )
 
 var (
@@ -27,13 +28,13 @@ func refreshCache() {
 	maxRefreshCount := 1000
 
 	for _, i := range itemCache.Items() {
-		if wowAPI.Stale(i, maxAge) {
+		if i.Stale(maxAge) {
 			needsRefresh++
 		}
 	}
 
 	for _, i := range itemCache.Items() {
-		if wowAPI.Stale(i, maxAge) {
+		if i.Stale(maxAge) {
 			wowAPI.LookupItem(i.Id(), maxAge)
 			refreshCount++
 		}

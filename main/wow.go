@@ -41,11 +41,11 @@ var usefulGoods = map[int64]int64{
 	//itemCache.Search("Xiwyllag ATV").Id(): common.Coins(3999, 0, 0),
 
 	// Gun appearances
-	itemCache.Search("Ameelton's Shot-Thrower").Id(): common.Coins(1000, 0, 0),
-	itemCache.Search("Kickback 5000").Id():           common.Coins(1000, 0, 0),
+	itemCache.Search("Ameelton's Shot-Thrower").Id(): common.Coins(2000, 0, 0),
+	itemCache.Search("Kickback 5000").Id():           common.Coins(2000, 0, 0),
 }
 
-var usefulRecipesMaxPrice = common.Coins(8, 0, 0)
+var usefulRecipesMaxPrice = common.Coins(20, 0, 0)
 
 var usefulRecipes = map[int64]struct{}{
 	// Outland cooking
@@ -135,32 +135,32 @@ var usefulRecipes = map[int64]struct{}{
 	//itemCache.Search("Recipe: Undermine Clam Chowder").Id():       {}, // 225
 	//itemCache.Search("Recipe: Hot Smoked Bass").Id():              {}, // 240
 	//itemCache.Search("Recipe: Baked Salmon").Id():                 {}, // 275
-	itemCache.Search("Recipe: Lobster Stew").Id(): {}, // 275 <all alts>
+	//itemCache.Search("Recipe: Lobster Stew").Id():                 {}, // 275
 	//itemCache.Search("Recipe: Mightfish Steak").Id():              {}, // 275
 }
 
 // skipToys are toys I am not interested in
 var skipToys = map[int64]bool{
 	// Only usable by engineers
-	itemCache.Search("Dimensional Ripper - Area 52").Id():     true,
-	itemCache.Search("Dimensional Ripper - Everlook").Id():    true,
-	itemCache.Search("Flying Machine").Id():                   true,
-	itemCache.Search("Snowmaster 9000").Id():                  true,
-	itemCache.Search("Turbo-Charged Flying Machine").Id():     true,
+	//itemCache.Search("Dimensional Ripper - Area 52").Id():     true,
+	//itemCache.Search("Dimensional Ripper - Everlook").Id():    true,
+	//itemCache.Search("Flying Machine").Id():                   true,
+	itemCache.Search("Snowmaster 9000").Id(): true,
+	//itemCache.Search("Turbo-Charged Flying Machine").Id():     true,
 	itemCache.Search("Wormhole Generator: Argus").Id():        true,
+	itemCache.Search("Wyrmhole Generator: Dragon Isles").Id(): true,
 	itemCache.Search("Wormhole Generator: Khaz Algar").Id():   true,
 	itemCache.Search("Wormhole Generator: Pandaria").Id():     true,
 	itemCache.Search("Wormhole Generator: Shadowlands").Id():  true,
-	itemCache.Search("Wyrmhole Generator: Dragon Isles").Id(): true,
 
 	// I am not interested in these
-	itemCache.Search("Artisan's Sign").Id():         true,
-	itemCache.Search("Cold Cushion").Id():           true,
-	itemCache.Search("Cushion of Time Travel").Id(): true,
-	itemCache.Search("Giggle Goggles").Id():         true,
-	itemCache.Search("Leather Pet Bed").Id():        true,
-	itemCache.Search("Leather Pet Leash").Id():      true,
-	itemCache.Search("Safari Lounge Cushion").Id():  true,
+	//itemCache.Search("Artisan's Sign").Id():         true,
+	//itemCache.Search("Cold Cushion").Id():           true,
+	//itemCache.Search("Cushion of Time Travel").Id(): true,
+	//itemCache.Search("Giggle Goggles").Id():         true,
+	//itemCache.Search("Leather Pet Bed").Id():        true,
+	//itemCache.Search("Leather Pet Leash").Id():      true,
+	//itemCache.Search("Safari Lounge Cushion").Id():  true,
 }
 
 // findPetSpellNeeded returns pet spells for sale that I do not own
@@ -288,7 +288,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Pet.Level < 25 {
 			continue
 		}
-		if petAuction.Buyout > common.Coins(100, 0, 0) {
+		if petAuction.Buyout > common.Coins(50, 0, 0) {
 			continue
 		}
 
@@ -422,13 +422,13 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 				continue
 			}
 
-			if !transmog.NeedItem(i) {
+			if !transmog.NeedAppearance(i.Appearances()) {
 				continue
 			}
 
 			maxPrice := common.Coins(20, 0, 0)
 			appearanceSetSuffix := ""
-			if transmog.InAppearanceSet(i) {
+			if transmog.InAppearanceSet(i.Appearances()) {
 				maxPrice = common.Coins(400, 0, 0)
 				appearanceSetSuffix = "    ---"
 			}

@@ -208,6 +208,14 @@ func (i Item) Quality() string {
 	return web.ToString(v)
 }
 
+// Stale returns whether the item is older than a given number of days
+func (i Item) Stale(age time.Duration) bool {
+	if age == 0 {
+		return false
+	}
+	return time.Now().Sub(i.Updated()) > age
+}
+
 func (i Item) Toy() bool {
 	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "toy"}, "")
 	return web.ToString(v) == "Toy"
@@ -234,13 +242,13 @@ func (i Item) Appearances() []int64 {
 
 // Format returns a formatted string representing the item
 func (i Item) Format() string {
-	equippable := "F"
+	equippable := "!E"
 	if i.Equippable() {
-		equippable = "T"
+		equippable = " E"
 	}
-	stackable := "F"
+	stackable := "!S"
 	if i.Stackable() {
-		stackable = "T"
+		stackable = " S"
 	}
 	return fmt.Sprintf("%7d  %s %s %11s   %3d   %-18s   %-8s   %s   %s", i.Id(), equippable, stackable, common.Gold(i.SellPriceAdvertised()), i.ItemLevel(), i.ItemClassName(), i.Quality(), i.Updated().Format("2006-01-02"), i.Name())
 }

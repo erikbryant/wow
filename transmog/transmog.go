@@ -7,8 +7,6 @@ import (
 	"os"
 
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/item"
-	"github.com/erikbryant/wow/itemCache"
 	"github.com/erikbryant/wow/wowAPI"
 )
 
@@ -129,105 +127,77 @@ func owned() map[int64]bool {
 	return myTransmogs
 }
 
-// NeedId returns true if I need this transmog
+// NeedId returns true if I need this transmog appearance ID
 func NeedId(id int64) bool {
-	if len(allOwned) == 0 {
-		Init(true)
-	}
 	if id <= 0 {
 		return false
+	}
+	if id == 573 || id == 577 {
+		// Various equippable profession items
+		return false
+	}
+	if id == 870 {
+		// Ammo
+		return false
+	}
+	if id == 2016 {
+		// Various offhand fish
+		return false
+	}
+	if len(allOwned) == 0 {
+		Init(true)
 	}
 	return !allOwned[id]
 }
 
 // flaky item IDs; WoW says I own the transmogs, but this app says I don't
 var flaky = map[int64]bool{
-	// I don't think these have appearances
-	itemCache.Search("15 Pound Salmon").Id():               true,
-	itemCache.Search("18 Pound Salmon").Id():               true,
-	itemCache.Search("22 Pound Salmon").Id():               true,
-	itemCache.Search("25 Pound Salmon").Id():               true,
-	itemCache.Search("29 Pound Salmon").Id():               true,
-	itemCache.Search("17 Pound Catfish").Id():              true,
-	itemCache.Search("19 Pound Catfish").Id():              true,
-	itemCache.Search("22 Pound Catfish").Id():              true,
-	itemCache.Search("26 Pound Catfish").Id():              true,
-	itemCache.Search("32 Pound Catfish").Id():              true,
-	itemCache.Search("70 Pound Mightfish").Id():            true,
-	itemCache.Search("85 Pound Mightfish").Id():            true,
-	itemCache.Search("92 Pound Mightfish").Id():            true,
-	itemCache.Search("Accurate Slugs").Id():                true,
-	itemCache.Search("Arclight Spanner").Id():              true,
-	itemCache.Search("Blacksmith Hammer").Id():             true,
-	itemCache.Search("Bright Linen Enchanting Hat").Id():   true,
-	itemCache.Search("Brumdysla, Hammer of Vrorsk").Id():   true,
-	itemCache.Search("Crafted Light Shot").Id():            true,
-	itemCache.Search("Crafted Heavy Shot").Id():            true,
-	itemCache.Search("Crafted Solid Shot").Id():            true,
-	itemCache.Search("Exploding Shot").Id():                true,
-	itemCache.Search("Flash Pellet").Id():                  true,
-	itemCache.Search("Heavy Shot").Id():                    true,
-	itemCache.Search("Hi-Impact Mithril Slugs").Id():       true,
-	itemCache.Search("Huge Spotted Feltail").Id():          true,
-	itemCache.Search("Light Shot").Id():                    true,
-	itemCache.Search("Mammoth Cutters").Id():               true,
-	itemCache.Search("Rockshard Pellets").Id():             true,
-	itemCache.Search("Shatter Rounds").Id():                true,
-	itemCache.Search("Silvermoon Focusing Shard").Id():     true,
-	itemCache.Search("Sin'dorei Enchanter's Crystal").Id(): true,
-	itemCache.Search("Solid Shot").Id():                    true,
-	itemCache.Search("Thorium Shells").Id():                true,
-	itemCache.Search("Tinker's Handguard").Id():            true,
-
 	// Need these, but almost never available -- part of an appearance set
-	itemCache.Search("Aristocrat's Winter Drape").Id():   true,
-	itemCache.Search("Bloody Experimenter's Wraps").Id(): true,
-	itemCache.Search("Cord of Zandalari Resolve").Id():   true,
-	itemCache.Search("Fashionable Autumn Cloak").Id():    true,
-	itemCache.Search("Mana-Cord of Deception").Id():      true,
-	itemCache.Search("Skyless Coif").Id():                true,
-	itemCache.Search("Skyless Epaulets").Id():            true,
-	itemCache.Search("Vintage Duskwatch Cinch").Id():     true,
+	//itemCache.Search("Aristocrat's Winter Drape").Id():   true,
+	//itemCache.Search("Bloody Experimenter's Wraps").Id(): true,
+	//itemCache.Search("Cord of Zandalari Resolve").Id():   true,
+	//itemCache.Search("Fashionable Autumn Cloak").Id():    true,
+	//itemCache.Search("Mana-Cord of Deception").Id():      true,
+	//itemCache.Search("Skyless Coif").Id():                true,
+	//itemCache.Search("Skyless Epaulets").Id():            true,
+	//itemCache.Search("Vintage Duskwatch Cinch").Id():     true,
 
 	// Need these, but almost never available -- NOT part of an appearance set
-	itemCache.Search("Anthemic Shoulders").Id():    true,
-	itemCache.Search("Choral Handwraps").Id():      true,
-	itemCache.Search("Choral Leggings").Id():       true,
-	itemCache.Search("Choral Slippers").Id():       true,
-	itemCache.Search("Choral Wraps").Id():          true,
-	itemCache.Search("Harmonium Breastplate").Id(): true,
-	itemCache.Search("Harmonium Gauntlets").Id():   true,
-	itemCache.Search("Harmonium Girdle").Id():      true,
-	itemCache.Search("Protective Gloves").Id():     true,
-	itemCache.Search("Staccato Belt").Id():         true,
-	itemCache.Search("Staccato Cuffs").Id():        true,
-	itemCache.Search("Staccato Grips").Id():        true,
+	//itemCache.Search("Anthemic Shoulders").Id():    true,
+	//itemCache.Search("Choral Handwraps").Id():      true,
+	//itemCache.Search("Choral Leggings").Id():       true,
+	//itemCache.Search("Choral Slippers").Id():       true,
+	//itemCache.Search("Choral Wraps").Id():          true,
+	//itemCache.Search("Harmonium Breastplate").Id(): true,
+	//itemCache.Search("Harmonium Gauntlets").Id():   true,
+	//itemCache.Search("Harmonium Girdle").Id():      true,
+	//itemCache.Search("Protective Gloves").Id():     true,
+	//itemCache.Search("Round Buckler").Id():         true,
+	//itemCache.Search("Staccato Belt").Id():         true,
+	//itemCache.Search("Staccato Cuffs").Id():        true,
+	//itemCache.Search("Staccato Grips").Id():        true,
 
 	//itemCache.Search("").Id():                  true,
 	//itemCache.Search("").Id():                  true,
 }
 
-// NeedItem returns true if I need any of the transmogs this item provides
-func NeedItem(i item.Item) bool {
-	if flaky[i.Id()] {
-		return false
-	}
-
-	for _, id := range i.Appearances() {
-		if NeedId(id) {
+// NeedAppearance returns true if I need any of these appearance IDs
+func NeedAppearance(appearances []int64) bool {
+	for _, appearance := range appearances {
+		if NeedId(appearance) {
 			return true
 		}
 	}
 	return false
 }
 
-// InAppearanceSet returns true if this item is in an appearance set
-func InAppearanceSet(i item.Item) bool {
+// InAppearanceSet returns true if any of these appearance IDs are in an appearance set
+func InAppearanceSet(appearances []int64) bool {
 	if len(allSetIds) == 0 {
 		Init(true)
 	}
-	for _, id := range i.Appearances() {
-		if allSetIds[id] {
+	for _, appearance := range appearances {
+		if allSetIds[appearance] {
 			return true
 		}
 	}
