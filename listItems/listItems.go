@@ -35,7 +35,7 @@ func refreshCache() {
 
 	for _, i := range itemCache.Items() {
 		if i.Stale(maxAge) {
-			wowAPI.LookupItem(i.Id(), maxAge)
+			itemCache.LookupItem(i.Id(), maxAge)
 			refreshCount++
 		}
 		if refreshCount >= maxRefreshCount {
@@ -95,7 +95,7 @@ func main() {
 		itemCache.DisableRead()
 	}
 
-	i, ok := wowAPI.LookupItem(*itemId, 0)
+	i, ok := itemCache.LookupItem(*itemId, 0)
 	if !ok {
 		log.Fatal("Failed to LookupItem: ", *itemId)
 	}

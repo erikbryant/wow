@@ -16,17 +16,18 @@ var (
 	allSetIds           = map[int64]bool{}
 )
 
-func Init(oauthAvailable bool) {
-	if !oauthAvailable {
+func Init(includeOwned bool) {
+	gob.Register(map[string]interface{}{})
+	gob.Register([]interface{}{})
+	load()
+	fmt.Printf("-- #Appearance set cache: %d\n", len(allSetIds))
+
+	if !includeOwned {
 		return
 	}
 
 	allOwned = owned()
 	fmt.Printf("-- #Transmogs: %d/%d\n", len(allOwned), 44344)
-	gob.Register(map[string]interface{}{})
-	gob.Register([]interface{}{})
-	load()
-	fmt.Printf("-- #Appearance set cache: %d\n", len(allSetIds))
 }
 
 // load loads the disk cache file into memory
@@ -165,7 +166,7 @@ func NeedAppearance(appearances []int64) bool {
 // InAppearanceSet returns true if any of these appearance IDs are in an appearance set
 func InAppearanceSet(appearances []int64) bool {
 	if len(allSetIds) == 0 {
-		Init(true)
+		Init(false)
 	}
 	for _, appearance := range appearances {
 		if allSetIds[appearance] {

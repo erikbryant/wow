@@ -172,7 +172,7 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for itemId, itemAuctions := range auctions {
-		i, ok := wowAPI.LookupItem(itemId, 0)
+		i, ok := itemCache.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}
@@ -309,7 +309,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 	totalProfit := int64(0)
 
 	for itemId, itemAuctions := range auctions {
-		i, ok := wowAPI.LookupItem(itemId, 0)
+		i, ok := itemCache.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}
@@ -367,7 +367,7 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for itemId, itemAuctions := range auctions {
-		i, ok := wowAPI.LookupItem(itemId, 0)
+		i, ok := itemCache.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}
@@ -413,7 +413,7 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 	needed := map[string]bool{}
 
 	for itemId, itemAuctions := range auctions {
-		i, ok := wowAPI.LookupItem(itemId, 0)
+		i, ok := itemCache.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}

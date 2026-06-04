@@ -8,12 +8,9 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/erikbryant/aes"
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/item"
-	"github.com/erikbryant/wow/itemCache"
 	"github.com/erikbryant/wow/oauth2"
 )
 
@@ -429,8 +426,8 @@ func Commodities() ([]interface{}, bool) {
 	return requestKey(url, accessToken, "auctions", "Commodities")
 }
 
-// wowItem retrieves a single item from the WoW web API
-func wowItem(id string) (map[string]interface{}, bool) {
+// WowItem retrieves a single item from the WoW web API
+func WowItem(id string) (map[string]interface{}, bool) {
 	url := "https://us.api.blizzard.com/data/wow/item/" + id + "?namespace=static-us&locale=en_US"
 	r, ok := request(url, accessToken, "Auctions")
 	if !ok {
@@ -449,28 +446,6 @@ func wowItem(id string) (map[string]interface{}, bool) {
 	}
 
 	return response, true
-}
-
-// LookupItem retrieves the data for a single item. It retrieves from the cache if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
-func LookupItem(id int64, age time.Duration) (item.Item, bool) {
-	// Use the cached value if exists and not stale
-	i, ok := itemCache.Read(id)
-	if ok {
-		// A cache hit, but is the cache stale?
-		if !i.Stale(age) {
-			return i, true
-		}
-		fmt.Println("Refreshing stale item:", i.Format())
-	}
-
-	result, ok := wowItem(web.ToString(id))
-	if !ok {
-		return item.Item{}, false
-	}
-	i = item.NewItem(result)
-	itemCache.Write(i.Id(), i)
-
-	return i, true
 }
 
 // Pets returns a list of all battle pets in the game

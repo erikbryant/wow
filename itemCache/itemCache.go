@@ -7,8 +7,11 @@ import (
 	"os"
 	"sort"
 	"sync"
+	"time"
 
+	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/item"
+	"github.com/erikbryant/wow/wowAPI"
 )
 
 var (
@@ -135,6 +138,28 @@ func DisableRead() {
 
 func EnableRead() {
 	readDisabled = false
+}
+
+// LookupItem retrieves the data for a single item. It retrieves from the cache if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
+func LookupItem(id int64, age time.Duration) (item.Item, bool) {
+	// Use the cached value if exists and not stale
+	i, ok := Read(id)
+	if ok {
+		// A cache hit, but is the cache stale?
+		if !i.Stale(age) {
+			return i, true
+		}
+		fmt.Println("Refreshing stale item:", i.Format())
+	}
+
+	result, ok := wowAPI.WowItem(web.ToString(id))
+	if !ok {
+		return item.Item{}, false
+	}
+	i = item.NewItem(result)
+	Write(i.Id(), i)
+
+	return i, true
 }
 
 func luaVendorPrice() (string, []string) {

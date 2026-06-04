@@ -7,6 +7,7 @@ import (
 
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/common"
+	"github.com/erikbryant/wow/transmog"
 )
 
 // Item holds values about a WoW item
@@ -240,6 +241,10 @@ func (i Item) Appearances() []int64 {
 	return appearanceIds
 }
 
+func (i Item) AppearanceSet() bool {
+	return transmog.InAppearanceSet(i.Appearances())
+}
+
 // Format returns a formatted string representing the item
 func (i Item) Format() string {
 	equippable := "!E"
@@ -250,5 +255,9 @@ func (i Item) Format() string {
 	if i.Stackable() {
 		stackable = " S"
 	}
-	return fmt.Sprintf("%7d  %s %s %11s   %3d   %-18s   %-8s   %s   %s", i.Id(), equippable, stackable, common.Gold(i.SellPriceAdvertised()), i.ItemLevel(), i.ItemClassName(), i.Quality(), i.Updated().Format("2006-01-02"), i.Name())
+	appearanceSet := "!AS"
+	if i.AppearanceSet() {
+		appearanceSet = " AS"
+	}
+	return fmt.Sprintf("%7d  %s %s %s %11s   %3d   %-18s   %-8s   %s   %s", i.Id(), equippable, stackable, appearanceSet, common.Gold(i.SellPriceAdvertised()), i.ItemLevel(), i.ItemClassName(), i.Quality(), i.Updated().Format("2006-01-02"), i.Name())
 }
