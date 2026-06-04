@@ -422,10 +422,6 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 				continue
 			}
 
-			if !transmog.NeedAppearance(i.Appearances()) {
-				continue
-			}
-
 			maxPrice := common.Coins(20, 0, 0)
 			appearanceSetSuffix := ""
 			if transmog.InAppearanceSet(i.Appearances()) {
@@ -434,6 +430,10 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 			}
 
 			if auc.Buyout > maxPrice {
+				continue
+			}
+
+			if !transmog.NeedAppearance(i.Appearances()) {
 				continue
 			}
 
