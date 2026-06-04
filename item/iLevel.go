@@ -20,6 +20,7 @@ var itemLevels = map[int64][]int64{
 	244627: {180, 186, 192, 199, 206}, // Apprentice Smith's Apron
 	244629: {180, 186, 192, 199, 206}, // Apprentice Jeweler's Apron
 	245775: {180, 186, 192, 199, 206}, // Hobbyist Scribe's Quill
+	245777: {180, 186, 192, 199, 206}, // Hobbyist Alchemist's Mixing Rod
 
 	// iLvl 80 oddities
 	240955: {180, 183, 186, 189, 193}, // Silvermoon Loupes
@@ -32,6 +33,9 @@ var itemLevels = map[int64][]int64{
 	240960: {212, 218, 225, 232},      // Sin'dorei Enchanter's Crystal
 	244718: {206, 212, 218, 225, 232}, // Turbo-Junker's Multitool v1
 	245776: {206, 212, 218, 225, 232}, // Sin'dorei Quill
+
+	// iLvl 106 oddities
+	244616: {180, 186, 192, 199, 206}, // Skinner's Backpack
 
 	// iLvl 317
 	191235: {70, 71, 72, 73, 74}, // Draconium Blacksmith's Toolbox
