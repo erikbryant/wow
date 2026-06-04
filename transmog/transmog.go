@@ -127,58 +127,26 @@ func owned() map[int64]bool {
 	return myTransmogs
 }
 
+// flaky appearance IDs; WoW says I own the transmogs, but this app thinks I don't
+var flaky = map[int64]bool{
+	573:  true, // Various equippable profession items
+	577:  true, // Various equippable profession items
+	870:  true, // Ammo
+	2016: true, // Various fish held in offhand
+}
+
 // NeedId returns true if I need this transmog appearance ID
 func NeedId(id int64) bool {
 	if id <= 0 {
 		return false
 	}
-	if id == 573 || id == 577 {
-		// Various equippable profession items
-		return false
-	}
-	if id == 870 {
-		// Ammo
-		return false
-	}
-	if id == 2016 {
-		// Various offhand fish
+	if flaky[id] {
 		return false
 	}
 	if len(allOwned) == 0 {
 		Init(true)
 	}
 	return !allOwned[id]
-}
-
-// flaky item IDs; WoW says I own the transmogs, but this app says I don't
-var flaky = map[int64]bool{
-	// Need these, but almost never available -- part of an appearance set
-	//itemCache.Search("Aristocrat's Winter Drape").Id():   true,
-	//itemCache.Search("Bloody Experimenter's Wraps").Id(): true,
-	//itemCache.Search("Cord of Zandalari Resolve").Id():   true,
-	//itemCache.Search("Fashionable Autumn Cloak").Id():    true,
-	//itemCache.Search("Mana-Cord of Deception").Id():      true,
-	//itemCache.Search("Skyless Coif").Id():                true,
-	//itemCache.Search("Skyless Epaulets").Id():            true,
-	//itemCache.Search("Vintage Duskwatch Cinch").Id():     true,
-
-	// Need these, but almost never available -- NOT part of an appearance set
-	//itemCache.Search("Anthemic Shoulders").Id():    true,
-	//itemCache.Search("Choral Handwraps").Id():      true,
-	//itemCache.Search("Choral Leggings").Id():       true,
-	//itemCache.Search("Choral Slippers").Id():       true,
-	//itemCache.Search("Choral Wraps").Id():          true,
-	//itemCache.Search("Harmonium Breastplate").Id(): true,
-	//itemCache.Search("Harmonium Gauntlets").Id():   true,
-	//itemCache.Search("Harmonium Girdle").Id():      true,
-	//itemCache.Search("Protective Gloves").Id():     true,
-	//itemCache.Search("Round Buckler").Id():         true,
-	//itemCache.Search("Staccato Belt").Id():         true,
-	//itemCache.Search("Staccato Cuffs").Id():        true,
-	//itemCache.Search("Staccato Grips").Id():        true,
-
-	//itemCache.Search("").Id():                  true,
-	//itemCache.Search("").Id():                  true,
 }
 
 // NeedAppearance returns true if I need any of these appearance IDs
