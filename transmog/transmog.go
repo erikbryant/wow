@@ -129,10 +129,13 @@ func owned() map[int64]bool {
 
 // flaky appearance IDs; WoW says I own the transmogs, but this app thinks I don't
 var flaky = map[int64]bool{
-	573:  true, // Various equippable profession items
-	577:  true, // Various equippable profession items
-	870:  true, // Ammo
-	2016: true, // Various fish held in offhand
+	573:   true, // Various equippable profession items
+	577:   true, // Various equippable profession items
+	870:   true, // Ammo
+	2016:  true, // Various fish held in offhand
+	31863: true, // Vintage Duskwatch Cinch
+	31934: true, // Mana-Cord of Deception
+	38409: true, // Crushproof Vambraces
 }
 
 // NeedId returns true if I need this transmog appearance ID
