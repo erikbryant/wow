@@ -43,9 +43,11 @@ var usefulGoods = map[int64]int64{
 	// Gun appearances
 	itemCache.Search("Ameelton's Shot-Thrower").Id(): common.Coins(2000, 0, 0),
 	itemCache.Search("Kickback 5000").Id():           common.Coins(2000, 0, 0),
+
+	itemCache.Search("Gem Studded Bracelets").Id(): common.Coins(500, 0, 0),
 }
 
-var usefulRecipesMaxPrice = common.Coins(20, 0, 0)
+var usefulRecipesMaxPrice = common.Coins(10, 0, 0)
 
 var usefulRecipes = map[int64]struct{}{
 	// Outland cooking
@@ -58,6 +60,7 @@ var usefulRecipes = map[int64]struct{}{
 	//itemCache.Search("Recipe: Poached Bluefish").Id():    {}, // 20
 	//itemCache.Search("Recipe: Golden Fish Sticks").Id():  {}, // 25
 	//itemCache.Search("Recipe: Roasted Clefthoof").Id():   {}, // 25
+	//itemCache.Search("Recipe: Talbuk Steak").Id():        {}, // 25
 	//itemCache.Search("Recipe: Warp Burger").Id():         {}, // 25
 	//itemCache.Search("Recipe: Spicy Crawdad").Id():       {}, // 50
 
@@ -96,15 +99,15 @@ var usefulRecipes = map[int64]struct{}{
 	//itemCache.Search("Recipe: Gingerbread Cookie").Id():           {}, // 1
 	//itemCache.Search("Recipe: Lemon Herb Filet").Id():             {}, // 1
 	//itemCache.Search("Recipe: Lynx Steak").Id():                   {}, // 1
-	//itemCache.Search("Recipe: Roasted Moongraze Tenderloin").Id(): {}, // 1
+	itemCache.Search("Recipe: Roasted Moongraze Tenderloin").Id(): {}, // 1 Aegwynn
 	//itemCache.Search("Recipe: Slitherskin Mackerel").Id():         {}, // 1
 	//itemCache.Search("Recipe: Scorpid Surprise").Id():             {}, // 20
 	//itemCache.Search("Recipe: Roasted Kodo Meat").Id():            {}, // 35
 	//itemCache.Search("Recipe: Smoked Bear Meat").Id():             {}, // 40
+	//itemCache.Search("Recipe: Bat Bites").Id():                    {}, // 50
 	//itemCache.Search("Recipe: Loch Frenzy Delight").Id():          {}, // 50
 	//itemCache.Search("Recipe: Longjaw Mud Snapper").Id():          {}, // 50
 	//itemCache.Search("Recipe: Rainbow Fin Albacore").Id():         {}, // 50
-	//itemCache.Search("Recipe: Bat Bites").Id():                    {}, // 50
 	//itemCache.Search("Recipe: Strider Stew").Id():                 {}, // 50
 	//itemCache.Search("Recipe: Crunchy Spider Surprise").Id():      {}, // 60
 	//itemCache.Search("Recipe: Thistle Tea").Id():                  {}, // 60
@@ -113,9 +116,11 @@ var usefulRecipes = map[int64]struct{}{
 	//itemCache.Search("Recipe: Clam Chowder").Id():                 {}, // 90
 	//itemCache.Search("Recipe: Bristle Whisker Catfish").Id():      {}, // 100
 	//itemCache.Search("Recipe: Crispy Lizard Tail").Id():           {}, // 100
+	itemCache.Search("Recipe: Lean Venison").Id(): {}, // 110 Aegwynn
 	//itemCache.Search("Recipe: Hot Lion Chops").Id():               {}, // 125
+	itemCache.Search("Recipe: Lean Wolf Steak").Id(): {}, // 125 Aegwynn
 	//itemCache.Search("Recipe: Heavy Crocolisk Stew").Id():         {}, // 150
-	//itemCache.Search("Recipe: Goldthorn Tea").Id():                {}, // 160
+	itemCache.Search("Recipe: Goldthorn Tea").Id(): {}, // 160 Aegwynn
 	//itemCache.Search("Recipe: Carrion Surprise").Id():             {}, // 175
 	//itemCache.Search("Recipe: Giant Clam Scorcho").Id():           {}, // 175
 	//itemCache.Search("Recipe: Hot Wolf Ribs").Id():                {}, // 175
@@ -142,25 +147,12 @@ var usefulRecipes = map[int64]struct{}{
 // skipToys are toys I am not interested in
 var skipToys = map[int64]bool{
 	// Only usable by engineers
-	//itemCache.Search("Dimensional Ripper - Area 52").Id():     true,
-	//itemCache.Search("Dimensional Ripper - Everlook").Id():    true,
-	//itemCache.Search("Flying Machine").Id():                   true,
-	itemCache.Search("Snowmaster 9000").Id(): true,
-	//itemCache.Search("Turbo-Charged Flying Machine").Id():     true,
-	itemCache.Search("Wormhole Generator: Argus").Id():        true,
-	itemCache.Search("Wyrmhole Generator: Dragon Isles").Id(): true,
-	itemCache.Search("Wormhole Generator: Khaz Algar").Id():   true,
-	itemCache.Search("Wormhole Generator: Pandaria").Id():     true,
-	itemCache.Search("Wormhole Generator: Shadowlands").Id():  true,
-
-	// I am not interested in these
-	//itemCache.Search("Artisan's Sign").Id():         true,
-	//itemCache.Search("Cold Cushion").Id():           true,
-	//itemCache.Search("Cushion of Time Travel").Id(): true,
-	//itemCache.Search("Giggle Goggles").Id():         true,
-	//itemCache.Search("Leather Pet Bed").Id():        true,
-	//itemCache.Search("Leather Pet Leash").Id():      true,
-	//itemCache.Search("Safari Lounge Cushion").Id():  true,
+	//itemCache.Search("Snowmaster 9000").Id():                  true,
+	//itemCache.Search("Wormhole Generator: Argus").Id():        true,
+	//itemCache.Search("Wyrmhole Generator: Dragon Isles").Id(): true,
+	//itemCache.Search("Wormhole Generator: Khaz Algar").Id():   true,
+	//itemCache.Search("Wormhole Generator: Pandaria").Id():     true,
+	//itemCache.Search("Wormhole Generator: Shadowlands").Id():  true,
 }
 
 // findPetSpellNeeded returns pet spells for sale that I do not own
