@@ -130,13 +130,45 @@ func owned() map[int64]bool {
 
 // flaky appearance IDs; WoW says I own the transmogs, but this app thinks I don't
 var flaky = map[int64]bool{
-	573:   true, // Various equippable profession items
-	577:   true, // Various equippable profession items
-	870:   true, // Ammo
-	2016:  true, // Various fish held in offhand
+	// These are not real appearances
+	573:  true, // Various equippable profession items
+	577:  true, // Various equippable profession items
+	870:  true, // Ammo
+	2016: true, // Various fish held in offhand
+
+	// NOT part of an appearance set
+	5133: true, // Round Buckler
+
+	// Part of an appearance set, but rarely available
+	18561: true, // Fists of Lightning
+	18575: true, // Nightfire Robe
+	18715: true, // Greyshadow Gloves
+	24098: true, // {Brilliant, Nimble, Powerful} Hexweave Cloak
+	24178: true, // {Brilliant, Nimble, Powerful} Burnished Cloak
+	24180: true, // {Brilliant, Nimble, Powerful} Burnished Cloak
+	26016: true, // Cursed Demonchain Belt
+	26033: true, // Cursed Demonchain Belt
 	31863: true, // Vintage Duskwatch Cinch
 	31934: true, // Mana-Cord of Deception
+	32237: true, // Aristocrat's Winter Drape
+	33423: true, // Treads of Panicked Escape
+	33439: true, // Treads of Panicked Escape
+	33497: true, // Treads of Violent Intrusion
+	33522: true, // Acolyte's Abandoned Footwraps
+	33538: true, // Acolyte's Abandoned Footwraps
+	33716: true, // Moon-Wrought Clasp
+	34314: true, // Pristine Moon-Wrought Clasp
+	34558: true, // Cuffs of the Viridian Flameweavers
+	38275: true, // Reinforced Test Subject Shackles
+	38291: true, // Reinforced Test Subject Shackles
+	38325: true, // Antiseptic Specimen Handlers
 	38409: true, // Crushproof Vambraces
+	38830: true, // Cord of Zandalari Resolve
+	38831: true, // Slippers of the Encroaching Tide
+	39969: true, // Gauntlets of Crashing Tides
+	39976: true, // Gauntlets of Crashing Tides
+	39987: true, // Gauntlets of Crashing Tides
+	80187: true, // Skyless Coif
 }
 
 // NeedId returns true if I need this transmog appearance ID
@@ -149,6 +181,9 @@ func NeedId(id int64) bool {
 	}
 	if len(allOwned) == 0 {
 		Init(true)
+	}
+	if !allOwned[id] {
+		fmt.Println("NEED APPEARANCE ID: ", id)
 	}
 	return !allOwned[id]
 }
