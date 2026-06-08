@@ -134,6 +134,7 @@ var flaky = map[int64]bool{
 	573:  true, // Various equippable profession items
 	577:  true, // Various equippable profession items
 	870:  true, // Ammo
+	1884: true, // Various fish held in offhand
 	2016: true, // Various fish held in offhand
 	2019: true, // Various fish held in offhand
 
@@ -152,6 +153,7 @@ var flaky = map[int64]bool{
 	56865: true, // Staccato Cuffs
 	56866: true, // Staccato Grips
 	57175: true, // Antecedent Drape
+	57225: true, // Anthemic Shoulders
 	57227: true, // Anthemic Links
 	57230: true, // Anthemic Bracers
 	57231: true, // Anthemic Gauntlets
@@ -167,12 +169,12 @@ var flaky = map[int64]bool{
 	24098: true, // {Brilliant, Nimble, Powerful} Hexweave Cloak
 	24178: true, // {Brilliant, Nimble, Powerful} Burnished Cloak
 	24180: true, // {Brilliant, Nimble, Powerful} Burnished Cloak
-	26016: true, // Cursed Demonchain Belt
-	26033: true, // Cursed Demonchain Belt
 	31863: true, // Vintage Duskwatch Cinch
 	31934: true, // Mana-Cord of Deception
 	32066: true, // Fashionable Autumn Cloak
 	32237: true, // Aristocrat's Winter Drape
+	33357: true, // Sash of the Unredeemed
+	33365: true, // Sash of the Unredeemed
 	33423: true, // Treads of Panicked Escape
 	33439: true, // Treads of Panicked Escape
 	33497: true, // Treads of Violent Intrusion
@@ -188,10 +190,11 @@ var flaky = map[int64]bool{
 	38325: true, // Antiseptic Specimen Handlers
 	38409: true, // Crushproof Vambraces
 	38830: true, // Cord of Zandalari Resolve
-	38831: true, // Slippers of the Encroaching Tide
 	39969: true, // Gauntlets of Crashing Tides
 	39976: true, // Gauntlets of Crashing Tides
 	39987: true, // Gauntlets of Crashing Tides
+	40967: true, // Gauntlets of Nightmare Manifest
+	40970: true, // Gauntlets of Nightmare Manifest
 	57228: true, // Anthemic Legguards
 	80187: true, // Skyless Coif
 	80188: true, // Skyless Epaulets
