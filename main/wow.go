@@ -53,7 +53,7 @@ var usefulRecipes = map[int64]struct{}{
 	// Outland cooking
 	//itemCache.Search("Recipe: Blackened Trout").Id():     {}, // 1
 	//itemCache.Search("Recipe: Buzzard Bites").Id():       {}, // 1
-	//itemCache.Search("Recipe: Clam Bar").Id():            {}, // 1
+	itemCache.Search("Recipe: Clam Bar").Id(): {}, // 1 Akama
 	//itemCache.Search("Recipe: Blackened Sporefish").Id(): {}, // 10
 	//itemCache.Search("Recipe: Blackened Basilisk").Id():  {}, // 15
 	//itemCache.Search("Recipe: Grilled Mudfish").Id():     {}, // 20
@@ -95,7 +95,7 @@ var usefulRecipes = map[int64]struct{}{
 	// Classic cooking
 	//itemCache.Search("Recipe: Brilliant Smallfish").Id():          {}, // 1
 	//itemCache.Search("Recipe: Crispy Bat Wing").Id():              {}, // 1
-	itemCache.Search("Recipe: Extra Lemony Herb Filet").Id(): {}, // 1 Aegwynn
+	itemCache.Search("Recipe: Extra Lemony Herb Filet").Id(): {}, // 1 Aegwynn Alleria
 	//itemCache.Search("Recipe: Gingerbread Cookie").Id():           {}, // 1
 	//itemCache.Search("Recipe: Lemon Herb Filet").Id():             {}, // 1
 	//itemCache.Search("Recipe: Lynx Steak").Id():                   {}, // 1
@@ -118,9 +118,9 @@ var usefulRecipes = map[int64]struct{}{
 	//itemCache.Search("Recipe: Crispy Lizard Tail").Id():           {}, // 100
 	itemCache.Search("Recipe: Lean Venison").Id(): {}, // 110 Aegwynn
 	//itemCache.Search("Recipe: Hot Lion Chops").Id():               {}, // 125
-	itemCache.Search("Recipe: Lean Wolf Steak").Id(): {}, // 125 Aegwynn
-	//itemCache.Search("Recipe: Heavy Crocolisk Stew").Id():         {}, // 150
-	itemCache.Search("Recipe: Goldthorn Tea").Id(): {}, // 160 Aegwynn
+	itemCache.Search("Recipe: Lean Wolf Steak").Id():      {}, // 125 Aegwynn
+	itemCache.Search("Recipe: Heavy Crocolisk Stew").Id(): {}, // 150 Akama
+	itemCache.Search("Recipe: Goldthorn Tea").Id():        {}, // 160 Aegwynn
 	//itemCache.Search("Recipe: Carrion Surprise").Id():             {}, // 175
 	//itemCache.Search("Recipe: Giant Clam Scorcho").Id():           {}, // 175
 	//itemCache.Search("Recipe: Hot Wolf Ribs").Id():                {}, // 175
