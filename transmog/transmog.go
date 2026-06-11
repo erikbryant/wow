@@ -152,6 +152,7 @@ var flaky = map[int64]bool{
 	56862: true, // Staccato Belt
 	56865: true, // Staccato Cuffs
 	56866: true, // Staccato Grips
+	57173: true, // Harmonium Vambrace
 	57175: true, // Antecedent Drape
 	57225: true, // Anthemic Shoulders
 	57227: true, // Anthemic Links
@@ -166,9 +167,10 @@ var flaky = map[int64]bool{
 	22906: true, // Hexweave Bracers
 	22915: true, // Hexweave Bracers
 	23247: true, // Truesteel Armguards
-	24098: true, // {Brilliant, Nimble, Powerful} Hexweave Cloak
+	//24098: true, // {Brilliant, Nimble, Powerful} Hexweave Cloak
 	24178: true, // {Brilliant, Nimble, Powerful} Burnished Cloak
 	24180: true, // {Brilliant, Nimble, Powerful} Burnished Cloak
+	26016: true, // Cursed Demonchain Belt
 	31863: true, // Vintage Duskwatch Cinch
 	31934: true, // Mana-Cord of Deception
 	32066: true, // Fashionable Autumn Cloak
@@ -193,11 +195,18 @@ var flaky = map[int64]bool{
 	39969: true, // Gauntlets of Crashing Tides
 	39976: true, // Gauntlets of Crashing Tides
 	39987: true, // Gauntlets of Crashing Tides
+	40811: true, // Belt of Concealed Intent
+	40813: true, // Belt of Concealed Intent
 	40967: true, // Gauntlets of Nightmare Manifest
 	40970: true, // Gauntlets of Nightmare Manifest
 	57228: true, // Anthemic Legguards
 	80187: true, // Skyless Coif
 	80188: true, // Skyless Epaulets
+
+	//43838: true, // Supple Supplicant's Gloves
+	//44001: true, // Supple Supplicant's Gloves
+	//44023: true, // Supple Supplicant's Gloves
+	//44034: true, // Supple Supplicant's Gloves
 }
 
 // NeedId returns true if I need this transmog appearance ID
