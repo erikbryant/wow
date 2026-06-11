@@ -49,6 +49,7 @@ var itemLevels = map[int64][]int64{
 	193486: {70, 71, 72, 73, 74}, // Resilient Smock
 	193487: {71, 72, 73, 74},     // Alchemist's Hat
 	193612: {71, 72, 73, 74},     // Smithing Apron
+	193541: {70, 71, 72, 73, 74}, // Wildercloth Tailor's Coat
 
 	// iLvl 317 oddities
 	224114: {79, 85, 91, 98, 105}, // Runed Bismuth Rod
