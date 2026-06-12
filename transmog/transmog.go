@@ -149,6 +149,7 @@ var flaky = map[int64]bool{
 	56703: true, // Choral Vestments
 	56705: true, // Choral Leggings
 	56707: true, // Choral Wraps
+	56859: true, // Staccato Helm
 	56862: true, // Staccato Belt
 	56865: true, // Staccato Cuffs
 	56866: true, // Staccato Grips
@@ -202,11 +203,6 @@ var flaky = map[int64]bool{
 	57228: true, // Anthemic Legguards
 	80187: true, // Skyless Coif
 	80188: true, // Skyless Epaulets
-
-	//43838: true, // Supple Supplicant's Gloves
-	//44001: true, // Supple Supplicant's Gloves
-	//44023: true, // Supple Supplicant's Gloves
-	//44034: true, // Supple Supplicant's Gloves
 }
 
 // NeedId returns true if I need this transmog appearance ID
