@@ -30,7 +30,7 @@ var itemLevels = map[int64][]int64{
 	237952: {206, 212, 218, 225, 232}, // Sun-Blessed Blacksmith's Toolbox
 	238018: {206, 212, 218, 225, 232}, // Sun-Blessed Blacksmith's Hammer
 	240959: {206, 212, 218, 225, 232}, // Sin'dorei Jeweler's Loupes
-	240960: {212, 218, 225, 232},      // Sin'dorei Enchanter's Crystal
+	240960: {206, 212, 218, 225, 232}, // Sin'dorei Enchanter's Crystal
 	244628: {206, 212, 218, 225, 232}, // Sin'dorei Forgemaster's Cover
 	244718: {206, 212, 218, 225, 232}, // Turbo-Junker's Multitool v1
 	245776: {206, 212, 218, 225, 232}, // Sin'dorei Quill
@@ -51,6 +51,7 @@ var itemLevels = map[int64][]int64{
 	193487: {71, 72, 73, 74},     // Alchemist's Hat
 	193612: {71, 72, 73, 74},     // Smithing Apron
 	193541: {70, 71, 72, 73, 74}, // Wildercloth Tailor's Coat
+	198715: {70, 71, 72, 73, 74}, // Runed Draconium Rod
 
 	// iLvl 317 oddities
 	224114: {79, 85, 91, 98, 105}, // Runed Bismuth Rod
