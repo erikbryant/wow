@@ -170,7 +170,6 @@ var flaky = map[int64]bool{
 	22906: true, // Hexweave Bracers
 	22915: true, // Hexweave Bracers
 	23247: true, // Truesteel Armguards
-	//24098: true, // {Brilliant, Nimble, Powerful} Hexweave Cloak
 	24178: true, // {Brilliant, Nimble, Powerful} Burnished Cloak
 	24180: true, // {Brilliant, Nimble, Powerful} Burnished Cloak
 	26016: true, // Cursed Demonchain Belt
