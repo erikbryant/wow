@@ -150,10 +150,12 @@ var flaky = map[int64]bool{
 	56705: true, // Choral Leggings
 	56707: true, // Choral Wraps
 	56859: true, // Staccato Helm
+	56861: true, // Staccato Vest
 	56862: true, // Staccato Belt
 	56865: true, // Staccato Cuffs
 	56866: true, // Staccato Grips
 	57173: true, // Harmonium Vambrace
+	57174: true, // Harmonium Gauntlets
 	57175: true, // Antecedent Drape
 	57225: true, // Anthemic Shoulders
 	57227: true, // Anthemic Links
@@ -191,6 +193,7 @@ var flaky = map[int64]bool{
 	38275: true, // Reinforced Test Subject Shackles
 	38291: true, // Reinforced Test Subject Shackles
 	38325: true, // Antiseptic Specimen Handlers
+	38359: true, // Bloody Experimenter's Wraps
 	38409: true, // Crushproof Vambraces
 	38830: true, // Cord of Zandalari Resolve
 	39969: true, // Gauntlets of Crashing Tides
