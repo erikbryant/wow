@@ -161,6 +161,7 @@ var flaky = map[int64]bool{
 	57227: true, // Anthemic Links
 	57230: true, // Anthemic Bracers
 	57231: true, // Anthemic Gauntlets
+	78230: true, // Scepter of Spectacle: Order
 
 	// Part of an appearance set, but rarely available
 	18561: true, // Fists of Lightning
