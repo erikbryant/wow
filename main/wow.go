@@ -41,10 +41,11 @@ var usefulGoods = map[int64]int64{
 	//itemCache.Search("Xiwyllag ATV").Id(): common.Coins(3999, 0, 0),
 
 	// Gun appearances
-	itemCache.Search("Ameelton's Shot-Thrower").Id(): common.Coins(2000, 0, 0),
-	itemCache.Search("Kickback 5000").Id():           common.Coins(2000, 0, 0),
-
-	itemCache.Search("Gem Studded Bracelets").Id(): common.Coins(500, 0, 0),
+	itemCache.Search("Ameelton's Shot-Thrower").Id():     common.Coins(2000, 0, 0),
+	itemCache.Search("Kickback 5000").Id():               common.Coins(2000, 0, 0),
+	itemCache.Search("Extreme-Impact Hole Puncher").Id(): common.Coins(2000, 0, 0),
+	itemCache.Search("Ameelton's Shot-Thrower").Id():     common.Coins(2000, 0, 0),
+	itemCache.Search("Converted Carrot Carbine").Id():    common.Coins(2000, 0, 0),
 }
 
 var usefulRecipesMaxPrice = common.Coins(10, 0, 0)
@@ -53,7 +54,7 @@ var usefulRecipes = map[int64]struct{}{
 	// Outland cooking
 	//itemCache.Search("Recipe: Blackened Trout").Id():     {}, // 1
 	//itemCache.Search("Recipe: Buzzard Bites").Id():       {}, // 1
-	itemCache.Search("Recipe: Clam Bar").Id(): {}, // 1 Akama
+	//itemCache.Search("Recipe: Clam Bar").Id():            {}, // 1
 	//itemCache.Search("Recipe: Blackened Sporefish").Id(): {}, // 10
 	//itemCache.Search("Recipe: Blackened Basilisk").Id():  {}, // 15
 	//itemCache.Search("Recipe: Grilled Mudfish").Id():     {}, // 20
@@ -95,11 +96,11 @@ var usefulRecipes = map[int64]struct{}{
 	// Classic cooking
 	//itemCache.Search("Recipe: Brilliant Smallfish").Id():          {}, // 1
 	//itemCache.Search("Recipe: Crispy Bat Wing").Id():              {}, // 1
-	itemCache.Search("Recipe: Extra Lemony Herb Filet").Id(): {}, // 1 Aegwynn Alleria
+	//itemCache.Search("Recipe: Extra Lemony Herb Filet").Id():      {}, // 1
 	//itemCache.Search("Recipe: Gingerbread Cookie").Id():           {}, // 1
 	//itemCache.Search("Recipe: Lemon Herb Filet").Id():             {}, // 1
 	//itemCache.Search("Recipe: Lynx Steak").Id():                   {}, // 1
-	itemCache.Search("Recipe: Roasted Moongraze Tenderloin").Id(): {}, // 1 Aegwynn
+	//itemCache.Search("Recipe: Roasted Moongraze Tenderloin").Id(): {}, // 1
 	//itemCache.Search("Recipe: Slitherskin Mackerel").Id():         {}, // 1
 	//itemCache.Search("Recipe: Scorpid Surprise").Id():             {}, // 20
 	//itemCache.Search("Recipe: Roasted Kodo Meat").Id():            {}, // 35
@@ -116,11 +117,12 @@ var usefulRecipes = map[int64]struct{}{
 	//itemCache.Search("Recipe: Clam Chowder").Id():                 {}, // 90
 	//itemCache.Search("Recipe: Bristle Whisker Catfish").Id():      {}, // 100
 	//itemCache.Search("Recipe: Crispy Lizard Tail").Id():           {}, // 100
-	itemCache.Search("Recipe: Lean Venison").Id(): {}, // 110 Aegwynn
+	//itemCache.Search("Recipe: Big Bear Steak").Id():               {}, // 110
+	//itemCache.Search("Recipe: Lean Venison").Id():                 {}, // 110
 	//itemCache.Search("Recipe: Hot Lion Chops").Id():               {}, // 125
-	itemCache.Search("Recipe: Lean Wolf Steak").Id():      {}, // 125 Aegwynn
-	itemCache.Search("Recipe: Heavy Crocolisk Stew").Id(): {}, // 150 Akama
-	itemCache.Search("Recipe: Goldthorn Tea").Id():        {}, // 160 Aegwynn
+	//itemCache.Search("Recipe: Lean Wolf Steak").Id():              {}, // 125
+	//itemCache.Search("Recipe: Heavy Crocolisk Stew").Id():         {}, // 150
+	//itemCache.Search("Recipe: Goldthorn Tea").Id():                {}, // 160
 	//itemCache.Search("Recipe: Carrion Surprise").Id():             {}, // 175
 	//itemCache.Search("Recipe: Giant Clam Scorcho").Id():           {}, // 175
 	//itemCache.Search("Recipe: Hot Wolf Ribs").Id():                {}, // 175
@@ -280,7 +282,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Pet.Level < 25 {
 			continue
 		}
-		if petAuction.Buyout > common.Coins(50, 0, 0) {
+		if petAuction.Buyout > common.Coins(100, 0, 0) {
 			continue
 		}
 
