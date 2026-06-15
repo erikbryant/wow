@@ -140,6 +140,8 @@ var flaky = map[int64]bool{
 
 	// NOT part of an appearance set
 	5133:  true, // Round Buckler
+	22392: true, // Shadowtome
+	22547: true, // Shadowtome
 	22902: true, // Hexweave Cowl
 	22905: true, // Hexweave Mantle
 	22911: true, // Hexweave Cowl
@@ -147,13 +149,16 @@ var flaky = map[int64]bool{
 	22939: true, // Steelforged Saber
 	22940: true, // Steelforged Saber
 	56703: true, // Choral Vestments
+	56704: true, // Choral Sash
 	56705: true, // Choral Leggings
 	56707: true, // Choral Wraps
 	56859: true, // Staccato Helm
+	56860: true, // Staccato Mantle
 	56861: true, // Staccato Vest
 	56862: true, // Staccato Belt
 	56865: true, // Staccato Cuffs
 	56866: true, // Staccato Grips
+	57169: true, // Harmonium Breastplate
 	57173: true, // Harmonium Vambrace
 	57174: true, // Harmonium Gauntlets
 	57175: true, // Antecedent Drape
