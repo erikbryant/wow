@@ -21,6 +21,7 @@ var itemLevels = map[int64][]int64{
 	244629: {180, 186, 192, 199, 206}, // Apprentice Jeweler's Apron
 	245775: {180, 186, 192, 199, 206}, // Hobbyist Scribe's Quill
 	245777: {180, 186, 192, 199, 206}, // Hobbyist Alchemist's Mixing Rod
+	238009: {180, 186, 192, 206},      // Thalassian Sickle
 
 	// iLvl 80 oddities
 	240955: {180, 183, 186, 189, 193}, // Silvermoon Loupes
@@ -34,6 +35,7 @@ var itemLevels = map[int64][]int64{
 	244628: {206, 212, 218, 225, 232}, // Sin'dorei Forgemaster's Cover
 	244718: {206, 212, 218, 225, 232}, // Turbo-Junker's Multitool v1
 	245776: {206, 212, 218, 225, 232}, // Sin'dorei Quill
+	245780: {212, 218, 225, 232},      // Sin'dorei Rolling Pin
 
 	// iLvl 106 oddities
 	244616: {180, 186, 192, 199, 206}, // Skinner's Backpack
