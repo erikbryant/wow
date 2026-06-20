@@ -21,7 +21,8 @@ var itemLevels = map[int64][]int64{
 	244629: {180, 186, 192, 199, 206}, // Apprentice Jeweler's Apron
 	245775: {180, 186, 192, 199, 206}, // Hobbyist Scribe's Quill
 	245777: {180, 186, 192, 199, 206}, // Hobbyist Alchemist's Mixing Rod
-	238009: {180, 186, 192, 206},      // Thalassian Sickle
+	238009: {180, 186, 192, 199, 206}, // Thalassian Sickle
+	244717: {180, 186, 192, 199, 206}, // Junker's Multitool
 
 	// iLvl 80 oddities
 	240955: {180, 183, 186, 189, 193}, // Silvermoon Loupes
@@ -64,6 +65,8 @@ var itemLevels = map[int64][]int64{
 	221797: {79, 85, 91, 98, 105}, // Bismuth-Fueled Samophlange
 	222575: {79, 85, 91, 98, 105}, // Hasty Alchemist's Mixing Rod
 	222577: {79, 85, 91, 98, 105}, // Burnt Rolling Pin
+	222573: {79, 85, 91, 98, 105}, // Lightweight Scribe's Quill
+	222483: {79, 85, 91, 98, 105}, // Proficient Needle Set
 
 	// iLvl 486 oddities
 	244709: {180, 186, 192, 199, 206}, // Junker's Junk Visor
