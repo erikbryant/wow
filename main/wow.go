@@ -15,6 +15,7 @@ import (
 	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/itemCache"
+	"github.com/erikbryant/wow/recipes"
 	"github.com/erikbryant/wow/toy"
 	"github.com/erikbryant/wow/transmog"
 	"github.com/erikbryant/wow/wowAPI"
@@ -39,6 +40,11 @@ var usefulGoods = map[int64]int64{
 	//cache.Search("Weavercloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
 
 	//itemCache.Search("Xiwyllag ATV").Id(): common.Coins(3999, 0, 0),
+
+	// Fun weapon transmogs
+	itemCache.Search("Blackfury").Id():                          common.Coins(2000, 0, 0),
+	itemCache.Search("Tyrhold Broadsword").Id():                 common.Coins(2000, 0, 0),
+	itemCache.Search("Scarlet Diamond Staff of Intuition").Id(): common.Coins(2000, 0, 0),
 
 	// Gun appearances
 	itemCache.Search("Ameelton's Shot-Thrower").Id():     common.Coins(2000, 0, 0),
@@ -593,6 +599,8 @@ func main() {
 	if !*oauthAvailable {
 		fmt.Printf("\n*** OAuth unavailable. Some features may be missing.\n")
 	}
+
+	recipes.Needed()
 
 	scanRealms(*realms, *summarize, *petResell)
 
