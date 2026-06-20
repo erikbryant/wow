@@ -570,3 +570,12 @@ func CollectionsTransmogs() (interface{}, bool) {
 	url := "https://us.api.blizzard.com/profile/user/wow/collections/transmogs?namespace=profile-us&locale=en_US"
 	return request(url, profileAccessToken, "CollectionsTransmogs")
 }
+
+// Professions returns the professions this alt knows
+func Professions(realm, alt string) (interface{}, bool) {
+	realm = strings.ToLower(realm)
+	realm = realmToSlug(realm)
+	alt = strings.ToLower(alt)
+	url := "https://us.api.blizzard.com/profile/wow/character/" + realm + "/" + alt + "/professions?namespace=profile-us&locale=en_US"
+	return request(url, profileAccessToken, "Professions")
+}
