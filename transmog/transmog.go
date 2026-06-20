@@ -188,8 +188,6 @@ var flaky = map[int64]bool{
 	33423: true, // Treads of Panicked Escape
 	33439: true, // Treads of Panicked Escape
 	33497: true, // Treads of Violent Intrusion
-	33522: true, // Acolyte's Abandoned Footwraps
-	33538: true, // Acolyte's Abandoned Footwraps
 	33716: true, // Moon-Wrought Clasp
 	34314: true, // Pristine Moon-Wrought Clasp
 	34558: true, // Cuffs of the Viridian Flameweavers
