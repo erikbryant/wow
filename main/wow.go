@@ -600,7 +600,11 @@ func main() {
 		fmt.Printf("\n*** OAuth unavailable. Some features may be missing.\n")
 	}
 
-	recipes.Needed()
+	recipeNames := recipes.Needed()
+
+	for _, recipeName := range recipeNames {
+		usefulRecipes[itemCache.Search(recipeName).Id()] = struct{}{}
+	}
 
 	scanRealms(*realms, *summarize, *petResell)
 

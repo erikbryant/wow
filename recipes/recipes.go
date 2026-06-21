@@ -3,7 +3,6 @@ package recipes
 import (
 	"fmt"
 	"slices"
-	"strconv"
 	"strings"
 
 	"github.com/erikbryant/web"
@@ -134,7 +133,7 @@ func scanAlts() map[string]map[int64]Recipe {
 	return recipesByAlt
 }
 
-func Needed() {
+func Needed() []string {
 	recipesByAlt := scanAlts()
 	recipesNeeded := map[string]int{}
 
@@ -149,13 +148,19 @@ func Needed() {
 	}
 
 	rn := []string{}
+	rnc := []string{}
 	for recipe, count := range recipesNeeded {
-		rn = append(rn, recipe+" "+strconv.Itoa(count))
+		rn = append(rn, "Recipe: "+recipe)
+		r := fmt.Sprintf("%-30s  %2d", recipe, count)
+		rnc = append(rnc, r)
 	}
 	slices.Sort(rn)
+	slices.Sort(rnc)
 
 	fmt.Println()
 	fmt.Println("Recipes needed:")
-	fmt.Println(strings.Join(rn, "\n"))
+	fmt.Println(strings.Join(rnc, "\n"))
 	fmt.Println()
+
+	return rn
 }
