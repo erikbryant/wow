@@ -41,6 +41,9 @@ var itemLevels = map[int64][]int64{
 	// iLvl 106 oddities
 	244616: {180, 186, 192, 199, 206}, // Skinner's Backpack
 
+	// iLvl 270
+	201601: {57, 58, 59, 61}, // Runed Serevite Rod
+
 	// iLvl 317
 	191235: {70, 71, 72, 73, 74}, // Draconium Blacksmith's Toolbox
 	191236: {71, 72, 73, 74},     // Draconium Leatherworker's Toolset
