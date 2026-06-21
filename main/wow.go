@@ -44,7 +44,7 @@ var usefulGoods = map[int64]int64{
 	// Fun weapon transmogs
 	itemCache.Search("Blackfury").Id():                          common.Coins(2000, 0, 0),
 	itemCache.Search("Tyrhold Broadsword").Id():                 common.Coins(2000, 0, 0),
-	itemCache.Search("Scarlet Diamond Staff of Intuition").Id(): common.Coins(2000, 0, 0),
+	itemCache.Search("Scarlet Diamond Staff of Intuition").Id(): common.Coins(1000, 0, 0),
 
 	// Gun appearances
 	itemCache.Search("Ameelton's Shot-Thrower").Id():     common.Coins(2000, 0, 0),
@@ -54,7 +54,7 @@ var usefulGoods = map[int64]int64{
 	itemCache.Search("Converted Carrot Carbine").Id():    common.Coins(2000, 0, 0),
 }
 
-var usefulRecipesMaxPrice = common.Coins(10, 0, 0)
+var usefulRecipesMaxPrice = common.Coins(5, 0, 0)
 
 var usefulRecipes = map[int64]struct{}{
 	// Outland cooking
