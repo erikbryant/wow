@@ -70,6 +70,7 @@ var itemLevels = map[int64][]int64{
 	222577: {79, 85, 91, 98, 105}, // Burnt Rolling Pin
 	222573: {79, 85, 91, 98, 105}, // Lightweight Scribe's Quill
 	222483: {79, 85, 91, 98, 105}, // Proficient Needle Set
+	222480: {79, 91, 98, 105},     // Proficient Sickle
 
 	// iLvl 486 oddities
 	244709: {180, 186, 192, 199, 206}, // Junker's Junk Visor
