@@ -105,6 +105,19 @@ var Alts = []Alt{
 	{"Farstriders", "Rrhooshka"},
 	{"Feathermoon", "Rrhannet"},
 	{"Frostwolf", "Rrouscha"},
+	//{"Ghostlands", "Rreezy"},
+	//{"Greymane", "Rrznyth"},
+	//{"Icecrown", "Pkhats"},
+	//{"Kilrogg", "Rrinky"},
+	//{"Kirin Tor", "Rruggles"},
+	//{"Kul Tiras", "Rrkulth"},
+	//{"Lightninghoof", "Rroovetta"},
+	//{"Llane", "Rreebenna"},
+	//{"Misha", "Rrazhneth"},
+	//{"Nazgrel", "Rryxny"},
+	//{"Ravencrest", "Rrothinna"},
+	//{"Runetotem", "Rrygellna"},
+	//{"Sisters of Elune", "Rrhette"},
 }
 
 func key(alt Alt) string {
