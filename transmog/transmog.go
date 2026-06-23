@@ -148,6 +148,7 @@ var flaky = map[int64]bool{
 	22914: true, // Hexweave Mantle
 	22939: true, // Steelforged Saber
 	22940: true, // Steelforged Saber
+	37116: true, // Enchanter's Sorcerous Scepter
 	56703: true, // Choral Vestments
 	56704: true, // Choral Sash
 	56705: true, // Choral Leggings
@@ -163,6 +164,7 @@ var flaky = map[int64]bool{
 	57174: true, // Harmonium Gauntlets
 	57175: true, // Antecedent Drape
 	57225: true, // Anthemic Shoulders
+	57226: true, // Anthemic Cuirass
 	57227: true, // Anthemic Links
 	57230: true, // Anthemic Bracers
 	57231: true, // Anthemic Gauntlets
@@ -187,8 +189,10 @@ var flaky = map[int64]bool{
 	33365: true, // Sash of the Unredeemed
 	33423: true, // Treads of Panicked Escape
 	33439: true, // Treads of Panicked Escape
+	33440: true, // Soul-Rattle Ribcage
 	33497: true, // Treads of Violent Intrusion
 	33716: true, // Moon-Wrought Clasp
+	33756: true, // Spiked Terrorwake Greatboots
 	34314: true, // Pristine Moon-Wrought Clasp
 	34558: true, // Cuffs of the Viridian Flameweavers
 	35092: true, // Wristguards of Ominous Forging
