@@ -73,6 +73,7 @@ var itemLevels = map[int64][]int64{
 	222480: {79, 91, 98, 105},     // Proficient Sickle
 
 	// iLvl 486 oddities
+	244620: {180, 186, 192, 206},      // Chemist's Cap
 	244709: {180, 186, 192, 199, 206}, // Junker's Junk Visor
 
 	// iLvl 535
