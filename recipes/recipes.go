@@ -151,10 +151,11 @@ func Needed() []string {
 	recipesNeeded := map[string]int{}
 
 	// Identify missing recipes
-	for _, recipes := range recipesByAlt {
+	for alt, recipes := range recipesByAlt {
 		for _, recipe := range AllRecipes {
 			_, ok := recipes[recipe.id]
 			if !ok {
+				fmt.Println(alt, recipe.name)
 				recipesNeeded[recipe.name]++
 			}
 		}
