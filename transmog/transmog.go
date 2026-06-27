@@ -139,7 +139,10 @@ var flaky = map[int64]bool{
 	2019: true, // Various fish held in offhand
 
 	// NOT part of an appearance set
+	1172:  true, // Ghostly Bracers
 	5133:  true, // Round Buckler
+	22334: true, // Shrediron's Shredder
+	22335: true, // Shrediron's Shredder
 	22392: true, // Shadowtome
 	22547: true, // Shadowtome
 	22902: true, // Hexweave Cowl
@@ -152,17 +155,21 @@ var flaky = map[int64]bool{
 	56703: true, // Choral Vestments
 	56704: true, // Choral Sash
 	56705: true, // Choral Leggings
+	56706: true, // Choral Slippers
 	56707: true, // Choral Wraps
+	56708: true, // Choral Handwraps
 	56859: true, // Staccato Helm
 	56860: true, // Staccato Mantle
 	56861: true, // Staccato Vest
 	56862: true, // Staccato Belt
+	56864: true, // Staccato Boots
 	56865: true, // Staccato Cuffs
 	56866: true, // Staccato Grips
 	57169: true, // Harmonium Breastplate
 	57173: true, // Harmonium Vambrace
 	57174: true, // Harmonium Gauntlets
 	57175: true, // Antecedent Drape
+	57224: true, // Anthemic Coif
 	57225: true, // Anthemic Shoulders
 	57226: true, // Anthemic Cuirass
 	57227: true, // Anthemic Links
@@ -195,6 +202,8 @@ var flaky = map[int64]bool{
 	33756: true, // Spiked Terrorwake Greatboots
 	34314: true, // Pristine Moon-Wrought Clasp
 	34558: true, // Cuffs of the Viridian Flameweavers
+	34870: true, // Gloves of Abhorrent Strategies
+	34886: true, // Gloves of Abhorrent Strategies
 	35092: true, // Wristguards of Ominous Forging
 	35101: true, // Wristguards of Ominous Forging
 	38275: true, // Reinforced Test Subject Shackles
@@ -206,6 +215,7 @@ var flaky = map[int64]bool{
 	39969: true, // Gauntlets of Crashing Tides
 	39976: true, // Gauntlets of Crashing Tides
 	39987: true, // Gauntlets of Crashing Tides
+	40325: true, // Cloak of Blessed Depths
 	40811: true, // Belt of Concealed Intent
 	40813: true, // Belt of Concealed Intent
 	40967: true, // Gauntlets of Nightmare Manifest
