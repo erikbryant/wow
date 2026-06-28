@@ -167,8 +167,6 @@ type Alt struct {
 }
 
 var Alts = []Alt{
-	//{"Darrowmere", "Rrackette"},
-
 	{"Aegwynn", "Rrynndelleh"},
 	{"Agamaggan", "Rresgan"},
 	{"Akama", "Rryzella"},
@@ -190,6 +188,7 @@ var Alts = []Alt{
 	{"Caelestrasz", "Rrousch"},
 	{"Cairne", "Rrhazzash"},
 	{"Coilfang", "Rrexanna"},
+	{"Darrowmere", "Rrackette"},
 	{"Deathwing", "Rruthenny"},
 	{"Dentarg", "Rrhoul"},
 	{"Draenor", "Rrooh"},
@@ -201,19 +200,19 @@ var Alts = []Alt{
 	{"Farstriders", "Rrhooshka"},
 	{"Feathermoon", "Rrhannet"},
 	{"Frostwolf", "Rrouscha"},
-	//{"Ghostlands", "Rreezy"},
-	//{"Greymane", "Rrznyth"},
-	//{"Icecrown", "Pkhats"},
-	//{"Kilrogg", "Rrinky"},
-	//{"Kirin Tor", "Rruggles"},
-	//{"Kul Tiras", "Rrkulth"},
-	//{"Lightninghoof", "Rroovetta"},
-	//{"Llane", "Rreebenna"},
-	//{"Misha", "Rrazhneth"},
-	//{"Nazgrel", "Rryxny"},
-	//{"Ravencrest", "Rrothinna"},
-	//{"Runetotem", "Rrygellna"},
-	//{"Sisters of Elune", "Rrhette"},
+	{"Ghostlands", "Rreezy"},
+	{"Greymane", "Rrznyth"},
+	{"Icecrown", "Pkhats"},
+	{"Kilrogg", "Rrinky"},
+	{"Kirin Tor", "Rruggles"},
+	{"Kul Tiras", "Rrkulth"},
+	{"Lightninghoof", "Rroovetta"},
+	{"Llane", "Rreebenna"},
+	{"Misha", "Rrazhneth"},
+	{"Nazgrel", "Rryxny"},
+	{"Ravencrest", "Rrothinna"},
+	{"Runetotem", "Rrygellna"},
+	{"Sisters of Elune", "Rrhette"},
 }
 
 func key(alt Alt) string {
