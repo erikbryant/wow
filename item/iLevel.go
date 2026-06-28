@@ -31,6 +31,7 @@ var itemLevels = map[int64][]int64{
 	// iLvl 106
 	237952: {206, 212, 218, 225, 232}, // Sun-Blessed Blacksmith's Toolbox
 	238018: {206, 212, 218, 225, 232}, // Sun-Blessed Blacksmith's Hammer
+	239637: {212, 218, 225, 232},      // Elegant Artisan's Enchanting Hat
 	240959: {206, 212, 218, 225, 232}, // Sin'dorei Jeweler's Loupes
 	240960: {206, 212, 218, 225, 232}, // Sin'dorei Enchanter's Crystal
 	244628: {206, 212, 218, 225, 232}, // Sin'dorei Forgemaster's Cover
