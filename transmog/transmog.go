@@ -152,6 +152,7 @@ var flaky = map[int64]bool{
 	22939: true, // Steelforged Saber
 	22940: true, // Steelforged Saber
 	37116: true, // Enchanter's Sorcerous Scepter
+	56701: true, // Choral Hood
 	56703: true, // Choral Vestments
 	56704: true, // Choral Sash
 	56705: true, // Choral Leggings
@@ -162,6 +163,7 @@ var flaky = map[int64]bool{
 	56860: true, // Staccato Mantle
 	56861: true, // Staccato Vest
 	56862: true, // Staccato Belt
+	56863: true, // Staccato Leggings
 	56864: true, // Staccato Boots
 	56865: true, // Staccato Cuffs
 	56866: true, // Staccato Grips
@@ -196,7 +198,6 @@ var flaky = map[int64]bool{
 	33365: true, // Sash of the Unredeemed
 	33423: true, // Treads of Panicked Escape
 	33439: true, // Treads of Panicked Escape
-	33440: true, // Soul-Rattle Ribcage
 	33497: true, // Treads of Violent Intrusion
 	33716: true, // Moon-Wrought Clasp
 	33756: true, // Spiked Terrorwake Greatboots
