@@ -42,16 +42,13 @@ var usefulGoods = map[int64]int64{
 	//itemCache.Search("Xiwyllag ATV").Id(): common.Coins(3999, 0, 0),
 
 	// Fun weapon transmogs
-	itemCache.Search("Blackfury").Id():                          common.Coins(2000, 0, 0),
-	itemCache.Search("Tyrhold Broadsword").Id():                 common.Coins(2000, 0, 0),
-	itemCache.Search("Scarlet Diamond Staff of Intuition").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Blackfury").Id():          common.Coins(2000, 0, 0),
+	itemCache.Search("Tyrhold Broadsword").Id(): common.Coins(2000, 0, 0),
 
 	// Gun appearances
 	itemCache.Search("Ameelton's Shot-Thrower").Id():     common.Coins(2000, 0, 0),
 	itemCache.Search("Kickback 5000").Id():               common.Coins(2000, 0, 0),
 	itemCache.Search("Extreme-Impact Hole Puncher").Id(): common.Coins(2000, 0, 0),
-	itemCache.Search("Ameelton's Shot-Thrower").Id():     common.Coins(2000, 0, 0),
-	itemCache.Search("Converted Carrot Carbine").Id():    common.Coins(2000, 0, 0),
 }
 
 var usefulRecipesMaxPrice = common.Coins(5, 0, 0)
@@ -168,6 +165,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 		1568: {}, // Puddle Terror
 		340:  {}, // Sea Pony
 		162:  {}, // Sinister Squashling
+		1628: {}, // Sister of Temptation
 		200:  {}, // Spring Rabbit
 		211:  {}, // Strand Crawler
 		2088: {}, // Surger
