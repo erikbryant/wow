@@ -45,6 +45,19 @@ var usefulGoods = map[int64]int64{
 	itemCache.Search("Blackfury").Id():          common.Coins(2000, 0, 0),
 	itemCache.Search("Tyrhold Broadsword").Id(): common.Coins(2000, 0, 0),
 
+	itemCache.Search("Helm of the Tranquil Path").Id(): common.Coins(2000, 0, 0),
+	itemCache.Search("Vest of the Tranquil Path").Id(): common.Coins(2000, 0, 0),
+
+	// Appearance set transmogs
+	itemCache.Search("Tyrhold Visage").Id():            common.Coins(1000, 0, 0),
+	itemCache.Search("Tyrhold Epaulets").Id():          common.Coins(1000, 0, 0),
+	itemCache.Search("Tyrhold Robe").Id():              common.Coins(1000, 0, 0),
+	itemCache.Search("Tyrhold Slippers").Id():          common.Coins(1000, 0, 0),
+	itemCache.Search("Boots of the Black Flame").Id():  common.Coins(1000, 0, 0),
+	itemCache.Search("Dreamless Belt").Id():            common.Coins(1000, 0, 0),
+	itemCache.Search("Helm of the Tranquil Path").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Vest of the Tranquil Path").Id(): common.Coins(1000, 0, 0),
+
 	// Gun appearances
 	itemCache.Search("Ameelton's Shot-Thrower").Id():     common.Coins(2000, 0, 0),
 	itemCache.Search("Kickback 5000").Id():               common.Coins(2000, 0, 0),
@@ -56,15 +69,7 @@ var usefulRecipesMaxPrice = common.Coins(5, 0, 0)
 var usefulRecipes = map[int64]struct{}{}
 
 // skipToys are toys I am not interested in
-var skipToys = map[int64]bool{
-	// Only usable by engineers
-	//itemCache.Search("Snowmaster 9000").Id():                  true,
-	//itemCache.Search("Wormhole Generator: Argus").Id():        true,
-	//itemCache.Search("Wyrmhole Generator: Dragon Isles").Id(): true,
-	//itemCache.Search("Wormhole Generator: Khaz Algar").Id():   true,
-	//itemCache.Search("Wormhole Generator: Pandaria").Id():     true,
-	//itemCache.Search("Wormhole Generator: Shadowlands").Id():  true,
-}
+var skipToys = map[int64]bool{}
 
 // findPetSpellNeeded returns pet spells for sale that I do not own
 func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
