@@ -66,20 +66,21 @@ var itemLevels = map[int64][]int64{
 	// iLvl 486
 	215119: {79, 85, 91, 98, 105}, // Right-Handed Magnifying Glass
 	215120: {79, 85, 91, 98, 105}, // Radiant Loupes
-	221790: {85, 91, 105},         // Bismuth Fisherfriend
+	221790: {85, 91, 98, 105},     // Bismuth Fisherfriend
 	221797: {79, 85, 91, 98, 105}, // Bismuth-Fueled Samophlange
 	222575: {79, 85, 91, 98, 105}, // Hasty Alchemist's Mixing Rod
 	222577: {79, 85, 91, 98, 105}, // Burnt Rolling Pin
 	222573: {79, 85, 91, 98, 105}, // Lightweight Scribe's Quill
 	222483: {79, 85, 91, 98, 105}, // Proficient Needle Set
-	222480: {79, 91, 98, 105},     // Proficient Sickle
+	222480: {79, 85, 91, 98, 105}, // Proficient Sickle
 
 	// iLvl 486 oddities
-	244620: {180, 186, 192, 206},      // Chemist's Cap
+	244620: {180, 186, 192, 199, 206}, // Chemist's Cap
 	244709: {180, 186, 192, 199, 206}, // Junker's Junk Visor
 
 	// iLvl 535
 	244626: {206, 212, 218, 225, 232}, // Sin'dorei Alchemist's Hat
+	244708: {206, 212, 218, 225, 232}, // Sin'dorei Snippers
 }
 
 // Known returns true if the item has an entry in itemLevels
