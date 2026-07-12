@@ -151,6 +151,7 @@ var flaky = map[int64]bool{
 	//22939: true, // Steelforged Saber
 	//22940: true, // Steelforged Saber
 	56701: true, // Choral Hood
+	56702: true, // Choral Amice
 	56703: true, // Choral Vestments
 	56704: true, // Choral Sash
 	56705: true, // Choral Leggings
