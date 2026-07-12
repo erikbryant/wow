@@ -76,6 +76,7 @@ var itemLevels = map[int64][]int64{
 
 	// iLvl 486 oddities
 	244620: {180, 186, 192, 199, 206}, // Chemist's Cap
+	244707: {180, 186, 192, 199, 206}, // Farstrider Fabric Cutters
 	244709: {180, 186, 192, 199, 206}, // Junker's Junk Visor
 
 	// iLvl 535
