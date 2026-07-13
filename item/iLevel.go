@@ -5,12 +5,14 @@ var itemLevels = map[int64][]int64{
 	237946: {180, 186, 192, 199, 206}, // Thalassian Needle Set
 	237947: {180, 186, 192, 199, 206}, // Thalassian Leatherworker's Toolset
 	237948: {180, 186, 192, 199, 206}, // Thalassian Blacksmith's Toolbox
+	238009: {180, 186, 192, 199, 206}, // Thalassian Sickle
 	238011: {180, 186, 192, 199, 206}, // Thalassian Skinning Knife
 	238012: {180, 186, 192, 199, 206}, // Thalassian Leatherworker's Knife
 	238013: {180, 186, 192, 199, 206}, // Thalassian Blacksmith's Hammer
 	239641: {180, 186, 192, 199, 206}, // Bright Linen Alchemy Apron
 	239642: {180, 186, 192, 199, 206}, // Chef's Bright Linen Cooking Chapeau
 	239643: {180, 186, 192, 199, 206}, // Bright Linen Enchanting Hat
+	239645: {180, 186, 192, 199, 206}, // Bright Linen Herbalism Hat
 	239646: {180, 186, 192, 199, 206}, // Bright Linen Tailoring Robe
 	240953: {180, 186, 192, 199, 206}, // Bold Biographer's Bifocals
 	240954: {180, 186, 192, 199, 206}, // Fantastic Font Focuser
@@ -19,10 +21,9 @@ var itemLevels = map[int64][]int64{
 	244619: {180, 186, 192, 199, 206}, // Hideworker's Cover
 	244627: {180, 186, 192, 199, 206}, // Apprentice Smith's Apron
 	244629: {180, 186, 192, 199, 206}, // Apprentice Jeweler's Apron
+	244717: {180, 186, 192, 199, 206}, // Junker's Multitool
 	245775: {180, 186, 192, 199, 206}, // Hobbyist Scribe's Quill
 	245777: {180, 186, 192, 199, 206}, // Hobbyist Alchemist's Mixing Rod
-	238009: {180, 186, 192, 199, 206}, // Thalassian Sickle
-	244717: {180, 186, 192, 199, 206}, // Junker's Multitool
 
 	// iLvl 80 oddities
 	240955: {180, 183, 186, 189, 193}, // Silvermoon Loupes
@@ -56,8 +57,9 @@ var itemLevels = map[int64][]int64{
 	191242: {70, 71, 72, 73, 74}, // Draconium Pickaxe
 	193486: {70, 71, 72, 73, 74}, // Resilient Smock
 	193487: {71, 72, 73, 74},     // Alchemist's Hat
-	193612: {71, 72, 73, 74},     // Smithing Apron
 	193541: {70, 71, 72, 73, 74}, // Wildercloth Tailor's Coat
+	193612: {71, 72, 73, 74},     // Smithing Apron
+	194874: {74},                 // Scribe's Fastened Quill
 	198715: {70, 71, 72, 73, 74}, // Runed Draconium Rod
 
 	// iLvl 317 oddities
