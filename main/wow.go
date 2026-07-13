@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 	"slices"
 	"sort"
 	"strings"
@@ -44,9 +43,6 @@ var usefulGoods = map[int64]int64{
 	// Fun weapon transmogs
 	itemCache.Search("Blackfury").Id():          common.Coins(2000, 0, 0),
 	itemCache.Search("Tyrhold Broadsword").Id(): common.Coins(2000, 0, 0),
-
-	itemCache.Search("Helm of the Tranquil Path").Id(): common.Coins(2000, 0, 0),
-	itemCache.Search("Vest of the Tranquil Path").Id(): common.Coins(2000, 0, 0),
 
 	// Appearance set transmogs
 	itemCache.Search("Tyrhold Visage").Id():            common.Coins(1000, 0, 0),
@@ -240,7 +236,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 			if i.ItemClassName() == "Profession" && !item.Known(i.Id()) {
 				// We have not seen this arbitrage before. Add iLevels for it in iLevel.go.
 				msg := fmt.Sprintf("%d: {}, // %s (%s)  iLvl: %d\n", i.Id(), i.Name(), i.ItemClassName(), i.ItemLevel())
-				appendFile("./generated/arbitrageWithiLvl.log", msg)
+				common.AppendFile("./generated/arbitrageWithiLvl.log", msg, &mu)
 				fmt.Println(msg)
 			}
 		}
@@ -261,7 +257,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 		iLevels := item.ILevels(arbitrage.item.Id(), arbitrage.item.ItemLevel())
 		for _, iLevel := range iLevels {
 			logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", arbitrage.item.Id(), iLevel, arbitrage.item.Name())
-			appendFile("./generated/arbitrageLatest.log", logEntry)
+			common.AppendFile("./generated/arbitrageLatest.log", logEntry, &mu)
 		}
 	}
 
@@ -419,10 +415,7 @@ func scanRealms(r string, summarize, includePets bool) {
 		go scanRealm(realm, c, summarize, includePets)
 	}
 
-	err := os.Remove("./generated/arbitrageLatest.log")
-	if err != nil {
-		fmt.Println(err)
-	}
+	common.CreateFile("./generated/arbitrageLatest.log")
 
 	for range len(realms) {
 		s := <-c
@@ -440,49 +433,9 @@ func scanRealms(r string, summarize, includePets bool) {
 	itemCache.Save()
 }
 
-// appendFile appends 'contents' to a file
-func appendFile(file, contents string) {
-	mu.Lock()
-	f, err := os.OpenFile(file, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-	if err != nil {
-		log.Fatal("Failed to open file:", file, err)
-	}
-	defer f.Close()
-
-	_, err = f.WriteString(contents)
-	if err != nil {
-		log.Fatal("Failed to append file:", file, err)
-	}
-
-	err = f.Close()
-	if err != nil {
-		log.Fatal("Failed to close file:", file, err)
-	}
-	mu.Unlock()
-}
-
-// writeFile writes 'contents' to a new file
-func writeFile(file, contents string) {
-	f, err := os.Create(file)
-	if err != nil {
-		log.Fatal("Failed to create file:", file, err)
-	}
-	defer f.Close()
-
-	_, err = f.WriteString(contents)
-	if err != nil {
-		log.Fatal("Failed to write file:", file, err)
-	}
-
-	err = f.Close()
-	if err != nil {
-		log.Fatal("Failed to close file:", file, err)
-	}
-}
-
 // generateLua writes the WoW 'Arbitrage' addon Lua files
 func generateLua() {
-	writeFile("./generated/PriceCache.lua", itemCache.Lua())
+	common.WriteFile("./generated/PriceCache.lua", itemCache.Lua())
 }
 
 // usage prints a usage message and terminates the program with an error
