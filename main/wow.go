@@ -385,7 +385,7 @@ func scanRealm(realm string, c chan<- string, summarize, includePets bool) {
 	arbitrages, profit := findArbitrages(auctions, realm)
 
 	if summarize {
-		if profit > common.Coins(20, 0, 0) {
+		if profit > common.Coins(15, 0, 0) {
 			// Only show arbitrages if there is some actual amount of money
 			// If the arbitrages are the only things on this realm, only show if worthwhile to visit
 			c := color.New(color.FgWhite)
