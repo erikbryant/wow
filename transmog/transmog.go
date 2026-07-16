@@ -139,17 +139,17 @@ var flaky = map[int64]bool{
 	2019: true, // Various fish held in offhand
 
 	// NOT part of an appearance set
-	//1172:  true, // Ghostly Bracers
-	//22334: true, // Shrediron's Shredder
-	//22335: true, // Shrediron's Shredder
-	//22392: true, // Shadowtome
-	//22547: true, // Shadowtome
-	//22902: true, // Hexweave Cowl
-	//22905: true, // Hexweave Mantle
-	//22911: true, // Hexweave Cowl
-	//22914: true, // Hexweave Mantle
-	//22939: true, // Steelforged Saber
-	//22940: true, // Steelforged Saber
+	1172:  true, // Ghostly Bracers
+	22334: true, // Shrediron's Shredder
+	22335: true, // Shrediron's Shredder
+	22392: true, // Shadowtome
+	22547: true, // Shadowtome
+	22902: true, // Hexweave Cowl
+	22905: true, // Hexweave Mantle
+	22911: true, // Hexweave Cowl
+	22914: true, // Hexweave Mantle
+	22939: true, // Steelforged Saber
+	22940: true, // Steelforged Saber
 	56701: true, // Choral Hood
 	56702: true, // Choral Amice
 	56703: true, // Choral Vestments
@@ -169,6 +169,8 @@ var flaky = map[int64]bool{
 	57167: true, // Harmonium Helm
 	57168: true, // Harmonium Spaulders
 	57169: true, // Harmonium Breastplate
+	57171: true, // Harmonium Legplates
+	57172: true, // Harmonium Percussive Stompers
 	57173: true, // Harmonium Vambrace
 	57174: true, // Harmonium Gauntlets
 	57175: true, // Antecedent Drape
@@ -179,20 +181,12 @@ var flaky = map[int64]bool{
 	57228: true, // Anthemic Legguards
 	57230: true, // Anthemic Bracers
 	57231: true, // Anthemic Gauntlets
-	//78230: true, // Scepter of Spectacle: Order
+	78230: true, // Scepter of Spectacle: Order
 
 	// NOT part of an appearance set [Horde]
 	37116: true, // Enchanter's Sorcerous Scepter
 
 	// Part of an appearance set, but rarely available
-	26016: true, // Cursed Demonchain Belt
-	31863: true, // Vintage Duskwatch Cinch
-	32066: true, // Fashionable Autumn Cloak
-	32237: true, // Aristocrat's Winter Drape
-	33423: true, // Treads of Panicked Escape
-	33439: true, // Treads of Panicked Escape
-	33497: true, // Treads of Violent Intrusion
-
 	//18561: true, // Fists of Lightning
 	//18575: true, // Nightfire Robe
 	//18715: true, // Greyshadow Gloves
@@ -202,10 +196,15 @@ var flaky = map[int64]bool{
 	//23247: true, // Truesteel Armguards
 	//24178: true, // {Brilliant, Nimble, Powerful} Burnished Cloak
 	//24180: true, // {Brilliant, Nimble, Powerful} Burnished Cloak
+	//26016: true, // Cursed Demonchain Belt
+	//32066: true, // Fashionable Autumn Cloak
+	//32237: true, // Aristocrat's Winter Drape
 	//33357: true, // Sash of the Unredeemed
 	//33365: true, // Sash of the Unredeemed
+	//33423: true, // Treads of Panicked Escape
+	//33439: true, // Treads of Panicked Escape
+	//33497: true, // Treads of Violent Intrusion
 	//33716: true, // Moon-Wrought Clasp
-	//33756: true, // Spiked Terrorwake Greatboots
 	//34314: true, // Pristine Moon-Wrought Clasp
 	//34558: true, // Cuffs of the Viridian Flameweavers
 	//34870: true, // Gloves of Abhorrent Strategies
