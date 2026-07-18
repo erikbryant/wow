@@ -169,6 +169,7 @@ var flaky = map[int64]bool{
 	57167: true, // Harmonium Helm
 	57168: true, // Harmonium Spaulders
 	57169: true, // Harmonium Breastplate
+	57170: true, // Harmonium Girdle
 	57171: true, // Harmonium Legplates
 	57172: true, // Harmonium Percussive Stompers
 	57173: true, // Harmonium Vambrace
