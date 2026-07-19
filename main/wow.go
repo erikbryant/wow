@@ -24,7 +24,7 @@ import (
 var (
 	mu             sync.Mutex
 	passPhrase     = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
-	realms         = flag.String("realms", "Aegwynn,Agamaggan,Aggramar,Akama,Alexstrasza,Alleria,Altar of Storms,Alterac Mountains,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azralon,Azuremyst,Baelgun,Barthilas,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Caelestrasz,Cairne,Coilfang,Darrowmere,Dath'Remar,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Drakkari,Durotan,Eitrigg,Elune,Eredar,Farstriders,Feathermoon,Frostwolf,Gallywix,Ghostlands,Goldrinn,Greymane,Gundrak,IceCrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Nemesis,Quel'Thalas,Ragnaros,Ravencrest,Runetotem,Sisters of Elune,Commodities", "WoW realm(s) to scan")
+	realms         = flag.String("realms", "Aegwynn,Agamaggan,Aggramar,Akama,Alexstrasza,Alleria,Altar of Storms,Alterac Mountains,Andorhal,Anub'arak,Argent Dawn,Azgalor,Azjol-Nerub,Azralon,Azuremyst,Baelgun,Barthilas,Blackhand,Blackwing Lair,Bloodhoof,Bloodscalp,Bronzebeard,Caelestrasz,Cairne,Coilfang,Darrowmere,Dath'Remar,Deathwing,Dentarg,Draenor,Dragonblight,Drak'thul,Drakkari,Durotan,Eitrigg,Elune,Eredar,Farstriders,Feathermoon,Frostwolf,Gallywix,Ghostlands,Goldrinn,Greymane,Gundrak,Icecrown,Kilrogg,Kirin Tor,Kul Tiras,Lightninghoof,Llane,Misha,Nazgrel,Nemesis,Quel'Thalas,Ragnaros,Ravencrest,Runetotem,Sisters of Elune,Commodities", "WoW realm(s) to scan")
 	oauthAvailable = flag.Bool("oauth", true, "Is OAuth authentication available?")
 	petResell      = flag.Bool("petResell", true, "Suggest pets to resell?")
 	summarize      = flag.Bool("summarize", true, "Summarize arbitrages?")
@@ -41,23 +41,22 @@ var usefulGoods = map[int64]int64{
 	//itemCache.Search("Xiwyllag ATV").Id(): common.Coins(3999, 0, 0),
 
 	// Fun weapon transmogs
-	itemCache.Search("Blackfury").Id():          common.Coins(2000, 0, 0),
-	itemCache.Search("Tyrhold Broadsword").Id(): common.Coins(2000, 0, 0),
+	itemCache.Search("Blackfury").Id():          common.Coins(3000, 0, 0),
+	itemCache.Search("Tyrhold Broadsword").Id(): common.Coins(3000, 0, 0),
 
 	// Appearance set transmogs
-	itemCache.Search("Tyrhold Visage").Id():            common.Coins(1000, 0, 0),
-	itemCache.Search("Tyrhold Epaulets").Id():          common.Coins(1000, 0, 0),
-	itemCache.Search("Tyrhold Robe").Id():              common.Coins(1000, 0, 0),
-	itemCache.Search("Tyrhold Slippers").Id():          common.Coins(1000, 0, 0),
-	itemCache.Search("Boots of the Black Flame").Id():  common.Coins(1000, 0, 0),
-	itemCache.Search("Dreamless Belt").Id():            common.Coins(1000, 0, 0),
-	itemCache.Search("Helm of the Tranquil Path").Id(): common.Coins(1000, 0, 0),
-	itemCache.Search("Vest of the Tranquil Path").Id(): common.Coins(1000, 0, 0),
+	itemCache.Search("Tyrhold Visage").Id():            common.Coins(2000, 0, 0),
+	itemCache.Search("Tyrhold Epaulets").Id():          common.Coins(2000, 0, 0),
+	itemCache.Search("Tyrhold Robe").Id():              common.Coins(2000, 0, 0),
+	itemCache.Search("Tyrhold Slippers").Id():          common.Coins(2000, 0, 0),
+	itemCache.Search("Boots of the Black Flame").Id():  common.Coins(2000, 0, 0),
+	itemCache.Search("Helm of the Tranquil Path").Id(): common.Coins(2000, 0, 0),
+	itemCache.Search("Vest of the Tranquil Path").Id(): common.Coins(2000, 0, 0),
 
 	// Gun appearances
-	itemCache.Search("Ameelton's Shot-Thrower").Id():     common.Coins(2000, 0, 0),
-	itemCache.Search("Kickback 5000").Id():               common.Coins(2000, 0, 0),
-	itemCache.Search("Extreme-Impact Hole Puncher").Id(): common.Coins(2000, 0, 0),
+	itemCache.Search("Ameelton's Shot-Thrower").Id():     common.Coins(3000, 0, 0),
+	itemCache.Search("Kickback 5000").Id():               common.Coins(3000, 0, 0),
+	itemCache.Search("Extreme-Impact Hole Puncher").Id(): common.Coins(3000, 0, 0),
 }
 
 var usefulRecipesMaxPrice = common.Coins(5, 0, 0)
