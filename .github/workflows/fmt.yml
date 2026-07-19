@@ -1,0 +1,19 @@
+name: go fmt
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Golang
+      uses: actions/setup-go@v6
+      with:
+        go-version: 'stable'
+        check-latest: 'true'
+    - name: Check out source code
+      uses: actions/checkout@v6
+    - name: Format
+      run: |
+        go fmt ./...
+        git diff --exit-code
