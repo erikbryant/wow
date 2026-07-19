@@ -7,15 +7,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/pkg/browser"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/endpoints"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/pkg/browser"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/endpoints"
 )
 
 var (
@@ -92,7 +93,7 @@ func tokenToPAT(code string) string {
 		log.Fatal(err)
 	}
 
-	var jsonObject map[string]interface{}
+	var jsonObject map[string]any
 
 	err = json.Unmarshal(contents, &jsonObject)
 	if err != nil {

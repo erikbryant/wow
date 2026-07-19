@@ -2,6 +2,7 @@ package recipes
 
 import (
 	"fmt"
+	"maps"
 	"slices"
 	"strings"
 
@@ -17,8 +18,7 @@ type Recipe struct {
 }
 
 var (
-	AllRecipes    = map[int64]Recipe{}
-	NeededRecipes = map[int64]int64{}
+	AllRecipes = map[int64]Recipe{}
 )
 
 var usefulRecipes = map[int64]struct{}{
@@ -117,7 +117,7 @@ var usefulRecipes = map[int64]struct{}{
 	//itemCache.Search("Recipe: Mightfish Steak").Id():              {}, // 275
 }
 
-func makeRecipe(r interface{}) Recipe {
+func makeRecipe(r any) Recipe {
 	recipe := Recipe{}
 
 	href, _ := web.MsiValued(r, []string{"key", "href"}, nil)
@@ -137,20 +137,20 @@ func knownRecipes(realm, alt, tierName string) map[int64]Recipe {
 	}
 
 	s, _ := web.MsiValued(result, []string{"secondaries"}, nil)
-	for _, prof := range s.([]interface{}) {
+	for _, prof := range s.([]any) {
 		name, _ := web.MsiValued(prof, []string{"profession", "name"}, nil)
 		if name != "Cooking" {
 			continue
 		}
 		tiers, _ := web.MsiValued(prof, []string{"tiers"}, nil)
-		for _, tier := range tiers.([]interface{}) {
+		for _, tier := range tiers.([]any) {
 			t, _ := web.MsiValued(tier, []string{"tier", "name"}, nil)
 			if t != tierName {
 				continue
 			}
 			kr, _ := web.MsiValued(tier, []string{"known_recipes"}, nil)
 			recipes := map[int64]Recipe{}
-			for _, k := range kr.([]interface{}) {
+			for _, k := range kr.([]any) {
 				recipe := makeRecipe(k)
 				recipes[recipe.id] = recipe
 			}
@@ -225,9 +225,7 @@ func scanAlts() map[string]map[int64]Recipe {
 	// Find known recipes for each alt
 	for _, alt := range Alts {
 		kr := knownRecipes(alt.realm, alt.name, "Classic Cooking")
-		for id, r := range kr {
-			AllRecipes[id] = r
-		}
+		maps.Copy(AllRecipes, kr)
 		recipesByAlt[key(alt)] = kr
 	}
 

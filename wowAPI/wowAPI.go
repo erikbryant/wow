@@ -186,7 +186,7 @@ func realmToSlug(realm string) string {
 	return slug
 }
 
-func request(url, token, caller string) (interface{}, bool) {
+func request(url, token, caller string) (any, bool) {
 	headers := map[string]string{
 		"Authorization": "Bearer " + token,
 	}
@@ -200,13 +200,13 @@ func request(url, token, caller string) (interface{}, bool) {
 	return response, true
 }
 
-func requestKey(url, token, key, caller string) ([]interface{}, bool) {
+func requestKey(url, token, key, caller string) ([]any, bool) {
 	r, ok := request(url, token, caller)
 	if !ok {
 		return nil, false
 	}
-	response := r.(map[string]interface{})
-	return response[key].([]interface{}), true
+	response := r.(map[string]any)
+	return response[key].([]any), true
 }
 
 // wowProfileAccessToken returns a profile access token (to authenticate user profile API calls)
@@ -237,7 +237,7 @@ func wowAccessToken() (string, error) {
 		return "", err
 	}
 
-	var jsonObject map[string]interface{}
+	var jsonObject map[string]any
 
 	err = json.Unmarshal(contents, &jsonObject)
 	if err != nil {
@@ -248,14 +248,14 @@ func wowAccessToken() (string, error) {
 }
 
 // ConnectedRealm returns all realms connected to the given realm ID
-func ConnectedRealm(realmId string) map[string]interface{} {
+func ConnectedRealm(realmId string) map[string]any {
 	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + realmId + "?namespace=dynamic-us&locale=en_US"
 	r, ok := request(url, accessToken, "ConnectedRealm")
 	if !ok {
 		return nil
 	}
 
-	response := r.(map[string]interface{})
+	response := r.(map[string]any)
 	if response["code"] != nil {
 		fmt.Println("ConnectedRealm: Failed to get connected realm:", response)
 		return nil
@@ -265,14 +265,14 @@ func ConnectedRealm(realmId string) map[string]interface{} {
 }
 
 // ConnectedRealmSearch returns the set of all connected realms
-func ConnectedRealmSearch() map[string]interface{} {
+func ConnectedRealmSearch() map[string]any {
 	url := "https://us.api.blizzard.com/data/wow/search/connected-realm?namespace=dynamic-us&status.type=UP"
 	r, ok := request(url, accessToken, "ConnectedRealm")
 	if !ok {
 		return nil
 	}
 
-	response := r.(map[string]interface{})
+	response := r.(map[string]any)
 	if response["code"] != nil {
 		fmt.Println("ConnectedRealmSearch: Failed to get connected realms:", response)
 		return nil
@@ -319,7 +319,7 @@ var crIDs = map[string]string{
 	"Frostwolf":         "127",
 	"Ghostlands":        "1175",
 	"Greymane":          "158",
-	"IceCrown":          "104",
+	"Icecrown":          "104",
 	"Kilrogg":           "4",
 	"Kirin Tor":         "1071",
 	"Kul Tiras":         "1147",
@@ -372,19 +372,19 @@ func ConnectedRealmId(realm string) (string, bool) {
 
 	slug := realmToSlug(realm)
 
-	results := connectedRealms["results"].([]interface{})
+	results := connectedRealms["results"].([]any)
 	for _, result := range results {
-		r := result.(map[string]interface{})
-		data := r["data"].(map[string]interface{})
+		r := result.(map[string]any)
+		data := r["data"].(map[string]any)
 		cRealmId := web.ToString(data["id"])
 		cr := ConnectedRealm(cRealmId)
 		if cr == nil {
 			continue
 			//return "", false
 		}
-		realms := cr["realms"].([]interface{})
+		realms := cr["realms"].([]any)
 		for _, cRealm := range realms {
-			realmSlug := cRealm.(map[string]interface{})["slug"].(string)
+			realmSlug := cRealm.(map[string]any)["slug"].(string)
 			if slug == realmSlug {
 				mapItem := fmt.Sprintf("  \"%s\": \"%s\",\n", realm, cRealmId)
 				fmt.Println(mapItem)
@@ -398,7 +398,7 @@ func ConnectedRealmId(realm string) (string, bool) {
 }
 
 // Auctions returns the current auctions from the auction house
-func Auctions(realm string) ([]interface{}, bool) {
+func Auctions(realm string) ([]any, bool) {
 	connectedRealmId, ok := ConnectedRealmId(realm)
 	if !ok {
 		fmt.Println("Auctions: no connected realm id found")
@@ -411,31 +411,31 @@ func Auctions(realm string) ([]interface{}, bool) {
 		return nil, false
 	}
 
-	response := r.(map[string]interface{})
+	response := r.(map[string]any)
 	if response["code"] != nil {
 		fmt.Println("Auctions: HTTP error:", response)
 		return nil, false
 	}
 
-	auctions := response["auctions"].([]interface{})
+	auctions := response["auctions"].([]any)
 	return auctions, true
 }
 
 // Commodities returns the current commodity auctions from the auction house
-func Commodities() ([]interface{}, bool) {
+func Commodities() ([]any, bool) {
 	url := "https://us.api.blizzard.com/data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US"
 	return requestKey(url, accessToken, "auctions", "Commodities")
 }
 
 // WowItem retrieves a single item from the WoW web API
-func WowItem(id string) (map[string]interface{}, bool) {
+func WowItem(id string) (map[string]any, bool) {
 	url := "https://us.api.blizzard.com/data/wow/item/" + id + "?namespace=static-us&locale=en_US"
 	r, ok := request(url, accessToken, "Auctions")
 	if !ok {
 		return nil, false
 	}
 
-	response := r.(map[string]interface{})
+	response := r.(map[string]any)
 	if response["status"] == "nok" {
 		fmt.Println("INFO: ", response["reason"], "id: ", id)
 		return nil, false
@@ -450,31 +450,31 @@ func WowItem(id string) (map[string]interface{}, bool) {
 }
 
 // Pets returns a list of all battle pets in the game
-func Pets() ([]interface{}, bool) {
+func Pets() ([]any, bool) {
 	url := "https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US"
 	return requestKey(url, profileAccessToken, "pets", "Pets")
 }
 
 // CollectionsPets returns the battle pets the user owns
-func CollectionsPets() ([]interface{}, bool) {
+func CollectionsPets() ([]any, bool) {
 	url := "https://us.api.blizzard.com/profile/user/wow/collections/pets?namespace=profile-us&locale=en_US"
 	return requestKey(url, profileAccessToken, "pets", "CollectionsPets")
 }
 
 // Toys returns a list of all toys in the game
-func Toys() ([]interface{}, bool) {
+func Toys() ([]any, bool) {
 	url := "https://us.api.blizzard.com/data/wow/toy/index?namespace=static-us&locale=en_US"
 	return requestKey(url, profileAccessToken, "toys", "Toys")
 }
 
 // CollectionsToys returns the toys the user owns
-func CollectionsToys() ([]interface{}, bool) {
+func CollectionsToys() ([]any, bool) {
 	url := "https://us.api.blizzard.com/profile/user/wow/collections/toys?namespace=profile-us&locale=en_US"
 	return requestKey(url, profileAccessToken, "toys", "CollectionsToys")
 }
 
 // ItemAppearanceSetsIndex returns IDs of each appearance set
-func ItemAppearanceSetsIndex() ([]interface{}, bool) {
+func ItemAppearanceSetsIndex() ([]any, bool) {
 	url := "https://us.api.blizzard.com/data/wow/item-appearance/set/index?namespace=static-us&locale=en_US"
 	return requestKey(url, accessToken, "appearance_sets", "ItemAppearanceSetsIndex")
 }
@@ -488,7 +488,7 @@ func ItemAppearanceSetsIndexIds() map[int64]string {
 
 	indexMap := map[int64]string{}
 	for _, i := range index {
-		i := i.(map[string]interface{})
+		i := i.(map[string]any)
 		id := web.ToInt64(i["id"])
 		name := web.ToString(i["name"])
 		indexMap[id] = name
@@ -498,7 +498,7 @@ func ItemAppearanceSetsIndexIds() map[int64]string {
 }
 
 // ItemAppearanceSet returns the appearance IDs of the given appearance set
-func ItemAppearanceSet(appearanceId int64) ([]interface{}, bool) {
+func ItemAppearanceSet(appearanceId int64) ([]any, bool) {
 	url := fmt.Sprintf("https://us.api.blizzard.com/data/wow/item-appearance/set/%d?namespace=static-us&locale=en_US", appearanceId)
 	return requestKey(url, accessToken, "appearances", "ItemAppearanceSet")
 }
@@ -512,7 +512,7 @@ func ItemAppearanceSetIds(appearanceId int64) []int64 {
 
 	ids := []int64{}
 	for _, i := range itemSet {
-		i := i.(map[string]interface{})
+		i := i.(map[string]any)
 		ids = append(ids, web.ToInt64(i["id"]))
 	}
 
@@ -554,25 +554,25 @@ func ItemAppearanceSlotIndex() []string {
 }
 
 // ItemAppearanceSlot returns a list of appearances for a given slot
-func ItemAppearanceSlot(slotName string) ([]interface{}, bool) {
+func ItemAppearanceSlot(slotName string) ([]any, bool) {
 	url := "https://us.api.blizzard.com/data/wow/item-appearance/slot/" + slotName + "?namespace=static-us&locale=en_US"
 	return requestKey(url, profileAccessToken, "appearances", "ItemAppearanceSlot")
 }
 
 // ItemAppearance returns the details of a given item appearance ID
-func ItemAppearance(itemAppearanceId int64) (interface{}, bool) {
+func ItemAppearance(itemAppearanceId int64) (any, bool) {
 	url := fmt.Sprintf("https://us.api.blizzard.com/data/wow/item-appearance/%d?namespace=static-us", itemAppearanceId)
 	return request(url, profileAccessToken, "ItemAppearance")
 }
 
 // CollectionsTransmogs returns the transmogs the user owns
-func CollectionsTransmogs() (interface{}, bool) {
+func CollectionsTransmogs() (any, bool) {
 	url := "https://us.api.blizzard.com/profile/user/wow/collections/transmogs?namespace=profile-us&locale=en_US"
 	return request(url, profileAccessToken, "CollectionsTransmogs")
 }
 
 // Professions returns the professions this alt knows
-func Professions(realm, alt string) (interface{}, bool) {
+func Professions(realm, alt string) (any, bool) {
 	realm = strings.ToLower(realm)
 	realm = realmToSlug(realm)
 	alt = strings.ToLower(alt)

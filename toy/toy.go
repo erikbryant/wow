@@ -1,10 +1,11 @@
 package toy
 
 import (
+	"log"
+
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/item"
 	"github.com/erikbryant/wow/wowAPI"
-	"log"
 )
 
 var (
@@ -31,7 +32,7 @@ func owned() map[int64]bool {
 	}
 
 	for _, toyRaw := range toys {
-		toy := toyRaw.(map[string]interface{})
+		toy := toyRaw.(map[string]any)
 		id, _ := web.MsiValued(toy, []string{"toy", "id"}, 0)
 		myToys[web.ToInt64(id)] = true
 	}
@@ -39,7 +40,7 @@ func owned() map[int64]bool {
 	return myToys
 }
 
-// toyNames returns a map of all toy names by Id
+// toyNames returns a map of all toy names by ID
 func toyNames() map[int64]string {
 	toys := map[int64]string{}
 
@@ -49,7 +50,7 @@ func toyNames() map[int64]string {
 	}
 
 	for _, toyRaw := range allToys {
-		toy := toyRaw.(map[string]interface{})
+		toy := toyRaw.(map[string]any)
 		id := web.ToInt64(toy["id"])
 		toys[id] = toy["name"].(string)
 	}
