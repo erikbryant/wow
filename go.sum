@@ -1,7 +1,7 @@
-github.com/erikbryant/aes v0.4.0 h1:obZHjv5b+cxyGocqvKMiCpN4QGjRwG5r7vPrYtWT3nA=
-github.com/erikbryant/aes v0.4.0/go.mod h1:Awmp9n4/zhnQgZ/YmkotbY2TEKFLi9Zh87cRbw5WdhM=
-github.com/erikbryant/web v0.10.0 h1:pVq1phHzm0xigWBY7qGxTqg5Cd3qA60N9X/ZIdLfI0g=
-github.com/erikbryant/web v0.10.0/go.mod h1:NNP71ST7uai5s5vV2s92LJQyoLlr67+fbz8spZJNW4c=
+github.com/erikbryant/aes v0.5.0 h1:MTkI+0q0GNUUEpjAt9sUtAerGl93YXwf+KIz8VCkNks=
+github.com/erikbryant/aes v0.5.0/go.mod h1:q5q/JayC4fXxRtaudC2B39Y2sHQVgrEEqYc5Bg7XzhE=
+github.com/erikbryant/web v0.11.0 h1:IVmAOZJVUc8X6//mTt1NQ0v/93g8KJOBZXB4qNa9FPU=
+github.com/erikbryant/web v0.11.0/go.mod h1:eD+MzF4VyIbza7EmrhLmhT2mYZL2q3QBwP997+rPEQQ=
 github.com/fatih/color v1.19.0 h1:Zp3PiM21/9Ld6FzSKyL5c/BULoe/ONr9KlbYVOfG8+w=
 github.com/fatih/color v1.19.0/go.mod h1:zNk67I0ZUT1bEGsSGyCZYZNrHuTkJJB+r6Q9VuMi0LE=
 github.com/mattn/go-colorable v0.1.15 h1:+u9SLTRGnXv73cEsnsmoZBom+dMU88B2M0aDcWy0/jY=
