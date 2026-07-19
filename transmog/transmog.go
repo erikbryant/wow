@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/wowAPI"
@@ -12,13 +13,13 @@ import (
 
 var (
 	allOwned            = map[int64]bool{}
-	appearanceCacheFile = "./generated/appearanceCache.gob"
 	allSetIds           = map[int64]bool{}
+	appearanceCacheFile = "./generated/appearanceCache.gob"
 )
 
 func Init(includeOwned bool) {
-	gob.Register(map[string]interface{}{})
-	gob.Register([]interface{}{})
+	gob.Register(map[string]any{})
+	gob.Register([]any{})
 	load()
 	fmt.Printf("-- #Appearance set cache: %d\n", len(allSetIds))
 
@@ -85,11 +86,11 @@ func owned() map[int64]bool {
 		log.Fatal("ERROR: Unable to obtain transmogs owned.")
 	}
 
-	transmogs := t.(map[string]interface{})
+	transmogs := t.(map[string]any)
 
 	// Appearance sets
-	for _, appearanceSet := range transmogs["appearance_sets"].([]interface{}) {
-		appearanceSet := appearanceSet.(map[string]interface{})
+	for _, appearanceSet := range transmogs["appearance_sets"].([]any) {
+		appearanceSet := appearanceSet.(map[string]any)
 		id := web.ToInt64(appearanceSet["id"])
 		myTransmogs[id] = true
 	}
@@ -116,10 +117,10 @@ func owned() map[int64]bool {
 	//	},
 	//	...
 	//	]
-	for _, slot := range transmogs["slots"].([]interface{}) {
-		slot := slot.(map[string]interface{})
-		for _, appearance := range slot["appearances"].([]interface{}) {
-			appearance := appearance.(map[string]interface{})
+	for _, slot := range transmogs["slots"].([]any) {
+		slot := slot.(map[string]any)
+		for _, appearance := range slot["appearances"].([]any) {
+			appearance := appearance.(map[string]any)
 			id := web.ToInt64(appearance["id"])
 			myTransmogs[id] = true
 		}
@@ -144,12 +145,14 @@ var flaky = map[int64]bool{
 	22335: true, // Shrediron's Shredder
 	22392: true, // Shadowtome
 	22547: true, // Shadowtome
+	22750: true, // Truesteel Waistguard
 	22902: true, // Hexweave Cowl
 	22905: true, // Hexweave Mantle
 	22911: true, // Hexweave Cowl
 	22914: true, // Hexweave Mantle
 	22939: true, // Steelforged Saber
 	22940: true, // Steelforged Saber
+	23254: true, // Truesteel Waistguard
 	56701: true, // Choral Hood
 	56702: true, // Choral Amice
 	56703: true, // Choral Vestments
@@ -198,12 +201,12 @@ var flaky = map[int64]bool{
 	//24178: true, // {Brilliant, Nimble, Powerful} Burnished Cloak
 	//24180: true, // {Brilliant, Nimble, Powerful} Burnished Cloak
 	//26016: true, // Cursed Demonchain Belt
-	//32066: true, // Fashionable Autumn Cloak
-	//32237: true, // Aristocrat's Winter Drape
+	32066: true, // Fashionable Autumn Cloak
+	32237: true, // Aristocrat's Winter Drape
 	//33357: true, // Sash of the Unredeemed
 	//33365: true, // Sash of the Unredeemed
-	//33423: true, // Treads of Panicked Escape
-	//33439: true, // Treads of Panicked Escape
+	33423: true, // Treads of Panicked Escape
+	33439: true, // Treads of Panicked Escape
 	//33497: true, // Treads of Violent Intrusion
 	//33716: true, // Moon-Wrought Clasp
 	//34314: true, // Pristine Moon-Wrought Clasp
@@ -220,7 +223,7 @@ var flaky = map[int64]bool{
 	//39969: true, // Gauntlets of Crashing Tides
 	//39976: true, // Gauntlets of Crashing Tides
 	//39987: true, // Gauntlets of Crashing Tides
-	//40325: true, // Cloak of Blessed Depths
+	40325: true, // Cloak of Blessed Depths
 	//40811: true, // Belt of Concealed Intent
 	//40813: true, // Belt of Concealed Intent
 	//40967: true, // Gauntlets of Nightmare Manifest
@@ -249,12 +252,7 @@ func NeedId(id int64) bool {
 
 // NeedAppearance returns true if I need any of these appearance IDs
 func NeedAppearance(appearances []int64) bool {
-	for _, appearance := range appearances {
-		if NeedId(appearance) {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(appearances, NeedId)
 }
 
 // InAppearanceSet returns true if any of these appearance IDs are in an appearance set
