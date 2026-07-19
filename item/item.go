@@ -16,7 +16,7 @@ type Item struct {
 	// The members have to be public to write to a gob file,
 	// but only use the accessor functions!
 	XId      int64
-	XItem    map[string]interface{}
+	XItem    map[string]any
 	XUpdated time.Time // Datetime when created or updated
 }
 
@@ -30,7 +30,7 @@ type PetInfo struct {
 }
 
 // NewItem returns an Item populated with wowData
-func NewItem(wowData map[string]interface{}) Item {
+func NewItem(wowData map[string]any) Item {
 	return Item{
 		XId:      web.ToInt64(wowData["id"]),
 		XItem:    wowData,
@@ -232,9 +232,9 @@ func (i Item) Appearances() []int64 {
 		return nil
 	}
 
-	appearances := v.([]interface{})
+	appearances := v.([]any)
 	for _, appearance := range appearances {
-		id := appearance.(map[string]interface{})["id"]
+		id := appearance.(map[string]any)["id"]
 		appearanceIds = append(appearanceIds, web.ToInt64(id))
 	}
 

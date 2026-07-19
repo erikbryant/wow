@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sort"
+	"slices"
+	"strings"
 	"sync"
 	"time"
 
@@ -22,8 +23,8 @@ var (
 )
 
 func init() {
-	gob.Register(map[string]interface{}{})
-	gob.Register([]interface{}{})
+	gob.Register(map[string]any{})
+	gob.Register([]any{})
 	load()
 	fmt.Printf("-- #Items in cache: %d\n", len(itemCache))
 }
@@ -96,7 +97,7 @@ func IDs() []int64 {
 	}
 	mu.Unlock()
 
-	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
+	slices.Sort(ids)
 
 	return ids
 }
@@ -163,9 +164,9 @@ func LookupItem(id int64, age time.Duration) (item.Item, bool) {
 }
 
 func luaVendorPrice() (string, []string) {
-	lua := ""
+	var lua strings.Builder
 
-	lua += fmt.Sprintf("local VendorSellPriceCache = {\n")
+	lua.WriteString(fmt.Sprintf("local VendorSellPriceCache = {\n"))
 	for _, id := range IDs() {
 		mu.Lock()
 		spr := itemCache[id].SellPriceRealizable()
@@ -176,11 +177,11 @@ func luaVendorPrice() (string, []string) {
 			// Skip prices <= one silver (the auction house does not deal in copper)
 			continue
 		}
-		lua += fmt.Sprintf("  [\"%d\"] = %d,\n", id, spr)
+		lua.WriteString(fmt.Sprintf("  [\"%d\"] = %d,\n", id, spr))
 	}
-	lua += fmt.Sprintf("}\n")
+	lua.WriteString(fmt.Sprintf("}\n"))
 
-	lua += fmt.Sprintf(`
+	lua.WriteString(fmt.Sprintf(`
 -- VendorSellPrice returns the cached vendor sell price
 local function VendorSellPrice(itemID)
     return VendorSellPriceCache[tostring(itemID)] or 0
@@ -202,15 +203,15 @@ local function ValidatePriceCache()
         )
     end
 end
-`)
+`))
 
-	return lua, []string{"VendorSellPrice", "ValidatePriceCache"}
+	return lua.String(), []string{"VendorSellPrice", "ValidatePriceCache"}
 }
 
 func luaCosmetic() (string, []string) {
-	lua := ""
+	var lua strings.Builder
 
-	lua += fmt.Sprintf("local Cosmetics = {\n")
+	lua.WriteString(fmt.Sprintf("local Cosmetics = {\n"))
 	for _, id := range IDs() {
 		mu.Lock()
 		cosmetic := itemCache[id].Cosmetic()
@@ -218,18 +219,18 @@ func luaCosmetic() (string, []string) {
 		if !cosmetic {
 			continue
 		}
-		lua += fmt.Sprintf("  [\"%d\"] = true,\n", id)
+		lua.WriteString(fmt.Sprintf("  [\"%d\"] = true,\n", id))
 	}
-	lua += fmt.Sprintf("}\n")
+	lua.WriteString(fmt.Sprintf("}\n"))
 
-	lua += fmt.Sprintf(`
+	lua.WriteString(fmt.Sprintf(`
 -- Cosmetic returns true if the item is a Cosmetic
 local function Cosmetic(itemID)
     return Cosmetics[tostring(itemID)] or false
 end
-`)
+`))
 
-	return lua, []string{"Cosmetic"}
+	return lua.String(), []string{"Cosmetic"}
 }
 
 // Lua the cached vendor sell prices to stdout as a lua table and accessor

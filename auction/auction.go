@@ -27,7 +27,7 @@ type Auction struct {
 	Pet      item.PetInfo
 }
 
-func Id(msi interface{}) int64 {
+func Id(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"id"})
 	if err != nil {
 		log.Fatalf("Id: %s in %v", err, msi)
@@ -35,7 +35,7 @@ func Id(msi interface{}) int64 {
 	return web.ToInt64(value)
 }
 
-func ItemId(msi interface{}) int64 {
+func ItemId(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"item", "id"})
 	if err != nil {
 		log.Fatalf("ItemId: %s in %v", err, msi)
@@ -43,7 +43,7 @@ func ItemId(msi interface{}) int64 {
 	return web.ToInt64(value)
 }
 
-func Buyout(msi interface{}) int64 {
+func Buyout(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"buyout"})
 	if value == nil || err != nil {
 		value, err = web.MsiValued(msi, []string{"unit_price"}, 0)
@@ -55,7 +55,7 @@ func Buyout(msi interface{}) int64 {
 	return web.ToInt64(value)
 }
 
-func Quantity(msi interface{}) int64 {
+func Quantity(msi any) int64 {
 	value, err := web.MsiValued(msi, []string{"quantity"}, 0)
 	if err != nil {
 		log.Fatalf("Quantity: %s in %v", err, msi)
@@ -63,7 +63,7 @@ func Quantity(msi interface{}) int64 {
 	return web.ToInt64(value)
 }
 
-func PetBreedId(msi interface{}) int64 {
+func PetBreedId(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"item", "pet_breed_id"})
 	if err != nil {
 		log.Fatalf("PetBreedID: %s in %v", err, msi)
@@ -71,7 +71,7 @@ func PetBreedId(msi interface{}) int64 {
 	return web.ToInt64(value)
 }
 
-func PetLevel(msi interface{}) int64 {
+func PetLevel(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"item", "pet_level"})
 	if err != nil {
 		log.Fatalf("PetLevel: %s in %v", err, msi)
@@ -79,7 +79,7 @@ func PetLevel(msi interface{}) int64 {
 	return web.ToInt64(value)
 }
 
-func PetQualityId(msi interface{}) int64 {
+func PetQualityId(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"item", "pet_quality_id"})
 	if err != nil {
 		log.Fatalf("PetQualityId: %s in %v", err, msi)
@@ -87,7 +87,7 @@ func PetQualityId(msi interface{}) int64 {
 	return web.ToInt64(value)
 }
 
-func PetSpeciesId(msi interface{}) int64 {
+func PetSpeciesId(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"item", "pet_species_id"})
 	if err != nil {
 		log.Fatalf("PetSpeciesId: %s in %v", err, msi)
@@ -95,8 +95,8 @@ func PetSpeciesId(msi interface{}) int64 {
 	return web.ToInt64(value)
 }
 
-// JsonToStruct converts a single auction json string into a struct that is much easier to work with
-func JsonToStruct(auc interface{}) Auction {
+// JsonToStruct converts a single auction JSON string into a struct that is much easier to work with
+func JsonToStruct(auc any) Auction {
 	var a Auction
 
 	a.Id = Id(auc)
@@ -117,11 +117,11 @@ func JsonToStruct(auc interface{}) Auction {
 }
 
 // UnpackAuctions converts the []interface{} format we get from the web into structs
-func UnpackAuctions(auctions []interface{}) map[int64][]Auction {
+func UnpackAuctions(auctions []any) map[int64][]Auction {
 	a := map[int64][]Auction{}
 
 	for _, auc := range auctions {
-		aucStruct := JsonToStruct(auc.(map[string]interface{}))
+		aucStruct := JsonToStruct(auc.(map[string]any))
 		if wowAPI.SkipItem(aucStruct.ItemId) {
 			continue
 		}
@@ -134,7 +134,7 @@ func UnpackAuctions(auctions []interface{}) map[int64][]Auction {
 // GetAuctions returns the current auctions and their hash
 func GetAuctions(realm string) (map[int64][]Auction, bool) {
 	var ok bool
-	var auctions []interface{}
+	var auctions []any
 
 	if strings.ToLower(realm) == "commodities" {
 		auctions, ok = wowAPI.Commodities()
