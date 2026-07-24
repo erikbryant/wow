@@ -9,6 +9,60 @@ import (
 	"sync"
 )
 
+type Alt struct {
+	Realm string
+	Name  string
+}
+
+var Alts = []Alt{
+	{"Aegwynn", "Rrynndelleh"},
+	{"Agamaggan", "Rresgan"},
+	{"Akama", "Rryzella"},
+	{"Alexstrasza", "Rrunnestra"},
+	{"Alleria", "Rrennie"},
+	{"Altar of Storms", "Rrindella"},
+	{"Andorhal", "Rrhosthka"},
+	{"Anub'arak", "Rrendernna"},
+	{"Argent Dawn", "Rreythlyn"},
+	{"Azgalor", "Rrhooska"},
+	{"Azjol-Nerub", "Rricci"},
+	{"Azuremyst", "Rrynochk"},
+	{"Baelgun", "Rrhustra"},
+	{"Blackhand", "Rrysten"},
+	{"Blackwing Lair", "Rrinky"},
+	{"Bloodhoof", "Rrishtha"},
+	{"Bloodscalp", "Rroushtra"},
+	{"Bronzebeard", "Rrimminy"},
+	{"Caelestrasz", "Rrousch"},
+	{"Cairne", "Rrhazzash"},
+	{"Coilfang", "Rrexanna"},
+	{"Darrowmere", "Rrackette"},
+	{"Deathwing", "Rruthenny"},
+	{"Dentarg", "Rrhoul"},
+	{"Draenor", "Rrooh"},
+	{"Dragonblight", "Rrizzy"},
+	{"Drak'thul", "Rrkharst"},
+	{"Durotan", "Rryjhen"},
+	{"Eitrigg", "Rrhyn"},
+	{"Elune", "Rrazyn"},
+	{"Farstriders", "Rrhooshka"},
+	{"Feathermoon", "Rrhannet"},
+	{"Frostwolf", "Rrouscha"},
+	{"Ghostlands", "Rreezy"},
+	{"Greymane", "Rrznyth"},
+	{"Icecrown", "Pkhats"},
+	{"Kilrogg", "Rrinky"},
+	{"Kirin Tor", "Rruggles"},
+	{"Kul Tiras", "Rrkulth"},
+	{"Lightninghoof", "Rroovetta"},
+	{"Llane", "Rreebenna"},
+	{"Misha", "Rrazhneth"},
+	{"Nazgrel", "Rryxny"},
+	{"Ravencrest", "Rrothinna"},
+	{"Runetotem", "Rrygellna"},
+	{"Sisters of Elune", "Rrhette"},
+}
+
 // Coins returns a single numeric value of the given denominations
 func Coins(g, s, c int64) int64 {
 	return g*100*100 + s*100 + c

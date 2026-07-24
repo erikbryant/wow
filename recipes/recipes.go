@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/wowapi"
 )
 
@@ -65,70 +66,16 @@ func knownRecipes(realm, alt, tierName string) map[int64]Recipe {
 	return nil
 }
 
-type Alt struct {
-	realm string
-	name  string
-}
-
-var Alts = []Alt{
-	{"Aegwynn", "Rrynndelleh"},
-	{"Agamaggan", "Rresgan"},
-	{"Akama", "Rryzella"},
-	{"Alexstrasza", "Rrunnestra"},
-	{"Alleria", "Rrennie"},
-	{"Altar of Storms", "Rrindella"},
-	{"Andorhal", "Rrhosthka"},
-	{"Anub'arak", "Rrendernna"},
-	{"Argent Dawn", "Rreythlyn"},
-	{"Azgalor", "Rrhooska"},
-	{"Azjol-Nerub", "Rricci"},
-	{"Azuremyst", "Rrynochk"},
-	{"Baelgun", "Rrhustra"},
-	{"Blackhand", "Rrysten"},
-	{"Blackwing Lair", "Rrinky"},
-	{"Bloodhoof", "Rrishtha"},
-	{"Bloodscalp", "Rroushtra"},
-	{"Bronzebeard", "Rrimminy"},
-	{"Caelestrasz", "Rrousch"},
-	{"Cairne", "Rrhazzash"},
-	{"Coilfang", "Rrexanna"},
-	{"Darrowmere", "Rrackette"},
-	{"Deathwing", "Rruthenny"},
-	{"Dentarg", "Rrhoul"},
-	{"Draenor", "Rrooh"},
-	{"Dragonblight", "Rrizzy"},
-	{"Drak'thul", "Rrkharst"},
-	{"Durotan", "Rryjhen"},
-	{"Eitrigg", "Rrhyn"},
-	{"Elune", "Rrazyn"},
-	{"Farstriders", "Rrhooshka"},
-	{"Feathermoon", "Rrhannet"},
-	{"Frostwolf", "Rrouscha"},
-	{"Ghostlands", "Rreezy"},
-	{"Greymane", "Rrznyth"},
-	{"Icecrown", "Pkhats"},
-	{"Kilrogg", "Rrinky"},
-	{"Kirin Tor", "Rruggles"},
-	{"Kul Tiras", "Rrkulth"},
-	{"Lightninghoof", "Rroovetta"},
-	{"Llane", "Rreebenna"},
-	{"Misha", "Rrazhneth"},
-	{"Nazgrel", "Rryxny"},
-	{"Ravencrest", "Rrothinna"},
-	{"Runetotem", "Rrygellna"},
-	{"Sisters of Elune", "Rrhette"},
-}
-
-func key(alt Alt) string {
-	return alt.realm + "-" + alt.name
+func key(alt common.Alt) string {
+	return alt.Realm + "-" + alt.Name
 }
 
 func scanAlts() map[string]map[int64]Recipe {
 	recipesByAlt := map[string]map[int64]Recipe{}
 
 	// Find known recipes for each alt
-	for _, alt := range Alts {
-		kr := knownRecipes(alt.realm, alt.name, "Classic Cooking")
+	for _, alt := range common.Alts {
+		kr := knownRecipes(alt.Realm, alt.Name, "Classic Cooking")
 		maps.Copy(AllRecipes, kr)
 		recipesByAlt[key(alt)] = kr
 	}
