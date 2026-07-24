@@ -364,7 +364,7 @@ func fmtShoppingList(label string, items []string, c *color.Color, summarize boo
 }
 
 // scanRealm retrieves auctions and prints suggestions for what to buy for a single realm
-func scanRealm(realm string, c chan<- string, summarize, includePets bool) {
+func scanRealm(realm string, c chan<- string, summarize bool) {
 	auctions, ok := auction.GetAuctions(realm)
 	if !ok {
 		c <- ""
@@ -373,9 +373,7 @@ func scanRealm(realm string, c chan<- string, summarize, includePets bool) {
 
 	shoppingList := ""
 	shoppingList += fmtShoppingList("Pets I Need", findPetNeeded(auctions), color.New(color.FgMagenta), summarize)
-	if includePets {
-		shoppingList += fmtShoppingList("Pets to Resell", findPetBargains(auctions), color.New(color.FgGreen), summarize)
-	}
+	shoppingList += fmtShoppingList("Pets to Resell", findPetBargains(auctions), color.New(color.FgGreen), summarize)
 	shoppingList += fmtShoppingList("Useful Item Bargains", findBargains(auctions), color.New(color.FgRed), summarize)
 	shoppingList += fmtShoppingList("Transmog Bargains", findTransmogBargains(auctions), color.New(color.FgBlue), summarize)
 
@@ -403,7 +401,7 @@ func scanRealm(realm string, c chan<- string, summarize, includePets bool) {
 }
 
 // ScanRealms processes auctions on all realms in 'r'
-func ScanRealms(r string, summarize, includePets, oauth bool) {
+func ScanRealms(r string, summarize, oauth bool) {
 	oauthAvailable = oauth
 	realms := strings.Split(r, ",")
 	results := []string{}
@@ -412,7 +410,7 @@ func ScanRealms(r string, summarize, includePets, oauth bool) {
 	common.CreateFile("./generated/arbitrageLatest.log")
 
 	for _, realm := range realms {
-		go scanRealm(realm, c, summarize, includePets)
+		go scanRealm(realm, c, summarize)
 	}
 
 	for range len(realms) {

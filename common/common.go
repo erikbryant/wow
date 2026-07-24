@@ -48,7 +48,7 @@ func QualityId(qualityName string) int64 {
 			return qId
 		}
 	}
-	fmt.Println("ERROR: Unknown quality", qualityName)
+	fmt.Println("Unknown quality", qualityName)
 	return -1
 }
 

@@ -142,7 +142,7 @@ func GetAuctions(realm string) (map[int64][]Auction, bool) {
 		auctions, ok = wowapi.Auctions(realm)
 	}
 	if !ok {
-		log.Println("ERROR: Unable to obtain auctions for", realm)
+		log.Println("Unable to obtain auctions for", realm)
 		return nil, false
 	}
 

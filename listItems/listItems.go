@@ -68,7 +68,7 @@ func main() {
 	}
 
 	if *passPhrase == "" {
-		fmt.Println("ERROR: You must specify `-passPhrase <phrase>`")
+		fmt.Println("You must specify `-passPhrase <phrase>`")
 		usage()
 	}
 

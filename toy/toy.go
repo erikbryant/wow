@@ -28,7 +28,7 @@ func owned() map[int64]bool {
 
 	toys, ok := wowapi.CollectionsToys()
 	if !ok {
-		log.Fatal("ERROR: Unable to obtain toys owned.")
+		log.Fatal("Unable to obtain toys owned.")
 	}
 
 	for _, toyRaw := range toys {
@@ -46,7 +46,7 @@ func toyNames() map[int64]string {
 
 	allToys, ok := wowapi.Toys()
 	if !ok {
-		log.Fatal("ERROR: Unable to obtain toys.")
+		log.Fatal("Unable to obtain toy names.")
 	}
 
 	for _, toyRaw := range allToys {
@@ -60,7 +60,7 @@ func toyNames() map[int64]string {
 
 func Own(i item.Item) bool {
 	if len(allOwned) == 0 {
-		log.Fatal("ERROR: You must call toy.Init() before calling toy.Own()")
+		log.Fatal("You must call toy.Init() before calling toy.Own()")
 	}
 
 	for toyId, name := range allNames {

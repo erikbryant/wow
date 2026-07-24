@@ -83,7 +83,7 @@ func owned() map[int64]bool {
 
 	t, ok := wowapi.CollectionsTransmogs()
 	if !ok {
-		log.Fatal("ERROR: Unable to obtain transmogs owned.")
+		log.Fatal("Unable to obtain transmogs owned.")
 	}
 
 	transmogs := t.(map[string]any)

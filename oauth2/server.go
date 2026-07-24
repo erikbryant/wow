@@ -114,7 +114,7 @@ func oauthBlizzardCallback(w http.ResponseWriter, r *http.Request) {
 	// Read oauthState from Cookie
 	oauthState, err := r.Cookie(cookieName)
 	if err != nil {
-		log.Println("oauthBlizzardCallback: Cookie Error:", err)
+		log.Println("oauthBlizzardCallback Cookie Error:", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}

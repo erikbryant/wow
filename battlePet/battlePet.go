@@ -64,37 +64,37 @@ func owned() map[int64][]item.PetInfo {
 
 	pets, ok := wowapi.CollectionsPets()
 	if !ok {
-		log.Fatal("ERROR: Unable to obtain pets owned.")
+		log.Fatal("Unable to obtain pets owned.")
 	}
 
 	for _, petRaw := range pets {
-		pet := petRaw.(map[string]interface{})
+		pet := petRaw.(map[string]any)
 
 		var p item.PetInfo
 
-		stats, ok := pet["stats"].(map[string]interface{})
+		stats, ok := pet["stats"].(map[string]any)
 		if !ok {
-			log.Fatal("ERROR: Unable to obtain stats.")
+			log.Fatal("Unable to obtain stats.")
 		}
 		p.BreedId = web.ToInt64(stats["breed_id"])
 
 		p.Level = web.ToInt64(pet["level"])
 
-		quality, ok := pet["quality"].(map[string]interface{})
+		quality, ok := pet["quality"].(map[string]any)
 		if !ok {
-			log.Fatal("ERROR: Unable to obtain quality.")
+			log.Fatal("Unable to obtain quality.")
 		}
 		p.QualityId = common.QualityId(quality["name"].(string))
 
-		species, ok := pet["species"].(map[string]interface{})
+		species, ok := pet["species"].(map[string]any)
 		if !ok {
-			log.Fatal("ERROR: Unable to obtain species.")
+			log.Fatal("Unable to obtain species.")
 		}
 		p.SpeciesId = web.ToInt64(species["id"])
 
 		_, ok = myPets[p.SpeciesId]
 		if ok {
-			name, _ := pet["species"].(map[string]interface{})
+			name, _ := pet["species"].(map[string]any)
 			fmt.Println("Duplicate pet:", name)
 		} else {
 			myPets[p.SpeciesId] = []item.PetInfo{}
@@ -111,11 +111,11 @@ func petNames() map[int64]string {
 
 	allPets, ok := wowapi.Pets()
 	if !ok {
-		log.Fatal("ERROR: Unable to obtain pets.")
+		log.Fatal("Unable to obtain pet names.")
 	}
 
 	for _, petRaw := range allPets {
-		pet := petRaw.(map[string]interface{})
+		pet := petRaw.(map[string]any)
 		id := web.ToInt64(pet["id"])
 		pets[id] = pet["name"].(string)
 	}
@@ -126,7 +126,7 @@ func petNames() map[int64]string {
 // IsPetSpell returns true and the corresponding pet ID if the item is a pet summoning spell
 func IsPetSpell(i item.Item) (int64, bool) {
 	if len(allNames) == 0 {
-		log.Fatal("ERROR: You must call battlePet.Init() before calling battlePet.IsPetSpell()")
+		log.Fatal("You must call battlePet.Init() before calling battlePet.IsPetSpell()")
 	}
 
 	if i.ItemSubclassName() != "Companion Pets" {
@@ -144,14 +144,14 @@ func IsPetSpell(i item.Item) (int64, bool) {
 
 func Name(petId int64) string {
 	if len(allNames) == 0 {
-		log.Fatal("ERROR: You must call battlePet.Init() before calling battlePet.Name()")
+		log.Fatal("You must call battlePet.Init() before calling battlePet.Name()")
 	}
 	return allNames[petId]
 }
 
 func Own(petId int64) bool {
 	if len(allOwned) == 0 {
-		log.Fatal("ERROR: You must call battlePet.Init() before calling battlePet.Own()")
+		log.Fatal("You must call battlePet.Init() before calling battlePet.Own()")
 	}
 	return len(allOwned[petId]) > 0
 }

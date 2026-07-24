@@ -413,7 +413,7 @@ func Auctions(realm string) ([]any, bool) {
 
 	response := r.(map[string]any)
 	if response["code"] != nil {
-		fmt.Println("Auctions: HTTP error:", response)
+		fmt.Println("Auctions HTTP error:", response)
 		return nil, false
 	}
 
