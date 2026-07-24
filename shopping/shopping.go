@@ -8,10 +8,10 @@ import (
 	"sync"
 
 	"github.com/erikbryant/wow/auction"
-	"github.com/erikbryant/wow/battlePet"
+	"github.com/erikbryant/wow/battlepet"
 	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/item"
-	"github.com/erikbryant/wow/itemCache"
+	"github.com/erikbryant/wow/itemcache"
 	"github.com/erikbryant/wow/recipes"
 	"github.com/erikbryant/wow/toy"
 	"github.com/erikbryant/wow/transmog"
@@ -34,29 +34,29 @@ var usefulGoods = map[int64]int64{
 	//cache.Search("Weavercloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
 
 	// Fun weapon transmogs
-	itemCache.Search("Blackfury").Id():          common.Coins(3000, 0, 0),
-	itemCache.Search("Tyrhold Broadsword").Id(): common.Coins(3000, 0, 0),
+	itemcache.Search("Blackfury").Id():          common.Coins(3000, 0, 0),
+	itemcache.Search("Tyrhold Broadsword").Id(): common.Coins(3000, 0, 0),
 
 	// Appearance set transmogs
-	itemCache.Search("Tyrhold Visage").Id():            common.Coins(2000, 0, 0),
-	itemCache.Search("Tyrhold Epaulets").Id():          common.Coins(2000, 0, 0),
-	itemCache.Search("Tyrhold Robe").Id():              common.Coins(2000, 0, 0),
-	itemCache.Search("Tyrhold Slippers").Id():          common.Coins(2000, 0, 0),
-	itemCache.Search("Boots of the Black Flame").Id():  common.Coins(2000, 0, 0),
-	itemCache.Search("Helm of the Tranquil Path").Id(): common.Coins(2000, 0, 0),
-	itemCache.Search("Vest of the Tranquil Path").Id(): common.Coins(2000, 0, 0),
+	itemcache.Search("Tyrhold Visage").Id():            common.Coins(2000, 0, 0),
+	itemcache.Search("Tyrhold Epaulets").Id():          common.Coins(2000, 0, 0),
+	itemcache.Search("Tyrhold Robe").Id():              common.Coins(2000, 0, 0),
+	itemcache.Search("Tyrhold Slippers").Id():          common.Coins(2000, 0, 0),
+	itemcache.Search("Boots of the Black Flame").Id():  common.Coins(2000, 0, 0),
+	itemcache.Search("Helm of the Tranquil Path").Id(): common.Coins(2000, 0, 0),
+	itemcache.Search("Vest of the Tranquil Path").Id(): common.Coins(2000, 0, 0),
 
 	// Gun appearances
-	itemCache.Search("Ameelton's Shot-Thrower").Id():     common.Coins(3000, 0, 0),
-	itemCache.Search("Kickback 5000").Id():               common.Coins(3000, 0, 0),
-	itemCache.Search("Extreme-Impact Hole Puncher").Id(): common.Coins(3000, 0, 0),
+	itemcache.Search("Ameelton's Shot-Thrower").Id():     common.Coins(3000, 0, 0),
+	itemcache.Search("Kickback 5000").Id():               common.Coins(3000, 0, 0),
+	itemcache.Search("Extreme-Impact Hole Puncher").Id(): common.Coins(3000, 0, 0),
 }
 
 // Init determines which classic cooking recipes are needed
 func Init() {
 	recipeNames := recipes.Needed()
 	for _, recipeName := range recipeNames {
-		usefulRecipes[itemCache.Search(recipeName).Id()] = struct{}{}
+		usefulRecipes[itemcache.Search(recipeName).Id()] = struct{}{}
 	}
 }
 
@@ -69,18 +69,18 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for itemId, itemAuctions := range auctions {
-		i, ok := itemCache.LookupItem(itemId, 0)
+		i, ok := itemcache.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}
-		petId, ok := battlePet.IsPetSpell(i)
+		petId, ok := battlepet.IsPetSpell(i)
 		if !ok {
 			continue
 		}
 		//if common.QualityId(i.Quality()) < common.QualityId("Rare") {
 		//	continue
 		//}
-		if battlePet.Own(petId) {
+		if battlepet.Own(petId) {
 			continue
 		}
 
@@ -91,7 +91,7 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 			if auc.Buyout >= common.Coins(800, 0, 0) {
 				continue
 			}
-			stats := fmt.Sprintf("%s %s %s", battlePet.Name(petId), common.Gold(auc.Buyout), i.Quality())
+			stats := fmt.Sprintf("%s %s %s", battlepet.Name(petId), common.Gold(auc.Buyout), i.Quality())
 			bargains = append(bargains, stats)
 		}
 	}
@@ -107,8 +107,8 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 
 	bargains := []string{}
 
-	for _, petAuction := range auctions[battlePet.PetCageItemId] {
-		if battlePet.Own(petAuction.Pet.SpeciesId) {
+	for _, petAuction := range auctions[battlepet.PetCageItemId] {
+		if battlepet.Own(petAuction.Pet.SpeciesId) {
 			continue
 		}
 		if petAuction.Pet.SpeciesId == 3302 {
@@ -121,7 +121,7 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Buyout > common.Coins(800, 0, 0) {
 			continue
 		}
-		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId))
+		bargains = append(bargains, battlepet.Name(petAuction.Pet.SpeciesId))
 	}
 
 	// Include any pets available via spells
@@ -176,7 +176,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 		1907: {}, // Pygmy Owl
 	}
 
-	for _, petAuction := range auctions[battlePet.PetCageItemId] {
+	for _, petAuction := range auctions[battlepet.PetCageItemId] {
 		_, ok := skipPets[petAuction.Pet.SpeciesId]
 		if ok {
 			continue
@@ -194,7 +194,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 			continue
 		}
 
-		bargains = append(bargains, battlePet.Name(petAuction.Pet.SpeciesId))
+		bargains = append(bargains, battlepet.Name(petAuction.Pet.SpeciesId))
 	}
 
 	return bargains
@@ -211,7 +211,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 	totalProfit := int64(0)
 
 	for itemId, itemAuctions := range auctions {
-		i, ok := itemCache.LookupItem(itemId, 0)
+		i, ok := itemcache.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}
@@ -231,7 +231,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 			arbitrages = append(arbitrages, Arbitrage{i, profit})
 
 			if i.ItemClassName() == "Profession" && !item.Known(i.Id()) {
-				// We have not seen this arbitrage before. Add iLevels for it in iLevel.go.
+				// We have not seen this arbitrage before. Add iLevels for it in ilevel.go.
 				msg := fmt.Sprintf("%d: {}, // %s (%s)  iLvl: %d\n", i.Id(), i.Name(), i.ItemClassName(), i.ItemLevel())
 				common.AppendFile("./generated/arbitrageWithiLvl.log", msg, &mu)
 				fmt.Println(msg)
@@ -269,7 +269,7 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for itemId, itemAuctions := range auctions {
-		i, ok := itemCache.LookupItem(itemId, 0)
+		i, ok := itemcache.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}
@@ -315,7 +315,7 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 	needed := map[string]bool{}
 
 	for itemId, itemAuctions := range auctions {
-		i, ok := itemCache.LookupItem(itemId, 0)
+		i, ok := itemcache.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}
@@ -426,5 +426,5 @@ func ScanRealms(r string, summarize, oauth bool) {
 	sort.Strings(results)
 	fmt.Println(results)
 
-	itemCache.Save()
+	itemcache.Save()
 }

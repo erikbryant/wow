@@ -1,4 +1,4 @@
-package battlePet
+package battlepet
 
 import (
 	"encoding/gob"
@@ -126,7 +126,7 @@ func petNames() map[int64]string {
 // IsPetSpell returns true and the corresponding pet ID if the item is a pet summoning spell
 func IsPetSpell(i item.Item) (int64, bool) {
 	if len(allNames) == 0 {
-		log.Fatal("You must call battlePet.Init() before calling battlePet.IsPetSpell()")
+		log.Fatal("You must call battlepet.Init() before calling battlepet.IsPetSpell()")
 	}
 
 	if i.ItemSubclassName() != "Companion Pets" {
@@ -144,14 +144,14 @@ func IsPetSpell(i item.Item) (int64, bool) {
 
 func Name(petId int64) string {
 	if len(allNames) == 0 {
-		log.Fatal("You must call battlePet.Init() before calling battlePet.Name()")
+		log.Fatal("You must call battlepet.Init() before calling battlepet.Name()")
 	}
 	return allNames[petId]
 }
 
 func Own(petId int64) bool {
 	if len(allOwned) == 0 {
-		log.Fatal("You must call battlePet.Init() before calling battlePet.Own()")
+		log.Fatal("You must call battlepet.Init() before calling battlepet.Own()")
 	}
 	return len(allOwned[petId]) > 0
 }

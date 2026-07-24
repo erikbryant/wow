@@ -7,7 +7,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/erikbryant/wow/itemCache"
+	"github.com/erikbryant/wow/itemcache"
 	"github.com/erikbryant/wow/wowapi"
 )
 
@@ -27,15 +27,15 @@ func refreshCache() {
 	refreshCount := 0
 	maxRefreshCount := 1000
 
-	for _, i := range itemCache.Items() {
+	for _, i := range itemcache.Items() {
 		if i.Stale(maxAge) {
 			needsRefresh++
 		}
 	}
 
-	for _, i := range itemCache.Items() {
+	for _, i := range itemcache.Items() {
 		if i.Stale(maxAge) {
-			itemCache.LookupItem(i.Id(), maxAge)
+			itemcache.LookupItem(i.Id(), maxAge)
 			refreshCount++
 		}
 		if refreshCount >= maxRefreshCount {
@@ -43,7 +43,7 @@ func refreshCache() {
 		}
 	}
 
-	itemCache.Save()
+	itemcache.Save()
 
 	fmt.Printf("Refreshed %d of %d stale items\n", refreshCount, needsRefresh)
 }
@@ -51,10 +51,10 @@ func refreshCache() {
 // usage prints a usage message and terminates the program with an error
 func usage() {
 	log.Fatal(`Usage:
-  listItems                                              # Print the entire cache
-  listItems -passPhrase <phrase> -id <itemId>            # Print a single item
-  listItems -passPhrase <phrase> -refresh                # Refresh items in the cache
-  listItems -passPhrase <phrase> -delItem -id <itemId>   # Delete <itemId> from the cache
+  listitems                                              # Print the entire cache
+  listitems -passPhrase <phrase> -id <itemId>            # Print a single item
+  listitems -passPhrase <phrase> -refresh                # Refresh items in the cache
+  listitems -passPhrase <phrase> -delItem -id <itemId>   # Delete <itemId> from the cache
 `)
 }
 
@@ -63,7 +63,7 @@ func main() {
 
 	if *itemId == 0 && !*refresh && !*delItem {
 		// If no flags, list the whole cache
-		itemCache.Print()
+		itemcache.Print()
 		return
 	}
 
@@ -80,8 +80,8 @@ func main() {
 			usage()
 		}
 		fmt.Println("Deleting itemId:", *itemId)
-		itemCache.Delete(*itemId)
-		itemCache.Save()
+		itemcache.Delete(*itemId)
+		itemcache.Save()
 		return
 	}
 
@@ -92,10 +92,10 @@ func main() {
 
 	if *readThrough {
 		// Get the latest values
-		itemCache.DisableRead()
+		itemcache.DisableRead()
 	}
 
-	i, ok := itemCache.LookupItem(*itemId, 0)
+	i, ok := itemcache.LookupItem(*itemId, 0)
 	if !ok {
 		log.Fatal("Failed to LookupItem: ", *itemId)
 	}
@@ -107,5 +107,5 @@ func main() {
 		fmt.Println(i.Format())
 	}
 
-	itemCache.Save()
+	itemcache.Save()
 }

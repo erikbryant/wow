@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/erikbryant/wow/battlePet"
+	"github.com/erikbryant/wow/battlepet"
 	"github.com/erikbryant/wow/common"
-	"github.com/erikbryant/wow/itemCache"
+	"github.com/erikbryant/wow/itemcache"
 	"github.com/erikbryant/wow/shopping"
 	"github.com/erikbryant/wow/toy"
 	"github.com/erikbryant/wow/transmog"
@@ -37,7 +37,7 @@ func main() {
 	}
 
 	wowapi.Init(*passPhrase, *oauthAvailable)
-	battlePet.Init(*oauthAvailable)
+	battlepet.Init(*oauthAvailable)
 	toy.Init(*oauthAvailable)
 	transmog.Init(*oauthAvailable)
 	shopping.Init()
@@ -50,6 +50,6 @@ func main() {
 
 	if *oauthAvailable {
 		// Write the prices file for the WoW 'wowMerchant' addon to consume
-		common.WriteFile("./generated/PriceCache.lua", itemCache.Lua())
+		common.WriteFile("./generated/PriceCache.lua", itemcache.Lua())
 	}
 }

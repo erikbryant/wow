@@ -45,7 +45,7 @@ func load() {
 	decoder := gob.NewDecoder(file)
 	err = decoder.Decode(&allSetIds)
 	if err != nil {
-		log.Fatalf("error reading itemCache: %v", err)
+		log.Fatalf("error reading itemcache: %v", err)
 	}
 }
 
