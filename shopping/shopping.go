@@ -19,10 +19,13 @@ import (
 )
 
 var (
-	mu                    sync.Mutex
-	usefulRecipesMaxPrice = common.Coins(10, 0, 0)
-	usefulRecipes         = map[int64]struct{}{}
-	oauthAvailable        = true
+	mu             sync.Mutex
+	usefulRecipes  = map[int64]struct{}{}
+	oauthAvailable = true
+)
+
+const (
+	usefulRecipesMaxPrice = 100000
 )
 
 // usefulGoods are useful items I want

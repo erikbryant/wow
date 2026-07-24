@@ -33,7 +33,7 @@ func init() {
 func load() {
 	file, err := os.Open(itemCacheFile)
 	if err != nil {
-		fmt.Printf("*** error opening itemcache file: %v, creating new one\n", err)
+		fmt.Printf("*** error opening item cache file: %v, creating new one\n", err)
 		return
 	}
 	defer file.Close()
@@ -42,7 +42,7 @@ func load() {
 	err = decoder.Decode(&itemCache)
 	mu.Unlock()
 	if err != nil {
-		log.Fatalf("error reading itemcache: %v", err)
+		log.Fatalf("error reading item cache: %v", err)
 	}
 }
 
@@ -50,7 +50,7 @@ func load() {
 func Save() {
 	file, err := os.Create(itemCacheFile)
 	if err != nil {
-		log.Fatalf("error creating itemcache file: %v", err)
+		log.Fatalf("error creating item cache file: %v", err)
 	}
 	defer file.Close()
 	encoder := gob.NewEncoder(file)
@@ -58,7 +58,7 @@ func Save() {
 	err = encoder.Encode(itemCache)
 	mu.Unlock()
 	if err != nil {
-		log.Fatalf("error encoding itemcache: %v", err)
+		log.Fatalf("error encoding item cache: %v", err)
 	}
 }
 
@@ -87,7 +87,7 @@ func Delete(id int64) {
 	mu.Unlock()
 }
 
-// IDs returns the sorted list of keys from itemcache
+// IDs returns the sorted list of keys from the item cache file
 func IDs() []int64 {
 	ids := []int64{}
 
