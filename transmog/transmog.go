@@ -132,12 +132,13 @@ func owned() map[int64]bool {
 // flaky appearance IDs; WoW says I own the transmogs, but this app thinks I don't
 var flaky = map[int64]bool{
 	// These are not real appearances
-	573:  true, // Various equippable profession items
-	577:  true, // Various equippable profession items
-	870:  true, // Ammo
-	1884: true, // Various fish held in offhand
-	2016: true, // Various fish held in offhand
-	2019: true, // Various fish held in offhand
+	573:   true, // Various equippable profession items
+	577:   true, // Various equippable profession items
+	870:   true, // Ammo
+	1884:  true, // Various fish held in offhand
+	2016:  true, // Various fish held in offhand
+	2019:  true, // Various fish held in offhand
+	78217: true, // Elegant Artisan's Fishing Hat
 
 	// NOT part of an appearance set
 	1172:  true, // Ghostly Bracers
