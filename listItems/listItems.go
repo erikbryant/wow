@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/erikbryant/wow/itemCache"
-	"github.com/erikbryant/wow/wowAPI"
+	"github.com/erikbryant/wow/wowapi"
 )
 
 var (
@@ -72,7 +72,7 @@ func main() {
 		usage()
 	}
 
-	wowAPI.Init(*passPhrase, false)
+	wowapi.Init(*passPhrase, false)
 
 	if *delItem {
 		if *itemId == 0 {

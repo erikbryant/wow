@@ -9,7 +9,7 @@ import (
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/common"
 	"github.com/erikbryant/wow/item"
-	"github.com/erikbryant/wow/wowAPI"
+	"github.com/erikbryant/wow/wowapi"
 )
 
 var (
@@ -62,7 +62,7 @@ func save() {
 func owned() map[int64][]item.PetInfo {
 	myPets := map[int64][]item.PetInfo{}
 
-	pets, ok := wowAPI.CollectionsPets()
+	pets, ok := wowapi.CollectionsPets()
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain pets owned.")
 	}
@@ -109,7 +109,7 @@ func owned() map[int64][]item.PetInfo {
 func petNames() map[int64]string {
 	pets := map[int64]string{}
 
-	allPets, ok := wowAPI.Pets()
+	allPets, ok := wowapi.Pets()
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain pets.")
 	}

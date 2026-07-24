@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/wowAPI"
+	"github.com/erikbryant/wow/wowapi"
 )
 
 type Recipe struct {
@@ -131,7 +131,7 @@ func makeRecipe(r any) Recipe {
 }
 
 func knownRecipes(realm, alt, tierName string) map[int64]Recipe {
-	result, ok := wowAPI.Professions(realm, alt)
+	result, ok := wowapi.Professions(realm, alt)
 	if !ok {
 		fmt.Println("No professions!", realm, alt, result)
 	}

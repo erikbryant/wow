@@ -8,7 +8,7 @@ import (
 	"slices"
 
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/wowAPI"
+	"github.com/erikbryant/wow/wowapi"
 )
 
 var (
@@ -65,12 +65,12 @@ func save() {
 
 // allItemAppearanceSetIds returns a map of all item IDs that are in appearance sets
 func allItemAppearanceSetIds() {
-	ids := wowAPI.ItemAppearanceSetsIndexIds()
+	ids := wowapi.ItemAppearanceSetsIndexIds()
 	count := len(ids)
 	for setId, setName := range ids {
 		fmt.Printf("%d\tAppearance set: %d   %s\n", count, setId, setName)
 		count--
-		for _, id := range wowAPI.ItemAppearanceSetIds(setId) {
+		for _, id := range wowapi.ItemAppearanceSetIds(setId) {
 			//fmt.Printf("   Appearance: %d\n", id)
 			allSetIds[id] = true
 		}
@@ -81,7 +81,7 @@ func allItemAppearanceSetIds() {
 func owned() map[int64]bool {
 	myTransmogs := map[int64]bool{}
 
-	t, ok := wowAPI.CollectionsTransmogs()
+	t, ok := wowapi.CollectionsTransmogs()
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain transmogs owned.")
 	}

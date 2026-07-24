@@ -12,7 +12,7 @@ import (
 
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/item"
-	"github.com/erikbryant/wow/wowAPI"
+	"github.com/erikbryant/wow/wowapi"
 )
 
 var (
@@ -153,7 +153,7 @@ func LookupItem(id int64, age time.Duration) (item.Item, bool) {
 		fmt.Println("Refreshing stale item:", i.Format())
 	}
 
-	result, ok := wowAPI.WowItem(web.ToString(id))
+	result, ok := wowapi.WowItem(web.ToString(id))
 	if !ok {
 		return item.Item{}, false
 	}

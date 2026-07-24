@@ -17,7 +17,7 @@ import (
 	"github.com/erikbryant/wow/recipes"
 	"github.com/erikbryant/wow/toy"
 	"github.com/erikbryant/wow/transmog"
-	"github.com/erikbryant/wow/wowAPI"
+	"github.com/erikbryant/wow/wowapi"
 	"github.com/fatih/color"
 )
 
@@ -456,7 +456,7 @@ func main() {
 		usage()
 	}
 
-	wowAPI.Init(*passPhrase, *oauthAvailable)
+	wowapi.Init(*passPhrase, *oauthAvailable)
 	battlePet.Init(*oauthAvailable)
 	toy.Init(*oauthAvailable)
 	transmog.Init(*oauthAvailable)

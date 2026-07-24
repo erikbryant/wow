@@ -5,7 +5,7 @@ import (
 
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/item"
-	"github.com/erikbryant/wow/wowAPI"
+	"github.com/erikbryant/wow/wowapi"
 )
 
 var (
@@ -26,7 +26,7 @@ func Init(oauthAvailable bool) {
 func owned() map[int64]bool {
 	myToys := map[int64]bool{}
 
-	toys, ok := wowAPI.CollectionsToys()
+	toys, ok := wowapi.CollectionsToys()
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain toys owned.")
 	}
@@ -44,7 +44,7 @@ func owned() map[int64]bool {
 func toyNames() map[int64]string {
 	toys := map[int64]string{}
 
-	allToys, ok := wowAPI.Toys()
+	allToys, ok := wowapi.Toys()
 	if !ok {
 		log.Fatal("ERROR: Unable to obtain toys.")
 	}

@@ -1,4 +1,4 @@
-package wowAPI
+package wowapi
 
 import (
 	"bytes"

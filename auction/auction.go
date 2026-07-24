@@ -6,7 +6,7 @@ import (
 
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/item"
-	"github.com/erikbryant/wow/wowAPI"
+	"github.com/erikbryant/wow/wowapi"
 )
 
 // Sample 'commodity auction' response. All have exactly these fields.
@@ -122,7 +122,7 @@ func UnpackAuctions(auctions []any) map[int64][]Auction {
 
 	for _, auc := range auctions {
 		aucStruct := JsonToStruct(auc.(map[string]any))
-		if wowAPI.SkipItem(aucStruct.ItemId) {
+		if wowapi.SkipItem(aucStruct.ItemId) {
 			continue
 		}
 		a[aucStruct.ItemId] = append(a[aucStruct.ItemId], aucStruct)
@@ -137,9 +137,9 @@ func GetAuctions(realm string) (map[int64][]Auction, bool) {
 	var auctions []any
 
 	if strings.ToLower(realm) == "commodities" {
-		auctions, ok = wowAPI.Commodities()
+		auctions, ok = wowapi.Commodities()
 	} else {
-		auctions, ok = wowAPI.Auctions(realm)
+		auctions, ok = wowapi.Auctions(realm)
 	}
 	if !ok {
 		log.Println("ERROR: Unable to obtain auctions for", realm)
