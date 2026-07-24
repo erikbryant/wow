@@ -167,7 +167,7 @@ func Init(passPhrase string, oauthAvailable bool) {
 	var ok bool
 	profileAccessToken, ok = wowProfileAccessToken()
 	if !ok {
-		log.Fatal("unable to get oauthAvailable access token", err)
+		log.Fatal("unable to get profile access token", err)
 	}
 }
 
