@@ -32,22 +32,22 @@ var usefulGoods = map[int64]int64{
 	//cache.Search("Weavercloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
 
 	// Fun weapon transmogs
-	itemcache.Search("Blackfury").Id():          common.Coins(3000, 0, 0),
-	itemcache.Search("Tyrhold Broadsword").Id(): common.Coins(3000, 0, 0),
+	itemcache.Search("Blackfury").Id():          common.Coppers(3000, 0, 0),
+	itemcache.Search("Tyrhold Broadsword").Id(): common.Coppers(3000, 0, 0),
 
 	// Appearance set transmogs
-	itemcache.Search("Tyrhold Visage").Id():            common.Coins(2000, 0, 0),
-	itemcache.Search("Tyrhold Epaulets").Id():          common.Coins(2000, 0, 0),
-	itemcache.Search("Tyrhold Robe").Id():              common.Coins(2000, 0, 0),
-	itemcache.Search("Tyrhold Slippers").Id():          common.Coins(2000, 0, 0),
-	itemcache.Search("Boots of the Black Flame").Id():  common.Coins(2000, 0, 0),
-	itemcache.Search("Helm of the Tranquil Path").Id(): common.Coins(2000, 0, 0),
-	itemcache.Search("Vest of the Tranquil Path").Id(): common.Coins(2000, 0, 0),
+	itemcache.Search("Tyrhold Visage").Id():            common.Coppers(2000, 0, 0),
+	itemcache.Search("Tyrhold Epaulets").Id():          common.Coppers(2000, 0, 0),
+	itemcache.Search("Tyrhold Robe").Id():              common.Coppers(2000, 0, 0),
+	itemcache.Search("Tyrhold Slippers").Id():          common.Coppers(2000, 0, 0),
+	itemcache.Search("Boots of the Black Flame").Id():  common.Coppers(2000, 0, 0),
+	itemcache.Search("Helm of the Tranquil Path").Id(): common.Coppers(2000, 0, 0),
+	itemcache.Search("Vest of the Tranquil Path").Id(): common.Coppers(2000, 0, 0),
 
 	// Gun appearances
-	itemcache.Search("Ameelton's Shot-Thrower").Id():     common.Coins(3000, 0, 0),
-	itemcache.Search("Kickback 5000").Id():               common.Coins(3000, 0, 0),
-	itemcache.Search("Extreme-Impact Hole Puncher").Id(): common.Coins(3000, 0, 0),
+	itemcache.Search("Ameelton's Shot-Thrower").Id():     common.Coppers(3000, 0, 0),
+	itemcache.Search("Kickback 5000").Id():               common.Coppers(3000, 0, 0),
+	itemcache.Search("Extreme-Impact Hole Puncher").Id(): common.Coppers(3000, 0, 0),
 }
 
 // Init determines which cooking recipes are still needed
@@ -55,7 +55,7 @@ func Init(oauth bool) {
 	oauthAvailable = oauth
 
 	for _, recipeName := range recipes.Needed() {
-		usefulGoods[itemcache.Search(recipeName).Id()] = common.Coins(10, 0, 0)
+		usefulGoods[itemcache.Search(recipeName).Id()] = common.Coppers(10, 0, 0)
 	}
 }
 
@@ -87,7 +87,7 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 			if auc.Buyout <= 0 {
 				continue
 			}
-			if auc.Buyout >= common.Coins(800, 0, 0) {
+			if auc.Buyout >= common.Coppers(800, 0, 0) {
 				continue
 			}
 			stats := fmt.Sprintf("%s %s %s", battlepet.Name(petId), common.Gold(auc.Buyout), i.Quality())
@@ -117,7 +117,7 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Buyout <= 0 {
 			continue
 		}
-		if petAuction.Buyout > common.Coins(800, 0, 0) {
+		if petAuction.Buyout > common.Coppers(800, 0, 0) {
 			continue
 		}
 		bargains = append(bargains, battlepet.Name(petAuction.Pet.SpeciesId))
@@ -185,7 +185,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Pet.Level < 25 {
 			continue
 		}
-		if petAuction.Buyout > common.Coins(100, 0, 0) {
+		if petAuction.Buyout > common.Coppers(100, 0, 0) {
 			continue
 		}
 
@@ -218,7 +218,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 				continue
 			}
 			profit := (i.SellPriceRealizable() - auc.Buyout) * auc.Quantity
-			if profit < common.Coins(0, 50, 0) {
+			if profit < common.Coppers(0, 50, 0) {
 				// Not enough profit to make it worth the WoW runtime it takes to scan the AH
 				continue
 			}
@@ -275,7 +275,7 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 
 			// Bargains on toys
 			if oauthAvailable {
-				maxPrice := common.Coins(400, 0, 0)
+				maxPrice := common.Coppers(400, 0, 0)
 				if i.Toy() && !toy.Own(i) && auc.Buyout <= maxPrice {
 					str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 					bargains = append(bargains, str)
@@ -312,10 +312,10 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 				continue
 			}
 
-			maxPrice := common.Coins(80, 0, 0)
+			maxPrice := common.Coppers(80, 0, 0)
 			appearanceSetSuffix := ""
 			if transmog.InAppearanceSet(i.Appearances()) {
-				maxPrice = common.Coins(600, 0, 0)
+				maxPrice = common.Coppers(600, 0, 0)
 				appearanceSetSuffix = "    ---"
 			}
 
@@ -368,7 +368,7 @@ func scanRealm(realm string, c chan<- string, summarize bool) {
 	arbitrages, profit := findArbitrages(auctions, realm)
 
 	if summarize {
-		if profit > common.Coins(15, 0, 0) {
+		if profit > common.Coppers(15, 0, 0) {
 			// Only show arbitrages if there is some actual amount of money
 			// If the arbitrages are the only things on this realm, only show if worthwhile to visit
 			c := color.New(color.FgWhite)

@@ -63,8 +63,8 @@ var Alts = []Alt{
 	{"Sisters of Elune", "Rrhette"},
 }
 
-// Coins returns a single numeric value of the given denominations
-func Coins(g, s, c int64) int64 {
+// Coppers returns the value in coppers of the given denominations
+func Coppers(g, s, c int64) int64 {
 	return g*100*100 + s*100 + c
 }
 
@@ -145,7 +145,6 @@ func AppendFile(name, contents string, mu *sync.Mutex) {
 	if err != nil {
 		log.Fatal("Failed to open file:", name, err)
 	}
-	defer f.Close()
 
 	_, err = f.WriteString(contents)
 	if err != nil {
