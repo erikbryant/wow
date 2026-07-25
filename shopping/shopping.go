@@ -20,12 +20,7 @@ import (
 
 var (
 	mu             sync.Mutex
-	usefulRecipes  = map[int64]struct{}{}
 	oauthAvailable = true
-)
-
-const (
-	usefulRecipesMaxPrice = 100000
 )
 
 // usefulGoods are useful items I want
@@ -55,11 +50,12 @@ var usefulGoods = map[int64]int64{
 	itemcache.Search("Extreme-Impact Hole Puncher").Id(): common.Coins(3000, 0, 0),
 }
 
-// Init determines which classic cooking recipes are needed
-func Init() {
-	recipeNames := recipes.Needed()
-	for _, recipeName := range recipeNames {
-		usefulRecipes[itemcache.Search(recipeName).Id()] = struct{}{}
+// Init determines which cooking recipes are still needed
+func Init(oauth bool) {
+	oauthAvailable = oauth
+
+	for _, recipeName := range recipes.Needed() {
+		usefulGoods[itemcache.Search(recipeName).Id()] = common.Coins(10, 0, 0)
 	}
 }
 
@@ -292,13 +288,6 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 				bargains = append(bargains, str)
 			}
-
-			// Bargains on recipes
-			_, ok = usefulRecipes[itemId]
-			if ok && auc.Buyout <= usefulRecipesMaxPrice {
-				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
-				bargains = append(bargains, str)
-			}
 		}
 	}
 
@@ -400,8 +389,7 @@ func scanRealm(realm string, c chan<- string, summarize bool) {
 }
 
 // ScanRealms processes auctions on all realms in 'r'
-func ScanRealms(r string, summarize, oauth bool) {
-	oauthAvailable = oauth
+func ScanRealms(r string, summarize bool) {
 	realms := strings.Split(r, ",")
 	results := []string{}
 	c := make(chan string)

@@ -40,13 +40,13 @@ func main() {
 	battlepet.Init(*oauthAvailable)
 	toy.Init(*oauthAvailable)
 	transmog.Init(*oauthAvailable)
-	shopping.Init()
+	shopping.Init(*oauthAvailable)
 
 	if !*oauthAvailable {
 		fmt.Printf("\n*** OAuth unavailable. Some features may be missing.\n")
 	}
 
-	shopping.ScanRealms(*realms, *summarize, *oauthAvailable)
+	shopping.ScanRealms(*realms, *summarize)
 
 	if *oauthAvailable {
 		// Write the prices file for the WoW 'wowMerchant' addon to consume
