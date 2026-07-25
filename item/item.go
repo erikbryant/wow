@@ -259,5 +259,5 @@ func (i Item) Format() string {
 	if i.AppearanceSet() {
 		appearanceSet = " AS"
 	}
-	return fmt.Sprintf("%7d  %s %s %s %11s   %3d   %-18s   %-8s   %s   %s", i.Id(), equippable, stackable, appearanceSet, common.Gold(i.SellPriceAdvertised()), i.ItemLevel(), i.ItemClassName(), i.Quality(), i.Updated().Format("2006-01-02"), i.Name())
+	return fmt.Sprintf("%7d  %s %s %s %11s   %3d   %-18s   %-9s   %s   %s", i.Id(), equippable, stackable, appearanceSet, common.Gold(i.SellPriceAdvertised()), i.ItemLevel(), i.ItemClassName(), i.Quality(), i.Updated().Format("2006-01-02"), i.Name())
 }

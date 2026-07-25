@@ -27,19 +27,13 @@ func refreshCache() {
 	refreshCount := 0
 	maxRefreshCount := 1000
 
-	for _, i := range itemcache.Items() {
+	for _, i := range itemcache.ItemsCopy() {
 		if i.Stale(maxAge) {
 			needsRefresh++
-		}
-	}
-
-	for _, i := range itemcache.Items() {
-		if i.Stale(maxAge) {
-			itemcache.LookupItem(i.Id(), maxAge)
-			refreshCount++
-		}
-		if refreshCount >= maxRefreshCount {
-			break
+			if refreshCount < maxRefreshCount {
+				itemcache.LookupItem(i.Id(), maxAge)
+				refreshCount++
+			}
 		}
 	}
 

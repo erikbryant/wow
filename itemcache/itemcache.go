@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"log"
+	"maps"
 	"os"
 	"slices"
 	"strings"
@@ -102,10 +103,15 @@ func IDs() []int64 {
 	return ids
 }
 
-// Items returns the map of cached items
-func Items() map[int64]item.Item {
-	// I am not sure that this is thread-safe
-	return itemCache
+// ItemsCopy returns a copy of the map of cached items
+func ItemsCopy() map[int64]item.Item {
+	mu.Lock()
+	defer mu.Unlock()
+
+	result := make(map[int64]item.Item, len(itemCache))
+	maps.Copy(result, itemCache)
+
+	return result
 }
 
 // Print writes a text version of the in-memory cache to stdout
