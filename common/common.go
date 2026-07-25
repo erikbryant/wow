@@ -69,13 +69,13 @@ func Coppers(g, s, c int64) int64 {
 }
 
 // Gold returns a formatted string of the given numeric value
-func Gold(price int64) string {
-	copper := price % 100
-	price /= 100
-	silver := price % 100
-	price /= 100
-	gold := price
-	return fmt.Sprintf("%d.%02d.%02d", gold, silver, copper)
+func Gold(coppers int64) string {
+	c := coppers % 100
+	coppers /= 100
+	s := coppers % 100
+	coppers /= 100
+	g := coppers
+	return fmt.Sprintf("%d.%02d.%02d", g, s, c)
 }
 
 var (
