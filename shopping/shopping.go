@@ -66,6 +66,20 @@ func Init(oauth bool) {
 	}
 }
 
+// appendFile appends 'contents' to a file, creating it if it does not exist
+func appendFile(name, contents string) {
+	f, err := os.OpenFile(name, os.O_WRONLY|os.O_APPEND, 0600)
+	if err != nil {
+		log.Fatal("Failed to open log file:", name, err)
+	}
+	defer f.Close()
+
+	_, err = f.WriteString(contents)
+	if err != nil {
+		log.Fatal("Failed to write log file:", name, err)
+	}
+}
+
 // findPetSpellNeeded returns pet spells for sale that I do not own
 func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 	if !oauthAvailable {
@@ -239,7 +253,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 				// We have not seen this arbitrage before. Add iLevels for it in ilevel.go.
 				msg := fmt.Sprintf("%d: {}, // %s (%s)  iLvl: %d\n", i.Id(), i.Name(), i.ItemClassName(), i.ItemLevel())
 				mu.Lock()
-				common.AppendFile(iLvlPath, msg)
+				appendFile(iLvlPath, msg)
 				mu.Unlock()
 				fmt.Println(msg)
 			}
@@ -262,7 +276,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 		for _, iLevel := range iLevels {
 			logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", arbitrage.item.Id(), iLevel, arbitrage.item.Name())
 			mu.Lock()
-			common.AppendFile(arbitragePath, logEntry)
+			appendFile(arbitragePath, logEntry)
 			mu.Unlock()
 		}
 	}

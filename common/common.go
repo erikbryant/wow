@@ -2,8 +2,6 @@ package common
 
 import (
 	"fmt"
-	"log"
-	"os"
 	"sort"
 	"strings"
 )
@@ -121,18 +119,4 @@ func SortUnique(values []string) []string {
 	sort.Strings(unique)
 
 	return unique
-}
-
-// AppendFile appends 'contents' to a file, creating it if it does not exist
-func AppendFile(name, contents string) {
-	f, err := os.OpenFile(name, os.O_WRONLY|os.O_APPEND, 0600)
-	if err != nil {
-		log.Fatal("Failed to open file:", name, err)
-	}
-	defer f.Close()
-
-	_, err = f.WriteString(contents)
-	if err != nil {
-		log.Fatal("Failed to write file:", name, err)
-	}
 }
