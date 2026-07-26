@@ -169,6 +169,9 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 		118:  {}, // Winter Reindeer
 		120:  {}, // Winter's Little Helper
 		153:  {}, // Wolpertinger
+
+		// Pets that Stephen does not need right now
+		1907: {}, // Pygmy Owl
 	}
 
 	for _, petAuction := range auctions[battlepet.PetCageItemId] {
@@ -185,7 +188,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Pet.Level < 25 {
 			continue
 		}
-		if petAuction.Buyout > common.Coppers(100, 0, 0) {
+		if petAuction.Buyout > common.Coppers(200, 0, 0) {
 			continue
 		}
 
