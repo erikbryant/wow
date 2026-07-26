@@ -67,7 +67,7 @@ func Init(oauth bool) {
 	}
 }
 
-// appendFile appends 'contents' to a file, creating it if it does not exist
+// appendFile appends 'contents' to a file
 func appendFile(name, contents string) {
 	f, err := os.OpenFile(name, os.O_WRONLY|os.O_APPEND, 0600)
 	if err != nil {
