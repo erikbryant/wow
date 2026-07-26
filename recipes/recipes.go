@@ -2,7 +2,9 @@ package recipes
 
 import (
 	"fmt"
+	"log"
 	"maps"
+	"os"
 	"slices"
 	"strings"
 
@@ -20,6 +22,10 @@ type Recipe struct {
 
 var (
 	AllRecipes = map[int64]Recipe{}
+)
+
+const (
+	recipesNeededPath = "./generated/recipesNeeded.txt"
 )
 
 func makeRecipe(r any) Recipe {
@@ -98,12 +104,22 @@ func Needed() []string {
 	recipesByAlt := scanAlts()
 	recipesNeeded := map[string]int{}
 
+	// Ensure log file is empty
+	f, err := os.Create(recipesNeededPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
 	// Identify missing recipes
 	for alt, recipes := range recipesByAlt {
 		for _, recipe := range AllRecipes {
 			_, ok := recipes[recipe.id]
 			if !ok {
-				fmt.Println(alt, recipe.name)
+				_, err = f.WriteString(alt + " " + recipe.name + "\n")
+				if err != nil {
+					log.Fatal("Failed to write recipe needed:", recipesNeededPath, err)
+				}
 				recipesNeeded[recipe.name]++
 			}
 		}
@@ -119,10 +135,10 @@ func Needed() []string {
 	slices.Sort(rn)
 	slices.Sort(rnc)
 
-	fmt.Println()
-	fmt.Println("Recipes needed:")
-	fmt.Println(strings.Join(rnc, "\n"))
-	fmt.Println()
+	_, err = f.WriteString("\nRecipes needed:\n" + strings.Join(rnc, "\n"))
+	if err != nil {
+		log.Fatal("Failed to write table:", recipesNeededPath, err)
+	}
 
 	return rn
 }
