@@ -22,7 +22,7 @@ var (
 )
 
 const (
-	priceCachePath = "./generated/PriceCache.lua"
+	priceCachePath = "./exports/PriceCache.lua"
 )
 
 // usage prints a usage message and terminates the program with an error

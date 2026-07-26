@@ -1,15 +1,7 @@
-# Do not commit
-secrets/
-
-# Cache
-generated/
-
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+# Generated files
+data/
+exports/
+reports/
 
 # Test binary, build with `go test -c`
 *.test

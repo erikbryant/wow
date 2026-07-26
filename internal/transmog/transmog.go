@@ -14,7 +14,7 @@ import (
 var (
 	allOwned            = map[int64]bool{}
 	allSetIds           = map[int64]bool{}
-	appearanceCacheFile = "./generated/appearanceCache.gob"
+	appearanceCacheFile = "./data/appearanceCache.gob"
 )
 
 func Init(includeOwned bool) {

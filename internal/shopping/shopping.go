@@ -26,8 +26,8 @@ var (
 )
 
 const (
-	arbitragePath = "./generated/arbitrageLatest.log"
-	iLvlPath      = "./generated/arbitrageWithiLvl.log"
+	arbitragePath = "./exports/arbitrageLatest"
+	iLvlPath      = "./reports/arbitrageWithiLvl"
 )
 
 // usefulGoods are useful items I want

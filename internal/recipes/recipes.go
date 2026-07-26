@@ -25,7 +25,7 @@ var (
 )
 
 const (
-	recipesNeededPath = "./generated/recipesNeeded.txt"
+	recipesNeededPath = "./reports/recipesNeeded"
 )
 
 func makeRecipe(r any) Recipe {

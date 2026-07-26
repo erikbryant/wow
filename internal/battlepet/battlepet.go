@@ -14,7 +14,7 @@ import (
 
 var (
 	PetCageItemId    = int64(82800)
-	petNameCacheFile = "./generated/petNameCache.gob"
+	petNameCacheFile = "./data/petNameCache.gob"
 	allNames         = map[int64]string{}
 	allOwned         = map[int64][]wowitem.PetInfo{}
 )

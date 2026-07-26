@@ -18,7 +18,7 @@ import (
 
 var (
 	itemCache     = map[int64]wowitem.Item{}
-	itemCacheFile = "./generated/itemcache.gob"
+	itemCacheFile = "./data/itemCache.gob"
 	readDisabled  = false
 	mu            sync.Mutex
 )
