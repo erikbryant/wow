@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/item"
-	"github.com/erikbryant/wow/wowapi"
+	"github.com/erikbryant/wow/internal/wowapi"
+	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 var (
@@ -58,7 +58,7 @@ func toyNames() map[int64]string {
 	return toys
 }
 
-func Own(i item.Item) bool {
+func Own(i wowitem.Item) bool {
 	if len(allOwned) == 0 {
 		log.Fatal("You must call toy.Init() before calling toy.Own()")
 	}

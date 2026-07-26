@@ -7,8 +7,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/erikbryant/wow/itemcache"
-	"github.com/erikbryant/wow/wowapi"
+	"github.com/erikbryant/wow/internal/itemcache"
+	"github.com/erikbryant/wow/internal/wowapi"
 )
 
 var (
@@ -17,7 +17,7 @@ var (
 	refresh     = flag.Bool("refresh", false, "Refresh cached values")
 	delItem     = flag.Bool("delItem", false, "Delete cached value")
 	itemId      = flag.Int64("id", 0, "Item ID to look up")
-	full        = flag.Bool("full", false, "Display item details")
+	full        = flag.Bool("full", false, "Display wowitem details")
 )
 
 // refreshCache refreshes any cached items older than a certain age
@@ -46,7 +46,7 @@ func refreshCache() {
 func usage() {
 	log.Fatal(`Usage:
   listitems                                              # Print the entire cache
-  listitems -passPhrase <phrase> -id <itemId>            # Print a single item
+  listitems -passPhrase <phrase> -id <itemId>            # Print a single wowitem
   listitems -passPhrase <phrase> -refresh                # Refresh items in the cache
   listitems -passPhrase <phrase> -delItem -id <itemId>   # Delete <itemId> from the cache
 `)

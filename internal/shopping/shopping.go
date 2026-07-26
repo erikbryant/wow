@@ -9,14 +9,14 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/erikbryant/wow/auction"
-	"github.com/erikbryant/wow/battlepet"
-	"github.com/erikbryant/wow/common"
-	"github.com/erikbryant/wow/item"
-	"github.com/erikbryant/wow/itemcache"
-	"github.com/erikbryant/wow/recipes"
-	"github.com/erikbryant/wow/toy"
-	"github.com/erikbryant/wow/transmog"
+	"github.com/erikbryant/wow/internal/auction"
+	"github.com/erikbryant/wow/internal/battlepet"
+	"github.com/erikbryant/wow/internal/common"
+	"github.com/erikbryant/wow/internal/itemcache"
+	"github.com/erikbryant/wow/internal/recipes"
+	"github.com/erikbryant/wow/internal/toy"
+	"github.com/erikbryant/wow/internal/transmog"
+	"github.com/erikbryant/wow/internal/wowitem"
 	"github.com/fatih/color"
 )
 
@@ -221,7 +221,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 }
 
 type Arbitrage struct {
-	item   item.Item
+	item   wowitem.Item
 	profit int64
 }
 
@@ -250,7 +250,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 
 			arbitrages = append(arbitrages, Arbitrage{i, profit})
 
-			if i.ItemClassName() == "Profession" && !item.Known(i.ID()) {
+			if i.ItemClassName() == "Profession" && !wowitem.Known(i.ID()) {
 				// We have not seen this arbitrage before. Add iLevels for it in ilevel.go.
 				msg := fmt.Sprintf("%d: {}, // %s (%s)  iLvl: %d\n", i.ID(), i.Name(), i.ItemClassName(), i.ItemLevel())
 				mu.Lock()
@@ -273,7 +273,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 			continue
 		}
 
-		iLevels := item.ILevels(arbitrage.item.ID())
+		iLevels := wowitem.ILevels(arbitrage.item.ID())
 		for _, iLevel := range iLevels {
 			logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", arbitrage.item.ID(), iLevel, arbitrage.item.Name())
 			mu.Lock()

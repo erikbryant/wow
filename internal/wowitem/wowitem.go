@@ -1,4 +1,4 @@
-package item
+package wowitem
 
 import (
 	"fmt"
@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/common"
-	"github.com/erikbryant/wow/transmog"
+	"github.com/erikbryant/wow/internal/common"
+	"github.com/erikbryant/wow/internal/transmog"
 )
 
-// Item holds values about a WoW item
+// Item holds values about a WoW wowitem
 type Item struct {
 	// WARNING: Changing this struct invalidates the cache.
 	// The members have to be public to write to a gob file,
@@ -38,19 +38,19 @@ func NewItem(wowData map[string]any) Item {
 	}
 }
 
-// ID returns the item ID
+// ID returns the wowitem ID
 func (i Item) ID() int64 {
 	return i.XId
 }
 
-// Binding returns whether and when the item binds
+// Binding returns whether and when the wowitem binds
 func (i Item) Binding() string {
 	// The key is only sometimes there; do not error if it is missing
 	value, _ := web.MsiValued(i.XItem, []string{"preview_item", "binding", "type"}, "")
 	return value.(string)
 }
 
-// InventoryType returns the slot this item equips to, or UNKNOWN
+// InventoryType returns the slot this wowitem equips to, or UNKNOWN
 func (i Item) InventoryType() string {
 	// The key is only sometimes there; do not error if it is missing
 	value, _ := web.MsiValued(i.XItem, []string{"inventory_type"}, "UNKNOWN")
@@ -79,7 +79,7 @@ var EquipSlotTypes = map[string]struct{}{
 	"SHIELD":     {},
 }
 
-// Equippable returns true if the item is equippable
+// Equippable returns true if the wowitem is equippable
 func (i Item) Equippable() bool {
 	// Preferred authoritative field
 	if v, ok := i.XItem["is_equippable"]; ok {
@@ -93,7 +93,7 @@ func (i Item) Equippable() bool {
 	return isEquipSlot
 }
 
-// ItemLevel returns the item level
+// ItemLevel returns the wowitem level
 func (i Item) ItemLevel() int64 {
 	v, err := web.MsiValue(i.XItem, []string{"level"})
 	if err != nil {
@@ -102,7 +102,7 @@ func (i Item) ItemLevel() int64 {
 	return web.ToInt64(v)
 }
 
-// VariableItemLevel returns true if the item can be enhanced, changing its iLevel
+// VariableItemLevel returns true if the wowitem can be enhanced, changing its iLevel
 func (i Item) VariableItemLevel() bool {
 	if i.Stackable() {
 		return false
@@ -111,13 +111,13 @@ func (i Item) VariableItemLevel() bool {
 	return cn == "Armor" || cn == "Gem" || cn == "Weapon"
 }
 
-// ItemSubclassName returns the item subclass name
+// ItemSubclassName returns the wowitem subclass name
 func (i Item) ItemSubclassName() string {
 	v, _ := web.MsiValued(i.XItem, []string{"item_subclass", "name"}, "")
 	return v.(string)
 }
 
-// Cosmetic returns true if this item is a cosmetic
+// Cosmetic returns true if this wowitem is a cosmetic
 func (i Item) Cosmetic() bool {
 	// Definitely cosmetic
 	if i.ItemSubclassName() == "Cosmetic" {
@@ -135,7 +135,7 @@ func (i Item) Cosmetic() bool {
 	return false
 }
 
-// ItemClassName returns the item class name
+// ItemClassName returns the wowitem class name
 func (i Item) ItemClassName() string {
 	v, err := web.MsiValue(i.XItem, []string{"item_class", "name"})
 	if err != nil {
@@ -144,7 +144,7 @@ func (i Item) ItemClassName() string {
 	return v.(string)
 }
 
-// Stackable returns true if the item can be stacked in the inventory
+// Stackable returns true if the wowitem can be stacked in the inventory
 func (i Item) Stackable() bool {
 	v, err := web.MsiValue(i.XItem, []string{"is_stackable"})
 	if err != nil {
@@ -160,7 +160,7 @@ func (i Item) RelicType() string {
 	return v.(string)
 }
 
-// Name returns the item name
+// Name returns the wowitem name
 func (i Item) Name() string {
 	return i.XItem["name"].(string)
 }
@@ -185,7 +185,7 @@ func (i Item) SellPriceAdvertised() int64 {
 	return pp
 }
 
-// SellPriceRealizable returns the actual price the vendor will offer for this specific item
+// SellPriceRealizable returns the actual price the vendor will offer for this specific wowitem
 func (i Item) SellPriceRealizable() int64 {
 	if i.VariableItemLevel() {
 		// I don't know how to price these
@@ -194,7 +194,7 @@ func (i Item) SellPriceRealizable() int64 {
 	return i.SellPriceAdvertised()
 }
 
-// Updated returns the last time this item was updated in the cache
+// Updated returns the last time this wowitem was updated in the cache
 func (i Item) Updated() time.Time {
 	return i.XUpdated
 }
@@ -209,7 +209,7 @@ func (i Item) Quality() string {
 	return web.ToString(v)
 }
 
-// Stale returns whether the item is older than a given number of days
+// Stale returns whether the wowitem is older than a given number of days
 func (i Item) Stale(age time.Duration) bool {
 	if age == 0 {
 		return false
@@ -222,7 +222,7 @@ func (i Item) Toy() bool {
 	return web.ToString(v) == "Toy"
 }
 
-// Appearances returns the appearance IDs this item provides
+// Appearances returns the appearance IDs this wowitem provides
 func (i Item) Appearances() []int64 {
 	appearanceIds := []int64{}
 
@@ -245,7 +245,7 @@ func (i Item) AppearanceSet() bool {
 	return transmog.InAppearanceSet(i.Appearances())
 }
 
-// Format returns a formatted string representing the item
+// Format returns a formatted string representing the wowitem
 func (i Item) Format() string {
 	equippable := "!E"
 	if i.Equippable() {

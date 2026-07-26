@@ -1,4 +1,4 @@
-package item
+package wowitem
 
 var itemLevels = map[int64][]int64{
 	// iLvl 80
@@ -89,7 +89,7 @@ var itemLevels = map[int64][]int64{
 	244708: {206, 212, 218, 225, 232}, // Sin'dorei Snippers
 }
 
-// Known returns true if the item has an entry in itemLevels
+// Known returns true if the wowitem has an entry in itemLevels
 func Known(itemId int64) bool {
 	_, ok := itemLevels[itemId]
 	return ok

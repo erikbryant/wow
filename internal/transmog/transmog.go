@@ -8,7 +8,7 @@ import (
 	"slices"
 
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/wowapi"
+	"github.com/erikbryant/wow/internal/wowapi"
 )
 
 var (
@@ -63,7 +63,7 @@ func save() {
 	}
 }
 
-// allItemAppearanceSetIds returns a map of all item IDs that are in appearance sets
+// allItemAppearanceSetIds returns a map of all wowitem IDs that are in appearance sets
 func allItemAppearanceSetIds() {
 	ids := wowapi.ItemAppearanceSetsIndexIds()
 	count := len(ids)

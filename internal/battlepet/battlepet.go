@@ -7,16 +7,16 @@ import (
 	"os"
 
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/common"
-	"github.com/erikbryant/wow/item"
-	"github.com/erikbryant/wow/wowapi"
+	"github.com/erikbryant/wow/internal/common"
+	"github.com/erikbryant/wow/internal/wowapi"
+	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 var (
 	PetCageItemId    = int64(82800)
 	petNameCacheFile = "./generated/petNameCache.gob"
 	allNames         = map[int64]string{}
-	allOwned         = map[int64][]item.PetInfo{}
+	allOwned         = map[int64][]wowitem.PetInfo{}
 )
 
 func Init(oauthAvailable bool) {
@@ -59,8 +59,8 @@ func save() {
 }
 
 // owned returns the pets I own
-func owned() map[int64][]item.PetInfo {
-	myPets := map[int64][]item.PetInfo{}
+func owned() map[int64][]wowitem.PetInfo {
+	myPets := map[int64][]wowitem.PetInfo{}
 
 	pets, ok := wowapi.CollectionsPets()
 	if !ok {
@@ -70,7 +70,7 @@ func owned() map[int64][]item.PetInfo {
 	for _, petRaw := range pets {
 		pet := petRaw.(map[string]any)
 
-		var p item.PetInfo
+		var p wowitem.PetInfo
 
 		stats, ok := pet["stats"].(map[string]any)
 		if !ok {
@@ -97,7 +97,7 @@ func owned() map[int64][]item.PetInfo {
 			name, _ := pet["species"].(map[string]any)
 			fmt.Println("Duplicate pet:", name)
 		} else {
-			myPets[p.SpeciesId] = []item.PetInfo{}
+			myPets[p.SpeciesId] = []wowitem.PetInfo{}
 		}
 		myPets[p.SpeciesId] = append(myPets[p.SpeciesId], p)
 	}
@@ -123,8 +123,8 @@ func petNames() map[int64]string {
 	return pets
 }
 
-// IsPetSpell returns true and the corresponding pet ID if the item is a pet summoning spell
-func IsPetSpell(i item.Item) (int64, bool) {
+// IsPetSpell returns true and the corresponding pet ID if the wowitem is a pet summoning spell
+func IsPetSpell(i wowitem.Item) (int64, bool) {
 	if len(allNames) == 0 {
 		log.Fatal("You must call battlepet.Init() before calling battlepet.IsPetSpell()")
 	}
@@ -156,6 +156,6 @@ func Own(petId int64) bool {
 	return len(allOwned[petId]) > 0
 }
 
-func Format(pet item.PetInfo) string {
+func Format(pet wowitem.PetInfo) string {
 	return fmt.Sprintf("%4d  %2d  %-8s  %s", pet.SpeciesId, pet.Level, common.QualityName(pet.QualityId), allNames[pet.SpeciesId])
 }

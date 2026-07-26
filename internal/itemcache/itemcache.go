@@ -12,12 +12,12 @@ import (
 	"time"
 
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/item"
-	"github.com/erikbryant/wow/wowapi"
+	"github.com/erikbryant/wow/internal/wowapi"
+	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 var (
-	itemCache     = map[int64]item.Item{}
+	itemCache     = map[int64]wowitem.Item{}
 	itemCacheFile = "./generated/itemcache.gob"
 	readDisabled  = false
 	mu            sync.Mutex
@@ -34,7 +34,7 @@ func init() {
 func load() {
 	file, err := os.Open(itemCacheFile)
 	if err != nil {
-		fmt.Printf("*** error opening item cache file: %v, creating new one\n", err)
+		fmt.Printf("*** error opening wowitem cache file: %v, creating new one\n", err)
 		return
 	}
 	defer file.Close()
@@ -43,7 +43,7 @@ func load() {
 	err = decoder.Decode(&itemCache)
 	mu.Unlock()
 	if err != nil {
-		log.Fatalf("error reading item cache: %v", err)
+		log.Fatalf("error reading wowitem cache: %v", err)
 	}
 }
 
@@ -51,7 +51,7 @@ func load() {
 func Save() {
 	file, err := os.Create(itemCacheFile)
 	if err != nil {
-		log.Fatalf("error creating item cache file: %v", err)
+		log.Fatalf("error creating wowitem cache file: %v", err)
 	}
 	defer file.Close()
 	encoder := gob.NewEncoder(file)
@@ -59,14 +59,14 @@ func Save() {
 	err = encoder.Encode(itemCache)
 	mu.Unlock()
 	if err != nil {
-		log.Fatalf("error encoding item cache: %v", err)
+		log.Fatalf("error encoding wowitem cache: %v", err)
 	}
 }
 
 // Read returns the in-memory copy (if exists)
-func Read(id int64) (item.Item, bool) {
+func Read(id int64) (wowitem.Item, bool) {
 	if readDisabled {
-		return item.Item{}, false
+		return wowitem.Item{}, false
 	}
 	mu.Lock()
 	i, ok := itemCache[id]
@@ -75,7 +75,7 @@ func Read(id int64) (item.Item, bool) {
 }
 
 // Write writes an entry to the in-memory cache
-func Write(id int64, i item.Item) {
+func Write(id int64, i wowitem.Item) {
 	mu.Lock()
 	itemCache[id] = i
 	mu.Unlock()
@@ -88,7 +88,7 @@ func Delete(id int64) {
 	mu.Unlock()
 }
 
-// IDs returns the sorted list of keys from the item cache file
+// IDs returns the sorted list of keys from the wowitem cache file
 func IDs() []int64 {
 	ids := []int64{}
 
@@ -104,11 +104,11 @@ func IDs() []int64 {
 }
 
 // ItemsCopy returns a copy of the map of cached items
-func ItemsCopy() map[int64]item.Item {
+func ItemsCopy() map[int64]wowitem.Item {
 	mu.Lock()
 	defer mu.Unlock()
 
-	result := make(map[int64]item.Item, len(itemCache))
+	result := make(map[int64]wowitem.Item, len(itemCache))
 	maps.Copy(result, itemCache)
 
 	return result
@@ -124,8 +124,8 @@ func Print() {
 	}
 }
 
-// Search returns the item with name 's' or an empty item if not found
-func Search(s string) item.Item {
+// Search returns the wowitem with name 's' or an empty wowitem if not found
+func Search(s string) wowitem.Item {
 	mu.Lock()
 	for id := range itemCache {
 		if itemCache[id].Name() == s {
@@ -135,8 +135,8 @@ func Search(s string) item.Item {
 	}
 	mu.Unlock()
 
-	fmt.Println("Did not find item for search string: ", s)
-	return item.Item{}
+	fmt.Println("Did not find wowitem for search string: ", s)
+	return wowitem.Item{}
 }
 
 func DisableRead() {
@@ -147,8 +147,8 @@ func EnableRead() {
 	readDisabled = false
 }
 
-// LookupItem retrieves the data for a single item. It retrieves from the cache if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
-func LookupItem(id int64, age time.Duration) (item.Item, bool) {
+// LookupItem retrieves the data for a single wowitem. It retrieves from the cache if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
+func LookupItem(id int64, age time.Duration) (wowitem.Item, bool) {
 	// Use the cached value if exists and not stale
 	i, ok := Read(id)
 	if ok {
@@ -156,14 +156,14 @@ func LookupItem(id int64, age time.Duration) (item.Item, bool) {
 		if !i.Stale(age) {
 			return i, true
 		}
-		fmt.Println("Refreshing stale item:", i.Format())
+		fmt.Println("Refreshing stale wowitem:", i.Format())
 	}
 
 	result, ok := wowapi.WowItem(web.ToString(id))
 	if !ok {
-		return item.Item{}, false
+		return wowitem.Item{}, false
 	}
-	i = item.NewItem(result)
+	i = wowitem.NewItem(result)
 	Write(i.ID(), i)
 
 	return i, true
@@ -197,8 +197,8 @@ end
 local function ValidatePriceCache()
     for itemID, cachedPrice in pairs(VendorSellPriceCache) do
         itemID = tonumber(itemID)
-        local item = Item:CreateFromItemID(itemID)
-        item:ContinueOnItemLoad(
+        local wowitem = Item:CreateFromItemID(itemID)
+        wowitem:ContinueOnItemLoad(
                 function()
                     local itemInfo = { C_Item.GetItemInfo(itemID) }
                     local sellPrice = itemInfo[11]
@@ -230,7 +230,7 @@ func luaCosmetic() (string, []string) {
 	lua.WriteString(fmt.Sprintf("}\n"))
 
 	lua.WriteString(fmt.Sprintf(`
--- Cosmetic returns true if the item is a Cosmetic
+-- Cosmetic returns true if the wowitem is a Cosmetic
 local function Cosmetic(itemID)
     return Cosmetics[tostring(itemID)] or false
 end

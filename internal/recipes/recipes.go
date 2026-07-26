@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/common"
-	"github.com/erikbryant/wow/wowapi"
+	"github.com/erikbryant/wow/internal/common"
+	"github.com/erikbryant/wow/internal/wowapi"
 )
 
 type Recipe struct {

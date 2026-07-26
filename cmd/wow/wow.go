@@ -6,12 +6,12 @@ import (
 	"log"
 	"os"
 
-	"github.com/erikbryant/wow/battlepet"
-	"github.com/erikbryant/wow/itemcache"
-	"github.com/erikbryant/wow/shopping"
-	"github.com/erikbryant/wow/toy"
-	"github.com/erikbryant/wow/transmog"
-	"github.com/erikbryant/wow/wowapi"
+	"github.com/erikbryant/wow/internal/battlepet"
+	"github.com/erikbryant/wow/internal/itemcache"
+	"github.com/erikbryant/wow/internal/shopping"
+	"github.com/erikbryant/wow/internal/toy"
+	"github.com/erikbryant/wow/internal/transmog"
+	"github.com/erikbryant/wow/internal/wowapi"
 )
 
 var (
