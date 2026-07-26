@@ -34,7 +34,7 @@ func init() {
 func load() {
 	file, err := os.Open(itemCacheFile)
 	if err != nil {
-		fmt.Printf("*** error opening wowitem cache file: %v, creating new one\n", err)
+		fmt.Printf("*** error opening item cache file: %v, creating new one\n", err)
 		return
 	}
 	defer file.Close()
@@ -43,7 +43,7 @@ func load() {
 	err = decoder.Decode(&itemCache)
 	mu.Unlock()
 	if err != nil {
-		log.Fatalf("error reading wowitem cache: %v", err)
+		log.Fatalf("error reading item cache: %v", err)
 	}
 }
 
@@ -51,7 +51,7 @@ func load() {
 func Save() {
 	file, err := os.Create(itemCacheFile)
 	if err != nil {
-		log.Fatalf("error creating wowitem cache file: %v", err)
+		log.Fatalf("error creating item cache file: %v", err)
 	}
 	defer file.Close()
 	encoder := gob.NewEncoder(file)
@@ -59,7 +59,7 @@ func Save() {
 	err = encoder.Encode(itemCache)
 	mu.Unlock()
 	if err != nil {
-		log.Fatalf("error encoding wowitem cache: %v", err)
+		log.Fatalf("error encoding item cache: %v", err)
 	}
 }
 
@@ -88,7 +88,7 @@ func Delete(id int64) {
 	mu.Unlock()
 }
 
-// IDs returns the sorted list of keys from the wowitem cache file
+// IDs returns the sorted list of keys from the item cache file
 func IDs() []int64 {
 	ids := []int64{}
 
@@ -124,7 +124,7 @@ func Print() {
 	}
 }
 
-// Search returns the wowitem with name 's' or an empty wowitem if not found
+// Search returns the item with name 's' or an empty item if not found
 func Search(s string) wowitem.Item {
 	mu.Lock()
 	for id := range itemCache {
@@ -135,7 +135,7 @@ func Search(s string) wowitem.Item {
 	}
 	mu.Unlock()
 
-	fmt.Println("Did not find wowitem for search string: ", s)
+	fmt.Println("Did not find item for search string: ", s)
 	return wowitem.Item{}
 }
 
@@ -147,7 +147,7 @@ func EnableRead() {
 	readDisabled = false
 }
 
-// LookupItem retrieves the data for a single wowitem. It retrieves from the cache if it is there, or the web if it is not. If it retrieves it from the web it also caches it.
+// LookupItem retrieves data for a single item. From the cache if present, or web if not. If it retrieves it from the web it also caches it.
 func LookupItem(id int64, age time.Duration) (wowitem.Item, bool) {
 	// Use the cached value if exists and not stale
 	i, ok := Read(id)
@@ -156,10 +156,10 @@ func LookupItem(id int64, age time.Duration) (wowitem.Item, bool) {
 		if !i.Stale(age) {
 			return i, true
 		}
-		fmt.Println("Refreshing stale wowitem:", i.Format())
+		fmt.Println("Refreshing stale item:", i.Format())
 	}
 
-	result, ok := wowapi.WowItem(web.ToString(id))
+	result, ok := wowapi.Item(web.ToString(id))
 	if !ok {
 		return wowitem.Item{}, false
 	}
@@ -197,8 +197,8 @@ end
 local function ValidatePriceCache()
     for itemID, cachedPrice in pairs(VendorSellPriceCache) do
         itemID = tonumber(itemID)
-        local wowitem = Item:CreateFromItemID(itemID)
-        wowitem:ContinueOnItemLoad(
+        local item = Item:CreateFromItemID(itemID)
+        item:ContinueOnItemLoad(
                 function()
                     local itemInfo = { C_Item.GetItemInfo(itemID) }
                     local sellPrice = itemInfo[11]
@@ -230,7 +230,7 @@ func luaCosmetic() (string, []string) {
 	lua.WriteString(fmt.Sprintf("}\n"))
 
 	lua.WriteString(fmt.Sprintf(`
--- Cosmetic returns true if the wowitem is a Cosmetic
+-- Cosmetic returns true if the item is a Cosmetic
 local function Cosmetic(itemID)
     return Cosmetics[tostring(itemID)] or false
 end

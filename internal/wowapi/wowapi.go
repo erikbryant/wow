@@ -171,7 +171,7 @@ func Init(passPhrase string, oauthAvailable bool) {
 	}
 }
 
-// SkipItem returns true if the caller should ignore this wowitem
+// SkipItem returns true if the caller should ignore this item
 func SkipItem(item int64) bool {
 	_, ok := skipItems[item]
 	return ok
@@ -427,8 +427,8 @@ func Commodities() ([]any, bool) {
 	return requestKey(url, accessToken, "auctions", "Commodities")
 }
 
-// WowItem retrieves a single wowitem from the WoW web API
-func WowItem(id string) (map[string]any, bool) {
+// Item retrieves a single item from the WoW web API
+func Item(id string) (map[string]any, bool) {
 	url := "https://us.api.blizzard.com/data/wow/item/" + id + "?namespace=static-us&locale=en_US"
 	r, ok := request(url, accessToken, "Auctions")
 	if !ok {
@@ -559,7 +559,7 @@ func ItemAppearanceSlot(slotName string) ([]any, bool) {
 	return requestKey(url, profileAccessToken, "appearances", "ItemAppearanceSlot")
 }
 
-// ItemAppearance returns the details of a given wowitem appearance ID
+// ItemAppearance returns the details of a given item appearance ID
 func ItemAppearance(itemAppearanceId int64) (any, bool) {
 	url := fmt.Sprintf("https://us.api.blizzard.com/data/wow/item-appearance/%d?namespace=static-us", itemAppearanceId)
 	return request(url, profileAccessToken, "ItemAppearance")

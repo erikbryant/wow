@@ -123,7 +123,7 @@ func petNames() map[int64]string {
 	return pets
 }
 
-// IsPetSpell returns true and the corresponding pet ID if the wowitem is a pet summoning spell
+// IsPetSpell returns true and the corresponding pet ID if the item is a pet summoning spell
 func IsPetSpell(i wowitem.Item) (int64, bool) {
 	if len(allNames) == 0 {
 		log.Fatal("You must call battlepet.Init() before calling battlepet.IsPetSpell()")
