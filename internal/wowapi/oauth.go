@@ -1,4 +1,4 @@
-package oauth2
+package wowapi
 
 import (
 	"context"
@@ -168,8 +168,8 @@ func shutdown() {
 	}
 }
 
-// ProfileAccessToken returns a profile access token (to authenticate user profile API calls)
-func ProfileAccessToken(clientID, clientSecret string) (string, bool) {
+// getPAT returns a profile access token (to authenticate user profile API calls)
+func getPAT(clientID, clientSecret string) (string, bool) {
 	go start(clientID, clientSecret)
 	defer shutdown()
 	uri := "http://localhost:8888/auth/blizzard/login"

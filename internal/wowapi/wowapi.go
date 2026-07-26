@@ -11,7 +11,6 @@ import (
 
 	"github.com/erikbryant/aes"
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/internal/oauth2"
 )
 
 var (
@@ -211,7 +210,7 @@ func requestKey(url, token, key, caller string) ([]any, bool) {
 
 // wowProfileAccessToken returns a profile access token (to authenticate user profile API calls)
 func wowProfileAccessToken() (string, bool) {
-	return oauth2.ProfileAccessToken(clientID, clientSecret)
+	return getPAT(clientID, clientSecret)
 }
 
 // wowAccessToken retrieves an access token. This token is used to authenticate API calls.
