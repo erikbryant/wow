@@ -32,7 +32,7 @@ var itemLevels = map[int64][]int64{
 	// iLvl 106
 	237952: {206, 212, 218, 225, 232}, // Sun-Blessed Blacksmith's Toolbox
 	238018: {206, 212, 218, 225, 232}, // Sun-Blessed Blacksmith's Hammer
-	239637: {212, 218, 225, 232},      // Elegant Artisan's Enchanting Hat
+	239637: {206, 212, 218, 225, 232}, // Elegant Artisan's Enchanting Hat
 	240959: {206, 212, 218, 225, 232}, // Sin'dorei Jeweler's Loupes
 	240960: {206, 212, 218, 225, 232}, // Sin'dorei Enchanter's Crystal
 	244628: {206, 212, 218, 225, 232}, // Sin'dorei Forgemaster's Cover
@@ -59,9 +59,10 @@ var itemLevels = map[int64][]int64{
 	193487: {71, 72, 73, 74},     // Alchemist's Hat
 	193541: {70, 71, 72, 73, 74}, // Wildercloth Tailor's Coat
 	193612: {71, 72, 73, 74},     // Smithing Apron
-	194874: {74},                 // Scribe's Fastened Quill
+	194874: {71, 72, 74},         // Scribe's Fastened Quill
 	198715: {70, 71, 72, 73, 74}, // Runed Draconium Rod
-	193615: {72, 73, 74},         // Jeweler's Cover
+	193615: {71, 72, 73, 74},     // Jeweler's Cover
+	193480: {71, 72, 73, 74},     // Durable Pack
 
 	// iLvl 317 oddities
 	224114: {79, 85, 91, 98, 105}, // Runed Bismuth Rod
