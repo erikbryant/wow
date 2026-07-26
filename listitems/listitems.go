@@ -31,7 +31,7 @@ func refreshCache() {
 		if i.Stale(maxAge) {
 			needsRefresh++
 			if refreshCount < maxRefreshCount {
-				itemcache.LookupItem(i.Id(), maxAge)
+				itemcache.LookupItem(i.ID(), maxAge)
 				refreshCount++
 			}
 		}

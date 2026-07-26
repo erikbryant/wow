@@ -164,7 +164,7 @@ func LookupItem(id int64, age time.Duration) (item.Item, bool) {
 		return item.Item{}, false
 	}
 	i = item.NewItem(result)
-	Write(i.Id(), i)
+	Write(i.ID(), i)
 
 	return i, true
 }

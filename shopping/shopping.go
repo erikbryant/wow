@@ -32,29 +32,30 @@ const (
 
 // usefulGoods are useful items I want
 var usefulGoods = map[int64]int64{
-	//cache.Search("Hexweave Bag").Id():                 common.Coins(120, 0, 0), // 30 slot
-	//cache.Search("Chronocloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
-	//cache.Search("Dawnweave Reagent Bag").Id():        common.Coins(90, 0, 0),  // 38 slot
-	//cache.Search("Simply Stitched Reagent Bag").Id():  common.Coins(90, 0, 0),  // 32 slot
-	//cache.Search("Weavercloth Reagent Bag").Id():      common.Coins(90, 0, 0),  // 36 slot
+	//itemcache.Search("Hexweave Bag").ID(): common.Coppers(120, 0, 0), // 30 slot
+
+	//itemcache.Search("Simply Stitched Reagent Bag").ID(): common.Coppers(90, 0, 0), // 32 slot
+	//itemcache.Search("Chronocloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
+	//itemcache.Search("Weavercloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
+	//itemcache.Search("Dawnweave Reagent Bag").ID():       common.Coppers(90, 0, 0), // 38 slot
 
 	// Fun weapon transmogs
-	itemcache.Search("Blackfury").Id():          common.Coppers(3000, 0, 0),
-	itemcache.Search("Tyrhold Broadsword").Id(): common.Coppers(3000, 0, 0),
+	itemcache.Search("Blackfury").ID():          common.Coppers(3000, 0, 0),
+	itemcache.Search("Tyrhold Broadsword").ID(): common.Coppers(3000, 0, 0),
 
 	// Appearance set transmogs
-	itemcache.Search("Tyrhold Visage").Id():            common.Coppers(2000, 0, 0),
-	itemcache.Search("Tyrhold Epaulets").Id():          common.Coppers(2000, 0, 0),
-	itemcache.Search("Tyrhold Robe").Id():              common.Coppers(2000, 0, 0),
-	itemcache.Search("Tyrhold Slippers").Id():          common.Coppers(2000, 0, 0),
-	itemcache.Search("Boots of the Black Flame").Id():  common.Coppers(2000, 0, 0),
-	itemcache.Search("Helm of the Tranquil Path").Id(): common.Coppers(2000, 0, 0),
-	itemcache.Search("Vest of the Tranquil Path").Id(): common.Coppers(2000, 0, 0),
+	itemcache.Search("Tyrhold Visage").ID():            common.Coppers(2000, 0, 0),
+	itemcache.Search("Tyrhold Epaulets").ID():          common.Coppers(2000, 0, 0),
+	itemcache.Search("Tyrhold Robe").ID():              common.Coppers(2000, 0, 0),
+	itemcache.Search("Tyrhold Slippers").ID():          common.Coppers(2000, 0, 0),
+	itemcache.Search("Boots of the Black Flame").ID():  common.Coppers(2000, 0, 0),
+	itemcache.Search("Helm of the Tranquil Path").ID(): common.Coppers(2000, 0, 0),
+	itemcache.Search("Vest of the Tranquil Path").ID(): common.Coppers(2000, 0, 0),
 
 	// Gun appearances
-	itemcache.Search("Ameelton's Shot-Thrower").Id():     common.Coppers(3000, 0, 0),
-	itemcache.Search("Kickback 5000").Id():               common.Coppers(3000, 0, 0),
-	itemcache.Search("Extreme-Impact Hole Puncher").Id(): common.Coppers(3000, 0, 0),
+	itemcache.Search("Ameelton's Shot-Thrower").ID():     common.Coppers(3000, 0, 0),
+	itemcache.Search("Kickback 5000").ID():               common.Coppers(3000, 0, 0),
+	itemcache.Search("Extreme-Impact Hole Puncher").ID(): common.Coppers(3000, 0, 0),
 }
 
 // Init determines which cooking recipes are still needed
@@ -62,7 +63,7 @@ func Init(oauth bool) {
 	oauthAvailable = oauth
 
 	for _, recipeName := range recipes.Needed() {
-		usefulGoods[itemcache.Search(recipeName).Id()] = common.Coppers(10, 0, 0)
+		usefulGoods[itemcache.Search(recipeName).ID()] = common.Coppers(10, 0, 0)
 	}
 }
 
@@ -249,9 +250,9 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 
 			arbitrages = append(arbitrages, Arbitrage{i, profit})
 
-			if i.ItemClassName() == "Profession" && !item.Known(i.Id()) {
+			if i.ItemClassName() == "Profession" && !item.Known(i.ID()) {
 				// We have not seen this arbitrage before. Add iLevels for it in ilevel.go.
-				msg := fmt.Sprintf("%d: {}, // %s (%s)  iLvl: %d\n", i.Id(), i.Name(), i.ItemClassName(), i.ItemLevel())
+				msg := fmt.Sprintf("%d: {}, // %s (%s)  iLvl: %d\n", i.ID(), i.Name(), i.ItemClassName(), i.ItemLevel())
 				mu.Lock()
 				appendFile(iLvlPath, msg)
 				mu.Unlock()
@@ -272,9 +273,9 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 			continue
 		}
 
-		iLevels := item.ILevels(arbitrage.item.Id(), arbitrage.item.ItemLevel())
+		iLevels := item.ILevels(arbitrage.item.ID(), arbitrage.item.ItemLevel())
 		for _, iLevel := range iLevels {
-			logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", arbitrage.item.Id(), iLevel, arbitrage.item.Name())
+			logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", arbitrage.item.ID(), iLevel, arbitrage.item.Name())
 			mu.Lock()
 			appendFile(arbitragePath, logEntry)
 			mu.Unlock()
