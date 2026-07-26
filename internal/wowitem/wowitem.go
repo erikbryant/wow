@@ -217,6 +217,7 @@ func (i Item) Stale(age time.Duration) bool {
 	return time.Now().Sub(i.Updated()) > age
 }
 
+// Toy returns true if this item is a toy
 func (i Item) Toy() bool {
 	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "toy"}, "")
 	return web.ToString(v) == "Toy"
