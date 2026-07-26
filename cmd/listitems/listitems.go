@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/erikbryant/wow/internal/itemcache"
 	"github.com/erikbryant/wow/internal/wowapi"
@@ -14,40 +13,16 @@ import (
 var (
 	passPhrase  = flag.String("passPhrase", "", "Passphrase to unlock WOW API client Id/secret")
 	readThrough = flag.Bool("readThrough", false, "Read live values")
-	refresh     = flag.Bool("refresh", false, "Refresh cached values")
 	delItem     = flag.Bool("delItem", false, "Delete cached value")
 	itemId      = flag.Int64("id", 0, "Item ID to look up")
 	full        = flag.Bool("full", false, "Display item details")
 )
-
-// refreshCache refreshes any cached items older than a certain age
-func refreshCache() {
-	maxAge := 24 * time.Hour * 7 // 1 week
-	needsRefresh := 0
-	refreshCount := 0
-	maxRefreshCount := 1000
-
-	for _, i := range itemcache.ItemsCopy() {
-		if i.Stale(maxAge) {
-			needsRefresh++
-			if refreshCount < maxRefreshCount {
-				itemcache.LookupItem(i.ID(), maxAge)
-				refreshCount++
-			}
-		}
-	}
-
-	itemcache.Save()
-
-	fmt.Printf("Refreshed %d of %d stale items\n", refreshCount, needsRefresh)
-}
 
 // usage prints a usage message and terminates the program with an error
 func usage() {
 	log.Fatal(`Usage:
   listitems                                              # Print the entire cache
   listitems -passPhrase <phrase> -id <itemId>            # Print a single item
-  listitems -passPhrase <phrase> -refresh                # Refresh items in the cache
   listitems -passPhrase <phrase> -delItem -id <itemId>   # Delete <itemId> from the cache
 `)
 }
@@ -55,7 +30,7 @@ func usage() {
 func main() {
 	flag.Parse()
 
-	if *itemId == 0 && !*refresh && !*delItem {
+	if *itemId == 0 && !*delItem {
 		// If no flags, list the whole cache
 		itemcache.Print()
 		return
@@ -76,11 +51,6 @@ func main() {
 		fmt.Println("Deleting itemId:", *itemId)
 		itemcache.Delete(*itemId)
 		itemcache.Save()
-		return
-	}
-
-	if *refresh {
-		refreshCache()
 		return
 	}
 
