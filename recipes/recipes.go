@@ -57,6 +57,10 @@ func knownRecipes(realm, alt, tierName string) map[int64]Recipe {
 			recipes := map[int64]Recipe{}
 			for _, k := range kr.([]any) {
 				recipe := makeRecipe(k)
+				if recipe.name == "Captain Rumsey's Lager" {
+					// This is a quest reward or something; won't be found in the AH
+					continue
+				}
 				recipes[recipe.id] = recipe
 			}
 			return recipes
