@@ -273,7 +273,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 			continue
 		}
 
-		iLevels := item.ILevels(arbitrage.item.ID(), arbitrage.item.ItemLevel())
+		iLevels := item.ILevels(arbitrage.item.ID())
 		for _, iLevel := range iLevels {
 			logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", arbitrage.item.ID(), iLevel, arbitrage.item.Name())
 			mu.Lock()
