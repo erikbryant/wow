@@ -2,6 +2,8 @@ package shopping
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"slices"
 	"sort"
 	"strings"
@@ -21,6 +23,11 @@ import (
 var (
 	mu             sync.Mutex
 	oauthAvailable = true
+)
+
+const (
+	arbitragePath = "./generated/arbitrageLatest.log"
+	iLvlPath      = "./generated/arbitrageWithiLvl.log"
 )
 
 // usefulGoods are useful items I want
@@ -231,7 +238,9 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 			if i.ItemClassName() == "Profession" && !item.Known(i.Id()) {
 				// We have not seen this arbitrage before. Add iLevels for it in ilevel.go.
 				msg := fmt.Sprintf("%d: {}, // %s (%s)  iLvl: %d\n", i.Id(), i.Name(), i.ItemClassName(), i.ItemLevel())
-				common.AppendFile("./generated/arbitrageWithiLvl.log", msg, &mu)
+				mu.Lock()
+				common.AppendFile(iLvlPath, msg)
+				mu.Unlock()
 				fmt.Println(msg)
 			}
 		}
@@ -252,7 +261,9 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 		iLevels := item.ILevels(arbitrage.item.Id(), arbitrage.item.ItemLevel())
 		for _, iLevel := range iLevels {
 			logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", arbitrage.item.Id(), iLevel, arbitrage.item.Name())
-			common.AppendFile("./generated/arbitrageLatest.log", logEntry, &mu)
+			mu.Lock()
+			common.AppendFile(arbitragePath, logEntry)
+			mu.Unlock()
 		}
 	}
 
@@ -397,7 +408,11 @@ func ScanRealms(r string, summarize bool) {
 	results := []string{}
 	c := make(chan string)
 
-	common.CreateFile("./generated/arbitrageLatest.log")
+	// Ensure log file is empty
+	err := os.WriteFile(arbitragePath, nil, 0600)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	for _, realm := range realms {
 		go scanRealm(realm, c, summarize)
