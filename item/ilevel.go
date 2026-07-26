@@ -95,7 +95,7 @@ func Known(itemId int64) bool {
 	return ok
 }
 
-func ILevels(itemId, iLevel int64) []int64 {
+func ILevels(itemId int64) []int64 {
 	if Known(itemId) {
 		return itemLevels[itemId]
 	}
