@@ -1,12 +1,13 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
 
 	"github.com/erikbryant/wow/internal/itemcache"
+	"github.com/erikbryant/wow/internal/output"
+	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 func show(itemID int64, format string) {
@@ -18,10 +19,10 @@ func show(itemID int64, format string) {
 
 	switch format {
 	case "json":
-		b, _ := json.MarshalIndent(i.XItem, "\t", "\t")
-		fmt.Println(string(b))
+		output.JSON(os.Stdout, []wowitem.Item{i})
 	case "summary":
-		fmt.Println(i.Format())
+		s := output.Summary(i)
+		fmt.Println(s)
 	default:
 		fmt.Fprintln(os.Stderr, "Unknown format: ", format)
 		os.Exit(2)
@@ -29,7 +30,7 @@ func show(itemID int64, format string) {
 }
 
 func runShow(args []string) {
-	flags := flag.NewFlagSet("refresh", flag.ContinueOnError)
+	flags := flag.NewFlagSet("show", flag.ContinueOnError)
 
 	itemID := flags.Int64("id", -1, "Item ID to look up")
 	format := flags.String("format", "summary", "Output format: json or summary")
@@ -39,7 +40,7 @@ func runShow(args []string) {
 	}
 
 	if *itemID == -1 {
-		fmt.Fprintln(os.Stderr, "show requires --id")
+		fmt.Fprintln(os.Stderr, "show requires -id")
 		os.Exit(2)
 	}
 

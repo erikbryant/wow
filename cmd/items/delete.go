@@ -24,7 +24,7 @@ func runDelete(args []string) {
 	}
 
 	if *itemID == -1 {
-		fmt.Fprintln(os.Stderr, "delete requires --id")
+		fmt.Fprintln(os.Stderr, "delete requires -id")
 		os.Exit(2)
 	}
 

@@ -7,20 +7,7 @@ import (
 	"github.com/erikbryant/wow/internal/itemcache"
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/query"
-	"github.com/erikbryant/wow/internal/wowitem"
 )
-
-func cachedItems() []wowitem.Item {
-	cache := itemcache.ItemsCopy()
-
-	items := make([]wowitem.Item, 0, len(cache))
-
-	for _, item := range cache {
-		items = append(items, item)
-	}
-
-	return items
-}
 
 func runQuery(args []string) {
 	flags := flag.NewFlagSet("query", flag.ExitOnError)
@@ -107,7 +94,7 @@ func runQuery(args []string) {
 		predicates = append(predicates, query.ItemLevelAtMost(*ilevelMax))
 	}
 
-	items := cachedItems()
+	items := itemcache.ItemsSlice()
 
 	results := query.Find(items, predicates...)
 

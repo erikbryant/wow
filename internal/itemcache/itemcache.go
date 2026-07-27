@@ -103,8 +103,8 @@ func IDs() []int64 {
 	return ids
 }
 
-// ItemsCopy returns a copy of the map of cached items
-func ItemsCopy() map[int64]wowitem.Item {
+// ItemsMap returns a map of the cached items
+func ItemsMap() map[int64]wowitem.Item {
 	mu.Lock()
 	defer mu.Unlock()
 
@@ -112,6 +112,20 @@ func ItemsCopy() map[int64]wowitem.Item {
 	maps.Copy(result, itemCache)
 
 	return result
+}
+
+// ItemsSlice returns a slice of the cached items
+func ItemsSlice() []wowitem.Item {
+	mu.Lock()
+	defer mu.Unlock()
+
+	items := make([]wowitem.Item, 0, len(itemCache))
+
+	for _, item := range itemCache {
+		items = append(items, item)
+	}
+
+	return items
 }
 
 // Print writes a text version of the in-memory cache to stdout

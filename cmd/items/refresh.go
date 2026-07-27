@@ -31,7 +31,7 @@ func refreshCache(passphrase string, maxRefresh int) {
 	needsRefresh := 0
 	refreshCount := 0
 
-	for _, i := range itemcache.ItemsCopy() {
+	for _, i := range itemcache.ItemsSlice() {
 		if i.Stale(maxAge) {
 			needsRefresh++
 			if refreshCount < maxRefresh {
@@ -58,7 +58,7 @@ func runRefresh(args []string) {
 	}
 
 	if *passphrase == "" {
-		fmt.Fprintln(os.Stderr, "refresh requires --passphrase")
+		fmt.Fprintln(os.Stderr, "items refresh requires -passphrase")
 		os.Exit(2)
 	}
 
