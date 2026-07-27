@@ -22,21 +22,22 @@ func Table(w io.Writer, items []wowitem.Item) error {
 
 	fmt.Fprintln(
 		writer,
-		"ID\tNAME\tLEVEL\tQUALITY\tCLASS",
+		"ID\tNAME\tLEVEL\tASet\tQUALITY\tCLASS",
 	)
 
 	fmt.Fprintln(
 		writer,
-		"--\t----\t-----\t-------\t-----",
+		"--\t----\t-----\t----\t-------\t-----",
 	)
 
 	for _, item := range items {
 		fmt.Fprintf(
 			writer,
-			"%d\t%s\t%d\t%s\t%s\n",
+			"%d\t%s\t%d\t%t\t%s\t%s\n",
 			item.ID(),
 			item.Name(),
 			item.ItemLevel(),
+			item.AppearanceSet(),
 			item.Quality(),
 			item.ItemClassName(),
 		)
@@ -54,6 +55,7 @@ func Detail(w io.Writer, item wowitem.Item) error {
 		{"ID", fmt.Sprintf("%d", item.ID())},
 		{"Name", item.Name()},
 		{"Level", fmt.Sprintf("%d", item.ItemLevel())},
+		{"ASet", fmt.Sprintf("%t", item.AppearanceSet())},
 		{"Quality", item.Quality()},
 		{"Class", item.ItemClassName()},
 	}
