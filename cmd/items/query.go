@@ -54,12 +54,6 @@ func runQuery(args []string) {
 		"maximum item level",
 	)
 
-	jsonOutput := flags.Bool(
-		"json",
-		false,
-		"output JSON",
-	)
-
 	if err := flags.Parse(args); err != nil {
 		os.Exit(2)
 	}
@@ -97,11 +91,6 @@ func runQuery(args []string) {
 	items := itemcache.ItemsSlice()
 
 	results := query.Find(items, predicates...)
-
-	if *jsonOutput {
-		output.JSON(os.Stdout, results)
-		return
-	}
 
 	output.Table(os.Stdout, results)
 }

@@ -3,10 +3,85 @@ package output
 import (
 	"fmt"
 	"io"
+	"strings"
 	"text/tabwriter"
 
+	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
+
+// Column contains information to retrieve each column of output
+type Column struct {
+	header string
+	value  func(wowitem.Item) string
+}
+
+var columns = []Column{
+	{
+		header: "ID",
+		value:  func(item wowitem.Item) string { return fmt.Sprintf("%d", item.ID()) },
+	},
+	{
+		header: "Equips",
+		value:  func(item wowitem.Item) string { return fmt.Sprintf("%t", item.Equippable()) },
+	},
+	{
+		header: "Stacks",
+		value:  func(item wowitem.Item) string { return fmt.Sprintf("%t", item.Stackable()) },
+	},
+	{
+		header: "App Set",
+		value:  func(item wowitem.Item) string { return fmt.Sprintf("%t", item.AppearanceSet()) },
+	},
+	{
+		header: "Sell Price",
+		value:  func(item wowitem.Item) string { return common.Gold(item.SellPriceAdvertised()) },
+	},
+	{
+		header: "iLvl",
+		value:  func(item wowitem.Item) string { return fmt.Sprintf("%d", item.ItemLevel()) },
+	},
+	{
+		header: "Class",
+		value:  func(item wowitem.Item) string { return item.ItemClassName() },
+	},
+	{
+		header: "Quality",
+		value:  func(item wowitem.Item) string { return item.Quality() },
+	},
+	{
+		header: "Updated",
+		value:  func(item wowitem.Item) string { return item.Updated().Format("2006-01-02") },
+	},
+	{
+		header: "Name",
+		value:  func(item wowitem.Item) string { return item.Name() },
+	},
+}
+
+func headers() (string, string, string) {
+	cols := []string{}
+	seps := []string{}
+	fmts := []string{}
+
+	for _, column := range columns {
+		cols = append(cols, column.header)
+		seps = append(seps, "-----------------------"[0:len(column.header)])
+		fmts = append(fmts, "%s")
+	}
+
+	return strings.Join(cols, "\t"), strings.Join(seps, "\t"), strings.Join(fmts, "\t")
+}
+
+func row(item wowitem.Item) string {
+	fields := []string{}
+
+	for _, col := range columns {
+		fields = append(fields, col.value(item))
+	}
+
+	return strings.Join(fields, "\t")
+}
 
 // Table writes items as a human-readable table.
 func Table(w io.Writer, items []wowitem.Item) error {
@@ -19,27 +94,13 @@ func Table(w io.Writer, items []wowitem.Item) error {
 		0,
 	)
 
-	fmt.Fprintln(
-		writer,
-		"ID\tNAME\tLEVEL\tASet\tQUALITY\tCLASS",
-	)
+	header, separator, _ := headers()
 
-	fmt.Fprintln(
-		writer,
-		"--\t----\t-----\t----\t-------\t-----",
-	)
+	fmt.Fprintln(writer, header)
+	fmt.Fprintln(writer, separator)
 
 	for _, item := range items {
-		fmt.Fprintf(
-			writer,
-			"%d\t%s\t%d\t%t\t%s\t%s\n",
-			item.ID(),
-			item.Name(),
-			item.ItemLevel(),
-			item.AppearanceSet(),
-			item.Quality(),
-			item.ItemClassName(),
-		)
+		fmt.Fprintf(writer, "%s\n", row(item))
 	}
 
 	return writer.Flush()
