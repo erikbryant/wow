@@ -7,20 +7,32 @@ import (
 	"time"
 
 	"github.com/erikbryant/wow/internal/itemcache"
+	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/wowapi"
+	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 // refreshItem refreshes a single item
 func refreshItem(passphrase string, itemID int64) {
 	wowapi.Init(passphrase, false)
 
-	show(itemID, "summary")
+	iOld, ok := itemcache.LookupItem(itemID, 0)
+	if !ok {
+		fmt.Fprintln(os.Stderr, "Failed to lookup item: ", itemID)
+		os.Exit(2)
+	}
 
-	// Get the latest values
+	// Get the latest values from the web API
 	itemcache.DisableRead()
 	defer itemcache.Save()
 
-	show(itemID, "summary")
+	iNew, ok := itemcache.LookupItem(itemID, 0)
+	if !ok {
+		fmt.Fprintln(os.Stderr, "Failed to lookup item: ", itemID)
+		os.Exit(2)
+	}
+
+	output.Table(os.Stdout, []wowitem.Item{iOld, iNew})
 }
 
 // refreshCache refreshes cached items older than a certain age
