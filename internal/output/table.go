@@ -59,18 +59,16 @@ var columns = []Column{
 	},
 }
 
-func headers() (string, string, string) {
+func headers() (string, string) {
 	cols := []string{}
 	seps := []string{}
-	fmts := []string{}
 
 	for _, column := range columns {
 		cols = append(cols, column.header)
 		seps = append(seps, "-----------------------"[0:len(column.header)])
-		fmts = append(fmts, "%s")
 	}
 
-	return strings.Join(cols, "\t"), strings.Join(seps, "\t"), strings.Join(fmts, "\t")
+	return strings.Join(cols, "\t"), strings.Join(seps, "\t")
 }
 
 func row(item wowitem.Item) string {
@@ -94,7 +92,7 @@ func Table(w io.Writer, items []wowitem.Item) error {
 		0,
 	)
 
-	header, separator, _ := headers()
+	header, separator := headers()
 
 	fmt.Fprintln(writer, header)
 	fmt.Fprintln(writer, separator)
