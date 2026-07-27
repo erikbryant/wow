@@ -10,7 +10,7 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
-func show(itemID int64) {
+func json(itemID int64) {
 	i, ok := itemcache.LookupItem(itemID, 0)
 	if !ok {
 		fmt.Fprintln(os.Stderr, "Failed to LookupItem: ", itemID)
@@ -20,8 +20,8 @@ func show(itemID int64) {
 	output.JSON(os.Stdout, []wowitem.Item{i})
 }
 
-func runShow(args []string) {
-	flags := flag.NewFlagSet("show", flag.ContinueOnError)
+func runJSON(args []string) {
+	flags := flag.NewFlagSet("json", flag.ContinueOnError)
 
 	itemID := flags.Int64("id", -1, "Item ID to look up")
 
@@ -30,9 +30,9 @@ func runShow(args []string) {
 	}
 
 	if *itemID == -1 {
-		fmt.Fprintln(os.Stderr, "show requires -id")
+		fmt.Fprintln(os.Stderr, "json requires -id")
 		os.Exit(2)
 	}
 
-	show(*itemID)
+	json(*itemID)
 }

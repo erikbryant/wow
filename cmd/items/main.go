@@ -11,18 +11,18 @@ func usage() {
 
 Commands:
   delete -id <id>                                    Delete cached item
+  json -id <id>                                      Show JSON for an item
   list                                               List all items
   query [options]                                    Search for items
   refresh -passphrase <pass> [-max-refresh=1000]     Refresh stale items
-  show -id <id>                                      Show JSON for an item
 
 Examples:
   items delete -id 12345
+  items json -id 12345
   items list
   items query -rare -in-appearance-set
   items refresh -passphrase foobar -max-refresh=42
-  items refresh -passphrase foobar -id 12345
-  items show -id 12345`)
+  items refresh -passphrase foobar -id 12345`)
 }
 
 func main() {
@@ -38,6 +38,9 @@ func main() {
 	case "delete":
 		runDelete(args)
 
+	case "json":
+		runJSON(args)
+
 	case "list":
 		runList(args)
 
@@ -46,9 +49,6 @@ func main() {
 
 	case "refresh":
 		runRefresh(args)
-
-	case "show":
-		runShow(args)
 
 	case "help":
 		usage()
