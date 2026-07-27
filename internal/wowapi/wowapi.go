@@ -141,15 +141,15 @@ var (
 	}
 )
 
-func Init(passPhrase string, oauthAvailable bool) {
+func Init(passphrase string, oauthAvailable bool) {
 	var err error
 
-	clientID, err = aes.Decrypt(clientIDCrypt, passPhrase)
+	clientID, err = aes.Decrypt(clientIDCrypt, passphrase)
 	if err != nil {
 		log.Fatal("unable to decrypt clientID", err)
 	}
 
-	clientSecret, err = aes.Decrypt(clientSecretCrypt, passPhrase)
+	clientSecret, err = aes.Decrypt(clientSecretCrypt, passphrase)
 	if err != nil {
 		log.Fatal("unable to decrypt clientSecret", err)
 	}

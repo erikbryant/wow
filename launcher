@@ -37,7 +37,7 @@ open -a "Google Chrome"
 vspace
 
 cd ~/dev/wow
-go run cmd/wow/wow.go -passPhrase unlock -oauth=true
+go run cmd/wow/wow.go -passphrase unlock -oauth=true
 
 vspace
 
