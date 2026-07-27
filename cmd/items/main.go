@@ -14,15 +14,14 @@ Commands:
   list                                               List all items
   query [options]                                    Search for items
   refresh -passphrase <pass> [-max-refresh=1000]     Refresh stale items
-  show -id <id> [-format={summary|json}]             Show a single item's details
+  show -id <id>                                      Show JSON for an item
 
 Examples:
   items delete -id 12345
   items list
   items query -rare -in-appearance-set
   items refresh -passphrase foobar -max-refresh=42
-  items refresh -id 12345 -passphrase foobar
-  items show -id 19019 -format=json
+  items refresh -passphrase foobar -id 12345
   items show -id 12345`)
 }
 
