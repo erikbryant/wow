@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 
 	"github.com/erikbryant/wow/internal/itemcache"
@@ -60,6 +61,12 @@ func runQuery(args []string) {
 		"item ID",
 	)
 
+	sortField := flags.String(
+		"sort",
+		"id",
+		"sort items by {id, name}",
+	)
+
 	if err := flags.Parse(args); err != nil {
 		os.Exit(2)
 	}
@@ -101,6 +108,16 @@ func runQuery(args []string) {
 	items := itemcache.ItemsSlice()
 
 	results := query.Find(items, predicates...)
+
+	switch *sortField {
+	case "id":
+		query.Sort(results, query.ByID)
+	case "name":
+		query.Sort(results, query.ByName)
+	default:
+		fmt.Fprintln(os.Stderr, "sort order must be one of {id, name} got ", *sortField)
+		os.Exit(2)
+	}
 
 	output.Table(os.Stdout, results)
 }
