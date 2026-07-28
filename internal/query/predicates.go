@@ -63,3 +63,10 @@ func ItemClass(class string) Predicate {
 		return item.ItemClassName() == class
 	}
 }
+
+// ItemID returns true for items with the given ID.
+func ItemID(itemID int64) Predicate {
+	return func(item wowitem.Item) bool {
+		return item.ID() == itemID
+	}
+}

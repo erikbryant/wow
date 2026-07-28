@@ -54,6 +54,12 @@ func runQuery(args []string) {
 		"maximum item level",
 	)
 
+	itemID := flags.Int64(
+		"id",
+		-1,
+		"item ID",
+	)
+
 	if err := flags.Parse(args); err != nil {
 		os.Exit(2)
 	}
@@ -86,6 +92,10 @@ func runQuery(args []string) {
 
 	if *ilevelMax != 0 {
 		predicates = append(predicates, query.ItemLevelAtMost(*ilevelMax))
+	}
+
+	if *itemID != -1 {
+		predicates = append(predicates, query.ItemID(*itemID))
 	}
 
 	items := itemcache.ItemsSlice()
