@@ -33,10 +33,14 @@ func Find(items []wowitem.Item, predicates ...Predicate) []wowitem.Item {
 
 // Count returns the number of items matching all supplied predicates.
 func Count(items []wowitem.Item, predicates ...Predicate) int {
+	// This could be made memory efficient by not allocating the slice.
+	// But that leads to complexity. And this function isn't even used.
 	return len(finder(items, predicates...))
 }
 
 // Any returns true if at least one item matches all supplied predicates.
 func Any(items []wowitem.Item, predicates ...Predicate) bool {
+	// This could be made faster by short-circuiting when the first is found.
+	// But that leads to complexity. And this function isn't even used.
 	return Count(items, predicates...) > 0
 }
