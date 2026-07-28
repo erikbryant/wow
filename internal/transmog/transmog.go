@@ -208,6 +208,7 @@ var flaky = map[int64]bool{
 	//33365: true, // Sash of the Unredeemed
 	33423: true, // Treads of Panicked Escape
 	33439: true, // Treads of Panicked Escape
+	33496: true, // Cord of Pilfered Rosaries
 	33497: true, // Treads of Violent Intrusion
 	//33716: true, // Moon-Wrought Clasp
 	//34314: true, // Pristine Moon-Wrought Clasp
