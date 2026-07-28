@@ -132,10 +132,6 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 		if battlepet.Own(petAuction.Pet.SpeciesId) {
 			continue
 		}
-		if petAuction.Pet.SpeciesId == 3302 {
-			// Pilot - we own this, but he is in the 'penalty box' for being so noisy
-			continue
-		}
 		if petAuction.Buyout <= 0 {
 			continue
 		}

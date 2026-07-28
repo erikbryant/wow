@@ -208,7 +208,7 @@ var flaky = map[int64]bool{
 	//33365: true, // Sash of the Unredeemed
 	33423: true, // Treads of Panicked Escape
 	33439: true, // Treads of Panicked Escape
-	//33497: true, // Treads of Violent Intrusion
+	33497: true, // Treads of Violent Intrusion
 	//33716: true, // Moon-Wrought Clasp
 	//34314: true, // Pristine Moon-Wrought Clasp
 	//34558: true, // Cuffs of the Viridian Flameweavers
@@ -221,14 +221,14 @@ var flaky = map[int64]bool{
 	//38359: true, // Bloody Experimenter's Wraps
 	38409: true, // Crushproof Vambraces
 	//38830: true, // Cord of Zandalari Resolve
-	//39969: true, // Gauntlets of Crashing Tides
-	//39976: true, // Gauntlets of Crashing Tides
-	//39987: true, // Gauntlets of Crashing Tides
+	39969: true, // Gauntlets of Crashing Tides
+	39976: true, // Gauntlets of Crashing Tides
+	39987: true, // Gauntlets of Crashing Tides
 	40325: true, // Cloak of Blessed Depths
 	//40811: true, // Belt of Concealed Intent
 	//40813: true, // Belt of Concealed Intent
-	//40967: true, // Gauntlets of Nightmare Manifest
-	//40970: true, // Gauntlets of Nightmare Manifest
+	40967: true, // Gauntlets of Nightmare Manifest
+	40970: true, // Gauntlets of Nightmare Manifest
 	//57228: true, // Anthemic Legguards
 	//80187: true, // Skyless Coif
 	//80188: true, // Skyless Epaulets
