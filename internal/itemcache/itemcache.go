@@ -20,9 +20,8 @@ const (
 )
 
 var (
-	itemCache    = map[int64]wowitem.Item{}
-	readDisabled = false
-	mu           sync.Mutex
+	itemCache = map[int64]wowitem.Item{}
+	mu        sync.Mutex
 )
 
 func init() {
@@ -79,9 +78,6 @@ func Save() error {
 
 // Read returns the in-memory copy (if exists)
 func Read(id int64) (wowitem.Item, bool) {
-	if readDisabled {
-		return wowitem.Item{}, false
-	}
 	mu.Lock()
 	i, ok := itemCache[id]
 	mu.Unlock()
@@ -144,10 +140,6 @@ func Search(s string) wowitem.Item {
 
 	fmt.Println("Did not find item for search string: ", s)
 	return wowitem.Item{}
-}
-
-func DisableRead() {
-	readDisabled = true
 }
 
 // LookupItem retrieves data for a single item. From the cache if present, or web if not. If it retrieves it from the web it also caches it.

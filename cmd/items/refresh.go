@@ -17,19 +17,25 @@ import (
 func refreshItem(passphrase string, itemID int64) {
 	wowapi.Init(passphrase, false)
 
-	iOld, ok := itemcache.LookupItem(itemID, 0)
+	iOld, ok := itemcache.Read(itemID)
+	if !ok {
+		fmt.Fprintln(os.Stderr, "Failed to lookup item in cache: ", itemID)
+		os.Exit(2)
+	}
+
+	// Remove the item from the cache
+	itemcache.Delete(itemID)
+
+	// Get the latest value from the web API
+	iNew, ok := itemcache.LookupItem(itemID, 0)
 	if !ok {
 		fmt.Fprintln(os.Stderr, "Failed to lookup item: ", itemID)
 		os.Exit(2)
 	}
 
-	// Get the latest values from the web API
-	itemcache.DisableRead()
-	defer itemcache.Save()
-
-	iNew, ok := itemcache.LookupItem(itemID, 0)
-	if !ok {
-		fmt.Fprintln(os.Stderr, "Failed to lookup item: ", itemID)
+	err := itemcache.Save()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Failed to save item cache: ", err)
 		os.Exit(2)
 	}
 
