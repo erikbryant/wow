@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/erikbryant/wow/internal/itemcache"
@@ -11,7 +12,10 @@ import (
 func deleteItem(itemID int64) {
 	fmt.Println("Deleting itemId:", itemID)
 	itemcache.Delete(itemID)
-	itemcache.Save()
+	err := itemcache.Save()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func runDelete(args []string) {

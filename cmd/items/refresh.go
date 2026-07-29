@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -53,7 +54,10 @@ func refreshCache(passphrase string, maxRefresh int) {
 		}
 	}
 
-	itemcache.Save()
+	err := itemcache.Save()
+	if err != nil {
+		log.Fatalln("Failed to save cache: ", err)
+	}
 
 	fmt.Printf("Refreshed %d of %d stale items\n", refreshCount, needsRefresh)
 }

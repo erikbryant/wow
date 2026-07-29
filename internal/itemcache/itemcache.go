@@ -16,9 +16,7 @@ import (
 )
 
 const (
-	cachePath     = "./data"
-	cacheFile     = "itemCache.gob"
-	cacheFullName = cachePath + "/" + cacheFile
+	cacheFilename = "./data/itemCache.gob"
 )
 
 var (
@@ -36,7 +34,7 @@ func init() {
 
 // load loads the disk cache file into memory
 func load() {
-	file, err := os.Open(cacheFullName)
+	file, err := os.Open(cacheFilename)
 	if err != nil {
 		fmt.Printf("*** error opening item cache file: %v, creating new one\n", err)
 		return
@@ -52,26 +50,31 @@ func load() {
 }
 
 // Save writes the in-memory cache file to disk
-func Save() {
-	// Write the data to a temporary file
-	file, err := os.CreateTemp(cachePath, cacheFile+".*")
-	if err != nil {
-		log.Fatalf("error creating item cache file: %v", err)
-	}
-	encoder := gob.NewEncoder(file)
+func Save() error {
 	mu.Lock()
-	err = encoder.Encode(itemCache)
-	mu.Unlock()
-	if err != nil {
-		log.Fatalf("error encoding item cache: %v", err)
-	}
-	file.Close()
+	defer mu.Unlock()
 
-	// Rename the successfully created temporary file to the actual file
-	err = os.Rename(file.Name(), cacheFullName)
+	tmp := cacheFilename + ".tmp"
+
+	f, err := os.Create(tmp)
 	if err != nil {
-		log.Fatalf("error renaming item cache file: %v", err)
+		return err
 	}
+
+	encoder := gob.NewEncoder(f)
+
+	if err := encoder.Encode(itemCache); err != nil {
+		f.Close()
+		os.Remove(tmp)
+		return err
+	}
+
+	if err := f.Close(); err != nil {
+		os.Remove(tmp)
+		return err
+	}
+
+	return os.Rename(tmp, cacheFilename)
 }
 
 // Read returns the in-memory copy (if exists)
@@ -114,7 +117,7 @@ func IDs() []int64 {
 	return ids
 }
 
-// ItemsSlice returns a slice of the cached items
+// ItemsSlice returns a slice of the cached map values
 func ItemsSlice() []wowitem.Item {
 	mu.Lock()
 	defer mu.Unlock()
