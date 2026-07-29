@@ -219,7 +219,6 @@ var flaky = map[int64]bool{
 	//23247: true, // Truesteel Armguards
 	//24178: true, // {Brilliant, Nimble, Powerful} Burnished Cloak
 	//24180: true, // {Brilliant, Nimble, Powerful} Burnished Cloak
-	//26016: true, // Cursed Demonchain Belt
 	32066: true, // Fashionable Autumn Cloak
 	32237: true, // Aristocrat's Winter Drape
 	//33357: true, // Sash of the Unredeemed
