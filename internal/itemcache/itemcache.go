@@ -4,7 +4,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"log"
-	"maps"
 	"os"
 	"slices"
 	"strings"
@@ -115,17 +114,6 @@ func IDs() []int64 {
 	return ids
 }
 
-// ItemsMap returns a map of the cached items
-func ItemsMap() map[int64]wowitem.Item {
-	mu.Lock()
-	defer mu.Unlock()
-
-	result := make(map[int64]wowitem.Item, len(itemCache))
-	maps.Copy(result, itemCache)
-
-	return result
-}
-
 // ItemsSlice returns a slice of the cached items
 func ItemsSlice() []wowitem.Item {
 	mu.Lock()
@@ -157,10 +145,6 @@ func Search(s string) wowitem.Item {
 
 func DisableRead() {
 	readDisabled = true
-}
-
-func EnableRead() {
-	readDisabled = false
 }
 
 // LookupItem retrieves data for a single item. From the cache if present, or web if not. If it retrieves it from the web it also caches it.
