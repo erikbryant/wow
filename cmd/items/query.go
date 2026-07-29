@@ -74,15 +74,15 @@ func runQuery(args []string) {
 	var predicates []query.Predicate
 
 	if *rare {
-		predicates = append(predicates, query.IsRare)
+		predicates = append(predicates, query.Rare())
 	}
 
 	if *epic {
-		predicates = append(predicates, query.IsEpic)
+		predicates = append(predicates, query.Epic())
 	}
 
 	if *inAppearanceSet {
-		predicates = append(predicates, query.AppearanceSet)
+		predicates = append(predicates, query.AppearanceSet())
 	}
 
 	if *class != "" {
