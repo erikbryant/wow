@@ -16,11 +16,16 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
+const (
+	itemCachePath     = "./data"
+	itemCacheFile     = "itemCache.gob"
+	itemCacheFullName = itemCachePath + "/" + itemCacheFile
+)
+
 var (
-	itemCache     = map[int64]wowitem.Item{}
-	itemCacheFile = "./data/itemCache.gob"
-	readDisabled  = false
-	mu            sync.Mutex
+	itemCache    = map[int64]wowitem.Item{}
+	readDisabled = false
+	mu           sync.Mutex
 )
 
 func init() {
@@ -32,7 +37,7 @@ func init() {
 
 // load loads the disk cache file into memory
 func load() {
-	file, err := os.Open(itemCacheFile)
+	file, err := os.Open(itemCacheFullName)
 	if err != nil {
 		fmt.Printf("*** error opening item cache file: %v, creating new one\n", err)
 		return
@@ -49,17 +54,24 @@ func load() {
 
 // Save writes the in-memory cache file to disk
 func Save() {
-	file, err := os.Create(itemCacheFile)
+	// Write the data to a temporary file
+	file, err := os.CreateTemp(itemCachePath, itemCacheFile+".*")
 	if err != nil {
 		log.Fatalf("error creating item cache file: %v", err)
 	}
-	defer file.Close()
 	encoder := gob.NewEncoder(file)
 	mu.Lock()
 	err = encoder.Encode(itemCache)
 	mu.Unlock()
 	if err != nil {
 		log.Fatalf("error encoding item cache: %v", err)
+	}
+	file.Close()
+
+	// Rename the successfully created temporary file to the actual file
+	err = os.Rename(file.Name(), itemCacheFullName)
+	if err != nil {
+		log.Fatalf("error renaming item cache file: %v", err)
 	}
 }
 
@@ -126,16 +138,6 @@ func ItemsSlice() []wowitem.Item {
 	}
 
 	return items
-}
-
-// Print writes a text version of the in-memory cache to stdout
-func Print() {
-	for _, id := range IDs() {
-		mu.Lock()
-		i := itemCache[id]
-		mu.Unlock()
-		fmt.Println(i.Format())
-	}
 }
 
 // Search returns the item with name 's' or an empty item if not found
