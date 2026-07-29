@@ -17,9 +17,9 @@ import (
 )
 
 const (
-	itemCachePath     = "./data"
-	itemCacheFile     = "itemCache.gob"
-	itemCacheFullName = itemCachePath + "/" + itemCacheFile
+	cachePath     = "./data"
+	cacheFile     = "itemCache.gob"
+	cacheFullName = cachePath + "/" + cacheFile
 )
 
 var (
@@ -37,7 +37,7 @@ func init() {
 
 // load loads the disk cache file into memory
 func load() {
-	file, err := os.Open(itemCacheFullName)
+	file, err := os.Open(cacheFullName)
 	if err != nil {
 		fmt.Printf("*** error opening item cache file: %v, creating new one\n", err)
 		return
@@ -55,7 +55,7 @@ func load() {
 // Save writes the in-memory cache file to disk
 func Save() {
 	// Write the data to a temporary file
-	file, err := os.CreateTemp(itemCachePath, itemCacheFile+".*")
+	file, err := os.CreateTemp(cachePath, cacheFile+".*")
 	if err != nil {
 		log.Fatalf("error creating item cache file: %v", err)
 	}
@@ -69,7 +69,7 @@ func Save() {
 	file.Close()
 
 	// Rename the successfully created temporary file to the actual file
-	err = os.Rename(file.Name(), itemCacheFullName)
+	err = os.Rename(file.Name(), cacheFullName)
 	if err != nil {
 		log.Fatalf("error renaming item cache file: %v", err)
 	}
