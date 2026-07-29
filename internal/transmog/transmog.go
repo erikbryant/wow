@@ -13,9 +13,7 @@ import (
 )
 
 const (
-	cachePath     = "./data"
-	cacheFile     = "appearanceCache.gob"
-	cacheFullName = cachePath + "/" + cacheFile
+	cacheFilename = "./data/appearanceCache.gob"
 )
 
 var (
@@ -40,12 +38,15 @@ func Init(includeOwned bool) {
 
 // load loads the disk cache file into memory
 func load() {
-	file, err := os.Open(cacheFullName)
+	file, err := os.Open(cacheFilename)
 	if err != nil {
 		fmt.Printf("*** error opening appearance cache file: %v, creating new one\n", err)
 		allItemAppearanceSetIds()
 		fmt.Printf("Found %d appearance set IDs\n", len(allSetIds))
-		save()
+		err = save()
+		if err != nil {
+			log.Fatal(err)
+		}
 		return
 	}
 	defer file.Close()
@@ -59,26 +60,31 @@ func load() {
 }
 
 // save writes the in-memory cache file to disk
-func save() {
-	// Write the data to a temporary file
-	file, err := os.CreateTemp(cachePath, cacheFile+".*")
-	if err != nil {
-		log.Fatalf("error creating appearance cache file: %v", err)
-	}
-	encoder := gob.NewEncoder(file)
+func save() error {
 	mu.Lock()
-	err = encoder.Encode(allSetIds)
-	mu.Unlock()
-	if err != nil {
-		log.Fatalf("error encoding appearance cache: %v", err)
-	}
-	file.Close()
+	defer mu.Unlock()
 
-	// Rename the successfully created temporary file to the actual file
-	err = os.Rename(file.Name(), cacheFullName)
+	tmp := cacheFilename + ".tmp"
+
+	f, err := os.Create(tmp)
 	if err != nil {
-		log.Fatalf("error renaming appearance cache file: %v", err)
+		return err
 	}
+
+	encoder := gob.NewEncoder(f)
+
+	if err := encoder.Encode(allSetIds); err != nil {
+		f.Close()
+		os.Remove(tmp)
+		return err
+	}
+
+	if err := f.Close(); err != nil {
+		os.Remove(tmp)
+		return err
+	}
+
+	return os.Rename(tmp, cacheFilename)
 }
 
 // allItemAppearanceSetIds returns a map of all item IDs that are in appearance sets
