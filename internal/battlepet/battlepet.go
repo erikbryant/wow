@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/common"
@@ -12,11 +13,17 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
+const (
+	cachePath     = "./data"
+	cacheFile     = "petNameCache.gob"
+	cacheFullName = cachePath + "/" + cacheFile
+)
+
 var (
-	PetCageItemId    = int64(82800)
-	petNameCacheFile = "./data/petNameCache.gob"
-	allNames         = map[int64]string{}
-	allOwned         = map[int64][]wowitem.PetInfo{}
+	PetCageItemId = int64(82800)
+	allNames      = map[int64]string{}
+	allOwned      = map[int64][]wowitem.PetInfo{}
+	mu            sync.Mutex
 )
 
 func Init(oauthAvailable bool) {
@@ -29,7 +36,8 @@ func Init(oauthAvailable bool) {
 
 // load loads the disk cache file into memory
 func load() {
-	file, err := os.Open(petNameCacheFile)
+	mu.Lock()
+	file, err := os.Open(cacheFullName)
 	if err != nil {
 		fmt.Printf("*** error opening petNameCache: %v, creating new one\n", err)
 		allNames = petNames()
@@ -42,19 +50,29 @@ func load() {
 	if err != nil {
 		log.Fatalf("error reading petNameCache: %v", err)
 	}
+	mu.Unlock()
 }
 
 // save writes the in-memory cache file to disk
 func save() {
-	file, err := os.Create(petNameCacheFile)
+	// Write the data to a temporary file
+	file, err := os.CreateTemp(cachePath, cacheFile+".*")
 	if err != nil {
-		log.Fatalf("error creating appearance cache file: %v", err)
+		log.Fatalf("error creating pet cache file: %v", err)
 	}
-	defer file.Close()
 	encoder := gob.NewEncoder(file)
+	mu.Lock()
 	err = encoder.Encode(allNames)
+	mu.Unlock()
 	if err != nil {
-		log.Fatalf("error encoding allSetIds: %v", err)
+		log.Fatalf("error encoding pet cache: %v", err)
+	}
+	file.Close()
+
+	// Rename the successfully created temporary file to the actual file
+	err = os.Rename(file.Name(), cacheFullName)
+	if err != nil {
+		log.Fatalf("error renaming pet cache file: %v", err)
 	}
 }
 
@@ -154,8 +172,4 @@ func Own(petId int64) bool {
 		log.Fatal("You must call battlepet.Init() before calling battlepet.Own()")
 	}
 	return len(allOwned[petId]) > 0
-}
-
-func Format(pet wowitem.PetInfo) string {
-	return fmt.Sprintf("%4d  %2d  %-8s  %s", pet.SpeciesId, pet.Level, common.QualityName(pet.QualityId), allNames[pet.SpeciesId])
 }

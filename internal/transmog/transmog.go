@@ -6,15 +6,22 @@ import (
 	"log"
 	"os"
 	"slices"
+	"sync"
 
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/wowapi"
 )
 
+const (
+	cachePath     = "./data"
+	cacheFile     = "appearanceCache.gob"
+	cacheFullName = cachePath + "/" + cacheFile
+)
+
 var (
-	allOwned            = map[int64]bool{}
-	allSetIds           = map[int64]bool{}
-	appearanceCacheFile = "./data/appearanceCache.gob"
+	allOwned  = map[int64]bool{}
+	allSetIds = map[int64]bool{}
+	mu        sync.Mutex
 )
 
 func Init(includeOwned bool) {
@@ -33,7 +40,7 @@ func Init(includeOwned bool) {
 
 // load loads the disk cache file into memory
 func load() {
-	file, err := os.Open(appearanceCacheFile)
+	file, err := os.Open(cacheFullName)
 	if err != nil {
 		fmt.Printf("*** error opening appearance cache file: %v, creating new one\n", err)
 		allItemAppearanceSetIds()
@@ -43,7 +50,9 @@ func load() {
 	}
 	defer file.Close()
 	decoder := gob.NewDecoder(file)
+	mu.Lock()
 	err = decoder.Decode(&allSetIds)
+	mu.Unlock()
 	if err != nil {
 		log.Fatalf("error reading itemcache: %v", err)
 	}
@@ -51,15 +60,24 @@ func load() {
 
 // save writes the in-memory cache file to disk
 func save() {
-	file, err := os.Create(appearanceCacheFile)
+	// Write the data to a temporary file
+	file, err := os.CreateTemp(cachePath, cacheFile+".*")
 	if err != nil {
 		log.Fatalf("error creating appearance cache file: %v", err)
 	}
-	defer file.Close()
 	encoder := gob.NewEncoder(file)
+	mu.Lock()
 	err = encoder.Encode(allSetIds)
+	mu.Unlock()
 	if err != nil {
-		log.Fatalf("error encoding allSetIds: %v", err)
+		log.Fatalf("error encoding appearance cache: %v", err)
+	}
+	file.Close()
+
+	// Rename the successfully created temporary file to the actual file
+	err = os.Rename(file.Name(), cacheFullName)
+	if err != nil {
+		log.Fatalf("error renaming appearance cache file: %v", err)
 	}
 }
 
