@@ -12,12 +12,12 @@ import (
 )
 
 const (
-	cacheFilename = "./data/petNameCache.gob"
-	PetCageItemId = int64(82800)
+	persistFilename = "./data/petNames.gob"
+	PetCageItemId   = int64(82800)
 )
 
 var (
-	petNames  = persist.New[int64, string](cacheFilename)
+	petNames  = persist.New[int64, string](persistFilename)
 	petsOwned = map[int64][]wowitem.PetInfo{}
 )
 
