@@ -6,38 +6,23 @@ import (
 	"sync"
 )
 
-// Callers use:
-//
-// cache.New(filename, map[string]any{})
-// cache.Load()
-//
-// cache.Update(func(m map[int64]Item) {
-//	m[id] = item
-// })
-//
-// var item Item
-// var ok bool
-// cache.Get(func(m map[int64]Item) {
-//	item, ok = m[id]
-// })
-
-type Cache[T any] struct {
+type Cache[K comparable, V comparable] struct {
 	filename string
 	mu       sync.RWMutex
-	Data     T
+	data     map[K]V
 }
 
-func New[T any](filename string, initial T) *Cache[T] {
+func New[K comparable, V comparable](filename string) *Cache[K, V] {
 	gob.Register(map[string]any{})
 	gob.Register([]any{})
 
-	return &Cache[T]{
+	return &Cache[K, V]{
 		filename: filename,
-		Data:     initial,
+		data:     make(map[K]V),
 	}
 }
 
-func (c *Cache[T]) Load() error {
+func (c *Cache[K, V]) Load() error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -49,17 +34,17 @@ func (c *Cache[T]) Load() error {
 
 	decoder := gob.NewDecoder(f)
 
-	var data T
+	var data map[K]V
 	if err := decoder.Decode(&data); err != nil {
 		return err
 	}
 
-	c.Data = data
+	c.data = data
 
 	return nil
 }
 
-func (c *Cache[T]) Save() error {
+func (c *Cache[K, V]) Save() error {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
@@ -72,7 +57,7 @@ func (c *Cache[T]) Save() error {
 
 	encoder := gob.NewEncoder(f)
 
-	if err := encoder.Encode(c.Data); err != nil {
+	if err := encoder.Encode(c.data); err != nil {
 		f.Close()
 		os.Remove(tmp)
 		return err
@@ -86,14 +71,35 @@ func (c *Cache[T]) Save() error {
 	return os.Rename(tmp, c.filename)
 }
 
-func (c *Cache[T]) Get(fn func(T)) {
+func (c *Cache[K, V]) Len() int {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	fn(c.Data)
+	return len(c.data)
 }
 
-func (c *Cache[T]) Update(fn func(T)) {
+func (c *Cache[K, V]) Get(key K) (V, bool) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	v, ok := c.data[key]
+	return v, ok
+}
+
+func (c *Cache[K, V]) ReverseLookup(value V) (K, bool) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	for k, v := range c.data {
+		if v == value {
+			return k, true
+		}
+	}
+
+	var zero K
+	return zero, false
+}
+
+func (c *Cache[K, V]) Set(key K, value V) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	fn(c.Data)
+	c.data[key] = value
 }

@@ -17,14 +17,12 @@ const (
 )
 
 var (
-	allNames = cache.New(cacheFilename, map[int64]string{})
-	allOwned = map[int64][]wowitem.PetInfo{}
+	petNames  = cache.New[int64, string](cacheFilename)
+	petsOwned = map[int64][]wowitem.PetInfo{}
 )
 
 // refreshPetNames downloads all pet names from the WoW web API
-func refreshPetNames() map[int64]string {
-	pets := map[int64]string{}
-
+func refreshPetNames() {
 	allPets, ok := wowapi.Pets()
 	if !ok {
 		log.Fatal("Unable to obtain pet names.")
@@ -33,14 +31,12 @@ func refreshPetNames() map[int64]string {
 	for _, petRaw := range allPets {
 		pet := petRaw.(map[string]any)
 		id := web.ToInt64(pet["id"])
-		pets[id] = pet["name"].(string)
+		petNames.Set(id, pet["name"].(string))
 	}
-
-	return pets
 }
 
-// petsOwned downloads the list of pets I own from the WoW web API
-func petsOwned() map[int64][]wowitem.PetInfo {
+// getPetsOwned downloads the list of pets I own from the WoW web API
+func getPetsOwned() map[int64][]wowitem.PetInfo {
 	myPets := map[int64][]wowitem.PetInfo{}
 
 	pets, ok := wowapi.CollectionsPets()
@@ -87,21 +83,21 @@ func petsOwned() map[int64][]wowitem.PetInfo {
 }
 
 func Init(oauthAvailable bool) {
-	err := allNames.Load()
+	err := petNames.Load()
 	if err != nil {
 		fmt.Printf("*** error opening pet name cache, creating new one: %v\n", err)
-		allNames.Data = refreshPetNames()
-		allNames.Save()
+		refreshPetNames()
+		petNames.Save()
 	}
 	if oauthAvailable {
-		allOwned = petsOwned()
+		petsOwned = getPetsOwned()
 	}
-	fmt.Printf("-- #Pets owned: %d/%d\n", len(allOwned), len(allNames.Data))
+	fmt.Printf("-- #Pets owned: %d/%d\n", len(petsOwned), petNames.Len())
 }
 
 // PetSpell returns true and the corresponding pet ID if the item is a pet summoning spell
 func PetSpell(i wowitem.Item) (int64, bool) {
-	if len(allNames.Data) == 0 {
+	if petNames.Len() == 0 {
 		log.Fatal("You must call battlepet.Init() before calling battlepet.PetSpell()")
 	}
 
@@ -109,27 +105,25 @@ func PetSpell(i wowitem.Item) (int64, bool) {
 		return 0, false
 	}
 
-	for petId, petName := range allNames.Data {
-		if i.Name() == petName {
-			return petId, true
-		}
-	}
-
-	return 0, false
+	return petNames.ReverseLookup(i.Name())
 }
 
 // Name returns the pet name for the given ID
 func Name(petID int64) string {
-	if len(allNames.Data) == 0 {
+	if petNames.Len() == 0 {
 		log.Fatal("You must call battlepet.Init() before calling battlepet.IdToName()")
 	}
-	return allNames.Data[petID]
+	name, ok := petNames.Get(petID)
+	if !ok {
+		log.Fatal("Pet not found:", petID)
+	}
+	return name
 }
 
 // Owned returns true if I own this pet ID
 func Owned(petID int64) bool {
-	if len(allOwned) == 0 {
+	if len(petsOwned) == 0 {
 		log.Fatal("You must call battlepet.Init() before calling battlepet.Own()")
 	}
-	return len(allOwned[petID]) > 0
+	return len(petsOwned[petID]) > 0
 }
