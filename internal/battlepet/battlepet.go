@@ -1,13 +1,11 @@
 package battlepet
 
 import (
-	"encoding/gob"
 	"fmt"
 	"log"
-	"os"
-	"sync"
 
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/internal/cache"
 	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
@@ -15,75 +13,34 @@ import (
 
 const (
 	cacheFilename = "./data/petNameCache.gob"
+	PetCageItemId = int64(82800)
 )
 
 var (
-	PetCageItemId = int64(82800)
-	allNames      = map[int64]string{}
-	allOwned      = map[int64][]wowitem.PetInfo{}
-	mu            sync.Mutex
+	allNames = cache.New(cacheFilename, map[int64]string{})
+	allOwned = map[int64][]wowitem.PetInfo{}
 )
 
-func Init(oauthAvailable bool) {
-	load()
-	if oauthAvailable {
-		allOwned = owned()
+// refreshPetNames downloads all pet names from the WoW web API
+func refreshPetNames() map[int64]string {
+	pets := map[int64]string{}
+
+	allPets, ok := wowapi.Pets()
+	if !ok {
+		log.Fatal("Unable to obtain pet names.")
 	}
-	fmt.Printf("-- #Pets owned: %d/%d\n", len(allOwned), len(allNames))
+
+	for _, petRaw := range allPets {
+		pet := petRaw.(map[string]any)
+		id := web.ToInt64(pet["id"])
+		pets[id] = pet["name"].(string)
+	}
+
+	return pets
 }
 
-// load loads the disk cache file into memory
-func load() {
-	mu.Lock()
-	file, err := os.Open(cacheFilename)
-	if err != nil {
-		fmt.Printf("*** error opening petNameCache: %v, creating new one\n", err)
-		allNames = petNames()
-		err = save()
-		if err != nil {
-			log.Fatal(err)
-		}
-		return
-	}
-	defer file.Close()
-	decoder := gob.NewDecoder(file)
-	err = decoder.Decode(&allNames)
-	if err != nil {
-		log.Fatalf("error reading petNameCache: %v", err)
-	}
-	mu.Unlock()
-}
-
-// save writes the in-memory cache file to disk
-func save() error {
-	mu.Lock()
-	defer mu.Unlock()
-
-	tmp := cacheFilename + ".tmp"
-
-	f, err := os.Create(tmp)
-	if err != nil {
-		return err
-	}
-
-	encoder := gob.NewEncoder(f)
-
-	if err := encoder.Encode(allNames); err != nil {
-		f.Close()
-		os.Remove(tmp)
-		return err
-	}
-
-	if err := f.Close(); err != nil {
-		os.Remove(tmp)
-		return err
-	}
-
-	return os.Rename(tmp, cacheFilename)
-}
-
-// owned returns the pets I own
-func owned() map[int64][]wowitem.PetInfo {
+// petsOwned downloads the list of pets I own from the WoW web API
+func petsOwned() map[int64][]wowitem.PetInfo {
 	myPets := map[int64][]wowitem.PetInfo{}
 
 	pets, ok := wowapi.CollectionsPets()
@@ -129,35 +86,30 @@ func owned() map[int64][]wowitem.PetInfo {
 	return myPets
 }
 
-// petNames returns a map of all battle pet names by petId
-func petNames() map[int64]string {
-	pets := map[int64]string{}
-
-	allPets, ok := wowapi.Pets()
-	if !ok {
-		log.Fatal("Unable to obtain pet names.")
+func Init(oauthAvailable bool) {
+	err := allNames.Load()
+	if err != nil {
+		fmt.Printf("*** error opening pet name cache, creating new one: %v\n", err)
+		allNames.Data = refreshPetNames()
+		allNames.Save()
 	}
-
-	for _, petRaw := range allPets {
-		pet := petRaw.(map[string]any)
-		id := web.ToInt64(pet["id"])
-		pets[id] = pet["name"].(string)
+	if oauthAvailable {
+		allOwned = petsOwned()
 	}
-
-	return pets
+	fmt.Printf("-- #Pets owned: %d/%d\n", len(allOwned), len(allNames.Data))
 }
 
-// IsPetSpell returns true and the corresponding pet ID if the item is a pet summoning spell
-func IsPetSpell(i wowitem.Item) (int64, bool) {
-	if len(allNames) == 0 {
-		log.Fatal("You must call battlepet.Init() before calling battlepet.IsPetSpell()")
+// PetSpell returns true and the corresponding pet ID if the item is a pet summoning spell
+func PetSpell(i wowitem.Item) (int64, bool) {
+	if len(allNames.Data) == 0 {
+		log.Fatal("You must call battlepet.Init() before calling battlepet.PetSpell()")
 	}
 
 	if i.ItemSubclassName() != "Companion Pets" {
 		return 0, false
 	}
 
-	for petId, petName := range allNames {
+	for petId, petName := range allNames.Data {
 		if i.Name() == petName {
 			return petId, true
 		}
@@ -166,16 +118,18 @@ func IsPetSpell(i wowitem.Item) (int64, bool) {
 	return 0, false
 }
 
-func Name(petId int64) string {
-	if len(allNames) == 0 {
-		log.Fatal("You must call battlepet.Init() before calling battlepet.Name()")
+// Name returns the pet name for the given ID
+func Name(petID int64) string {
+	if len(allNames.Data) == 0 {
+		log.Fatal("You must call battlepet.Init() before calling battlepet.IdToName()")
 	}
-	return allNames[petId]
+	return allNames.Data[petID]
 }
 
-func Own(petId int64) bool {
+// Owned returns true if I own this pet ID
+func Owned(petID int64) bool {
 	if len(allOwned) == 0 {
 		log.Fatal("You must call battlepet.Init() before calling battlepet.Own()")
 	}
-	return len(allOwned[petId]) > 0
+	return len(allOwned[petID]) > 0
 }

@@ -94,14 +94,14 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 		if !ok {
 			continue
 		}
-		petId, ok := battlepet.IsPetSpell(i)
+		petId, ok := battlepet.PetSpell(i)
 		if !ok {
 			continue
 		}
 		//if common.QualityId(i.Quality()) < common.QualityId("Rare") {
 		//	continue
 		//}
-		if battlepet.Own(petId) {
+		if battlepet.Owned(petId) {
 			continue
 		}
 
@@ -129,7 +129,7 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for _, petAuction := range auctions[battlepet.PetCageItemId] {
-		if battlepet.Own(petAuction.Pet.SpeciesId) {
+		if battlepet.Owned(petAuction.Pet.SpeciesId) {
 			continue
 		}
 		if petAuction.Buyout <= 0 {
