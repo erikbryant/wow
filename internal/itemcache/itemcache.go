@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	cacheFilename = "./data/itemCache.gob"
+	cacheFilename = "./data/items.gob"
 )
 
 var (

@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	cacheFilename = "./data/appearanceCache.gob"
+	cacheFilename = "./data/appearances.gob"
 )
 
 var (

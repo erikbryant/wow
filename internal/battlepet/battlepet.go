@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	persistFilename = "./data/petNames.gob"
+	persistFilename = "./data/battlePets"
 	PetCageItemId   = int64(82800)
 )
 

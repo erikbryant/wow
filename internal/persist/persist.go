@@ -17,7 +17,7 @@ func New[K comparable, V comparable](filename string) *Cache[K, V] {
 	gob.Register([]any{})
 
 	return &Cache[K, V]{
-		filename: filename,
+		filename: filename + ".gob",
 		data:     make(map[K]V),
 	}
 }
