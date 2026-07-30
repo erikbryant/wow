@@ -189,7 +189,12 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 		153:  {}, // Wolpertinger
 
 		// Pets that Stephen does not need right now
+		1963: {}, // Boneshard
+		191:  {}, // Clockwork Rocket Bot
+		1961: {}, // G0-R41-0n Ultratonk
+		2468: {}, // Laughing Stonekin
 		1907: {}, // Pygmy Owl
+		1721: {}, // Stormborne Whelpling
 	}
 
 	for _, petAuction := range auctions[battlepet.PetCageItemId] {
