@@ -3,26 +3,38 @@ package persist
 import (
 	"encoding/gob"
 	"os"
+	"path/filepath"
 	"sync"
 )
 
-type Cache[K comparable, V comparable] struct {
+const (
+	dataDirectory = "./data"
+)
+
+type Persistence[K comparable, V comparable] struct {
 	filename string
 	mu       sync.RWMutex
 	data     map[K]V
 }
 
-func New[K comparable, V comparable](filename string) *Cache[K, V] {
+func New[K comparable, V comparable](name string) *Persistence[K, V] {
 	gob.Register(map[string]any{})
 	gob.Register([]any{})
 
-	return &Cache[K, V]{
-		filename: filename + ".gob",
-		data:     make(map[K]V),
+	return &Persistence[K, V]{
+		filename: filepath.Join(dataDirectory, name+".gob"),
+		data:     nil,
 	}
 }
 
-func (c *Cache[K, V]) Load() error {
+// requireLoaded panics if the persistence has not been loaded; caller responsible for acquiring mu.lock
+func (c *Persistence[K, V]) requireLoaded() {
+	if c.data == nil {
+		panic("persist: persistence has not been loaded: " + c.filename)
+	}
+}
+
+func (c *Persistence[K, V]) Load() error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -44,9 +56,11 @@ func (c *Cache[K, V]) Load() error {
 	return nil
 }
 
-func (c *Cache[K, V]) Save() error {
+func (c *Persistence[K, V]) Save() error {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
+
+	c.requireLoaded()
 
 	tmp := c.filename + ".tmp"
 
@@ -71,22 +85,26 @@ func (c *Cache[K, V]) Save() error {
 	return os.Rename(tmp, c.filename)
 }
 
-func (c *Cache[K, V]) Len() int {
+func (c *Persistence[K, V]) Len() int {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
+	c.requireLoaded()
 	return len(c.data)
 }
 
-func (c *Cache[K, V]) Get(key K) (V, bool) {
+func (c *Persistence[K, V]) Get(key K) (V, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
+	c.requireLoaded()
 	v, ok := c.data[key]
 	return v, ok
 }
 
-func (c *Cache[K, V]) ReverseLookup(value V) (K, bool) {
+func (c *Persistence[K, V]) ReverseLookup(value V) (K, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
+
+	c.requireLoaded()
 
 	for k, v := range c.data {
 		if v == value {
@@ -98,8 +116,9 @@ func (c *Cache[K, V]) ReverseLookup(value V) (K, bool) {
 	return zero, false
 }
 
-func (c *Cache[K, V]) Set(key K, value V) {
+func (c *Persistence[K, V]) Set(key K, value V) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+	c.requireLoaded()
 	c.data[key] = value
 }

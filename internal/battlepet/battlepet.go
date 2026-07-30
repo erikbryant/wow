@@ -12,12 +12,12 @@ import (
 )
 
 const (
-	persistFilename = "./data/battlePets"
-	PetCageItemId   = int64(82800)
+	persistName   = "battlePets"
+	PetCageItemId = int64(82800)
 )
 
 var (
-	petNames  = persist.New[int64, string](persistFilename)
+	petNames  = persist.New[int64, string](persistName)
 	petsOwned = map[int64][]wowitem.PetInfo{}
 )
 
@@ -97,22 +97,14 @@ func Init(oauthAvailable bool) {
 
 // PetSpell returns true and the corresponding pet ID if the item is a pet summoning spell
 func PetSpell(i wowitem.Item) (int64, bool) {
-	if petNames.Len() == 0 {
-		log.Fatal("You must call battlepet.Init() before calling battlepet.PetSpell()")
-	}
-
 	if i.ItemSubclassName() != "Companion Pets" {
 		return 0, false
 	}
-
 	return petNames.ReverseLookup(i.Name())
 }
 
 // Name returns the pet name for the given ID
 func Name(petID int64) string {
-	if petNames.Len() == 0 {
-		log.Fatal("You must call battlepet.Init() before calling battlepet.IdToName()")
-	}
 	name, ok := petNames.Get(petID)
 	if !ok {
 		log.Fatal("Pet not found:", petID)
@@ -122,8 +114,5 @@ func Name(petID int64) string {
 
 // Owned returns true if I own this pet ID
 func Owned(petID int64) bool {
-	if len(petsOwned) == 0 {
-		log.Fatal("You must call battlepet.Init() before calling battlepet.Own()")
-	}
 	return len(petsOwned[petID]) > 0
 }
