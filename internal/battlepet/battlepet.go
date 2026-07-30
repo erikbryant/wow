@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/internal/cache"
 	"github.com/erikbryant/wow/internal/common"
+	"github.com/erikbryant/wow/internal/persist"
 	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
@@ -17,7 +17,7 @@ const (
 )
 
 var (
-	petNames  = cache.New[int64, string](cacheFilename)
+	petNames  = persist.New[int64, string](cacheFilename)
 	petsOwned = map[int64][]wowitem.PetInfo{}
 )
 
@@ -85,7 +85,7 @@ func getPetsOwned() map[int64][]wowitem.PetInfo {
 func Init(oauthAvailable bool) {
 	err := petNames.Load()
 	if err != nil {
-		fmt.Printf("*** error opening pet name cache, creating new one: %v\n", err)
+		fmt.Printf("*** error opening pet name persist, creating new one: %v\n", err)
 		refreshPetNames()
 		petNames.Save()
 	}
