@@ -18,53 +18,29 @@ const (
 )
 
 var (
-	items = persist.New[int64, wowitem.Item](persistName)
+	Items = persist.New[int64, wowitem.Item](persistName)
 )
 
 func init() {
 	gob.Register(map[string]any{})
 	gob.Register([]any{})
-	err := items.Load()
+	err := Items.Load()
 	if err != nil {
 		fmt.Printf("*** error opening items persist, creating new one: %v\n", err)
 	}
-	fmt.Printf("-- #Items in cache: %d\n", items.Len())
-}
-
-func Save() error {
-	return items.Save()
-}
-
-// Read returns the in-memory copy (if exists)
-func Read(id int64) (wowitem.Item, bool) {
-	return items.Get(id)
-}
-
-// Write writes an entry to the in-memory cache
-func Write(id int64, i wowitem.Item) {
-	items.Set(id, i)
-}
-
-// Delete deletes an entry from the in-memory cache
-func Delete(id int64) {
-	items.Delete(id)
+	fmt.Printf("-- #Items in cache: %d\n", Items.Len())
 }
 
 // IDs returns the sorted list of keys from the item cache file
 func IDs() []int64 {
-	keys := items.Keys()
+	keys := Items.Keys()
 	slices.Sort(keys)
 	return keys
 }
 
-// ItemValues returns a slice of the cached map values
-func ItemValues() []wowitem.Item {
-	return items.Values()
-}
-
 // Search returns the item with name 's' or an empty item if not found
 func Search(s string) wowitem.Item {
-	_, i, ok := items.Search(func(v wowitem.Item) bool {
+	_, i, ok := Items.Search(func(v wowitem.Item) bool {
 		return v.Name() == s
 	})
 	if !ok {
@@ -73,16 +49,16 @@ func Search(s string) wowitem.Item {
 	return i
 }
 
-// LookupItem retrieves data for a single item. From the cache if present, or web if not. If it retrieves it from the web it also caches it.
+// LookupItem retrieves data for a single item. From cache if present, or web if not. If retrieved from the web it also stores it.
 func LookupItem(id int64, age time.Duration) (wowitem.Item, bool) {
 	// Use the cached value if exists and not stale
-	i, ok := Read(id)
+	i, ok := Items.Get(id)
 	if ok {
 		// A cache hit, but is the cache stale?
 		if !i.Stale(age) {
 			return i, true
 		}
-		fmt.Println("Refreshing stale item:", i.Format())
+		fmt.Println("Refreshing stale item:", i.Updated().Format("2006-01-02"), i.ID(), i.Name())
 	}
 
 	result, ok := wowapi.Item(web.ToString(id))
@@ -90,7 +66,7 @@ func LookupItem(id int64, age time.Duration) (wowitem.Item, bool) {
 		return wowitem.Item{}, false
 	}
 	i = wowitem.NewItem(result)
-	Write(i.ID(), i)
+	Items.Set(i.ID(), i)
 
 	return i, true
 }
@@ -100,7 +76,7 @@ func luaVendorPrice() (string, []string) {
 
 	lua.WriteString(fmt.Sprintf("local VendorSellPriceCache = {\n"))
 	for _, id := range IDs() {
-		i, _ := items.Get(id)
+		i, _ := Items.Get(id)
 		spr := i.SellPriceRealizable()
 		if spr <= 100 {
 			// To keep the lua table small, ignore anything that can't ever be a bargain
@@ -144,7 +120,7 @@ func luaCosmetic() (string, []string) {
 
 	lua.WriteString(fmt.Sprintf("local Cosmetics = {\n"))
 	for _, id := range IDs() {
-		i, _ := items.Get(id)
+		i, _ := Items.Get(id)
 		cosmetic := i.Cosmetic()
 		if !cosmetic {
 			continue

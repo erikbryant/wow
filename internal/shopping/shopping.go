@@ -447,7 +447,7 @@ func ScanRealms(r string, summarize bool) {
 	sort.Strings(results)
 	fmt.Println(results)
 
-	err = itempersistence.Save()
+	err = itempersistence.Items.Save()
 	if err != nil {
 		log.Fatal(err)
 	}

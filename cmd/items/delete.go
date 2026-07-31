@@ -11,8 +11,8 @@ import (
 
 func deleteItem(itemID int64) {
 	fmt.Println("Deleting itemId:", itemID)
-	itempersistence.Delete(itemID)
-	err := itempersistence.Save()
+	itempersistence.Items.Delete(itemID)
+	err := itempersistence.Items.Save()
 	if err != nil {
 		log.Fatal(err)
 	}

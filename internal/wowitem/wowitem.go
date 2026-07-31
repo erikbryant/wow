@@ -1,12 +1,10 @@
 package wowitem
 
 import (
-	"fmt"
 	"log"
 	"time"
 
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/transmog"
 )
 
@@ -244,21 +242,4 @@ func (i Item) Appearances() []int64 {
 
 func (i Item) AppearanceSet() bool {
 	return transmog.InAppearanceSet(i.Appearances())
-}
-
-// Format returns a formatted string representing the item
-func (i Item) Format() string {
-	equippable := "!E"
-	if i.Equippable() {
-		equippable = " E"
-	}
-	stackable := "!S"
-	if i.Stackable() {
-		stackable = " S"
-	}
-	appearanceSet := "!AS"
-	if i.AppearanceSet() {
-		appearanceSet = " AS"
-	}
-	return fmt.Sprintf("%7d  %s %s %s %11s   %3d   %-18s   %-9s   %s   %s", i.ID(), equippable, stackable, appearanceSet, common.Gold(i.SellPriceAdvertised()), i.ItemLevel(), i.ItemClassName(), i.Quality(), i.Updated().Format("2006-01-02"), i.Name())
 }
