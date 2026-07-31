@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
@@ -15,22 +16,24 @@ import (
 // refreshItem refreshes a single item
 func refreshItem(passphrase string, itemID int64) {
 	wowapi.Init(passphrase, false)
+	rows := []wowitem.Item{}
 
 	iOld, ok := wowitem.Items.Get(itemID)
-	if !ok {
-		fmt.Fprintln(os.Stderr, "Failed to lookup item in cache: ", itemID)
-		os.Exit(2)
+	if ok {
+		rows = append(rows, iOld)
+		// Remove the item from the cache
+		wowitem.Items.Delete(itemID)
 	}
-
-	// Remove the item from the cache
-	wowitem.Items.Delete(itemID)
 
 	// Get the latest value from the web API
-	iNew, ok := wowitem.LookupItem(itemID, 0)
+	result, ok := wowapi.Item(web.ToString(itemID))
 	if !ok {
-		fmt.Fprintln(os.Stderr, "Failed to lookup item: ", itemID)
-		os.Exit(2)
+		log.Fatal("Item not found, fix this error message/handling")
 	}
+
+	// Write it to the persistence
+	iNew := wowitem.NewItem(result)
+	wowitem.Items.Set(iNew.ID(), iNew)
 
 	err := wowitem.Items.Save()
 	if err != nil {
@@ -38,7 +41,8 @@ func refreshItem(passphrase string, itemID int64) {
 		os.Exit(2)
 	}
 
-	output.Table(os.Stdout, []wowitem.Item{iOld, iNew})
+	rows = append(rows, iNew)
+	output.Table(os.Stdout, rows)
 }
 
 // refreshCache refreshes cached items older than a certain age
