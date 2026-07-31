@@ -1,7 +1,6 @@
 package wowitem
 
 import (
-	"encoding/gob"
 	"fmt"
 	"slices"
 
@@ -19,8 +18,6 @@ var (
 )
 
 func init() {
-	gob.Register(map[string]any{})
-	gob.Register([]any{})
 	err := Items.Load()
 	if err != nil {
 		fmt.Printf("*** error opening items persist, creating new one: %v\n", err)
