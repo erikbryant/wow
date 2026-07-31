@@ -57,15 +57,6 @@ var usefulGoods = map[int64]int64{
 	wowitem.Search("Extreme-Impact Hole Puncher").ID(): common.Coppers(3000, 0, 0),
 }
 
-// Init determines which cooking recipes are still needed
-func Init(oauth bool) {
-	oauthAvailable = oauth
-
-	for _, recipeName := range recipes.Needed() {
-		usefulGoods[wowitem.Search(recipeName).ID()] = common.Coppers(10, 0, 0)
-	}
-}
-
 // appendFile appends 'contents' to a file
 func appendFile(name, contents string) {
 	f, err := os.OpenFile(name, os.O_WRONLY|os.O_APPEND, 0600)
@@ -417,8 +408,8 @@ func scanRealm(realm string, c chan<- string, summarize bool) {
 	c <- col.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", realm, len(auctions), shoppingList)
 }
 
-// ScanRealms processes auctions on all realms in 'r'
-func ScanRealms(r string, summarize bool) {
+// scanRealms processes auctions on all realms in 'r'
+func scanRealms(r string, summarize bool) {
 	realms := strings.Split(r, ",")
 	results := []string{}
 	c := make(chan string)
@@ -450,4 +441,19 @@ func ScanRealms(r string, summarize bool) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+// Shop determines which cooking recipes are still needed
+func Shop(realms string, summarize, oauth bool) {
+	oauthAvailable = oauth
+
+	battlepet.Init(oauthAvailable)
+	toy.Init(oauthAvailable)
+	transmog.Init(oauthAvailable)
+
+	for _, recipeName := range recipes.Needed() {
+		usefulGoods[wowitem.Search(recipeName).ID()] = common.Coppers(10, 0, 0)
+	}
+
+	scanRealms(realms, summarize)
 }

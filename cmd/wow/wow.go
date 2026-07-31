@@ -6,10 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/shopping"
-	"github.com/erikbryant/wow/internal/toy"
-	"github.com/erikbryant/wow/internal/transmog"
 	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
@@ -40,17 +37,13 @@ func main() {
 		usage()
 	}
 
-	wowapi.Init(*passphrase, *oauthAvailable)
-	battlepet.Init(*oauthAvailable)
-	toy.Init(*oauthAvailable)
-	transmog.Init(*oauthAvailable)
-	shopping.Init(*oauthAvailable)
-
 	if !*oauthAvailable {
 		fmt.Printf("\n*** OAuth unavailable. Some features may be missing.\n")
 	}
 
-	shopping.ScanRealms(*realms, *summarize)
+	wowapi.Init(*passphrase, *oauthAvailable)
+
+	shopping.Shop(*realms, *summarize, *oauthAvailable)
 
 	if *oauthAvailable {
 		// Write the prices file for the WoW 'wowMerchant' addon to consume
