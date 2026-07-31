@@ -502,20 +502,20 @@ func ItemAppearanceSet(appearanceID int64) ([]any, bool) {
 	return requestKey(url, accessToken, "appearances", "ItemAppearanceSet")
 }
 
-// ItemAppearanceSetIDs returns a slice of the IDs for the given appearance set
+// ItemAppearanceSetIDs returns the appearance IDs that comprise the given appearance set
 func ItemAppearanceSetIDs(appearanceID int64) []int64 {
 	itemSet, ok := ItemAppearanceSet(appearanceID)
 	if !ok {
 		return nil
 	}
 
-	ids := []int64{}
+	appearanceIDs := []int64{}
 	for _, i := range itemSet {
 		i := i.(map[string]any)
-		ids = append(ids, web.ToInt64(i["id"]))
+		appearanceIDs = append(appearanceIDs, web.ToInt64(i["id"]))
 	}
 
-	return ids
+	return appearanceIDs
 }
 
 // CollectionsTransmogs returns the transmogs the user owns
