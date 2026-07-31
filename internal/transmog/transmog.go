@@ -15,47 +15,25 @@ const (
 )
 
 var (
-	allOwned  = map[int64]bool{}
-	allSetIDs = persist.New[int64, bool](persistName)
+	transmogsOwned   = map[int64]bool{}
+	allAppearanceIDs = persist.New[int64, bool](persistName)
 )
 
-// getAppearanceSetItemIDs returns a map of all item IDs that are in appearance sets
-func getAppearanceSetItemIDs() {
-	ids := wowapi.ItemAppearanceSetsIndexIDs()
-	count := len(ids)
-	for setID, setName := range ids {
+// getAppearanceSetAppearanceIDs returns all appearance IDs that are in any appearance set
+func getAppearanceSetAppearanceIDs() {
+	appearanceSetIDs := wowapi.ItemAppearanceSetsIndexIDs()
+	count := len(appearanceSetIDs)
+	for setID, setName := range appearanceSetIDs {
 		fmt.Printf("%d\tAppearance set: %d   %s\n", count, setID, setName)
 		count--
-		for _, id := range wowapi.ItemAppearanceSetIDs(setID) {
-			//fmt.Printf("   Appearance: %d\n", id)
-			allSetIDs.Set(id, true)
+		for _, appearanceID := range wowapi.ItemAppearanceSetIDs(setID) {
+			allAppearanceIDs.Set(appearanceID, true)
 		}
 	}
 }
 
-func Init(includeOwned bool) {
-	err := allSetIDs.Load()
-	if err != nil {
-		fmt.Printf("*** error opening appearances persist, creating new one: %v\n", err)
-		getAppearanceSetItemIDs()
-		err = allSetIDs.Save()
-		if err != nil {
-			log.Fatalf("Failed to save appearances persist: %v\n", err)
-		}
-	}
-
-	fmt.Printf("-- #Appearance sets persisted: %d\n", allSetIDs.Len())
-
-	if !includeOwned {
-		return
-	}
-
-	allOwned = owned()
-	fmt.Printf("-- #Transmogs owned: %d\n", len(allOwned))
-}
-
-// owned returns the IDs of the transmogs I own
-func owned() map[int64]bool {
+// getTransmogsOwned returns the IDs of the transmogs I own
+func getTransmogsOwned() map[int64]bool {
 	myTransmogIDs := map[int64]bool{}
 
 	t, ok := wowapi.CollectionsTransmogs()
@@ -104,6 +82,27 @@ func owned() map[int64]bool {
 	}
 
 	return myTransmogIDs
+}
+
+func Init(oauthAvailable bool) {
+	err := allAppearanceIDs.Load()
+	if err != nil {
+		fmt.Printf("*** error opening appearances persist, creating new one: %v\n", err)
+		getAppearanceSetAppearanceIDs()
+		err = allAppearanceIDs.Save()
+		if err != nil {
+			log.Fatalf("Failed to save appearances persist: %v\n", err)
+		}
+	}
+
+	fmt.Printf("-- #Appearances persisted: %d\n", allAppearanceIDs.Len())
+
+	if !oauthAvailable {
+		return
+	}
+
+	transmogsOwned = getTransmogsOwned()
+	fmt.Printf("-- #Transmogs owned: %d\n", len(transmogsOwned))
 }
 
 // flaky appearance IDs; WoW says I own the transmogs, but this app thinks I don't
@@ -216,19 +215,16 @@ var flaky = map[int64]bool{
 
 // NeedID returns true if I need this transmog appearance ID
 func NeedID(id int64) bool {
-	if id <= 0 {
-		return false
-	}
 	if flaky[id] {
 		return false
 	}
-	if len(allOwned) == 0 {
+	if len(transmogsOwned) == 0 {
 		Init(true)
 	}
-	if !allOwned[id] {
+	if !transmogsOwned[id] {
 		fmt.Println("NEED APPEARANCE ID: ", id)
 	}
-	return !allOwned[id]
+	return !transmogsOwned[id]
 }
 
 // NeedAppearance returns true if I need any of these appearance IDs
@@ -239,7 +235,7 @@ func NeedAppearance(appearanceIDs []int64) bool {
 // InAppearanceSet returns true if any of these appearance IDs are in an appearance set
 func InAppearanceSet(appearanceIDs []int64) bool {
 	for _, appearanceID := range appearanceIDs {
-		inSet, ok := allSetIDs.Get(appearanceID)
+		inSet, ok := allAppearanceIDs.Get(appearanceID)
 		if !ok {
 			continue
 		}
