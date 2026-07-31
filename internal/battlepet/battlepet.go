@@ -94,7 +94,7 @@ func Init(oauthAvailable bool) {
 	if oauthAvailable {
 		petsOwned = getPetsOwned()
 	}
-	fmt.Printf("-- #Pets owned: %d/%d\n", len(petsOwned), petNames.Len())
+	fmt.Printf("-- #Battle pets owned: %d/%d\n", len(petsOwned), petNames.Len())
 }
 
 // PetSpell returns true and the corresponding pet ID if the item is a pet summoning spell
