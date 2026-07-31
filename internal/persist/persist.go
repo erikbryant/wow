@@ -23,14 +23,7 @@ func New[K comparable, V any](name string) *Persistence[K, V] {
 
 	return &Persistence[K, V]{
 		filename: filepath.Join(dataDirectory, name+".gob"),
-		data:     nil,
-	}
-}
-
-// requireLoaded panics if the persistence has not been loaded; caller responsible for acquiring mu.lock
-func (c *Persistence[K, V]) requireLoaded() {
-	if c.data == nil {
-		panic("persist: persistence has not been loaded: " + c.filename)
+		data:     make(map[K]V),
 	}
 }
 
@@ -60,8 +53,6 @@ func (c *Persistence[K, V]) Save() error {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
-	c.requireLoaded()
-
 	tmp := c.filename + ".tmp"
 
 	f, err := os.Create(tmp)
@@ -88,14 +79,12 @@ func (c *Persistence[K, V]) Save() error {
 func (c *Persistence[K, V]) Len() int {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	c.requireLoaded()
 	return len(c.data)
 }
 
 func (c *Persistence[K, V]) Get(key K) (V, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	c.requireLoaded()
 	v, ok := c.data[key]
 	return v, ok
 }
@@ -103,21 +92,18 @@ func (c *Persistence[K, V]) Get(key K) (V, bool) {
 func (c *Persistence[K, V]) Set(key K, value V) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	c.requireLoaded()
 	c.data[key] = value
 }
 
 func (c *Persistence[K, V]) Delete(key K) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	c.requireLoaded()
 	delete(c.data, key)
 }
 
 func (c *Persistence[K, V]) Keys() []K {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	c.requireLoaded()
 
 	keys := make([]K, 0, len(c.data))
 	for k := range c.data {
@@ -130,7 +116,6 @@ func (c *Persistence[K, V]) Keys() []K {
 func (c *Persistence[K, V]) Values() []V {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	c.requireLoaded()
 
 	values := make([]V, 0, len(c.data))
 	for _, v := range c.data {
@@ -143,7 +128,6 @@ func (c *Persistence[K, V]) Values() []V {
 func (c *Persistence[K, V]) Search(searchFunc func(v V) bool) (K, V, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	c.requireLoaded()
 
 	for k, v := range c.data {
 		if searchFunc(v) {
