@@ -1,6 +1,8 @@
 # wow
 
-Tools that use the World of Warcraft developer API. https://develop.battle.net/documentation/world-of-warcraft/game-data-apis
+A command-line tool that analyzes the World of Warcraft Auction House to find vendor arbitrage opportunities and underpriced items needed by your characters.
+
+https://develop.battle.net/documentation/world-of-warcraft/game-data-apis
 
 Scan the Auction House for arbitrage opportunities. Sometimes players put items up for auction at a purchase price lower than what the stores will pay to buy the item from you. Find these arbitrage opportunities and display what profit is to be made.
 
