@@ -30,33 +30,6 @@ const (
 	iLvlPath      = "./reports/arbitrageWithiLvl"
 )
 
-// usefulGoods are useful items I want
-var usefulGoods = map[int64]int64{
-	//itempersistence.Search("Hexweave Bag").ID(): common.Coppers(120, 0, 0), // 30 slot
-
-	//itempersistence.Search("Simply Stitched Reagent Bag").ID(): common.Coppers(90, 0, 0), // 32 slot
-	//itempersistence.Search("Chronocloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
-	//itempersistence.Search("Weavercloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
-	//itempersistence.Search("Dawnweave Reagent Bag").ID():       common.Coppers(90, 0, 0), // 38 slot
-
-	// Fun weapon transmogs
-	wowitem.Search("Blackfury").ID():          common.Coppers(3000, 0, 0),
-	wowitem.Search("Tyrhold Broadsword").ID(): common.Coppers(3000, 0, 0),
-
-	// Appearance set transmogs
-	wowitem.Search("Tyrhold Visage").ID():            common.Coppers(2000, 0, 0),
-	wowitem.Search("Tyrhold Epaulets").ID():          common.Coppers(2000, 0, 0),
-	wowitem.Search("Tyrhold Robe").ID():              common.Coppers(2000, 0, 0),
-	wowitem.Search("Tyrhold Slippers").ID():          common.Coppers(2000, 0, 0),
-	wowitem.Search("Boots of the Black Flame").ID():  common.Coppers(2000, 0, 0),
-	wowitem.Search("Helm of the Tranquil Path").ID(): common.Coppers(2000, 0, 0),
-
-	// Gun appearances
-	wowitem.Search("Ameelton's Shot-Thrower").ID():     common.Coppers(3000, 0, 0),
-	wowitem.Search("Kickback 5000").ID():               common.Coppers(3000, 0, 0),
-	wowitem.Search("Extreme-Impact Hole Puncher").ID(): common.Coppers(3000, 0, 0),
-}
-
 // appendFile appends 'contents' to a file
 func appendFile(name, contents string) {
 	f, err := os.OpenFile(name, os.O_WRONLY|os.O_APPEND, 0600)
@@ -96,7 +69,7 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 			if auc.Buyout <= 0 {
 				continue
 			}
-			if auc.Buyout >= common.Coppers(800, 0, 0) {
+			if auc.Buyout > battlePetPriceUnownedMax {
 				continue
 			}
 			stats := fmt.Sprintf("%s %s %s", battlepet.Name(petID), common.Gold(auc.Buyout), i.Quality())
@@ -122,7 +95,7 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Buyout <= 0 {
 			continue
 		}
-		if petAuction.Buyout > common.Coppers(800, 0, 0) {
+		if petAuction.Buyout > battlePetPriceUnownedMax {
 			continue
 		}
 		bargains = append(bargains, battlepet.Name(petAuction.Pet.SpeciesID))
@@ -139,51 +112,6 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
-	// SpeciesID of pets that do not resell well
-	skipPets := map[int64]struct{}{
-		1385: {}, // Albino Chimaeraling
-		1706: {}, // Ashmaw Cub
-		1150: {}, // Ashstone Core
-		1934: {}, // Benax
-		1964: {}, // Blood Boil
-		4489: {}, // Bouncer
-		4537: {}, // Chester
-		1662: {}, // Cinder Pup
-		2087: {}, // Cinderweb Recluse
-		1149: {}, // Corefire Imp
-		1205: {}, // Direhorn Runt
-		119:  {}, // Father Winter's Helper
-		1545: {}, // Firewing
-		1442: {}, // Ghastly Kid
-		1147: {}, // Harbinger of Flame
-		2916: {}, // Hungry Burrower
-		2089: {}, // Infernal Pyreclaw
-		1687: {}, // Left Shark
-		4647: {}, // Mr. DELVER
-		1568: {}, // Puddle Terror
-		340:  {}, // Sea Pony
-		162:  {}, // Sinister Squashling
-		1628: {}, // Sister of Temptation
-		200:  {}, // Spring Rabbit
-		211:  {}, // Strand Crawler
-		2088: {}, // Surger
-		1434: {}, // Sun Sproutling
-		1570: {}, // Sunfire Kaliri
-		117:  {}, // Tiny Snowman
-		251:  {}, // Toxic Wasteling
-		118:  {}, // Winter Reindeer
-		120:  {}, // Winter's Little Helper
-		153:  {}, // Wolpertinger
-
-		// Pets that Stephen does not need right now
-		1963: {}, // Boneshard
-		191:  {}, // Clockwork Rocket Bot
-		1961: {}, // G0-R41-0n Ultratonk
-		2468: {}, // Laughing Stonekin
-		1907: {}, // Pygmy Owl
-		1721: {}, // Stormborne Whelpling
-	}
-
 	for _, petAuction := range auctions[battlepet.PetCageItemID] {
 		_, ok := skipPets[petAuction.Pet.SpeciesID]
 		if ok {
@@ -198,7 +126,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Pet.Level < 25 {
 			continue
 		}
-		if petAuction.Buyout > common.Coppers(200, 0, 0) {
+		if petAuction.Buyout > battlePetPriceResellMax {
 			continue
 		}
 
@@ -231,7 +159,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 				continue
 			}
 			profit := (i.SellPriceRealizable() - auc.Buyout) * auc.Quantity
-			if profit < common.Coppers(0, 50, 0) {
+			if profit < arbitrageProfitMin {
 				// Not enough profit to make it worth the WoW runtime it takes to scan the AH
 				continue
 			}
@@ -292,8 +220,7 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 
 			// Bargains on toys
 			if oauthAvailable {
-				maxPrice := common.Coppers(400, 0, 0)
-				if i.Toy() && !toy.Own(i) && auc.Buyout <= maxPrice {
+				if i.Toy() && !toy.Own(i) && auc.Buyout <= toyPriceMax {
 					str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 					bargains = append(bargains, str)
 				}
@@ -311,8 +238,8 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-// findTransmogBargains returns transmog auctions selling below our desired price
-func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
+// findAppearanceBargains returns appearances selling at a discount
+func findAppearanceBargains(auctions map[int64][]auction.Auction) []string {
 	if !oauthAvailable {
 		return nil
 	}
@@ -329,10 +256,10 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 				continue
 			}
 
-			maxPrice := common.Coppers(80, 0, 0)
+			maxPrice := appearancePriceMax
 			appearanceSetSuffix := ""
 			if transmog.InAppearanceSet(i.Appearances()) {
-				maxPrice = common.Coppers(600, 0, 0)
+				maxPrice = appearancePriceInSetMax
 				appearanceSetSuffix = "    ---"
 			}
 
@@ -380,14 +307,12 @@ func scanRealm(realm string, c chan<- string, summarize bool) {
 	shoppingList += fmtShoppingList("Pets I Need", findPetNeeded(auctions), color.New(color.FgMagenta), summarize)
 	shoppingList += fmtShoppingList("Pets to Resell", findPetBargains(auctions), color.New(color.FgGreen), summarize)
 	shoppingList += fmtShoppingList("Useful Item Bargains", findBargains(auctions), color.New(color.FgRed), summarize)
-	shoppingList += fmtShoppingList("Transmog Bargains", findTransmogBargains(auctions), color.New(color.FgBlue), summarize)
+	shoppingList += fmtShoppingList("Appearance Bargains", findAppearanceBargains(auctions), color.New(color.FgBlue), summarize)
 
 	arbitrages, profit := findArbitrages(auctions, realm)
 
 	if summarize {
-		if profit > common.Coppers(15, 0, 0) {
-			// Only show arbitrages if there is some actual amount of money
-			// If the arbitrages are the only things on this realm, only show if worthwhile to visit
+		if profit >= profitToDisplayMin {
 			c := color.New(color.FgWhite)
 			shoppingList += c.Sprintf("Arbitrages: %s\n", common.Gold(profit))
 		}
@@ -456,7 +381,7 @@ func Shop(realms string, summarize, oauth bool) {
 	appendFile(battlePetPath, battlepet.Output())
 
 	for _, recipeName := range recipes.Needed() {
-		usefulGoods[wowitem.Search(recipeName).ID()] = common.Coppers(10, 0, 0)
+		usefulGoods[wowitem.Search(recipeName).ID()] = recipePriceMax
 	}
 
 	scanRealms(realms, summarize)
