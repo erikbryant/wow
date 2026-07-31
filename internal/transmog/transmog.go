@@ -162,6 +162,7 @@ var flaky = map[int64]bool{
 	1884:  true, // Various fish held in offhand
 	2016:  true, // Various fish held in offhand
 	2019:  true, // Various fish held in offhand
+	70361: true, // Elegant Artisan's Cooking Hat
 	78217: true, // Elegant Artisan's Fishing Hat
 
 	// NOT part of an appearance set
@@ -242,7 +243,7 @@ var flaky = map[int64]bool{
 	//35101: true, // Wristguards of Ominous Forging
 	//38275: true, // Reinforced Test Subject Shackles
 	//38291: true, // Reinforced Test Subject Shackles
-	//38359: true, // Bloody Experimenter's Wraps
+	38359: true, // Bloody Experimenter's Wraps
 	38409: true, // Crushproof Vambraces
 	//38830: true, // Cord of Zandalari Resolve
 	39969: true, // Gauntlets of Crashing Tides
@@ -251,6 +252,8 @@ var flaky = map[int64]bool{
 	40325: true, // Cloak of Blessed Depths
 	//40811: true, // Belt of Concealed Intent
 	//40813: true, // Belt of Concealed Intent
+	40883: true, // Footpads of Terrible Delusions
+	40886: true, // Footpads of Terrible Delusions
 	40967: true, // Gauntlets of Nightmare Manifest
 	40970: true, // Gauntlets of Nightmare Manifest
 	//57228: true, // Anthemic Legguards
