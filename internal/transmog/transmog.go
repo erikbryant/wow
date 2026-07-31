@@ -55,7 +55,7 @@ func load() {
 	err = decoder.Decode(&allSetIDs)
 	mu.Unlock()
 	if err != nil {
-		log.Fatalf("error reading itempersistence: %v", err)
+		log.Fatalf("error reading item persistence: %v", err)
 	}
 }
 
