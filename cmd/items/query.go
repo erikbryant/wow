@@ -68,6 +68,7 @@ func runQuery(args []string) {
 	)
 
 	if err := flags.Parse(args); err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
 	}
 

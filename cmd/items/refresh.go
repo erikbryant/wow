@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -32,7 +31,7 @@ func refreshItem(passphrase string, itemID int64) {
 
 	err := wowitem.Items.Save()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Failed to save item cache: ", err)
+		fmt.Fprintln(os.Stderr, "Failed to save item persistence: ", err)
 		os.Exit(2)
 	}
 
@@ -60,20 +59,22 @@ func refreshCache(passphrase string, maxRefresh int) {
 
 	err := wowitem.Items.Save()
 	if err != nil {
-		log.Fatalln("Failed to save cache: ", err)
+		fmt.Fprintln(os.Stderr, "Failed to save item persistence: ", err)
+		os.Exit(2)
 	}
 
 	fmt.Printf("Refreshed %d of %d stale items\n", refreshCount, needsRefresh)
 }
 
 func runRefresh(args []string) {
-	flags := flag.NewFlagSet("refresh", flag.ContinueOnError)
+	flags := flag.NewFlagSet("refresh", flag.ExitOnError)
 
 	passphrase := flags.String("passphrase", "", "Passphrase to unlock WoW API client ID/secret")
 	maxRefresh := flags.Int("max-refresh", 1000, "Maximum number of items to refresh")
 	itemID := flags.Int64("id", -1, "Item ID to look up")
 
 	if err := flags.Parse(args); err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
 	}
 

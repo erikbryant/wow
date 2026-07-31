@@ -20,11 +20,12 @@ func json(itemID int64) {
 }
 
 func runJSON(args []string) {
-	flags := flag.NewFlagSet("json", flag.ContinueOnError)
+	flags := flag.NewFlagSet("json", flag.ExitOnError)
 
 	itemID := flags.Int64("id", -1, "Item ID to look up")
 
 	if err := flags.Parse(args); err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
 	}
 

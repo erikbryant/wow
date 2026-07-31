@@ -19,11 +19,12 @@ func deleteItem(itemID int64) {
 }
 
 func runDelete(args []string) {
-	flags := flag.NewFlagSet("delete", flag.ContinueOnError)
+	flags := flag.NewFlagSet("delete", flag.ExitOnError)
 
 	itemID := flag.Int64("id", -1, "Item ID to look up")
 
 	if err := flags.Parse(args); err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
 	}
 
