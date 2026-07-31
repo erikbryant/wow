@@ -1,75 +1,9 @@
-package itempersistence
+package wowitem
 
 import (
-	"encoding/gob"
 	"fmt"
-	"slices"
 	"strings"
-	"time"
-
-	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/internal/persist"
-	"github.com/erikbryant/wow/internal/wowapi"
-	"github.com/erikbryant/wow/internal/wowitem"
 )
-
-const (
-	persistName = "items"
-)
-
-var (
-	Items = persist.New[int64, wowitem.Item](persistName)
-)
-
-func init() {
-	gob.Register(map[string]any{})
-	gob.Register([]any{})
-	err := Items.Load()
-	if err != nil {
-		fmt.Printf("*** error opening items persist, creating new one: %v\n", err)
-	}
-	fmt.Printf("-- #Items in cache: %d\n", Items.Len())
-}
-
-// IDs returns the sorted list of keys from the item cache file
-func IDs() []int64 {
-	keys := Items.Keys()
-	slices.Sort(keys)
-	return keys
-}
-
-// Search returns the item with name 's' or an empty item if not found
-func Search(s string) wowitem.Item {
-	_, i, ok := Items.Search(func(v wowitem.Item) bool {
-		return v.Name() == s
-	})
-	if !ok {
-		fmt.Println("Did not find item for search string: ", s)
-	}
-	return i
-}
-
-// LookupItem retrieves data for a single item. From cache if present, or web if not. If retrieved from the web it also stores it.
-func LookupItem(id int64, age time.Duration) (wowitem.Item, bool) {
-	// Use the cached value if exists and not stale
-	i, ok := Items.Get(id)
-	if ok {
-		// A cache hit, but is the cache stale?
-		if !i.Stale(age) {
-			return i, true
-		}
-		fmt.Println("Refreshing stale item:", i.Updated().Format("2006-01-02"), i.ID(), i.Name())
-	}
-
-	result, ok := wowapi.Item(web.ToString(id))
-	if !ok {
-		return wowitem.Item{}, false
-	}
-	i = wowitem.NewItem(result)
-	Items.Set(i.ID(), i)
-
-	return i, true
-}
 
 func luaVendorPrice() (string, []string) {
 	var lua strings.Builder

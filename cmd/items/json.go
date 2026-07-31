@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/erikbryant/wow/internal/itempersistence"
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 func json(itemID int64) {
-	i, ok := itempersistence.LookupItem(itemID, 0)
+	i, ok := wowitem.LookupItem(itemID, 0)
 	if !ok {
 		fmt.Fprintln(os.Stderr, "Failed to LookupItem: ", itemID)
 		os.Exit(2)

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/erikbryant/wow/internal/itempersistence"
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/query"
+	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 func runQuery(args []string) {
@@ -105,7 +105,7 @@ func runQuery(args []string) {
 		predicates = append(predicates, query.ItemID(*itemID))
 	}
 
-	items := itempersistence.Items.Values()
+	items := wowitem.Items.Values()
 
 	results := query.Find(items, predicates...)
 

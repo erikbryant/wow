@@ -6,13 +6,13 @@ import (
 	"log"
 	"os"
 
-	"github.com/erikbryant/wow/internal/itempersistence"
+	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 func deleteItem(itemID int64) {
 	fmt.Println("Deleting itemId:", itemID)
-	itempersistence.Items.Delete(itemID)
-	err := itempersistence.Items.Save()
+	wowitem.Items.Delete(itemID)
+	err := wowitem.Items.Save()
 	if err != nil {
 		log.Fatal(err)
 	}
