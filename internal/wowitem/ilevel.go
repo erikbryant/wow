@@ -90,14 +90,14 @@ var itemLevels = map[int64][]int64{
 }
 
 // Known returns true if the item has an entry in itemLevels
-func Known(itemId int64) bool {
-	_, ok := itemLevels[itemId]
+func Known(itemID int64) bool {
+	_, ok := itemLevels[itemID]
 	return ok
 }
 
-func ILevels(itemId int64) []int64 {
-	if Known(itemId) {
-		return itemLevels[itemId]
+func ILevels(itemID int64) []int64 {
+	if Known(itemID) {
+		return itemLevels[itemID]
 	}
 
 	// If there is no *specific* iLvl then use 0 to tell WoW we don't care

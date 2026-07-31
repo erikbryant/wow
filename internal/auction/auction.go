@@ -15,30 +15,30 @@ import (
 // Sample 'auction' response. Some have more or fewer fields.
 // map[buyout:1.1111011e+09 id:3.49632108e+08 item:map[id:142075] quantity:1 time_left:VERY_LONG]
 
-// Sample 'auction' response for a pet auction. ItemId 82800 is a 'Pet Cage'. Pet cages have no sell value.
+// Sample 'auction' response for a pet auction. ItemID 82800 is a 'Pet Cage'. Pet cages have no sell value.
 // map[buyout:9.99e+06 id:5.01784773e+08 item:map[id:82800 modifiers:[map[type:6 value:39130]] pet_breed_id:20 pet_level:1 pet_quality_id:2 pet_species_id:1446] quantity:1 time_left:VERY_LONG]
 
 // Auction contains the properties of a single auction house auction
 type Auction struct {
-	Id       int64
-	ItemId   int64
+	ID       int64
+	ItemID   int64
 	Buyout   int64 // For commodity auctions this stores 'unit_price'
 	Quantity int64
 	Pet      wowitem.PetInfo
 }
 
-func Id(msi any) int64 {
+func ID(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"id"})
 	if err != nil {
-		log.Fatalf("Id: %s in %v", err, msi)
+		log.Fatalf("ID: %s in %v", err, msi)
 	}
 	return web.ToInt64(value)
 }
 
-func ItemId(msi any) int64 {
+func ItemID(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"item", "id"})
 	if err != nil {
-		log.Fatalf("ItemId: %s in %v", err, msi)
+		log.Fatalf("ItemID: %s in %v", err, msi)
 	}
 	return web.ToInt64(value)
 }
@@ -63,7 +63,7 @@ func Quantity(msi any) int64 {
 	return web.ToInt64(value)
 }
 
-func PetBreedId(msi any) int64 {
+func PetBreedID(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"item", "pet_breed_id"})
 	if err != nil {
 		log.Fatalf("PetBreedID: %s in %v", err, msi)
@@ -79,18 +79,18 @@ func PetLevel(msi any) int64 {
 	return web.ToInt64(value)
 }
 
-func PetQualityId(msi any) int64 {
+func PetQualityID(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"item", "pet_quality_id"})
 	if err != nil {
-		log.Fatalf("PetQualityId: %s in %v", err, msi)
+		log.Fatalf("PetQualityID: %s in %v", err, msi)
 	}
 	return web.ToInt64(value)
 }
 
-func PetSpeciesId(msi any) int64 {
+func PetSpeciesID(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"item", "pet_species_id"})
 	if err != nil {
-		log.Fatalf("PetSpeciesId: %s in %v", err, msi)
+		log.Fatalf("PetSpeciesID: %s in %v", err, msi)
 	}
 	return web.ToInt64(value)
 }
@@ -99,18 +99,18 @@ func PetSpeciesId(msi any) int64 {
 func JsonToStruct(auc any) Auction {
 	var a Auction
 
-	a.Id = Id(auc)
-	a.ItemId = ItemId(auc)
+	a.ID = ID(auc)
+	a.ItemID = ItemID(auc)
 	a.Buyout = Buyout(auc)
 	a.Quantity = Quantity(auc)
 
 	// Is this a Pet Cage?
-	if a.ItemId == 82800 {
+	if a.ItemID == 82800 {
 		// A pet auction!
-		a.Pet.BreedId = PetBreedId(auc)
+		a.Pet.BreedID = PetBreedID(auc)
 		a.Pet.Level = PetLevel(auc)
-		a.Pet.QualityId = PetQualityId(auc)
-		a.Pet.SpeciesId = PetSpeciesId(auc)
+		a.Pet.QualityID = PetQualityID(auc)
+		a.Pet.SpeciesID = PetSpeciesID(auc)
 	}
 
 	return a
@@ -122,10 +122,10 @@ func UnpackAuctions(auctions []any) map[int64][]Auction {
 
 	for _, auc := range auctions {
 		aucStruct := JsonToStruct(auc.(map[string]any))
-		if wowapi.SkipItem(aucStruct.ItemId) {
+		if wowapi.SkipItem(aucStruct.ItemID) {
 			continue
 		}
-		a[aucStruct.ItemId] = append(a[aucStruct.ItemId], aucStruct)
+		a[aucStruct.ItemID] = append(a[aucStruct.ItemID], aucStruct)
 	}
 
 	return a

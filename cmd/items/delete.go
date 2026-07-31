@@ -10,7 +10,7 @@ import (
 )
 
 func deleteItem(itemID int64) {
-	fmt.Println("Deleting itemId:", itemID)
+	fmt.Println("Deleting itemID:", itemID)
 	wowitem.Items.Delete(itemID)
 	err := wowitem.Items.Save()
 	if err != nil {

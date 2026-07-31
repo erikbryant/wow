@@ -111,7 +111,7 @@ func Needed() []string {
 	}
 	defer f.Close()
 
-	// Identify missing recipes
+	// Enumerate missing recipes
 	for alt, recipes := range recipesByAlt {
 		for _, recipe := range AllRecipes {
 			_, ok := recipes[recipe.id]

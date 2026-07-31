@@ -88,19 +88,19 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 
 	bargains := []string{}
 
-	for itemId, itemAuctions := range auctions {
-		i, ok := wowitem.LookupItem(itemId, 0)
+	for itemID, itemAuctions := range auctions {
+		i, ok := wowitem.LookupItem(itemID, 0)
 		if !ok {
 			continue
 		}
-		petId, ok := battlepet.PetSpell(i)
+		petID, ok := battlepet.PetSpell(i)
 		if !ok {
 			continue
 		}
-		//if common.QualityId(i.Quality()) < common.QualityId("Rare") {
+		//if common.QualityID(i.Quality()) < common.QualityID("Rare") {
 		//	continue
 		//}
-		if battlepet.Owned(petId) {
+		if battlepet.Owned(petID) {
 			continue
 		}
 
@@ -111,7 +111,7 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 			if auc.Buyout >= common.Coppers(800, 0, 0) {
 				continue
 			}
-			stats := fmt.Sprintf("%s %s %s", battlepet.Name(petId), common.Gold(auc.Buyout), i.Quality())
+			stats := fmt.Sprintf("%s %s %s", battlepet.Name(petID), common.Gold(auc.Buyout), i.Quality())
 			bargains = append(bargains, stats)
 		}
 	}
@@ -127,8 +127,8 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 
 	bargains := []string{}
 
-	for _, petAuction := range auctions[battlepet.PetCageItemId] {
-		if battlepet.Owned(petAuction.Pet.SpeciesId) {
+	for _, petAuction := range auctions[battlepet.PetCageItemID] {
+		if battlepet.Owned(petAuction.Pet.SpeciesID) {
 			continue
 		}
 		if petAuction.Buyout <= 0 {
@@ -137,7 +137,7 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Buyout > common.Coppers(800, 0, 0) {
 			continue
 		}
-		bargains = append(bargains, battlepet.Name(petAuction.Pet.SpeciesId))
+		bargains = append(bargains, battlepet.Name(petAuction.Pet.SpeciesID))
 	}
 
 	// Include any pets available via spells
@@ -151,7 +151,7 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
-	// SpeciesId of pets that do not resell well
+	// SpeciesID of pets that do not resell well
 	skipPets := map[int64]struct{}{
 		1385: {}, // Albino Chimaeraling
 		1706: {}, // Ashmaw Cub
@@ -196,15 +196,15 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 		1721: {}, // Stormborne Whelpling
 	}
 
-	for _, petAuction := range auctions[battlepet.PetCageItemId] {
-		_, ok := skipPets[petAuction.Pet.SpeciesId]
+	for _, petAuction := range auctions[battlepet.PetCageItemID] {
+		_, ok := skipPets[petAuction.Pet.SpeciesID]
 		if ok {
 			continue
 		}
 		if petAuction.Buyout <= 0 {
 			continue
 		}
-		if petAuction.Pet.QualityId < common.QualityId("Rare") {
+		if petAuction.Pet.QualityID < common.QualityID("Rare") {
 			continue
 		}
 		if petAuction.Pet.Level < 25 {
@@ -214,7 +214,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 			continue
 		}
 
-		bargains = append(bargains, battlepet.Name(petAuction.Pet.SpeciesId))
+		bargains = append(bargains, battlepet.Name(petAuction.Pet.SpeciesID))
 	}
 
 	return bargains
@@ -230,8 +230,8 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 	arbitrages := []Arbitrage{}
 	totalProfit := int64(0)
 
-	for itemId, itemAuctions := range auctions {
-		i, ok := wowitem.LookupItem(itemId, 0)
+	for itemID, itemAuctions := range auctions {
+		i, ok := wowitem.LookupItem(itemID, 0)
 		if !ok {
 			continue
 		}
@@ -292,8 +292,8 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 func findBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
-	for itemId, itemAuctions := range auctions {
-		i, ok := wowitem.LookupItem(itemId, 0)
+	for itemID, itemAuctions := range auctions {
+		i, ok := wowitem.LookupItem(itemID, 0)
 		if !ok {
 			continue
 		}
@@ -312,7 +312,7 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 			}
 
 			// Bargains on specific items
-			maxPrice, ok := usefulGoods[itemId]
+			maxPrice, ok := usefulGoods[itemID]
 			if ok && auc.Buyout <= maxPrice {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 				bargains = append(bargains, str)
@@ -331,8 +331,8 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 
 	needed := map[string]bool{}
 
-	for itemId, itemAuctions := range auctions {
-		i, ok := wowitem.LookupItem(itemId, 0)
+	for itemID, itemAuctions := range auctions {
+		i, ok := wowitem.LookupItem(itemID, 0)
 		if !ok {
 			continue
 		}

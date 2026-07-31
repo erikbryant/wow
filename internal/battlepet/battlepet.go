@@ -13,7 +13,7 @@ import (
 
 const (
 	persistName   = "battlePets"
-	PetCageItemId = int64(82800)
+	PetCageItemID = int64(82800)
 )
 
 var (
@@ -53,7 +53,7 @@ func getPetsOwned() map[int64][]wowitem.PetInfo {
 		if !ok {
 			log.Fatal("Unable to obtain stats.")
 		}
-		p.BreedId = web.ToInt64(stats["breed_id"])
+		p.BreedID = web.ToInt64(stats["breed_id"])
 
 		p.Level = web.ToInt64(pet["level"])
 
@@ -61,22 +61,22 @@ func getPetsOwned() map[int64][]wowitem.PetInfo {
 		if !ok {
 			log.Fatal("Unable to obtain quality.")
 		}
-		p.QualityId = common.QualityId(quality["name"].(string))
+		p.QualityID = common.QualityID(quality["name"].(string))
 
 		species, ok := pet["species"].(map[string]any)
 		if !ok {
 			log.Fatal("Unable to obtain species.")
 		}
-		p.SpeciesId = web.ToInt64(species["id"])
+		p.SpeciesID = web.ToInt64(species["id"])
 
-		_, ok = myPets[p.SpeciesId]
+		_, ok = myPets[p.SpeciesID]
 		if ok {
 			name, _ := pet["species"].(map[string]any)
 			fmt.Println("Duplicate pet:", name)
 		} else {
-			myPets[p.SpeciesId] = []wowitem.PetInfo{}
+			myPets[p.SpeciesID] = []wowitem.PetInfo{}
 		}
-		myPets[p.SpeciesId] = append(myPets[p.SpeciesId], p)
+		myPets[p.SpeciesID] = append(myPets[p.SpeciesID], p)
 	}
 
 	return myPets

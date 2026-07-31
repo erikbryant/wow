@@ -70,7 +70,7 @@ func refreshCache(passphrase string, maxRefresh int) {
 func runRefresh(args []string) {
 	flags := flag.NewFlagSet("refresh", flag.ContinueOnError)
 
-	passphrase := flags.String("passphrase", "", "Passphrase to unlock WoW API client Id/secret")
+	passphrase := flags.String("passphrase", "", "Passphrase to unlock WoW API client ID/secret")
 	maxRefresh := flags.Int("max-refresh", 1000, "Maximum number of items to refresh")
 	itemID := flags.Int64("id", -1, "Item ID to look up")
 

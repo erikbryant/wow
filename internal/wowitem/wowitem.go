@@ -13,24 +13,24 @@ type Item struct {
 	// WARNING: Changing this struct invalidates the cache.
 	// The members have to be public to write to a gob file,
 	// but only use the accessor functions!
-	XId      int64
+	XID      int64
 	XItem    map[string]any
 	XUpdated time.Time // Datetime when created or updated
 }
 
 // PetInfo contains the properties specific to a battle pet
 type PetInfo struct {
-	BreedId   int64
+	BreedID   int64
 	Level     int64
 	Name      string
-	QualityId int64
-	SpeciesId int64
+	QualityID int64
+	SpeciesID int64
 }
 
 // NewItem returns an Item populated with wowData
 func NewItem(wowData map[string]any) Item {
 	return Item{
-		XId:      web.ToInt64(wowData["id"]),
+		XID:      web.ToInt64(wowData["id"]),
 		XItem:    wowData,
 		XUpdated: time.Now(),
 	}
@@ -38,7 +38,7 @@ func NewItem(wowData map[string]any) Item {
 
 // ID returns the item ID
 func (i Item) ID() int64 {
-	return i.XId
+	return i.XID
 }
 
 // Binding returns whether and when the item binds
@@ -223,7 +223,7 @@ func (i Item) Toy() bool {
 
 // Appearances returns the appearance IDs this item provides
 func (i Item) Appearances() []int64 {
-	appearanceIds := []int64{}
+	appearanceIDs := []int64{}
 
 	v, _ := web.MsiValued(i.XItem, []string{"appearances"}, nil)
 	if v == nil {
@@ -234,10 +234,10 @@ func (i Item) Appearances() []int64 {
 	appearances := v.([]any)
 	for _, appearance := range appearances {
 		id := appearance.(map[string]any)["id"]
-		appearanceIds = append(appearanceIds, web.ToInt64(id))
+		appearanceIDs = append(appearanceIDs, web.ToInt64(id))
 	}
 
-	return appearanceIds
+	return appearanceIDs
 }
 
 func (i Item) AppearanceSet() bool {

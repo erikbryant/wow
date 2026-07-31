@@ -88,15 +88,15 @@ var (
 )
 
 // QualityName return the quality name of the given id
-func QualityName(qualityId int64) string {
-	return qualities[qualityId]
+func QualityName(qualityID int64) string {
+	return qualities[qualityID]
 }
 
-// QualityId return the integer id of the given quality name string
-func QualityId(qualityName string) int64 {
-	for qId, qName := range qualities {
+// QualityID return the integer id of the given quality name string
+func QualityID(qualityName string) int64 {
+	for qID, qName := range qualities {
 		if strings.ToLower(qName) == strings.ToLower(qualityName) {
-			return qId
+			return qID
 		}
 	}
 	fmt.Println("Unknown quality", qualityName)

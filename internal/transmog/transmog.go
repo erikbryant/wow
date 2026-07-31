@@ -18,7 +18,7 @@ const (
 
 var (
 	allOwned  = map[int64]bool{}
-	allSetIds = map[int64]bool{}
+	allSetIDs = map[int64]bool{}
 	mu        sync.Mutex
 )
 
@@ -26,7 +26,7 @@ func Init(includeOwned bool) {
 	gob.Register(map[string]any{})
 	gob.Register([]any{})
 	load()
-	fmt.Printf("-- #Appearance set cache: %d\n", len(allSetIds))
+	fmt.Printf("-- #Appearance set cache: %d\n", len(allSetIDs))
 
 	if !includeOwned {
 		return
@@ -41,8 +41,8 @@ func load() {
 	file, err := os.Open(cacheFilename)
 	if err != nil {
 		fmt.Printf("*** error opening appearance cache file: %v, creating new one\n", err)
-		allItemAppearanceSetIds()
-		fmt.Printf("Found %d appearance set IDs\n", len(allSetIds))
+		allItemAppearanceSetIDs()
+		fmt.Printf("Found %d appearance set IDs\n", len(allSetIDs))
 		err = save()
 		if err != nil {
 			log.Fatal(err)
@@ -52,7 +52,7 @@ func load() {
 	defer file.Close()
 	decoder := gob.NewDecoder(file)
 	mu.Lock()
-	err = decoder.Decode(&allSetIds)
+	err = decoder.Decode(&allSetIDs)
 	mu.Unlock()
 	if err != nil {
 		log.Fatalf("error reading itempersistence: %v", err)
@@ -73,7 +73,7 @@ func save() error {
 
 	encoder := gob.NewEncoder(f)
 
-	if err := encoder.Encode(allSetIds); err != nil {
+	if err := encoder.Encode(allSetIDs); err != nil {
 		f.Close()
 		os.Remove(tmp)
 		return err
@@ -87,16 +87,16 @@ func save() error {
 	return os.Rename(tmp, cacheFilename)
 }
 
-// allItemAppearanceSetIds returns a map of all item IDs that are in appearance sets
-func allItemAppearanceSetIds() {
-	ids := wowapi.ItemAppearanceSetsIndexIds()
+// allItemAppearanceSetIDs returns a map of all item IDs that are in appearance sets
+func allItemAppearanceSetIDs() {
+	ids := wowapi.ItemAppearanceSetsIndexIDs()
 	count := len(ids)
-	for setId, setName := range ids {
-		fmt.Printf("%d\tAppearance set: %d   %s\n", count, setId, setName)
+	for setID, setName := range ids {
+		fmt.Printf("%d\tAppearance set: %d   %s\n", count, setID, setName)
 		count--
-		for _, id := range wowapi.ItemAppearanceSetIds(setId) {
+		for _, id := range wowapi.ItemAppearanceSetIDs(setID) {
 			//fmt.Printf("   Appearance: %d\n", id)
-			allSetIds[id] = true
+			allSetIDs[id] = true
 		}
 	}
 }
@@ -258,8 +258,8 @@ var flaky = map[int64]bool{
 	//80188: true, // Skyless Epaulets
 }
 
-// NeedId returns true if I need this transmog appearance ID
-func NeedId(id int64) bool {
+// NeedID returns true if I need this transmog appearance ID
+func NeedID(id int64) bool {
 	if id <= 0 {
 		return false
 	}
@@ -277,16 +277,16 @@ func NeedId(id int64) bool {
 
 // NeedAppearance returns true if I need any of these appearance IDs
 func NeedAppearance(appearances []int64) bool {
-	return slices.ContainsFunc(appearances, NeedId)
+	return slices.ContainsFunc(appearances, NeedID)
 }
 
 // InAppearanceSet returns true if any of these appearance IDs are in an appearance set
 func InAppearanceSet(appearances []int64) bool {
-	if len(allSetIds) == 0 {
+	if len(allSetIDs) == 0 {
 		Init(false)
 	}
 	for _, appearance := range appearances {
-		if allSetIds[appearance] {
+		if allSetIDs[appearance] {
 			return true
 		}
 	}
