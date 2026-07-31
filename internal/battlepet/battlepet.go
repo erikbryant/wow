@@ -3,6 +3,8 @@ package battlepet
 import (
 	"fmt"
 	"log"
+	"slices"
+	"strings"
 
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/common"
@@ -116,4 +118,22 @@ func Name(petID int64) string {
 // Owned returns true if I own this pet ID
 func Owned(petID int64) bool {
 	return len(petsOwned[petID]) > 0
+}
+
+// Output returns all petID/names
+func Output() string {
+	var output strings.Builder
+
+	keys := petNames.Keys()
+	slices.Sort(keys)
+
+	for _, petID := range keys {
+		name, ok := petNames.Get(petID)
+		if !ok {
+			continue
+		}
+		output.WriteString(fmt.Sprintf("%d %s\n", petID, name))
+	}
+
+	return output.String()
 }

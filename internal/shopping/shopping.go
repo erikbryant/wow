@@ -26,6 +26,7 @@ var (
 
 const (
 	arbitragePath = "./exports/arbitrageLatest"
+	battlePetPath = "./reports/battlePets"
 	iLvlPath      = "./reports/arbitrageWithiLvl"
 )
 
@@ -446,6 +447,13 @@ func Shop(realms string, summarize, oauth bool) {
 	battlepet.Init(oauthAvailable)
 	toy.Init(oauthAvailable)
 	transmog.Init(oauthAvailable)
+
+	// Ensure log file is empty
+	err := os.WriteFile(battlePetPath, nil, 0600)
+	if err != nil {
+		log.Fatal(err)
+	}
+	appendFile(battlePetPath, battlepet.Output())
 
 	for _, recipeName := range recipes.Needed() {
 		usefulGoods[wowitem.Search(recipeName).ID()] = common.Coppers(10, 0, 0)
