@@ -15,6 +15,7 @@ type Persistence[K comparable, V any] struct {
 	filename string
 	mu       sync.RWMutex
 	data     map[K]V
+	dirty    bool
 }
 
 func New[K comparable, V any](name string) *Persistence[K, V] {
@@ -24,6 +25,7 @@ func New[K comparable, V any](name string) *Persistence[K, V] {
 	return &Persistence[K, V]{
 		filename: filepath.Join(dataDirectory, name+".gob"),
 		data:     make(map[K]V),
+		dirty:    false,
 	}
 }
 
@@ -45,6 +47,7 @@ func (c *Persistence[K, V]) Load() error {
 	}
 
 	c.data = data
+	c.dirty = false
 
 	return nil
 }
@@ -52,6 +55,11 @@ func (c *Persistence[K, V]) Load() error {
 func (c *Persistence[K, V]) Save() error {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
+
+	if !c.dirty {
+		// Nothing changed, no need to save
+		return nil
+	}
 
 	tmp := c.filename + ".tmp"
 
@@ -73,7 +81,16 @@ func (c *Persistence[K, V]) Save() error {
 		return err
 	}
 
-	return os.Rename(tmp, c.filename)
+	err = os.Rename(tmp, c.filename)
+	if err != nil {
+		os.Remove(tmp)
+		return err
+	}
+
+	// If we got here then we have a clean save
+	c.dirty = false
+
+	return nil
 }
 
 func (c *Persistence[K, V]) Len() int {
@@ -93,12 +110,14 @@ func (c *Persistence[K, V]) Set(key K, value V) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.data[key] = value
+	c.dirty = true
 }
 
 func (c *Persistence[K, V]) Delete(key K) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	delete(c.data, key)
+	c.dirty = true
 }
 
 func (c *Persistence[K, V]) Keys() []K {
