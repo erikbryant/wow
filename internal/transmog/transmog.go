@@ -1,32 +1,50 @@
 package transmog
 
 import (
-	"encoding/gob"
 	"fmt"
 	"log"
-	"os"
 	"slices"
-	"sync"
 
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/internal/persist"
 	"github.com/erikbryant/wow/internal/wowapi"
 )
 
 const (
-	cacheFilename = "./data/appearances.gob"
+	persistName = "appearances"
 )
 
 var (
 	allOwned  = map[int64]bool{}
-	allSetIDs = map[int64]bool{}
-	mu        sync.Mutex
+	allSetIDs = persist.New[int64, bool](persistName)
 )
 
+// getAppearanceSetItemIDs returns a map of all item IDs that are in appearance sets
+func getAppearanceSetItemIDs() {
+	ids := wowapi.ItemAppearanceSetsIndexIDs()
+	count := len(ids)
+	for setID, setName := range ids {
+		fmt.Printf("%d\tAppearance set: %d   %s\n", count, setID, setName)
+		count--
+		for _, id := range wowapi.ItemAppearanceSetIDs(setID) {
+			//fmt.Printf("   Appearance: %d\n", id)
+			allSetIDs.Set(id, true)
+		}
+	}
+}
+
 func Init(includeOwned bool) {
-	gob.Register(map[string]any{})
-	gob.Register([]any{})
-	load()
-	fmt.Printf("-- #Appearance set cache: %d\n", len(allSetIDs))
+	err := allSetIDs.Load()
+	if err != nil {
+		fmt.Printf("*** error opening appearances persist, creating new one: %v\n", err)
+		getAppearanceSetItemIDs()
+		err = allSetIDs.Save()
+		if err != nil {
+			log.Fatalf("Failed to save appearances persist: %v\n", err)
+		}
+	}
+
+	fmt.Printf("-- #Appearance set cache: %d\n", allSetIDs.Len())
 
 	if !includeOwned {
 		return
@@ -36,74 +54,9 @@ func Init(includeOwned bool) {
 	fmt.Printf("-- #Transmogs: %d/%d\n", len(allOwned), 44344)
 }
 
-// load loads the disk cache file into memory
-func load() {
-	file, err := os.Open(cacheFilename)
-	if err != nil {
-		fmt.Printf("*** error opening appearance cache file: %v, creating new one\n", err)
-		allItemAppearanceSetIDs()
-		fmt.Printf("Found %d appearance set IDs\n", len(allSetIDs))
-		err = save()
-		if err != nil {
-			log.Fatal(err)
-		}
-		return
-	}
-	defer file.Close()
-	decoder := gob.NewDecoder(file)
-	mu.Lock()
-	err = decoder.Decode(&allSetIDs)
-	mu.Unlock()
-	if err != nil {
-		log.Fatalf("error reading item persistence: %v", err)
-	}
-}
-
-// save writes the in-memory cache file to disk
-func save() error {
-	mu.Lock()
-	defer mu.Unlock()
-
-	tmp := cacheFilename + ".tmp"
-
-	f, err := os.Create(tmp)
-	if err != nil {
-		return err
-	}
-
-	encoder := gob.NewEncoder(f)
-
-	if err := encoder.Encode(allSetIDs); err != nil {
-		f.Close()
-		os.Remove(tmp)
-		return err
-	}
-
-	if err := f.Close(); err != nil {
-		os.Remove(tmp)
-		return err
-	}
-
-	return os.Rename(tmp, cacheFilename)
-}
-
-// allItemAppearanceSetIDs returns a map of all item IDs that are in appearance sets
-func allItemAppearanceSetIDs() {
-	ids := wowapi.ItemAppearanceSetsIndexIDs()
-	count := len(ids)
-	for setID, setName := range ids {
-		fmt.Printf("%d\tAppearance set: %d   %s\n", count, setID, setName)
-		count--
-		for _, id := range wowapi.ItemAppearanceSetIDs(setID) {
-			//fmt.Printf("   Appearance: %d\n", id)
-			allSetIDs[id] = true
-		}
-	}
-}
-
 // owned returns the IDs of the transmogs I own
 func owned() map[int64]bool {
-	myTransmogs := map[int64]bool{}
+	myTransmogIDs := map[int64]bool{}
 
 	t, ok := wowapi.CollectionsTransmogs()
 	if !ok {
@@ -116,7 +69,7 @@ func owned() map[int64]bool {
 	for _, appearanceSet := range transmogs["appearance_sets"].([]any) {
 		appearanceSet := appearanceSet.(map[string]any)
 		id := web.ToInt64(appearanceSet["id"])
-		myTransmogs[id] = true
+		myTransmogIDs[id] = true
 	}
 
 	//	"slots": [
@@ -146,11 +99,11 @@ func owned() map[int64]bool {
 		for _, appearance := range slot["appearances"].([]any) {
 			appearance := appearance.(map[string]any)
 			id := web.ToInt64(appearance["id"])
-			myTransmogs[id] = true
+			myTransmogIDs[id] = true
 		}
 	}
 
-	return myTransmogs
+	return myTransmogIDs
 }
 
 // flaky appearance IDs; WoW says I own the transmogs, but this app thinks I don't
@@ -279,17 +232,18 @@ func NeedID(id int64) bool {
 }
 
 // NeedAppearance returns true if I need any of these appearance IDs
-func NeedAppearance(appearances []int64) bool {
-	return slices.ContainsFunc(appearances, NeedID)
+func NeedAppearance(appearanceIDs []int64) bool {
+	return slices.ContainsFunc(appearanceIDs, NeedID)
 }
 
 // InAppearanceSet returns true if any of these appearance IDs are in an appearance set
-func InAppearanceSet(appearances []int64) bool {
-	if len(allSetIDs) == 0 {
-		Init(false)
-	}
-	for _, appearance := range appearances {
-		if allSetIDs[appearance] {
+func InAppearanceSet(appearanceIDs []int64) bool {
+	for _, appearanceID := range appearanceIDs {
+		inSet, ok := allSetIDs.Get(appearanceID)
+		if !ok {
+			continue
+		}
+		if inSet {
 			return true
 		}
 	}
