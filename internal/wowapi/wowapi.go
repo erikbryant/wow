@@ -518,52 +518,6 @@ func ItemAppearanceSetIDs(appearanceID int64) []int64 {
 	return ids
 }
 
-// ItemAppearanceSlotIndex returns a list of slot names
-func ItemAppearanceSlotIndex() []string {
-	// This would query the Blizzard URL:
-	//url := "https://us.api.blizzard.com/data/wow/item-appearance/slot/index?namespace=static-us&locale=en_US"
-	// But that returns a static list, so we cache the results and return those.
-
-	return []string{
-		"HEAD",
-		"SHOULDER",
-		"BODY",
-		"CHEST",
-		"WAIST",
-		"LEGS",
-		"FEET",
-		"WRIST",
-		"HAND",
-		"WEAPON",
-		"SHIELD",
-		"RANGED",
-		"CLOAK",
-		"TWOHWEAPON",
-		"TABARD",
-		"ROBE",
-		"WEAPONMAINHAND",
-		"WEAPONOFFHAND",
-		"HOLDABLE",
-		"AMMO",
-		"RANGEDRIGHT",
-		"PROFESSION_TOOL",
-		"PROFESSION_GEAR",
-		"EQUIPABLESPELL_WEAPON",
-	}
-}
-
-// ItemAppearanceSlot returns a list of appearances for a given slot
-func ItemAppearanceSlot(slotName string) ([]any, bool) {
-	url := "https://us.api.blizzard.com/data/wow/item-appearance/slot/" + slotName + "?namespace=static-us&locale=en_US"
-	return requestKey(url, profileAccessToken, "appearances", "ItemAppearanceSlot")
-}
-
-// ItemAppearance returns the details of a given item appearance ID
-func ItemAppearance(itemAppearanceID int64) (any, bool) {
-	url := fmt.Sprintf("https://us.api.blizzard.com/data/wow/item-appearance/%d?namespace=static-us", itemAppearanceID)
-	return request(url, profileAccessToken, "ItemAppearance")
-}
-
 // CollectionsTransmogs returns the transmogs the user owns
 func CollectionsTransmogs() (any, bool) {
 	url := "https://us.api.blizzard.com/profile/user/wow/collections/transmogs?namespace=profile-us&locale=en_US"
