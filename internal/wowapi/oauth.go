@@ -87,6 +87,7 @@ func tokenToPAT(code string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer response.Body.Close()
 
 	contents, err := io.ReadAll(response.Body)
 	if err != nil {
