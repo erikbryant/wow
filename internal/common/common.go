@@ -87,11 +87,6 @@ var (
 	}
 )
 
-// QualityName return the quality name of the given id
-func QualityName(qualityID int64) string {
-	return qualities[qualityID]
-}
-
 // QualityID return the integer id of the given quality name string
 func QualityID(qualityName string) int64 {
 	for qID, qName := range qualities {

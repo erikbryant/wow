@@ -27,20 +27,6 @@ func Epic() Predicate {
 	}
 }
 
-// Armor returns true for armor items.
-func Armor() Predicate {
-	return func(item wowitem.Item) bool {
-		return item.ItemClassName() == "Armor"
-	}
-}
-
-// Weapon returns true for weapon items.
-func Weapon() Predicate {
-	return func(item wowitem.Item) bool {
-		return item.ItemClassName() == "Weapon"
-	}
-}
-
 // NameContains returns true if the item name contains text.
 func NameContains(text string) Predicate {
 	text = strings.ToLower(text)
