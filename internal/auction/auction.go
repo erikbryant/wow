@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
@@ -105,7 +106,7 @@ func JsonToStruct(auc any) Auction {
 	a.Quantity = Quantity(auc)
 
 	// Is this a Pet Cage?
-	if a.ItemID == 82800 {
+	if a.ItemID == battlepet.PetCageItemID {
 		// A pet auction!
 		a.Pet.BreedID = PetBreedID(auc)
 		a.Pet.Level = PetLevel(auc)
