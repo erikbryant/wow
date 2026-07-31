@@ -10,8 +10,9 @@ import (
 
 // Item holds values about a WoW item
 type Item struct {
-	// WARNING: Changing this struct invalidates the cache.
-	// The members have to be public to write to a gob file,
+	// WARNING: Changing this struct invalidates the persistence,
+	// even changing the variable names.
+	// These members have to be public to write to a gob file,
 	// but only use the accessor functions!
 	XID      int64
 	XItem    map[string]any
@@ -192,7 +193,7 @@ func (i Item) SellPriceRealizable() int64 {
 	return i.SellPriceAdvertised()
 }
 
-// Updated returns the last time this item was updated in the cache
+// Updated returns the last time this item was updated in the persistence
 func (i Item) Updated() time.Time {
 	return i.XUpdated
 }

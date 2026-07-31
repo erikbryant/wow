@@ -22,10 +22,10 @@ func init() {
 	if err != nil {
 		fmt.Printf("*** error opening items persist, creating new one: %v\n", err)
 	}
-	fmt.Printf("-- #Items in cache: %d\n", Items.Len())
+	fmt.Printf("-- #Items persisted: %d\n", Items.Len())
 }
 
-// IDs returns the sorted list of keys from the item cache file
+// IDs returns the sorted list of keys from the persistence file
 func IDs() []int64 {
 	keys := Items.Keys()
 	slices.Sort(keys)

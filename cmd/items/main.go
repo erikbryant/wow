@@ -10,7 +10,7 @@ func usage() {
   items <command>
 
 Commands:
-  delete -id <id>                                    Delete cached item
+  delete -id <id>                                    Delete persisted item
   json -id <id>                                      Show JSON for an item
   query [options]                                    Search for items
   refresh -passphrase <pass> [-max-refresh=1000]     Refresh stale items

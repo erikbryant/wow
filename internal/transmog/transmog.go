@@ -44,14 +44,14 @@ func Init(includeOwned bool) {
 		}
 	}
 
-	fmt.Printf("-- #Appearance set cache: %d\n", allSetIDs.Len())
+	fmt.Printf("-- #Appearance sets persisted: %d\n", allSetIDs.Len())
 
 	if !includeOwned {
 		return
 	}
 
 	allOwned = owned()
-	fmt.Printf("-- #Transmogs: %d/%d\n", len(allOwned), 44344)
+	fmt.Printf("-- #Transmogs owned: %d\n", len(allOwned))
 }
 
 // owned returns the IDs of the transmogs I own

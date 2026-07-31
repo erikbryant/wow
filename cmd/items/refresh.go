@@ -19,7 +19,7 @@ func refreshItem(passphrase string, itemID int64) {
 	iOld, ok := wowitem.Items.Get(itemID)
 	if ok {
 		rows = append(rows, iOld)
-		// Remove the item from the cache
+		// Remove the item from the persistence
 		wowitem.Items.Delete(itemID)
 	}
 
@@ -39,8 +39,8 @@ func refreshItem(passphrase string, itemID int64) {
 	output.Table(os.Stdout, rows)
 }
 
-// refreshCache refreshes cached items older than a certain age
-func refreshCache(passphrase string, maxRefresh int) {
+// refreshAll refreshes persisted items older than a certain age
+func refreshAll(passphrase string, maxRefresh int) {
 	wowapi.Init(passphrase, false)
 
 	maxAge := 24 * time.Hour * 7 // 1 week
@@ -84,7 +84,7 @@ func runRefresh(args []string) {
 	}
 
 	if *itemID == -1 {
-		refreshCache(*passphrase, *maxRefresh)
+		refreshAll(*passphrase, *maxRefresh)
 	} else {
 		refreshItem(*passphrase, *itemID)
 	}
