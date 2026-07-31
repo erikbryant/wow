@@ -192,7 +192,7 @@ func request(url, token, caller string) (any, bool) {
 
 	response, err := web.RequestJSON(url, headers)
 	if err != nil {
-		fmt.Printf("%s: no data returned: %s", caller, err)
+		fmt.Printf("%s: no data returned: %s\n", caller, err)
 		return nil, false
 	}
 
@@ -429,7 +429,7 @@ func Commodities() ([]any, bool) {
 // Item retrieves a single item from the WoW web API
 func Item(id string) (map[string]any, bool) {
 	url := "https://us.api.blizzard.com/data/wow/item/" + id + "?namespace=static-us&locale=en_US"
-	r, ok := request(url, accessToken, "Auctions")
+	r, ok := request(url, accessToken, "Item")
 	if !ok {
 		return nil, false
 	}
