@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/erikbryant/wow/internal/battlepet"
-	"github.com/erikbryant/wow/internal/itemcache"
+	"github.com/erikbryant/wow/internal/itempersistence"
 	"github.com/erikbryant/wow/internal/shopping"
 	"github.com/erikbryant/wow/internal/toy"
 	"github.com/erikbryant/wow/internal/transmog"
@@ -54,7 +54,7 @@ func main() {
 
 	if *oauthAvailable {
 		// Write the prices file for the WoW 'wowMerchant' addon to consume
-		err := os.WriteFile(priceCachePath, []byte(itemcache.Lua()), 0600)
+		err := os.WriteFile(priceCachePath, []byte(itempersistence.Lua()), 0600)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/erikbryant/wow/internal/itemcache"
+	"github.com/erikbryant/wow/internal/itempersistence"
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
@@ -17,23 +17,23 @@ import (
 func refreshItem(passphrase string, itemID int64) {
 	wowapi.Init(passphrase, false)
 
-	iOld, ok := itemcache.Read(itemID)
+	iOld, ok := itempersistence.Read(itemID)
 	if !ok {
 		fmt.Fprintln(os.Stderr, "Failed to lookup item in cache: ", itemID)
 		os.Exit(2)
 	}
 
 	// Remove the item from the cache
-	itemcache.Delete(itemID)
+	itempersistence.Delete(itemID)
 
 	// Get the latest value from the web API
-	iNew, ok := itemcache.LookupItem(itemID, 0)
+	iNew, ok := itempersistence.LookupItem(itemID, 0)
 	if !ok {
 		fmt.Fprintln(os.Stderr, "Failed to lookup item: ", itemID)
 		os.Exit(2)
 	}
 
-	err := itemcache.Save()
+	err := itempersistence.Save()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Failed to save item cache: ", err)
 		os.Exit(2)
@@ -50,17 +50,17 @@ func refreshCache(passphrase string, maxRefresh int) {
 	needsRefresh := 0
 	refreshCount := 0
 
-	for _, i := range itemcache.ItemValues() {
+	for _, i := range itempersistence.ItemValues() {
 		if i.Stale(maxAge) {
 			needsRefresh++
 			if refreshCount < maxRefresh {
-				itemcache.LookupItem(i.ID(), maxAge)
+				itempersistence.LookupItem(i.ID(), maxAge)
 				refreshCount++
 			}
 		}
 	}
 
-	err := itemcache.Save()
+	err := itempersistence.Save()
 	if err != nil {
 		log.Fatalln("Failed to save cache: ", err)
 	}

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/erikbryant/wow/internal/itemcache"
+	"github.com/erikbryant/wow/internal/itempersistence"
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/query"
 )
@@ -105,7 +105,7 @@ func runQuery(args []string) {
 		predicates = append(predicates, query.ItemID(*itemID))
 	}
 
-	items := itemcache.ItemValues()
+	items := itempersistence.ItemValues()
 
 	results := query.Find(items, predicates...)
 

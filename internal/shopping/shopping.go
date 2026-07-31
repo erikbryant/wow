@@ -12,7 +12,7 @@ import (
 	"github.com/erikbryant/wow/internal/auction"
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/common"
-	"github.com/erikbryant/wow/internal/itemcache"
+	"github.com/erikbryant/wow/internal/itempersistence"
 	"github.com/erikbryant/wow/internal/recipes"
 	"github.com/erikbryant/wow/internal/toy"
 	"github.com/erikbryant/wow/internal/transmog"
@@ -32,30 +32,30 @@ const (
 
 // usefulGoods are useful items I want
 var usefulGoods = map[int64]int64{
-	//itemcache.Search("Hexweave Bag").ID(): common.Coppers(120, 0, 0), // 30 slot
+	//itempersistence.Search("Hexweave Bag").ID(): common.Coppers(120, 0, 0), // 30 slot
 
-	//itemcache.Search("Simply Stitched Reagent Bag").ID(): common.Coppers(90, 0, 0), // 32 slot
-	//itemcache.Search("Chronocloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
-	//itemcache.Search("Weavercloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
-	//itemcache.Search("Dawnweave Reagent Bag").ID():       common.Coppers(90, 0, 0), // 38 slot
+	//itempersistence.Search("Simply Stitched Reagent Bag").ID(): common.Coppers(90, 0, 0), // 32 slot
+	//itempersistence.Search("Chronocloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
+	//itempersistence.Search("Weavercloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
+	//itempersistence.Search("Dawnweave Reagent Bag").ID():       common.Coppers(90, 0, 0), // 38 slot
 
 	// Fun weapon transmogs
-	itemcache.Search("Blackfury").ID():          common.Coppers(3000, 0, 0),
-	itemcache.Search("Tyrhold Broadsword").ID(): common.Coppers(3000, 0, 0),
+	itempersistence.Search("Blackfury").ID():          common.Coppers(3000, 0, 0),
+	itempersistence.Search("Tyrhold Broadsword").ID(): common.Coppers(3000, 0, 0),
 
 	// Appearance set transmogs
-	itemcache.Search("Tyrhold Visage").ID():            common.Coppers(2000, 0, 0),
-	itemcache.Search("Tyrhold Epaulets").ID():          common.Coppers(2000, 0, 0),
-	itemcache.Search("Tyrhold Robe").ID():              common.Coppers(2000, 0, 0),
-	itemcache.Search("Tyrhold Slippers").ID():          common.Coppers(2000, 0, 0),
-	itemcache.Search("Boots of the Black Flame").ID():  common.Coppers(2000, 0, 0),
-	itemcache.Search("Helm of the Tranquil Path").ID(): common.Coppers(2000, 0, 0),
-	itemcache.Search("Vest of the Tranquil Path").ID(): common.Coppers(2000, 0, 0),
+	itempersistence.Search("Tyrhold Visage").ID():            common.Coppers(2000, 0, 0),
+	itempersistence.Search("Tyrhold Epaulets").ID():          common.Coppers(2000, 0, 0),
+	itempersistence.Search("Tyrhold Robe").ID():              common.Coppers(2000, 0, 0),
+	itempersistence.Search("Tyrhold Slippers").ID():          common.Coppers(2000, 0, 0),
+	itempersistence.Search("Boots of the Black Flame").ID():  common.Coppers(2000, 0, 0),
+	itempersistence.Search("Helm of the Tranquil Path").ID(): common.Coppers(2000, 0, 0),
+	itempersistence.Search("Vest of the Tranquil Path").ID(): common.Coppers(2000, 0, 0),
 
 	// Gun appearances
-	itemcache.Search("Ameelton's Shot-Thrower").ID():     common.Coppers(3000, 0, 0),
-	itemcache.Search("Kickback 5000").ID():               common.Coppers(3000, 0, 0),
-	itemcache.Search("Extreme-Impact Hole Puncher").ID(): common.Coppers(3000, 0, 0),
+	itempersistence.Search("Ameelton's Shot-Thrower").ID():     common.Coppers(3000, 0, 0),
+	itempersistence.Search("Kickback 5000").ID():               common.Coppers(3000, 0, 0),
+	itempersistence.Search("Extreme-Impact Hole Puncher").ID(): common.Coppers(3000, 0, 0),
 }
 
 // Init determines which cooking recipes are still needed
@@ -63,7 +63,7 @@ func Init(oauth bool) {
 	oauthAvailable = oauth
 
 	for _, recipeName := range recipes.Needed() {
-		usefulGoods[itemcache.Search(recipeName).ID()] = common.Coppers(10, 0, 0)
+		usefulGoods[itempersistence.Search(recipeName).ID()] = common.Coppers(10, 0, 0)
 	}
 }
 
@@ -90,7 +90,7 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for itemId, itemAuctions := range auctions {
-		i, ok := itemcache.LookupItem(itemId, 0)
+		i, ok := itempersistence.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}
@@ -232,7 +232,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 	totalProfit := int64(0)
 
 	for itemId, itemAuctions := range auctions {
-		i, ok := itemcache.LookupItem(itemId, 0)
+		i, ok := itempersistence.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}
@@ -294,7 +294,7 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for itemId, itemAuctions := range auctions {
-		i, ok := itemcache.LookupItem(itemId, 0)
+		i, ok := itempersistence.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}
@@ -333,7 +333,7 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 	needed := map[string]bool{}
 
 	for itemId, itemAuctions := range auctions {
-		i, ok := itemcache.LookupItem(itemId, 0)
+		i, ok := itempersistence.LookupItem(itemId, 0)
 		if !ok {
 			continue
 		}
@@ -447,7 +447,7 @@ func ScanRealms(r string, summarize bool) {
 	sort.Strings(results)
 	fmt.Println(results)
 
-	err = itemcache.Save()
+	err = itempersistence.Save()
 	if err != nil {
 		log.Fatal(err)
 	}

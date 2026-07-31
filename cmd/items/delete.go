@@ -6,13 +6,13 @@ import (
 	"log"
 	"os"
 
-	"github.com/erikbryant/wow/internal/itemcache"
+	"github.com/erikbryant/wow/internal/itempersistence"
 )
 
 func deleteItem(itemID int64) {
 	fmt.Println("Deleting itemId:", itemID)
-	itemcache.Delete(itemID)
-	err := itemcache.Save()
+	itempersistence.Delete(itemID)
+	err := itempersistence.Save()
 	if err != nil {
 		log.Fatal(err)
 	}

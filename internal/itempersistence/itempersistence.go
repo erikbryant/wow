@@ -1,4 +1,4 @@
-package itemcache
+package itempersistence
 
 import (
 	"encoding/gob"
@@ -18,53 +18,53 @@ const (
 )
 
 var (
-	itemCache = persist.New[int64, wowitem.Item](persistName)
+	items = persist.New[int64, wowitem.Item](persistName)
 )
 
 func init() {
 	gob.Register(map[string]any{})
 	gob.Register([]any{})
-	err := itemCache.Load()
+	err := items.Load()
 	if err != nil {
-		fmt.Printf("*** error opening pet name persist, creating new one: %v\n", err)
+		fmt.Printf("*** error opening items persist, creating new one: %v\n", err)
 	}
-	fmt.Printf("-- #Items in cache: %d\n", itemCache.Len())
+	fmt.Printf("-- #Items in cache: %d\n", items.Len())
 }
 
 func Save() error {
-	return itemCache.Save()
+	return items.Save()
 }
 
 // Read returns the in-memory copy (if exists)
 func Read(id int64) (wowitem.Item, bool) {
-	return itemCache.Get(id)
+	return items.Get(id)
 }
 
 // Write writes an entry to the in-memory cache
 func Write(id int64, i wowitem.Item) {
-	itemCache.Set(id, i)
+	items.Set(id, i)
 }
 
 // Delete deletes an entry from the in-memory cache
 func Delete(id int64) {
-	itemCache.Delete(id)
+	items.Delete(id)
 }
 
 // IDs returns the sorted list of keys from the item cache file
 func IDs() []int64 {
-	keys := itemCache.Keys()
+	keys := items.Keys()
 	slices.Sort(keys)
 	return keys
 }
 
 // ItemValues returns a slice of the cached map values
 func ItemValues() []wowitem.Item {
-	return itemCache.Values()
+	return items.Values()
 }
 
 // Search returns the item with name 's' or an empty item if not found
 func Search(s string) wowitem.Item {
-	_, i, ok := itemCache.Search(func(v wowitem.Item) bool {
+	_, i, ok := items.Search(func(v wowitem.Item) bool {
 		return v.Name() == s
 	})
 	if !ok {
@@ -100,7 +100,7 @@ func luaVendorPrice() (string, []string) {
 
 	lua.WriteString(fmt.Sprintf("local VendorSellPriceCache = {\n"))
 	for _, id := range IDs() {
-		i, _ := itemCache.Get(id)
+		i, _ := items.Get(id)
 		spr := i.SellPriceRealizable()
 		if spr <= 100 {
 			// To keep the lua table small, ignore anything that can't ever be a bargain
@@ -144,7 +144,7 @@ func luaCosmetic() (string, []string) {
 
 	lua.WriteString(fmt.Sprintf("local Cosmetics = {\n"))
 	for _, id := range IDs() {
-		i, _ := itemCache.Get(id)
+		i, _ := items.Get(id)
 		cosmetic := i.Cosmetic()
 		if !cosmetic {
 			continue
