@@ -100,7 +100,8 @@ func PetSpell(i wowitem.Item) (int64, bool) {
 	if i.ItemSubclassName() != "Companion Pets" {
 		return 0, false
 	}
-	return petNames.ReverseLookup(i.Name())
+	key, _, ok := petNames.Search(func(v string) bool { return v == i.Name() })
+	return key, ok
 }
 
 // Name returns the pet name for the given ID

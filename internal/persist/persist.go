@@ -11,13 +11,13 @@ const (
 	dataDirectory = "./data"
 )
 
-type Persistence[K comparable, V comparable] struct {
+type Persistence[K comparable, V any] struct {
 	filename string
 	mu       sync.RWMutex
 	data     map[K]V
 }
 
-func New[K comparable, V comparable](name string) *Persistence[K, V] {
+func New[K comparable, V any](name string) *Persistence[K, V] {
 	gob.Register(map[string]any{})
 	gob.Register([]any{})
 
@@ -100,25 +100,58 @@ func (c *Persistence[K, V]) Get(key K) (V, bool) {
 	return v, ok
 }
 
-func (c *Persistence[K, V]) ReverseLookup(value V) (K, bool) {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-
-	c.requireLoaded()
-
-	for k, v := range c.data {
-		if v == value {
-			return k, true
-		}
-	}
-
-	var zero K
-	return zero, false
-}
-
 func (c *Persistence[K, V]) Set(key K, value V) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.requireLoaded()
 	c.data[key] = value
+}
+
+func (c *Persistence[K, V]) Delete(key K) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.requireLoaded()
+	delete(c.data, key)
+}
+
+func (c *Persistence[K, V]) Keys() []K {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	c.requireLoaded()
+
+	keys := make([]K, 0, len(c.data))
+	for k := range c.data {
+		keys = append(keys, k)
+	}
+
+	return keys
+}
+
+func (c *Persistence[K, V]) Values() []V {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	c.requireLoaded()
+
+	values := make([]V, 0, len(c.data))
+	for _, v := range c.data {
+		values = append(values, v)
+	}
+
+	return values
+}
+
+func (c *Persistence[K, V]) Search(searchFunc func(v V) bool) (K, V, bool) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	c.requireLoaded()
+
+	for k, v := range c.data {
+		if searchFunc(v) {
+			return k, v, true
+		}
+	}
+
+	var zeroV V
+	var zeroK K
+	return zeroK, zeroV, false
 }

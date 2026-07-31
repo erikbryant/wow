@@ -3,143 +3,74 @@ package itemcache
 import (
 	"encoding/gob"
 	"fmt"
-	"log"
-	"os"
 	"slices"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/internal/persist"
 	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 const (
-	cacheFilename = "./data/items.gob"
+	persistName = "items"
 )
 
 var (
-	itemCache = map[int64]wowitem.Item{}
-	mu        sync.Mutex
+	itemCache = persist.New[int64, wowitem.Item](persistName)
 )
 
 func init() {
 	gob.Register(map[string]any{})
 	gob.Register([]any{})
-	load()
-	fmt.Printf("-- #Items in cache: %d\n", len(itemCache))
+	err := itemCache.Load()
+	if err != nil {
+		fmt.Printf("*** error opening pet name persist, creating new one: %v\n", err)
+	}
+	fmt.Printf("-- #Items in cache: %d\n", itemCache.Len())
 }
 
-// load loads the disk cache file into memory
-func load() {
-	file, err := os.Open(cacheFilename)
-	if err != nil {
-		fmt.Printf("*** error opening item cache file: %v, creating new one\n", err)
-		return
-	}
-	defer file.Close()
-	decoder := gob.NewDecoder(file)
-	mu.Lock()
-	err = decoder.Decode(&itemCache)
-	mu.Unlock()
-	if err != nil {
-		log.Fatalf("error reading item cache: %v", err)
-	}
-}
-
-// Save writes the in-memory cache file to disk
 func Save() error {
-	mu.Lock()
-	defer mu.Unlock()
-
-	tmp := cacheFilename + ".tmp"
-
-	f, err := os.Create(tmp)
-	if err != nil {
-		return err
-	}
-
-	encoder := gob.NewEncoder(f)
-
-	if err := encoder.Encode(itemCache); err != nil {
-		f.Close()
-		os.Remove(tmp)
-		return err
-	}
-
-	if err := f.Close(); err != nil {
-		os.Remove(tmp)
-		return err
-	}
-
-	return os.Rename(tmp, cacheFilename)
+	return itemCache.Save()
 }
 
 // Read returns the in-memory copy (if exists)
 func Read(id int64) (wowitem.Item, bool) {
-	mu.Lock()
-	i, ok := itemCache[id]
-	mu.Unlock()
-	return i, ok
+	return itemCache.Get(id)
 }
 
 // Write writes an entry to the in-memory cache
 func Write(id int64, i wowitem.Item) {
-	mu.Lock()
-	itemCache[id] = i
-	mu.Unlock()
+	itemCache.Set(id, i)
 }
 
 // Delete deletes an entry from the in-memory cache
 func Delete(id int64) {
-	mu.Lock()
-	delete(itemCache, id)
-	mu.Unlock()
+	itemCache.Delete(id)
 }
 
 // IDs returns the sorted list of keys from the item cache file
 func IDs() []int64 {
-	ids := []int64{}
-
-	mu.Lock()
-	for id := range itemCache {
-		ids = append(ids, id)
-	}
-	mu.Unlock()
-
-	slices.Sort(ids)
-
-	return ids
+	keys := itemCache.Keys()
+	slices.Sort(keys)
+	return keys
 }
 
-// ItemsSlice returns a slice of the cached map values
-func ItemsSlice() []wowitem.Item {
-	mu.Lock()
-	defer mu.Unlock()
-
-	items := make([]wowitem.Item, 0, len(itemCache))
-
-	for _, item := range itemCache {
-		items = append(items, item)
-	}
-
-	return items
+// ItemValues returns a slice of the cached map values
+func ItemValues() []wowitem.Item {
+	return itemCache.Values()
 }
 
 // Search returns the item with name 's' or an empty item if not found
 func Search(s string) wowitem.Item {
-	mu.Lock()
-	for id := range itemCache {
-		if itemCache[id].Name() == s {
-			mu.Unlock()
-			return itemCache[id]
-		}
+	_, i, ok := itemCache.Search(func(v wowitem.Item) bool {
+		return v.Name() == s
+	})
+	if !ok {
+		fmt.Println("Did not find item for search string: ", s)
 	}
-	mu.Unlock()
-
-	fmt.Println("Did not find item for search string: ", s)
-	return wowitem.Item{}
+	return i
 }
 
 // LookupItem retrieves data for a single item. From the cache if present, or web if not. If it retrieves it from the web it also caches it.
@@ -169,9 +100,8 @@ func luaVendorPrice() (string, []string) {
 
 	lua.WriteString(fmt.Sprintf("local VendorSellPriceCache = {\n"))
 	for _, id := range IDs() {
-		mu.Lock()
-		spr := itemCache[id].SellPriceRealizable()
-		mu.Unlock()
+		i, _ := itemCache.Get(id)
+		spr := i.SellPriceRealizable()
 		if spr <= 100 {
 			// To keep the lua table small, ignore anything that can't ever be a bargain
 			// Skip prices that are zero
@@ -214,9 +144,8 @@ func luaCosmetic() (string, []string) {
 
 	lua.WriteString(fmt.Sprintf("local Cosmetics = {\n"))
 	for _, id := range IDs() {
-		mu.Lock()
-		cosmetic := itemCache[id].Cosmetic()
-		mu.Unlock()
+		i, _ := itemCache.Get(id)
+		cosmetic := i.Cosmetic()
 		if !cosmetic {
 			continue
 		}

@@ -50,7 +50,7 @@ func refreshCache(passphrase string, maxRefresh int) {
 	needsRefresh := 0
 	refreshCount := 0
 
-	for _, i := range itemcache.ItemsSlice() {
+	for _, i := range itemcache.ItemValues() {
 		if i.Stale(maxAge) {
 			needsRefresh++
 			if refreshCount < maxRefresh {

@@ -105,7 +105,7 @@ func runQuery(args []string) {
 		predicates = append(predicates, query.ItemID(*itemID))
 	}
 
-	items := itemcache.ItemsSlice()
+	items := itemcache.ItemValues()
 
 	results := query.Find(items, predicates...)
 
