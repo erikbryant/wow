@@ -87,9 +87,6 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 		if !ok {
 			continue
 		}
-		//if common.QualityID(i.Quality()) < common.QualityID("Rare") {
-		//	continue
-		//}
 		if battlepet.Owned(petID) {
 			continue
 		}
