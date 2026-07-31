@@ -101,7 +101,7 @@ func (i Item) ItemLevel() int64 {
 	return web.ToInt64(v)
 }
 
-// VariableItemLevel returns true if the item can be enhanced, changing its iLevel
+// VariableItemLevel returns true if the item can be enhanced, changing its ilevel
 func (i Item) VariableItemLevel() bool {
 	if i.Stackable() {
 		return false
