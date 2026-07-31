@@ -1,20 +1,41 @@
 # wow
 
-A command-line tool that analyzes the World of Warcraft Auction House to find vendor arbitrage opportunities and underpriced items needed by your characters.
+A command-line tool that analyzes the World of Warcraft Auction House to
+* find arbitrage opportunities
+* find items needed by your characters that are selling for cheap
+* find battle pets needed
+* find battle pets for resale
+* generate files to configure the wowMerchant AddOn
 
-https://develop.battle.net/documentation/world-of-warcraft/game-data-apis
+### Find arbitrage opportunities
 
-Scan the Auction House for arbitrage opportunities. Sometimes players put items up for auction at a purchase price lower than what the stores will pay to buy the item from you. Find these arbitrage opportunities and display what profit is to be made.
+Scan the Auction House for arbitrage opportunities. Players auction items at a purchase price lower than vendors will pay. Find these arbitrage opportunities and display what profit is to be made.
 
-Also, scan the Auction House for good deals on items that my characters need. Sometimes players dump items for lower prices than my characters would have to pay at the stores. Or, sometimes hard to find items appear at good prices. Find these and display them.
+### Find items needed
+Scan the Auction House for items that my characters need that are selling at low prices.
+
+### Find battle pets
+
+Find battle pets that your characters do not own. If they are selling at a good price, suggest them.
+
+Find battle pets that will resell well. Suggest buying those.
+
+### Generate files for wowMerchant
+
+The wowMerchant AddOn depends on certain data from the wow application. Scrape this data from the WoW web APIs and generate files consumable by wowMerchant.
+
+This includes a cache of all current vendor prices. It also includes arbitrage items (selling at a discount to vendor prices).
+
+# Development notes
 
 The auction house downloadable data is updated once an hour. The precise time might depend upon when the service was last started up after a maintenance. Sampling multiple times during a one-hour window will result in identical downloads. There are other people playing this same arbitrage game, so you have to be *very* quick (right at 10 after) to get in on the bargains before they are gone.
 
-## Development
+### WoW web APIs
 
 https://develop.battle.net/documentation
+https://develop.battle.net/documentation/world-of-warcraft/game-data-apis
 
-### OAUTH 2.0
+### OAuth 2.0
 
 [Reference implementation](https://github.com/douglasmakey/oauth2-example).
 
@@ -25,7 +46,3 @@ This callback has been registered with Blizzard for this client ID:
 ```text
 redirect_uri = 'http://localhost:8000/auth/wow/callback'
 ```
-
-## Oddities
-
-Why does 'Strong Sniffin' Soup for Niffen' (204790) have a sell price, but is not sellable?
