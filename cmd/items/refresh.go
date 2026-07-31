@@ -7,7 +7,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
@@ -25,15 +24,11 @@ func refreshItem(passphrase string, itemID int64) {
 		wowitem.Items.Delete(itemID)
 	}
 
-	// Get the latest value from the web API
-	result, ok := wowapi.Item(web.ToString(itemID))
+	iNew, ok := wowitem.GetWeb(itemID)
 	if !ok {
-		log.Fatal("Item not found, fix this error message/handling")
+		fmt.Fprintln(os.Stderr, "Could not retrieve item", itemID)
+		os.Exit(2)
 	}
-
-	// Write it to the persistence
-	iNew := wowitem.NewItem(result)
-	wowitem.Items.Set(iNew.ID(), iNew)
 
 	err := wowitem.Items.Save()
 	if err != nil {
@@ -57,7 +52,7 @@ func refreshCache(passphrase string, maxRefresh int) {
 		if i.Stale(maxAge) {
 			needsRefresh++
 			if refreshCount < maxRefresh {
-				wowitem.LookupItem(i.ID(), maxAge)
+				wowitem.GetWeb(i.ID())
 				refreshCount++
 			}
 		}

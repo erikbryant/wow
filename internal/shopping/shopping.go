@@ -49,7 +49,6 @@ var usefulGoods = map[int64]int64{
 	wowitem.Search("Tyrhold Slippers").ID():          common.Coppers(2000, 0, 0),
 	wowitem.Search("Boots of the Black Flame").ID():  common.Coppers(2000, 0, 0),
 	wowitem.Search("Helm of the Tranquil Path").ID(): common.Coppers(2000, 0, 0),
-	wowitem.Search("Vest of the Tranquil Path").ID(): common.Coppers(2000, 0, 0),
 
 	// Gun appearances
 	wowitem.Search("Ameelton's Shot-Thrower").ID():     common.Coppers(3000, 0, 0),
@@ -80,7 +79,7 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for itemID, itemAuctions := range auctions {
-		i, ok := wowitem.LookupItem(itemID, 0)
+		i, ok := wowitem.Get(itemID)
 		if !ok {
 			continue
 		}
@@ -222,7 +221,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 	totalProfit := int64(0)
 
 	for itemID, itemAuctions := range auctions {
-		i, ok := wowitem.LookupItem(itemID, 0)
+		i, ok := wowitem.Get(itemID)
 		if !ok {
 			continue
 		}
@@ -284,7 +283,7 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for itemID, itemAuctions := range auctions {
-		i, ok := wowitem.LookupItem(itemID, 0)
+		i, ok := wowitem.Get(itemID)
 		if !ok {
 			continue
 		}
@@ -323,7 +322,7 @@ func findTransmogBargains(auctions map[int64][]auction.Auction) []string {
 	needed := map[string]bool{}
 
 	for itemID, itemAuctions := range auctions {
-		i, ok := wowitem.LookupItem(itemID, 0)
+		i, ok := wowitem.Get(itemID)
 		if !ok {
 			continue
 		}

@@ -4,7 +4,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"slices"
-	"time"
 
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/persist"
@@ -47,24 +46,25 @@ func Search(s string) Item {
 	return i
 }
 
-// LookupItem retrieves a single item. From persistence if present, web if not. If from the web, also store it.
-func LookupItem(id int64, age time.Duration) (Item, bool) {
-	// Use the persisted value if exists and not stale
-	i, ok := Items.Get(id)
-	if ok {
-		if !i.Stale(age) {
-			return i, true
-		}
-		fmt.Println("Refreshing stale item:", i.Updated().Format("2006-01-02"), i.ID(), i.Name())
-	}
-
+// GetWeb retrieves a single item from the web and persists it.
+func GetWeb(id int64) (Item, bool) {
+	fmt.Println("Downloading item:", id)
 	result, ok := wowapi.Item(web.ToString(id))
 	if !ok {
 		return Item{}, false
 	}
 
-	i = NewItem(result)
+	i := NewItem(result)
 	Items.Set(i.ID(), i)
 
 	return i, true
+}
+
+// Get retrieves a single item. From persistence if present, web if not.
+func Get(id int64) (Item, bool) {
+	i, ok := Items.Get(id)
+	if ok {
+		return i, true
+	}
+	return GetWeb(id)
 }
