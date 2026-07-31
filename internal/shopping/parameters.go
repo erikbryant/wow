@@ -18,6 +18,7 @@ var (
 
 // usefulGoods are useful items I want, if the price is right
 var usefulGoods = map[int64]int64{
+	// Bags
 	//itempersistence.Search("Hexweave Bag").ID(): common.Coppers(120, 0, 0), // 30 slot
 	//itempersistence.Search("Simply Stitched Reagent Bag").ID(): common.Coppers(90, 0, 0), // 32 slot
 	//itempersistence.Search("Chronocloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
