@@ -283,8 +283,9 @@ func fmtShoppingList(label string, items []string, c *color.Color, summarize boo
 
 // scanRealm retrieves auctions and prints suggestions for what to buy for a single realm
 func scanRealm(realm string, c chan<- string, summarize bool) {
-	auctions, ok := auction.Get(realm)
-	if !ok {
+	auctions, err := auction.Get(realm)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		c <- ""
 		return
 	}

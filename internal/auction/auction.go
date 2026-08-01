@@ -1,6 +1,7 @@
 package auction
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -28,7 +29,7 @@ type Auction struct {
 	Pet      wowitem.PetInfo
 }
 
-func ID(msi any) int64 {
+func auctionID(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"id"})
 	if err != nil {
 		log.Fatalf("ID: %s in %v", err, msi)
@@ -100,7 +101,7 @@ func petSpeciesID(msi any) int64 {
 func newAuction(auc any) Auction {
 	var a Auction
 
-	a.ID = ID(auc)
+	a.ID = auctionID(auc)
 	a.ItemID = itemID(auc)
 	a.Buyout = buyout(auc)
 	a.Quantity = quantity(auc)
@@ -133,7 +134,7 @@ func unpackAuctions(auctions []any) map[int64][]Auction {
 }
 
 // Get returns the current auctions and their hash
-func Get(realm string) (map[int64][]Auction, bool) {
+func Get(realm string) (map[int64][]Auction, error) {
 	var ok bool
 	var auctions []any
 
@@ -143,9 +144,8 @@ func Get(realm string) (map[int64][]Auction, bool) {
 		auctions, ok = wowapi.Auctions(realm)
 	}
 	if !ok {
-		log.Println("Unable to obtain auctions for", realm)
-		return nil, false
+		return nil, fmt.Errorf("unable to obtain auctions for: %s", realm)
 	}
 
-	return unpackAuctions(auctions), true
+	return unpackAuctions(auctions), nil
 }
