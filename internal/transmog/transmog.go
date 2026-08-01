@@ -73,7 +73,7 @@ func Init() {
 
 // needAppearanceID returns true if I need this appearance ID
 func needAppearanceID(id int64) bool {
-	if config.FlakyAppearanceIDs[id] {
+	if config.FlakyAppearanceID(id) {
 		return false
 	}
 	if !appearanceIDsOwned[id] {
