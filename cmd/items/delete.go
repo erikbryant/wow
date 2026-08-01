@@ -3,19 +3,16 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
-func deleteItem(itemID int64) {
+func deleteItem(itemID int64) error {
 	fmt.Println("Deleting itemID:", itemID)
 	wowitem.Items.Delete(itemID)
 	err := wowitem.Items.Save()
-	if err != nil {
-		log.Fatal(err)
-	}
+	return err
 }
 
 func runDelete(args []string) {
@@ -33,5 +30,8 @@ func runDelete(args []string) {
 		os.Exit(2)
 	}
 
-	deleteItem(*itemID)
+	err := deleteItem(*itemID)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
 }
