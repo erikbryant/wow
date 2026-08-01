@@ -12,8 +12,7 @@ import (
 )
 
 // refreshItem refreshes a single item
-func refreshItem(passphrase string, itemID int64) {
-	wowapi.Init(passphrase, false)
+func refreshItem(itemID int64) {
 	rows := []wowitem.Item{}
 
 	iOld, ok := wowitem.Items.Get(itemID)
@@ -40,9 +39,7 @@ func refreshItem(passphrase string, itemID int64) {
 }
 
 // refreshAll refreshes persisted items older than a certain age
-func refreshAll(passphrase string, maxRefresh int) {
-	wowapi.Init(passphrase, false)
-
+func refreshAll(maxRefresh int) {
 	maxAge := 24 * time.Hour * 7 // 1 week
 	needsRefresh := 0
 	refreshCount := 0
@@ -83,9 +80,11 @@ func runRefresh(args []string) {
 		os.Exit(2)
 	}
 
+	wowapi.Init(*passphrase)
+
 	if *itemID == -1 {
-		refreshAll(*passphrase, *maxRefresh)
+		refreshAll(*maxRefresh)
 	} else {
-		refreshItem(*passphrase, *itemID)
+		refreshItem(*itemID)
 	}
 }
