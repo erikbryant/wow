@@ -1,4 +1,4 @@
-package shopping
+package config
 
 import (
 	"github.com/erikbryant/wow/internal/common"
@@ -6,24 +6,24 @@ import (
 )
 
 var (
-	appearancePriceMax       = common.Coppers(50, 0, 0)
-	appearancePriceInSetMax  = common.Coppers(600, 0, 0)
-	arbitrageProfitMin       = common.Coppers(0, 50, 0)
-	battlePetPriceResellMax  = common.Coppers(200, 0, 0)
-	battlePetPriceUnownedMax = common.Coppers(500, 0, 0)
-	profitToDisplayMin       = common.Coppers(15, 0, 0)
-	recipePriceMax           = common.Coppers(20, 0, 0)
-	toyPriceMax              = common.Coppers(400, 0, 0)
+	AppearancePriceMax       = common.Coppers(50, 0, 0)
+	AppearancePriceInSetMax  = common.Coppers(600, 0, 0)
+	ArbitrageProfitMin       = common.Coppers(0, 50, 0)
+	BattlePetPriceResellMax  = common.Coppers(200, 0, 0)
+	BattlePetPriceUnownedMax = common.Coppers(500, 0, 0)
+	ProfitToDisplayMin       = common.Coppers(15, 0, 0)
+	RecipePriceMax           = common.Coppers(20, 0, 0)
+	ToyPriceMax              = common.Coppers(400, 0, 0)
 )
 
-// usefulGoods are useful items I want, if the price is right
-var usefulGoods = map[int64]int64{
+// UsefulGoods are useful items I want, if the price is right
+var UsefulGoods = map[int64]int64{
 	// Bags
-	//itempersistence.Search("Hexweave Bag").ID(): common.Coppers(120, 0, 0), // 30 slot
-	//itempersistence.Search("Simply Stitched Reagent Bag").ID(): common.Coppers(90, 0, 0), // 32 slot
-	//itempersistence.Search("Chronocloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
-	//itempersistence.Search("Weavercloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
-	//itempersistence.Search("Dawnweave Reagent Bag").ID():       common.Coppers(90, 0, 0), // 38 slot
+	//wowitem.Search("Hexweave Bag").ID(): common.Coppers(120, 0, 0), // 30 slot
+	//wowitem.Search("Simply Stitched Reagent Bag").ID(): common.Coppers(90, 0, 0), // 32 slot
+	//wowitem.Search("Chronocloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
+	//wowitem.Search("Weavercloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
+	//wowitem.Search("Dawnweave Reagent Bag").ID():       common.Coppers(90, 0, 0), // 38 slot
 
 	// Fun weapon appearances
 	wowitem.Search("Blackfury").ID():                   common.Coppers(3000, 0, 0),
@@ -40,8 +40,8 @@ var usefulGoods = map[int64]int64{
 	wowitem.Search("Helm of the Tranquil Path").ID(): common.Coppers(2000, 0, 0),
 }
 
-// SpeciesID of pets that do not resell well
-var skipPets = map[int64]struct{}{
+// SkipPets holds SpeciesID of pets that do not resell well
+var SkipPets = map[int64]struct{}{
 	1385: {}, // Albino Chimaeraling
 	1706: {}, // Ashmaw Cub
 	1150: {}, // Ashstone Core

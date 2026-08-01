@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/internal/transmog"
 )
 
 // Item holds values about a WoW item
@@ -239,8 +238,4 @@ func (i Item) Appearances() []int64 {
 	}
 
 	return appearanceIDs
-}
-
-func (i Item) AppearanceSet() bool {
-	return transmog.InAppearanceSet(i.Appearances())
 }

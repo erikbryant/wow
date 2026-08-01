@@ -7,6 +7,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/erikbryant/wow/internal/common"
+	"github.com/erikbryant/wow/internal/transmog"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
@@ -31,7 +32,7 @@ var columns = []Column{
 	},
 	{
 		header: "App Set",
-		value:  func(item wowitem.Item) string { return fmt.Sprintf("%t", item.AppearanceSet()) },
+		value:  func(item wowitem.Item) string { return fmt.Sprintf("%t", transmog.InAppearanceSet(item.Appearances())) },
 	},
 	{
 		header: "Sell Price",

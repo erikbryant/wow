@@ -12,6 +12,7 @@ import (
 	"github.com/erikbryant/wow/internal/auction"
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/common"
+	"github.com/erikbryant/wow/internal/config"
 	"github.com/erikbryant/wow/internal/recipes"
 	"github.com/erikbryant/wow/internal/toy"
 	"github.com/erikbryant/wow/internal/transmog"
@@ -64,7 +65,7 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 			if auc.Buyout <= 0 {
 				continue
 			}
-			if auc.Buyout > battlePetPriceUnownedMax {
+			if auc.Buyout > config.BattlePetPriceUnownedMax {
 				continue
 			}
 			stats := fmt.Sprintf("%s %s %s", battlepet.Name(petID), common.Gold(auc.Buyout), i.Quality())
@@ -86,7 +87,7 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Buyout <= 0 {
 			continue
 		}
-		if petAuction.Buyout > battlePetPriceUnownedMax {
+		if petAuction.Buyout > config.BattlePetPriceUnownedMax {
 			continue
 		}
 		bargains = append(bargains, battlepet.Name(petAuction.Pet.SpeciesID))
@@ -104,7 +105,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for _, petAuction := range auctions[battlepet.PetCageItemID] {
-		_, ok := skipPets[petAuction.Pet.SpeciesID]
+		_, ok := config.SkipPets[petAuction.Pet.SpeciesID]
 		if ok {
 			continue
 		}
@@ -117,7 +118,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Pet.Level < 25 {
 			continue
 		}
-		if petAuction.Buyout > battlePetPriceResellMax {
+		if petAuction.Buyout > config.BattlePetPriceResellMax {
 			continue
 		}
 
@@ -150,7 +151,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 				continue
 			}
 			profit := (i.SellPriceRealizable() - auc.Buyout) * auc.Quantity
-			if profit < arbitrageProfitMin {
+			if profit < config.ArbitrageProfitMin {
 				// Not enough profit to make it worth the WoW runtime it takes to scan the AH
 				continue
 			}
@@ -210,13 +211,13 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 			}
 
 			// Bargains on toys
-			if i.Toy() && !toy.Own(i) && auc.Buyout <= toyPriceMax {
+			if i.Toy() && !toy.Own(i) && auc.Buyout <= config.ToyPriceMax {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 				bargains = append(bargains, str)
 			}
 
 			// Bargains on specific items
-			maxPrice, ok := usefulGoods[itemID]
+			maxPrice, ok := config.UsefulGoods[itemID]
 			if ok && auc.Buyout <= maxPrice {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 				bargains = append(bargains, str)
@@ -241,10 +242,10 @@ func findAppearanceBargains(auctions map[int64][]auction.Auction) []string {
 				continue
 			}
 
-			maxPrice := appearancePriceMax
+			maxPrice := config.AppearancePriceMax
 			appearanceSetSuffix := ""
 			if transmog.InAppearanceSet(i.Appearances()) {
-				maxPrice = appearancePriceInSetMax
+				maxPrice = config.AppearancePriceInSetMax
 				appearanceSetSuffix = "    ---"
 			}
 
@@ -297,7 +298,7 @@ func scanRealm(realm string, c chan<- string, summarize bool) {
 	arbitrages, profit := findArbitrages(auctions, realm)
 
 	if summarize {
-		if profit >= profitToDisplayMin {
+		if profit >= config.ProfitToDisplayMin {
 			c := color.New(color.FgWhite)
 			shoppingList += c.Sprintf("Arbitrages: %s\n", common.Gold(profit))
 		}
@@ -364,7 +365,7 @@ func Shop(realms string, summarize bool) {
 	appendFile(battlePetPath, battlepet.Output())
 
 	for _, recipeName := range recipes.Needed() {
-		usefulGoods[wowitem.Search(recipeName).ID()] = recipePriceMax
+		config.UsefulGoods[wowitem.Search(recipeName).ID()] = config.RecipePriceMax
 	}
 
 	scanRealms(realms, summarize)
