@@ -2,14 +2,22 @@ package wowitem
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 )
+
+// itemIDs returns the sorted list of keys from the persistence file
+func itemIDs() []int64 {
+	keys := Items.Keys()
+	slices.Sort(keys)
+	return keys
+}
 
 func luaVendorPrice() (string, []string) {
 	var lua strings.Builder
 
 	lua.WriteString(fmt.Sprintf("local VendorSellPriceCache = {\n"))
-	for _, id := range IDs() {
+	for _, id := range itemIDs() {
 		i, _ := Items.Get(id)
 		spr := i.SellPriceRealizable()
 		if spr <= 100 {
@@ -53,7 +61,7 @@ func luaCosmetic() (string, []string) {
 	var lua strings.Builder
 
 	lua.WriteString(fmt.Sprintf("local Cosmetics = {\n"))
-	for _, id := range IDs() {
+	for _, id := range itemIDs() {
 		i, _ := Items.Get(id)
 		cosmetic := i.Cosmetic()
 		if !cosmetic {

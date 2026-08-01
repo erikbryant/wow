@@ -2,7 +2,6 @@ package wowitem
 
 import (
 	"fmt"
-	"slices"
 
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/persist"
@@ -23,13 +22,6 @@ func init() {
 		fmt.Printf("*** error opening items persist, creating new one: %v\n", err)
 	}
 	fmt.Printf("-- #Items persisted  : %d\n", Items.Len())
-}
-
-// IDs returns the sorted list of keys from the persistence file
-func IDs() []int64 {
-	keys := Items.Keys()
-	slices.Sort(keys)
-	return keys
 }
 
 // Search returns the item with name 's' or an empty item if not found
