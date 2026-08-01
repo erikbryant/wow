@@ -69,8 +69,7 @@ func oauthBlizzardLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, u, http.StatusTemporaryRedirect)
 }
 
-func tokenToPAT(code string) string {
-	client := &http.Client{}
+func tokenToPAT(code string) (string, error) {
 	data := url.Values{
 		"redirect_uri": {blizzardOauthConfig.RedirectURL},
 		"grant_type":   {"authorization_code"},
@@ -79,29 +78,31 @@ func tokenToPAT(code string) string {
 
 	request, err := http.NewRequest("POST", "https://oauth.battle.net/token", strings.NewReader(data.Encode()))
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	request.SetBasicAuth(blizzardOauthConfig.ClientID, blizzardOauthConfig.ClientSecret)
+
+	client := &http.Client{}
 	response, err := client.Do(request)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 	defer response.Body.Close()
 
 	contents, err := io.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
 	var jsonObject map[string]any
 
 	err = json.Unmarshal(contents, &jsonObject)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
-	return jsonObject["access_token"].(string)
+	return jsonObject["access_token"].(string), nil
 }
 
 // oauthBlizzardCallback receives the token, converts it to a PAT, and passes that to the webpage requester
@@ -127,8 +128,13 @@ func oauthBlizzardCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Exchange the token we got for an actual profile access token
-	paToken = tokenToPAT(r.FormValue("code"))
-	w.Write([]byte("success!\n"))
+	msg := "Success!"
+	paToken, err = tokenToPAT(r.FormValue("code"))
+	if err != nil {
+		msg = fmt.Sprintf("Could not get a profile access token: %s", err)
+	}
+	msg += " You can close this window."
+	w.Write([]byte(msg))
 }
 
 // handlers registers the OAUTH endpoints
