@@ -89,17 +89,18 @@ var itemLevels = map[int64][]int64{
 	244708: {206, 212, 218, 225, 232}, // Sin'dorei Snippers
 }
 
-// Known returns true if the item has an entry in itemLevels
+// Known returns true if we have item level data for this itemID
 func Known(itemID int64) bool {
 	_, ok := itemLevels[itemID]
 	return ok
 }
 
+// ILevels returns the item levels for this itemID
 func ILevels(itemID int64) []int64 {
-	if Known(itemID) {
-		return itemLevels[itemID]
+	iLevels, ok := itemLevels[itemID]
+	if !ok {
+		return []int64{0}
 	}
 
-	// If there is no *specific* iLvl then use 0 to tell WoW we don't care
-	return []int64{0}
+	return iLevels
 }
