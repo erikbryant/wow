@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -38,25 +39,29 @@ const (
 )
 
 // generateStateOauthCookie stores a unique identifier in a cookie and returns that same identifier
-func generateStateOauthCookie(w http.ResponseWriter) string {
+func generateStateOauthCookie(w http.ResponseWriter) (string, error) {
 	var expiration = time.Now().Add(20 * time.Minute)
 
 	b := make([]byte, 16)
 	_, err := rand.Read(b)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 	state := base64.URLEncoding.EncodeToString(b)
 	cookie := http.Cookie{Name: cookieName, Value: state, Expires: expiration}
 	http.SetCookie(w, &cookie)
 
-	return state
+	return state, nil
 }
 
 // oauthBlizzardLogin creates the auth cookie and redirects to the Blizzard auth server
 func oauthBlizzardLogin(w http.ResponseWriter, r *http.Request) {
 	// Create oauthState cookie
-	oauthState := generateStateOauthCookie(w)
+	oauthState, err := generateStateOauthCookie(w)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "unable to create Oauth cookie:", err)
+		os.Exit(1)
+	}
 
 	// AuthCodeURL takes a unique, private state token to protect the user from CSRF attacks.
 	// You must always provide a non-empty string and validate it matches the state query
