@@ -13,9 +13,22 @@ var (
 	allOwned = map[int64]bool{}
 )
 
-func Init() {
-	allNames = toyNames()
-	allOwned = owned()
+// toyNames returns a map of all toy names by ID
+func toyNames() map[int64]string {
+	toys := map[int64]string{}
+
+	allToys, ok := wowapi.Toys()
+	if !ok {
+		log.Fatal("Unable to obtain toy names.")
+	}
+
+	for _, toyRaw := range allToys {
+		toy := toyRaw.(map[string]any)
+		id := web.ToInt64(toy["id"])
+		toys[id] = toy["name"].(string)
+	}
+
+	return toys
 }
 
 // owned returns the toys I own
@@ -36,34 +49,16 @@ func owned() map[int64]bool {
 	return myToys
 }
 
-// toyNames returns a map of all toy names by ID
-func toyNames() map[int64]string {
-	toys := map[int64]string{}
-
-	allToys, ok := wowapi.Toys()
-	if !ok {
-		log.Fatal("Unable to obtain toy names.")
-	}
-
-	for _, toyRaw := range allToys {
-		toy := toyRaw.(map[string]any)
-		id := web.ToInt64(toy["id"])
-		toys[id] = toy["name"].(string)
-	}
-
-	return toys
+func Init() {
+	allNames = toyNames()
+	allOwned = owned()
 }
 
 func Own(i wowitem.Item) bool {
-	if len(allOwned) == 0 {
-		log.Fatal("You must call toy.Init() before calling toy.Own()")
-	}
-
 	for toyID, name := range allNames {
 		if i.Name() == name {
 			return allOwned[toyID]
 		}
 	}
-
 	return false
 }
