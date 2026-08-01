@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/internal/common"
+	"github.com/erikbryant/wow/internal/userconfig"
 	"github.com/erikbryant/wow/internal/wowapi"
 )
 
@@ -76,7 +76,7 @@ func knownRecipes(realm, alt, tierName string) map[int64]Recipe {
 	return nil
 }
 
-func key(alt common.Alt) string {
+func key(alt userconfig.Alt) string {
 	return alt.Realm + "-" + alt.Name
 }
 
@@ -84,7 +84,7 @@ func scanAlts() map[string]map[int64]Recipe {
 	recipesByAlt := map[string]map[int64]Recipe{}
 
 	// Find known recipes for each alt
-	for _, alt := range common.Alts {
+	for _, alt := range userconfig.Alts {
 		kr := knownRecipes(alt.Realm, alt.Name, "Classic Cooking")
 		maps.Copy(AllRecipes, kr)
 		recipesByAlt[key(alt)] = kr
