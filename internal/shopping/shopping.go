@@ -2,7 +2,6 @@ package shopping
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"slices"
 	"sort"
@@ -31,20 +30,22 @@ const (
 )
 
 // appendFile appends 'contents' to a file
-func appendFile(name, contents string) {
+func appendFile(name, contents string) error {
 	mu.Lock()
 	defer mu.Unlock()
 
 	f, err := os.OpenFile(name, os.O_WRONLY|os.O_APPEND, 0600)
 	if err != nil {
-		log.Fatal("Failed to open log file:", name, err)
+		return fmt.Errorf("failed to open log file %s: %s", name, err)
 	}
 	defer f.Close()
 
 	_, err = f.WriteString(contents)
 	if err != nil {
-		log.Fatal("Failed to write log file:", name, err)
+		return fmt.Errorf("failed to write to log file %s: %s", name, err)
 	}
+
+	return nil
 }
 
 // findPetSpellNeeded returns pet spells for sale that I do not own
@@ -137,7 +138,7 @@ type Arbitrage struct {
 }
 
 // findArbitrages returns auctions selling for lower than vendor prices
-func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]string, int64) {
+func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]string, int64, error) {
 	arbitrages := []Arbitrage{}
 	totalProfit := int64(0)
 
@@ -164,7 +165,10 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 			if i.ItemClassName() == "Profession" && !wowitem.Known(i.ID()) {
 				// We have not seen this profession tool before. Add iLevels for it in ilevel.go.
 				msg := fmt.Sprintf("%d: {}, // %s (%s)  iLvl: %d\n", i.ID(), i.Name(), i.ItemClassName(), i.ItemLevel())
-				appendFile(iLvlPath, msg)
+				err := appendFile(iLvlPath, msg)
+				if err != nil {
+					return nil, 0, err
+				}
 				fmt.Println(msg)
 			}
 		}
@@ -185,14 +189,17 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 		iLevels := wowitem.ILevels(arbitrage.item.ID())
 		for _, iLevel := range iLevels {
 			logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", arbitrage.item.ID(), iLevel, arbitrage.item.Name())
-			appendFile(arbitragePath, logEntry)
+			err := appendFile(arbitragePath, logEntry)
+			if err != nil {
+				return nil, 0, err
+			}
 		}
 	}
 
 	slices.Sort(bargains)
 	bargains = slices.Compact(bargains)
 
-	return bargains, totalProfit
+	return bargains, totalProfit, nil
 }
 
 // findBargains returns auctions selling below our desired prices
@@ -281,12 +288,11 @@ func fmtShoppingList(label string, items []string, c *color.Color, summarize boo
 }
 
 // scanRealm retrieves auctions and prints suggestions for what to buy for a single realm
-func scanRealm(realm string, c chan<- string, summarize bool) {
+func scanRealm(realm string, c chan<- string, summarize bool) error {
 	auctions, err := auction.Get(realm)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
 		c <- ""
-		return
+		return err
 	}
 
 	shoppingList := ""
@@ -295,7 +301,10 @@ func scanRealm(realm string, c chan<- string, summarize bool) {
 	shoppingList += fmtShoppingList("Useful Item Bargains", findBargains(auctions), color.New(color.FgRed), summarize)
 	shoppingList += fmtShoppingList("Appearance Bargains", findAppearanceBargains(auctions), color.New(color.FgBlue), summarize)
 
-	arbitrages, profit := findArbitrages(auctions, realm)
+	arbitrages, profit, err := findArbitrages(auctions, realm)
+	if err != nil {
+		return err
+	}
 
 	if summarize {
 		if profit >= userconfig.ProfitToDisplayMin {
@@ -309,11 +318,13 @@ func scanRealm(realm string, c chan<- string, summarize bool) {
 	if len(shoppingList) == 0 {
 		// Nothing to buy
 		c <- ""
-		return
+		return nil
 	}
 
 	col := color.New(color.FgCyan)
 	c <- col.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", realm, len(auctions), shoppingList)
+
+	return nil
 }
 
 // scanRealms processes auctions on all realms in 'r'
@@ -322,14 +333,20 @@ func scanRealms(r string, summarize bool) error {
 	results := []string{}
 	c := make(chan string)
 
-	// Ensure log file is empty
+	// Ensure arbitrage log file is empty
 	err := os.WriteFile(arbitragePath, nil, 0600)
 	if err != nil {
 		return err
 	}
 
 	for _, realm := range realms {
-		go scanRealm(realm, c, summarize)
+		go func() {
+			err := scanRealm(realm, c, summarize)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "failed to scan realm %s: %s\n", realm, err)
+				os.Exit(1)
+			}
+		}()
 	}
 
 	for range len(realms) {
