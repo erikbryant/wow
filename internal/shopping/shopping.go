@@ -32,6 +32,9 @@ const (
 
 // appendFile appends 'contents' to a file
 func appendFile(name, contents string) {
+	mu.Lock()
+	defer mu.Unlock()
+
 	f, err := os.OpenFile(name, os.O_WRONLY|os.O_APPEND, 0600)
 	if err != nil {
 		log.Fatal("Failed to open log file:", name, err)
@@ -159,11 +162,9 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 			arbitrages = append(arbitrages, Arbitrage{i, profit})
 
 			if i.ItemClassName() == "Profession" && !wowitem.Known(i.ID()) {
-				// We have not seen this arbitrage before. Add iLevels for it in ilevel.go.
+				// We have not seen this profession tool before. Add iLevels for it in ilevel.go.
 				msg := fmt.Sprintf("%d: {}, // %s (%s)  iLvl: %d\n", i.ID(), i.Name(), i.ItemClassName(), i.ItemLevel())
-				mu.Lock()
 				appendFile(iLvlPath, msg)
-				mu.Unlock()
 				fmt.Println(msg)
 			}
 		}
@@ -184,9 +185,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 		iLevels := wowitem.ILevels(arbitrage.item.ID())
 		for _, iLevel := range iLevels {
 			logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", arbitrage.item.ID(), iLevel, arbitrage.item.Name())
-			mu.Lock()
 			appendFile(arbitragePath, logEntry)
-			mu.Unlock()
 		}
 	}
 
