@@ -35,7 +35,6 @@ var usefulGoods = map[int64]int64{
 	// Appearance set transmogs
 	wowitem.Search("Tyrhold Visage").ID():            common.Coppers(2000, 0, 0),
 	wowitem.Search("Tyrhold Epaulets").ID():          common.Coppers(2000, 0, 0),
-	wowitem.Search("Tyrhold Robe").ID():              common.Coppers(2000, 0, 0),
 	wowitem.Search("Tyrhold Slippers").ID():          common.Coppers(2000, 0, 0),
 	wowitem.Search("Boots of the Black Flame").ID():  common.Coppers(2000, 0, 0),
 	wowitem.Search("Helm of the Tranquil Path").ID(): common.Coppers(2000, 0, 0),
