@@ -84,16 +84,14 @@ func getPetsOwned() map[int64][]wowitem.PetInfo {
 	return myPets
 }
 
-func Init(oauthAvailable bool) {
+func Init() {
 	err := petNames.Load()
 	if err != nil {
 		fmt.Printf("*** error opening pet name persist, creating new one: %v\n", err)
 		refreshPetNames()
 		petNames.Save()
 	}
-	if oauthAvailable {
-		petsOwned = getPetsOwned()
-	}
+	petsOwned = getPetsOwned()
 	fmt.Printf("-- #Battle pets owned: %d/%d\n", len(petsOwned), petNames.Len())
 }
 

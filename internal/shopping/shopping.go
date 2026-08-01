@@ -20,8 +20,7 @@ import (
 )
 
 var (
-	mu             sync.Mutex
-	oauthAvailable = true
+	mu sync.Mutex
 )
 
 const (
@@ -46,10 +45,6 @@ func appendFile(name, contents string) {
 
 // findPetSpellNeeded returns pet spells for sale that I do not own
 func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
-	if !oauthAvailable {
-		return nil
-	}
-
 	bargains := []string{}
 
 	for itemID, itemAuctions := range auctions {
@@ -82,10 +77,6 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 
 // findPetNeeded returns pets for sale that I do not own
 func findPetNeeded(auctions map[int64][]auction.Auction) []string {
-	if !oauthAvailable {
-		return nil
-	}
-
 	bargains := []string{}
 
 	for _, petAuction := range auctions[battlepet.PetCageItemID] {
@@ -219,11 +210,9 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 			}
 
 			// Bargains on toys
-			if oauthAvailable {
-				if i.Toy() && !toy.Own(i) && auc.Buyout <= toyPriceMax {
-					str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
-					bargains = append(bargains, str)
-				}
+			if i.Toy() && !toy.Own(i) && auc.Buyout <= toyPriceMax {
+				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
+				bargains = append(bargains, str)
 			}
 
 			// Bargains on specific items
@@ -240,10 +229,6 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 
 // findAppearanceBargains returns appearances selling at a discount
 func findAppearanceBargains(auctions map[int64][]auction.Auction) []string {
-	if !oauthAvailable {
-		return nil
-	}
-
 	needed := map[string]bool{}
 
 	for itemID, itemAuctions := range auctions {
@@ -366,12 +351,10 @@ func scanRealms(r string, summarize bool) {
 }
 
 // Shop determines which cooking recipes are still needed
-func Shop(realms string, summarize, oauth bool) {
-	oauthAvailable = oauth
-
-	battlepet.Init(oauthAvailable)
-	toy.Init(oauthAvailable)
-	transmog.Init(oauthAvailable)
+func Shop(realms string, summarize bool) {
+	battlepet.Init()
+	toy.Init()
+	transmog.Init()
 
 	// Ensure log file is empty
 	err := os.WriteFile(battlePetPath, nil, 0600)

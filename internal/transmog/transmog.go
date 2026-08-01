@@ -55,7 +55,7 @@ func getAppearanceIDsOwned() map[int64]bool {
 	return myAppearanceIDs
 }
 
-func Init(oauthAvailable bool) {
+func Init() {
 	err := appearanceSetAppearanceIDs.Load()
 	if err != nil {
 		fmt.Printf("*** error opening appearances persist, creating new one: %v\n", err)
@@ -65,12 +65,7 @@ func Init(oauthAvailable bool) {
 			log.Fatalf("Failed to save appearances persist: %v\n", err)
 		}
 	}
-
 	fmt.Printf("-- #Appearances persisted: %d\n", appearanceSetAppearanceIDs.Len())
-
-	if !oauthAvailable {
-		return
-	}
 
 	appearanceIDsOwned = getAppearanceIDsOwned()
 	fmt.Printf("-- #Appearances owned    : %d\n", len(appearanceIDsOwned))

@@ -141,7 +141,7 @@ var (
 	}
 )
 
-func Init(passphrase string, oauthAvailable bool) {
+func Init(passphrase string) {
 	var err error
 
 	clientID, err = aes.Decrypt(clientIDCrypt, passphrase)
@@ -157,10 +157,6 @@ func Init(passphrase string, oauthAvailable bool) {
 	accessToken, err = wowAccessToken()
 	if err != nil {
 		log.Fatal("unable to get access token", err)
-	}
-
-	if !oauthAvailable {
-		return
 	}
 
 	var ok bool
