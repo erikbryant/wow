@@ -376,7 +376,11 @@ func Shop(realms string, summarize bool) error {
 	}
 	appendFile(battlePetPath, battlepet.Output())
 
-	for _, recipeName := range cooking.RecipesNeeded() {
+	recipesNeeded, err := cooking.RecipesNeeded()
+	if err != nil {
+		return err
+	}
+	for _, recipeName := range recipesNeeded {
 		userconfig.UsefulGoods[wowitem.Search(recipeName).ID()] = userconfig.RecipePriceMax
 	}
 

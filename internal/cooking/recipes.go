@@ -2,7 +2,6 @@ package cooking
 
 import (
 	"fmt"
-	"log"
 	"maps"
 	"os"
 	"slices"
@@ -19,10 +18,6 @@ type Recipe struct {
 	itemID int64
 	id     int64
 }
-
-var (
-	AllRecipes = map[int64]Recipe{}
-)
 
 const (
 	recipesNeededPath = "./reports/recipesNeeded"
@@ -80,47 +75,39 @@ func key(alt userconfig.Alt) string {
 	return alt.Realm + "-" + alt.Name
 }
 
-func scanAlts() map[string]map[int64]Recipe {
+func scanAlts() (map[int64]Recipe, map[string]map[int64]Recipe) {
+	allRecipes := map[int64]Recipe{}
 	recipesByAlt := map[string]map[int64]Recipe{}
 
 	// Find known recipes for each alt
 	for _, alt := range userconfig.Alts {
 		kr := knownRecipes(alt.Realm, alt.Name, "Classic Cooking")
-		maps.Copy(AllRecipes, kr)
+		maps.Copy(allRecipes, kr)
 		recipesByAlt[key(alt)] = kr
 	}
 
 	// Merge all known recipes into one list
 	for _, recipes := range recipesByAlt {
 		for _, recipe := range recipes {
-			AllRecipes[recipe.id] = recipe
+			allRecipes[recipe.id] = recipe
 		}
 	}
 
-	return recipesByAlt
+	return allRecipes, recipesByAlt
 }
 
-func RecipesNeeded() []string {
-	recipesByAlt := scanAlts()
+func getRecipesNeeded() (string, string, []string) {
+	allRecipes, recipesByAlt := scanAlts()
 	recipesNeeded := map[string]int{}
-
-	// Ensure log file is empty
-	f, err := os.Create(recipesNeededPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
+	var recipesNeededByAlt strings.Builder
 
 	// Enumerate missing recipes
 	for alt, recipes := range recipesByAlt {
-		for _, recipe := range AllRecipes {
+		for _, recipe := range allRecipes {
 			_, ok := recipes[recipe.id]
 			if !ok {
-				_, err = f.WriteString(alt + " " + recipe.name + "\n")
-				if err != nil {
-					log.Fatal("Failed to write cooking recipes needed:", recipesNeededPath, err)
-				}
 				recipesNeeded[recipe.name]++
+				recipesNeededByAlt.WriteString(fmt.Sprintf("%s %s\n", alt, recipe.name))
 			}
 		}
 	}
@@ -135,10 +122,38 @@ func RecipesNeeded() []string {
 	slices.Sort(rn)
 	slices.Sort(rnc)
 
-	_, err = f.WriteString("\nCooking recipes needed:\n" + strings.Join(rnc, "\n"))
+	return recipesNeededByAlt.String(), strings.Join(rnc, "\n"), rn
+}
+
+func logRecipes(recipesNeededByAlt string, recipesNeededCount string) error {
+	// Ensure log file is empty
+	f, err := os.Create(recipesNeededPath)
 	if err != nil {
-		log.Fatal("Failed to write cooking recipes table:", recipesNeededPath, err)
+		return fmt.Errorf("could not create recipes needed file: %v", err)
+	}
+	defer f.Close()
+
+	_, err = f.WriteString("Cooking recipes needed by alt:\n" + recipesNeededByAlt)
+	if err != nil {
+		return fmt.Errorf("failed to write cooking recipes needed: %s", err)
 	}
 
-	return rn
+	_, err = f.WriteString("\nCooking recipes needed by count:\n" + recipesNeededCount + "\n")
+	if err != nil {
+		return fmt.Errorf("failed to write cooking recipes count: %s", err)
+	}
+
+	return nil
+}
+
+// RecipesNeeded returns which recipes are needed and writes to the log file
+func RecipesNeeded() ([]string, error) {
+	recipesNeededByAlt, recipesNeededCount, recipesNeeded := getRecipesNeeded()
+
+	err := logRecipes(recipesNeededByAlt, recipesNeededCount)
+	if err != nil {
+		return nil, err
+	}
+
+	return recipesNeeded, nil
 }
