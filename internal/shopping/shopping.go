@@ -317,7 +317,7 @@ func scanRealm(realm string, c chan<- string, summarize bool) {
 }
 
 // scanRealms processes auctions on all realms in 'r'
-func scanRealms(r string, summarize bool) {
+func scanRealms(r string, summarize bool) error {
 	realms := strings.Split(r, ",")
 	results := []string{}
 	c := make(chan string)
@@ -325,7 +325,7 @@ func scanRealms(r string, summarize bool) {
 	// Ensure log file is empty
 	err := os.WriteFile(arbitragePath, nil, 0600)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	for _, realm := range realms {
@@ -347,8 +347,10 @@ func scanRealms(r string, summarize bool) {
 
 	err = wowitem.Items.Save()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
 }
 
 // Shop determines which cooking recipes are still needed
@@ -379,7 +381,10 @@ func Shop(realms string, summarize bool) error {
 		userconfig.UsefulGoods[wowitem.Search(recipeName).ID()] = userconfig.RecipePriceMax
 	}
 
-	scanRealms(realms, summarize)
+	err = scanRealms(realms, summarize)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
