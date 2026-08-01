@@ -1,4 +1,4 @@
-package config
+package userconfig
 
 // FlakyAppearanceIDs WoW says I own them, but this app thinks I don't
 var FlakyAppearanceIDs = map[int64]struct{}{

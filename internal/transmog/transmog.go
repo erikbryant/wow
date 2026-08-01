@@ -6,8 +6,8 @@ import (
 	"slices"
 
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/internal/config"
 	"github.com/erikbryant/wow/internal/persist"
+	"github.com/erikbryant/wow/internal/userconfig"
 	"github.com/erikbryant/wow/internal/wowapi"
 )
 
@@ -73,7 +73,7 @@ func Init() {
 
 // needAppearanceID returns true if I need this appearance ID
 func needAppearanceID(id int64) bool {
-	if config.FlakyAppearanceID(id) {
+	if userconfig.FlakyAppearanceID(id) {
 		return false
 	}
 	if !appearanceIDsOwned[id] {

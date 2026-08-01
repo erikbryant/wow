@@ -20,7 +20,7 @@ import (
 )
 
 var (
-	// blizzardOauthConfig stores the OAUTH config for authenticating with Blizzard
+	// blizzardOauthConfig stores the OAUTH userconfig for authenticating with Blizzard
 	blizzardOauthConfig = &oauth2.Config{
 		ClientID:     "", // Populated at runtime
 		ClientSecret: "", // Populated at runtime

@@ -1,4 +1,4 @@
-package config
+package userconfig
 
 import (
 	"github.com/erikbryant/wow/internal/common"
