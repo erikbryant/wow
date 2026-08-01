@@ -1,11 +1,8 @@
 package wowapi
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/erikbryant/aes"
@@ -212,35 +209,11 @@ func wowProfileAccessToken() (string, error) {
 
 // wowAccessToken retrieves an access token. This token is used to authenticate API calls.
 func wowAccessToken() (string, error) {
-	grantString := "grant_type=client_credentials"
-	request, err := http.NewRequest("POST", "https://oauth.battle.net/token", bytes.NewBuffer([]byte(grantString)))
-	if err != nil {
-		return "", err
-	}
-	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	request.SetBasicAuth(clientID, clientSecret)
-
-	client := &http.Client{}
-	response, err := client.Do(request)
-	if err != nil {
-		return "", err
+	data := url.Values{
+		"grant_type": {"client_credentials"},
 	}
 
-	defer response.Body.Close()
-
-	contents, err := io.ReadAll(response.Body)
-	if err != nil {
-		return "", err
-	}
-
-	var jsonObject map[string]any
-
-	err = json.Unmarshal(contents, &jsonObject)
-	if err != nil {
-		return "", err
-	}
-
-	return jsonObject["access_token"].(string), nil
+	return wowoauth.GetToken(data, clientID, clientSecret)
 }
 
 // ConnectedRealm returns all realms connected to the given realm ID

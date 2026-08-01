@@ -4,10 +4,8 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -76,33 +74,7 @@ func tokenToPAT(code string) (string, error) {
 		"code":         {code},
 	}
 
-	request, err := http.NewRequest("POST", "https://oauth.battle.net/token", strings.NewReader(data.Encode()))
-	if err != nil {
-		return "", err
-	}
-	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	request.SetBasicAuth(blizzardOauthConfig.ClientID, blizzardOauthConfig.ClientSecret)
-
-	client := &http.Client{}
-	response, err := client.Do(request)
-	if err != nil {
-		return "", err
-	}
-	defer response.Body.Close()
-
-	contents, err := io.ReadAll(response.Body)
-	if err != nil {
-		return "", err
-	}
-
-	var jsonObject map[string]any
-
-	err = json.Unmarshal(contents, &jsonObject)
-	if err != nil {
-		return "", err
-	}
-
-	return jsonObject["access_token"].(string), nil
+	return GetToken(data, blizzardOauthConfig.ClientID, blizzardOauthConfig.ClientSecret)
 }
 
 // oauthBlizzardCallback receives the token, converts it to a PAT, and passes that to the webpage requester
