@@ -1,7 +1,7 @@
 package toy
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/wowapi"
@@ -14,12 +14,12 @@ var (
 )
 
 // toyNames returns a map of all toy names by ID
-func toyNames() map[int64]string {
+func toyNames() (map[int64]string, error) {
 	toys := map[int64]string{}
 
 	allToys, ok := wowapi.Toys()
 	if !ok {
-		log.Fatal("Unable to obtain toy names.")
+		return nil, fmt.Errorf("unable to obtain toy names")
 	}
 
 	for _, toyRaw := range allToys {
@@ -28,16 +28,16 @@ func toyNames() map[int64]string {
 		toys[id] = toy["name"].(string)
 	}
 
-	return toys
+	return toys, nil
 }
 
 // owned returns the toys I own
-func owned() map[int64]bool {
+func owned() (map[int64]bool, error) {
 	myToys := map[int64]bool{}
 
 	toys, ok := wowapi.CollectionsToys()
 	if !ok {
-		log.Fatal("Unable to obtain toys owned.")
+		return nil, fmt.Errorf("unable to obtain toys owned")
 	}
 
 	for _, toyRaw := range toys {
@@ -46,12 +46,23 @@ func owned() map[int64]bool {
 		myToys[web.ToInt64(id)] = true
 	}
 
-	return myToys
+	return myToys, nil
 }
 
-func Init() {
-	allNames = toyNames()
-	allOwned = owned()
+func Init() error {
+	var err error
+
+	allNames, err = toyNames()
+	if err != nil {
+		return err
+	}
+
+	allOwned, err = owned()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func Own(i wowitem.Item) bool {

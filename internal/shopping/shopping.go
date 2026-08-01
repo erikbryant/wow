@@ -352,15 +352,18 @@ func scanRealms(r string, summarize bool) {
 }
 
 // Shop determines which cooking recipes are still needed
-func Shop(realms string, summarize bool) {
+func Shop(realms string, summarize bool) error {
 	battlepet.Init()
-	toy.Init()
+	err := toy.Init()
+	if err != nil {
+		return err
+	}
 	transmog.Init()
 
 	// Ensure log file is empty
-	err := os.WriteFile(battlePetPath, nil, 0600)
+	err = os.WriteFile(battlePetPath, nil, 0600)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	appendFile(battlePetPath, battlepet.Output())
 
@@ -369,4 +372,6 @@ func Shop(realms string, summarize bool) {
 	}
 
 	scanRealms(realms, summarize)
+
+	return nil
 }

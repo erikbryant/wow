@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/erikbryant/wow/internal/shopping"
@@ -23,26 +22,30 @@ const (
 
 // usage prints a usage message and terminates the program with an error
 func usage() {
-	log.Fatal(`Usage:
-  wow -passphrase <phrase> [-realms=<realm1,realm2,...>] [-summarize=true|false]
-`)
+	fmt.Println(`Usage:
+  wow -passphrase <phrase> [-realms=<realm1,realm2,...>] [-summarize=true|false]`)
 }
 
 func main() {
 	flag.Parse()
 
 	if *passphrase == "" {
-		fmt.Println("You must specify -passphrase to unlock the client ID/secret")
 		usage()
+		os.Exit(1)
 	}
 
 	wowapi.Init(*passphrase)
 
-	shopping.Shop(*realms, *summarize)
+	err := shopping.Shop(*realms, *summarize)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 
 	// Write the prices file for the WoW 'wowMerchant' addon to consume
-	err := os.WriteFile(priceCachePath, []byte(wowitem.Lua()), 0600)
+	err = os.WriteFile(priceCachePath, []byte(wowitem.Lua()), 0600)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }
