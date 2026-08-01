@@ -353,11 +353,16 @@ func scanRealms(r string, summarize bool) {
 
 // Shop determines which cooking recipes are still needed
 func Shop(realms string, summarize bool) error {
-	battlepet.Init()
-	err := toy.Init()
+	err := battlepet.Init()
 	if err != nil {
 		return err
 	}
+
+	err = toy.Init()
+	if err != nil {
+		return err
+	}
+
 	transmog.Init()
 
 	// Ensure log file is empty

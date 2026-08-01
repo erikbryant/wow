@@ -2,7 +2,6 @@ package battlepet
 
 import (
 	"fmt"
-	"log"
 	"slices"
 	"strings"
 
@@ -24,10 +23,10 @@ var (
 )
 
 // refreshPetNames downloads all pet names from the WoW web API
-func refreshPetNames() {
+func refreshPetNames() error {
 	allPets, ok := wowapi.Pets()
 	if !ok {
-		log.Fatal("Unable to obtain pet names.")
+		return fmt.Errorf("unable to obtain pet names")
 	}
 
 	for _, petRaw := range allPets {
@@ -35,15 +34,17 @@ func refreshPetNames() {
 		id := web.ToInt64(pet["id"])
 		petNames.Set(id, pet["name"].(string))
 	}
+
+	return nil
 }
 
 // getPetsOwned downloads the list of pets I own from the WoW web API
-func getPetsOwned() map[int64][]wowitem.PetInfo {
+func getPetsOwned() (map[int64][]wowitem.PetInfo, error) {
 	myPets := map[int64][]wowitem.PetInfo{}
 
 	pets, ok := wowapi.CollectionsPets()
 	if !ok {
-		log.Fatal("Unable to obtain pets owned.")
+		return nil, fmt.Errorf("unable to obtain battle pets owned")
 	}
 
 	for _, petRaw := range pets {
@@ -53,7 +54,7 @@ func getPetsOwned() map[int64][]wowitem.PetInfo {
 
 		stats, ok := pet["stats"].(map[string]any)
 		if !ok {
-			log.Fatal("Unable to obtain stats.")
+			return nil, fmt.Errorf("unable to obtain battle pet stats")
 		}
 		p.BreedID = web.ToInt64(stats["breed_id"])
 
@@ -61,13 +62,13 @@ func getPetsOwned() map[int64][]wowitem.PetInfo {
 
 		quality, ok := pet["quality"].(map[string]any)
 		if !ok {
-			log.Fatal("Unable to obtain quality.")
+			return nil, fmt.Errorf("unable to obtain battle pet quality")
 		}
 		p.QualityID = common.QualityID(quality["name"].(string))
 
 		species, ok := pet["species"].(map[string]any)
 		if !ok {
-			log.Fatal("Unable to obtain species.")
+			return nil, fmt.Errorf("unable to obtain battle pet species")
 		}
 		p.SpeciesID = web.ToInt64(species["id"])
 
@@ -81,18 +82,31 @@ func getPetsOwned() map[int64][]wowitem.PetInfo {
 		myPets[p.SpeciesID] = append(myPets[p.SpeciesID], p)
 	}
 
-	return myPets
+	return myPets, nil
 }
 
-func Init() {
+func Init() error {
 	err := petNames.Load()
 	if err != nil {
 		fmt.Printf("*** error opening pet name persist, creating new one: %v\n", err)
-		refreshPetNames()
-		petNames.Save()
+		err = refreshPetNames()
+		if err != nil {
+			return err
+		}
+		err = petNames.Save()
+		if err != nil {
+			return fmt.Errorf("could not persist pet names: %s", err)
+		}
 	}
-	petsOwned = getPetsOwned()
+
+	petsOwned, err = getPetsOwned()
+	if err != nil {
+		return err
+	}
+
 	fmt.Printf("-- #Battle pets owned: %d/%d\n", len(petsOwned), petNames.Len())
+
+	return nil
 }
 
 // PetSpell returns true and the corresponding pet ID if the item is a pet summoning spell
@@ -108,7 +122,7 @@ func PetSpell(i wowitem.Item) (int64, bool) {
 func Name(petID int64) string {
 	name, ok := petNames.Get(petID)
 	if !ok {
-		log.Fatal("Pet not found:", petID)
+		return fmt.Sprintf("<bad petID: %d>", petID)
 	}
 	return name
 }
