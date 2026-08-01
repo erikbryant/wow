@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 
@@ -216,7 +215,7 @@ func wowAccessToken() (string, error) {
 	grantString := "grant_type=client_credentials"
 	request, err := http.NewRequest("POST", "https://oauth.battle.net/token", bytes.NewBuffer([]byte(grantString)))
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	request.SetBasicAuth(clientID, clientSecret)
@@ -224,7 +223,7 @@ func wowAccessToken() (string, error) {
 	client := &http.Client{}
 	response, err := client.Do(request)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
 	defer response.Body.Close()
