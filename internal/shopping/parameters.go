@@ -12,7 +12,7 @@ var (
 	battlePetPriceResellMax  = common.Coppers(200, 0, 0)
 	battlePetPriceUnownedMax = common.Coppers(500, 0, 0)
 	profitToDisplayMin       = common.Coppers(15, 0, 0)
-	recipePriceMax           = common.Coppers(10, 0, 0)
+	recipePriceMax           = common.Coppers(20, 0, 0)
 	toyPriceMax              = common.Coppers(400, 0, 0)
 )
 
