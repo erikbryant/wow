@@ -15,8 +15,8 @@ const (
 )
 
 var (
-	transmogsOwned   = map[int64]bool{}
-	allAppearanceIDs = persist.New[int64, bool](persistName)
+	appearanceIDsOwned         = map[int64]bool{}
+	appearanceSetAppearanceIDs = persist.New[int64, bool](persistName)
 )
 
 // getAppearanceSetAppearanceIDs returns all appearance IDs that are in any appearance set
@@ -27,14 +27,14 @@ func getAppearanceSetAppearanceIDs() {
 		fmt.Printf("%d\tAppearance set: %d   %s\n", count, setID, setName)
 		count--
 		for _, appearanceID := range wowapi.ItemAppearanceSetIDs(setID) {
-			allAppearanceIDs.Set(appearanceID, true)
+			appearanceSetAppearanceIDs.Set(appearanceID, true)
 		}
 	}
 }
 
-// getTransmogsOwned returns the IDs of the transmogs I own
-func getTransmogsOwned() map[int64]bool {
-	myTransmogIDs := map[int64]bool{}
+// getAppearanceIDsOwned returns the appearance IDs I own
+func getAppearanceIDsOwned() map[int64]bool {
+	myAppearanceIDs := map[int64]bool{}
 
 	t, ok := wowapi.CollectionsTransmogs()
 	if !ok {
@@ -44,70 +44,48 @@ func getTransmogsOwned() map[int64]bool {
 	transmogs := t.(map[string]any)
 
 	// Appearance sets
-	for _, appearanceSet := range transmogs["appearance_sets"].([]any) {
-		appearanceSet := appearanceSet.(map[string]any)
-		id := web.ToInt64(appearanceSet["id"])
-		myTransmogIDs[id] = true
-	}
+	//for _, appearanceSet := range transmogs["appearance_sets"].([]any) {
+	//	appearanceSet := appearanceSet.(map[string]any)
+	//	id := web.ToInt64(appearanceSet["id"])
+	//	myAppearanceIDs[id] = true
+	//}
 
-	//	"slots": [
-	//	{
-	//		"slot": {
-	//			"type": "HEAD",
-	//			"name": "Head"
-	//		},
-	//		"appearances": [
-	//		{
-	//			"key": {
-	//				"href": "https://us.api.blizzard.com/data/wow/item-appearance/358?namespace=static-11.1.5_60179-us"
-	//			},
-	//			"id": 358
-	//		},
-	//		{
-	//			"key": {
-	//				"href": "https://us.api.blizzard.com/data/wow/item-appearance/476?namespace=static-11.1.5_60179-us"
-	//			},
-	//			"id": 476
-	//		},
-	//	},
-	//	...
-	//	]
 	for _, slot := range transmogs["slots"].([]any) {
 		slot := slot.(map[string]any)
 		for _, appearance := range slot["appearances"].([]any) {
 			appearance := appearance.(map[string]any)
 			id := web.ToInt64(appearance["id"])
-			myTransmogIDs[id] = true
+			myAppearanceIDs[id] = true
 		}
 	}
 
-	return myTransmogIDs
+	return myAppearanceIDs
 }
 
 func Init(oauthAvailable bool) {
-	err := allAppearanceIDs.Load()
+	err := appearanceSetAppearanceIDs.Load()
 	if err != nil {
 		fmt.Printf("*** error opening appearances persist, creating new one: %v\n", err)
 		getAppearanceSetAppearanceIDs()
-		err = allAppearanceIDs.Save()
+		err = appearanceSetAppearanceIDs.Save()
 		if err != nil {
 			log.Fatalf("Failed to save appearances persist: %v\n", err)
 		}
 	}
 
-	fmt.Printf("-- #Appearances persisted: %d\n", allAppearanceIDs.Len())
+	fmt.Printf("-- #Appearances persisted: %d\n", appearanceSetAppearanceIDs.Len())
 
 	if !oauthAvailable {
 		return
 	}
 
-	transmogsOwned = getTransmogsOwned()
-	fmt.Printf("-- #Transmogs owned: %d\n", len(transmogsOwned))
+	appearanceIDsOwned = getAppearanceIDsOwned()
+	fmt.Printf("-- #Appearances owned    : %d\n", len(appearanceIDsOwned))
 }
 
 // flaky appearance IDs; WoW says I own the transmogs, but this app thinks I don't
 var flaky = map[int64]bool{
-	// These are not real appearances
+	// These are not real appearances; they generate false positives
 	573:   true, // Various equippable profession items
 	577:   true, // Various equippable profession items
 	870:   true, // Ammo
@@ -117,7 +95,7 @@ var flaky = map[int64]bool{
 	70361: true, // Elegant Artisan's Cooking Hat
 	78217: true, // Elegant Artisan's Fishing Hat
 
-	// NOT part of an appearance set
+	// NOT part of an appearance set (so less interesting)
 	1172:  true, // Ghostly Bracers
 	22334: true, // Shrediron's Shredder
 	22335: true, // Shrediron's Shredder
@@ -165,10 +143,10 @@ var flaky = map[int64]bool{
 	57231: true, // Anthemic Gauntlets
 	78230: true, // Scepter of Spectacle: Order
 
-	// NOT part of an appearance set [Horde]
+	// NOT part of an appearance set  (so less interesting) [Horde only]
 	37116: true, // Enchanter's Sorcerous Scepter
 
-	// Part of an appearance set, but rarely available
+	// Part of an appearance set (so of great interest), but rarely available
 	//18561: true, // Fists of Lightning
 	//18575: true, // Nightfire Robe
 	//18715: true, // Greyshadow Gloves
@@ -218,29 +196,26 @@ var flaky = map[int64]bool{
 
 }
 
-// NeedID returns true if I need this transmog appearance ID
-func NeedID(id int64) bool {
+// needAppearanceID returns true if I need this appearance ID
+func needAppearanceID(id int64) bool {
 	if flaky[id] {
 		return false
 	}
-	if len(transmogsOwned) == 0 {
-		Init(true)
-	}
-	if !transmogsOwned[id] {
+	if !appearanceIDsOwned[id] {
 		fmt.Println("NEED APPEARANCE ID: ", id)
 	}
-	return !transmogsOwned[id]
+	return !appearanceIDsOwned[id]
 }
 
 // NeedAppearance returns true if I need any of these appearance IDs
 func NeedAppearance(appearanceIDs []int64) bool {
-	return slices.ContainsFunc(appearanceIDs, NeedID)
+	return slices.ContainsFunc(appearanceIDs, needAppearanceID)
 }
 
 // InAppearanceSet returns true if any of these appearance IDs are in an appearance set
 func InAppearanceSet(appearanceIDs []int64) bool {
 	for _, appearanceID := range appearanceIDs {
-		inSet, ok := allAppearanceIDs.Get(appearanceID)
+		inSet, ok := appearanceSetAppearanceIDs.Get(appearanceID)
 		if !ok {
 			continue
 		}
