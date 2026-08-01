@@ -43,13 +43,6 @@ func getAppearanceIDsOwned() map[int64]bool {
 
 	transmogs := t.(map[string]any)
 
-	// Appearance sets
-	//for _, appearanceSet := range transmogs["appearance_sets"].([]any) {
-	//	appearanceSet := appearanceSet.(map[string]any)
-	//	id := web.ToInt64(appearanceSet["id"])
-	//	myAppearanceIDs[id] = true
-	//}
-
 	for _, slot := range transmogs["slots"].([]any) {
 		slot := slot.(map[string]any)
 		for _, appearance := range slot["appearances"].([]any) {
@@ -83,7 +76,7 @@ func Init(oauthAvailable bool) {
 	fmt.Printf("-- #Appearances owned    : %d\n", len(appearanceIDsOwned))
 }
 
-// flaky appearance IDs; WoW says I own the transmogs, but this app thinks I don't
+// flaky appearance IDs; WoW says I own them, but this app thinks I don't
 var flaky = map[int64]bool{
 	// These are not real appearances; they generate false positives
 	573:   true, // Various equippable profession items

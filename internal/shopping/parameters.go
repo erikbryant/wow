@@ -25,14 +25,14 @@ var usefulGoods = map[int64]int64{
 	//itempersistence.Search("Weavercloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
 	//itempersistence.Search("Dawnweave Reagent Bag").ID():       common.Coppers(90, 0, 0), // 38 slot
 
-	// Fun weapon transmogs
+	// Fun weapon appearances
 	wowitem.Search("Blackfury").ID():                   common.Coppers(3000, 0, 0),
 	wowitem.Search("Tyrhold Broadsword").ID():          common.Coppers(3000, 0, 0),
 	wowitem.Search("Ameelton's Shot-Thrower").ID():     common.Coppers(3000, 0, 0),
 	wowitem.Search("Kickback 5000").ID():               common.Coppers(3000, 0, 0),
 	wowitem.Search("Extreme-Impact Hole Puncher").ID(): common.Coppers(3000, 0, 0),
 
-	// Appearance set transmogs
+	// Appearance set appearances
 	wowitem.Search("Tyrhold Visage").ID():            common.Coppers(2000, 0, 0),
 	wowitem.Search("Tyrhold Epaulets").ID():          common.Coppers(2000, 0, 0),
 	wowitem.Search("Tyrhold Slippers").ID():          common.Coppers(2000, 0, 0),
