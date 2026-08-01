@@ -191,26 +191,31 @@ var flaky = map[int64]bool{
 	//34558: true, // Cuffs of the Viridian Flameweavers
 	//34870: true, // Gloves of Abhorrent Strategies
 	//34886: true, // Gloves of Abhorrent Strategies
-	//35092: true, // Wristguards of Ominous Forging
-	//35101: true, // Wristguards of Ominous Forging
+	35092: true, // Wristguards of Ominous Forging
+	35101: true, // Wristguards of Ominous Forging
 	//38275: true, // Reinforced Test Subject Shackles
 	//38291: true, // Reinforced Test Subject Shackles
 	38359: true, // Bloody Experimenter's Wraps
 	38409: true, // Crushproof Vambraces
-	//38830: true, // Cord of Zandalari Resolve
+	38830: true, // Cord of Zandalari Resolve
 	39969: true, // Gauntlets of Crashing Tides
 	39976: true, // Gauntlets of Crashing Tides
+	39980: true, // Brutish Myrmidon's Vambraces
+	39983: true, // Brutish Myrmidon's Vambraces
 	39987: true, // Gauntlets of Crashing Tides
 	40325: true, // Cloak of Blessed Depths
-	//40811: true, // Belt of Concealed Intent
-	//40813: true, // Belt of Concealed Intent
+	40811: true, // Belt of Concealed Intent
+	40813: true, // Belt of Concealed Intent
 	40883: true, // Footpads of Terrible Delusions
 	40886: true, // Footpads of Terrible Delusions
 	40967: true, // Gauntlets of Nightmare Manifest
 	40970: true, // Gauntlets of Nightmare Manifest
+	44135: true, // Bindings of the Subjugated
+	44178: true, // Bindings of the Subjugated
 	//57228: true, // Anthemic Legguards
 	//80187: true, // Skyless Coif
 	//80188: true, // Skyless Epaulets
+
 }
 
 // NeedID returns true if I need this transmog appearance ID
