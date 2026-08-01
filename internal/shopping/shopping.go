@@ -12,7 +12,7 @@ import (
 	"github.com/erikbryant/wow/internal/auction"
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/common"
-	"github.com/erikbryant/wow/internal/recipes"
+	"github.com/erikbryant/wow/internal/cooking"
 	"github.com/erikbryant/wow/internal/toy"
 	"github.com/erikbryant/wow/internal/transmog"
 	"github.com/erikbryant/wow/internal/userconfig"
@@ -353,7 +353,6 @@ func scanRealms(r string, summarize bool) error {
 	return nil
 }
 
-// Shop determines which cooking recipes are still needed
 func Shop(realms string, summarize bool) error {
 	err := battlepet.Init()
 	if err != nil {
@@ -377,7 +376,7 @@ func Shop(realms string, summarize bool) error {
 	}
 	appendFile(battlePetPath, battlepet.Output())
 
-	for _, recipeName := range recipes.Needed() {
+	for _, recipeName := range cooking.RecipesNeeded() {
 		userconfig.UsefulGoods[wowitem.Search(recipeName).ID()] = userconfig.RecipePriceMax
 	}
 

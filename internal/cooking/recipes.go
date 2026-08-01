@@ -1,4 +1,4 @@
-package recipes
+package cooking
 
 import (
 	"fmt"
@@ -100,7 +100,7 @@ func scanAlts() map[string]map[int64]Recipe {
 	return recipesByAlt
 }
 
-func Needed() []string {
+func RecipesNeeded() []string {
 	recipesByAlt := scanAlts()
 	recipesNeeded := map[string]int{}
 
@@ -118,7 +118,7 @@ func Needed() []string {
 			if !ok {
 				_, err = f.WriteString(alt + " " + recipe.name + "\n")
 				if err != nil {
-					log.Fatal("Failed to write recipe needed:", recipesNeededPath, err)
+					log.Fatal("Failed to write cooking recipes needed:", recipesNeededPath, err)
 				}
 				recipesNeeded[recipe.name]++
 			}
@@ -135,9 +135,9 @@ func Needed() []string {
 	slices.Sort(rn)
 	slices.Sort(rnc)
 
-	_, err = f.WriteString("\nRecipes needed:\n" + strings.Join(rnc, "\n"))
+	_, err = f.WriteString("\nCooking recipes needed:\n" + strings.Join(rnc, "\n"))
 	if err != nil {
-		log.Fatal("Failed to write table:", recipesNeededPath, err)
+		log.Fatal("Failed to write cooking recipes table:", recipesNeededPath, err)
 	}
 
 	return rn
