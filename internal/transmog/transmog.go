@@ -66,10 +66,9 @@ func Init() {
 			log.Fatalf("Failed to save appearances persist: %v\n", err)
 		}
 	}
-	fmt.Printf("-- #Appearances persisted: %d\n", appearanceSetAppearanceIDs.Len())
 
 	appearanceIDsOwned = getAppearanceIDsOwned()
-	fmt.Printf("-- #Appearances owned    : %d\n", len(appearanceIDsOwned))
+	fmt.Printf("-- #Appearances owned: %d/%d\n", len(appearanceIDsOwned), appearanceSetAppearanceIDs.Len())
 }
 
 // needAppearanceID returns true if I need this appearance ID

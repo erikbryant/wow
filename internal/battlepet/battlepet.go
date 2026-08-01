@@ -92,7 +92,7 @@ func Init() {
 		petNames.Save()
 	}
 	petsOwned = getPetsOwned()
-	fmt.Printf("-- #Battle pets owned    : %d/%d\n", len(petsOwned), petNames.Len())
+	fmt.Printf("-- #Battle pets owned: %d/%d\n", len(petsOwned), petNames.Len())
 }
 
 // PetSpell returns true and the corresponding pet ID if the item is a pet summoning spell

@@ -22,7 +22,7 @@ func init() {
 	if err != nil {
 		fmt.Printf("*** error opening items persist, creating new one: %v\n", err)
 	}
-	fmt.Printf("-- #Items persisted: %d\n", Items.Len())
+	fmt.Printf("-- #Items persisted  : %d\n", Items.Len())
 }
 
 // IDs returns the sorted list of keys from the persistence file
