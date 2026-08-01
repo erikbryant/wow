@@ -141,29 +141,31 @@ var (
 	}
 )
 
-func Init(passphrase string) {
+func Init(passphrase string) error {
 	var err error
+	var ok bool
 
 	clientID, err = aes.Decrypt(clientIDCrypt, passphrase)
 	if err != nil {
-		log.Fatal("unable to decrypt clientID", err)
+		return fmt.Errorf("unable to decrypt clientID: %s", err)
 	}
 
 	clientSecret, err = aes.Decrypt(clientSecretCrypt, passphrase)
 	if err != nil {
-		log.Fatal("unable to decrypt clientSecret", err)
+		return fmt.Errorf("unable to decrypt clientSecret: %s", err)
 	}
 
 	accessToken, err = wowAccessToken()
 	if err != nil {
-		log.Fatal("unable to get access token", err)
+		return fmt.Errorf("unable to get access token: %s", err)
 	}
 
-	var ok bool
 	profileAccessToken, ok = wowProfileAccessToken()
 	if !ok {
-		log.Fatal("unable to get profile access token", err)
+		return fmt.Errorf("unable to get profile access token: %s", err)
 	}
+
+	return nil
 }
 
 // SkipItem returns true if the caller should ignore this item

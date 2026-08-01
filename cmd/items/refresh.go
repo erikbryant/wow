@@ -80,7 +80,11 @@ func runRefresh(args []string) {
 		os.Exit(2)
 	}
 
-	wowapi.Init(*passphrase)
+	err := wowapi.Init(*passphrase)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
 
 	if *itemID == -1 {
 		refreshAll(*maxRefresh)

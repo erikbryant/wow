@@ -34,9 +34,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	wowapi.Init(*passphrase)
+	err := wowapi.Init(*passphrase)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 
-	err := shopping.Shop(*realms, *summarize)
+	err = shopping.Shop(*realms, *summarize)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
