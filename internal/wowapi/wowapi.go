@@ -10,6 +10,7 @@ import (
 
 	"github.com/erikbryant/aes"
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/internal/wowoauth"
 )
 
 var (
@@ -142,7 +143,6 @@ var (
 
 func Init(passphrase string) error {
 	var err error
-	var ok bool
 
 	clientID, err = aes.Decrypt(clientIDCrypt, passphrase)
 	if err != nil {
@@ -159,8 +159,8 @@ func Init(passphrase string) error {
 		return fmt.Errorf("unable to get access token: %s", err)
 	}
 
-	profileAccessToken, ok = wowProfileAccessToken()
-	if !ok {
+	profileAccessToken, err = wowProfileAccessToken()
+	if err != nil {
 		return fmt.Errorf("unable to get profile access token: %s", err)
 	}
 
@@ -206,8 +206,8 @@ func requestKey(url, token, key, caller string) ([]any, bool) {
 }
 
 // wowProfileAccessToken returns a profile access token (to authenticate user profile API calls)
-func wowProfileAccessToken() (string, bool) {
-	return getPAT(clientID, clientSecret)
+func wowProfileAccessToken() (string, error) {
+	return wowoauth.GetPAT(clientID, clientSecret)
 }
 
 // wowAccessToken retrieves an access token. This token is used to authenticate API calls.

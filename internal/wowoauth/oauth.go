@@ -1,4 +1,4 @@
-package wowapi
+package wowoauth
 
 import (
 	"context"
@@ -169,18 +169,20 @@ func shutdown() {
 	}
 }
 
-// getPAT returns a profile access token (to authenticate user profile API calls)
-func getPAT(clientID, clientSecret string) (string, bool) {
+// GetPAT returns a profile access token (to authenticate user profile API calls)
+func GetPAT(clientID, clientSecret string) (string, error) {
 	go start(clientID, clientSecret)
 	defer shutdown()
-	uri := "http://localhost:8888/auth/blizzard/login"
-	err := browser.OpenURL(uri)
+
+	err := browser.OpenURL("http://localhost:8888/auth/blizzard/login")
 	if err != nil {
-		log.Fatal("unable to open browser", err)
-		return "", false
+		return "", fmt.Errorf("unable to open browser: %s", err)
 	}
+
 	for paToken == "" {
+		// Wait for Oauth to complete
 		time.Sleep(time.Second)
 	}
-	return paToken, true
+
+	return paToken, nil
 }
