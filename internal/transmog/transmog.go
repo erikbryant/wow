@@ -2,7 +2,6 @@ package transmog
 
 import (
 	"fmt"
-	"log"
 	"slices"
 
 	"github.com/erikbryant/web"
@@ -34,12 +33,12 @@ func getAppearanceSetAppearanceIDs() {
 }
 
 // getAppearanceIDsOwned returns the appearance IDs I own
-func getAppearanceIDsOwned() map[int64]bool {
+func getAppearanceIDsOwned() (map[int64]bool, error) {
 	myAppearanceIDs := map[int64]bool{}
 
 	t, ok := wowapi.CollectionsTransmogs()
 	if !ok {
-		log.Fatal("Unable to obtain transmogs owned.")
+		return nil, fmt.Errorf("unable to obtain transmogs owned")
 	}
 
 	transmogs := t.(map[string]any)
@@ -53,22 +52,28 @@ func getAppearanceIDsOwned() map[int64]bool {
 		}
 	}
 
-	return myAppearanceIDs
+	return myAppearanceIDs, nil
 }
 
-func Init() {
+func Init() error {
 	err := appearanceSetAppearanceIDs.Load()
 	if err != nil {
 		fmt.Printf("*** error opening appearances persist, creating new one: %v\n", err)
 		getAppearanceSetAppearanceIDs()
 		err = appearanceSetAppearanceIDs.Save()
 		if err != nil {
-			log.Fatalf("Failed to save appearances persist: %v\n", err)
+			return fmt.Errorf("failed to save appearances persist: %s", err)
 		}
 	}
 
-	appearanceIDsOwned = getAppearanceIDsOwned()
+	appearanceIDsOwned, err = getAppearanceIDsOwned()
+	if err != nil {
+		return err
+	}
+
 	fmt.Printf("-- #Appearances owned: %d/%d\n", len(appearanceIDsOwned), appearanceSetAppearanceIDs.Len())
+
+	return nil
 }
 
 // needAppearanceID returns true if I need this appearance ID

@@ -363,7 +363,10 @@ func Shop(realms string, summarize bool) error {
 		return err
 	}
 
-	transmog.Init()
+	err = transmog.Init()
+	if err != nil {
+		return err
+	}
 
 	// Ensure log file is empty
 	err = os.WriteFile(battlePetPath, nil, 0600)
