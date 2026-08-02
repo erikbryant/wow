@@ -144,7 +144,8 @@ func Output() string {
 		if !ok {
 			continue
 		}
-		output.WriteString(fmt.Sprintf("%d %s\n", petID, name))
+		// Output in a format pastable into shopping.SkipPets
+		output.WriteString(fmt.Sprintf("%d: {}, // %s\n", petID, name))
 	}
 
 	return output.String()
