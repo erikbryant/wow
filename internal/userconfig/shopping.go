@@ -12,7 +12,7 @@ var (
 	BattlePetPriceResellMax  = common.Coppers(200, 0, 0)
 	BattlePetPriceUnownedMax = common.Coppers(500, 0, 0)
 	ProfitToDisplayMin       = common.Coppers(15, 0, 0)
-	RecipePriceMax           = common.Coppers(20, 0, 0)
+	RecipePriceMax           = common.Coppers(19, 0, 0)
 	ToyPriceMax              = common.Coppers(400, 0, 0)
 )
 
@@ -46,6 +46,7 @@ var SkipPets = map[int64]struct{}{
 	1150: {}, // Ashstone Core
 	1934: {}, // Benax
 	1964: {}, // Blood Boil
+	1963: {}, // Boneshard
 	4489: {}, // Bouncer
 	4537: {}, // Chester
 	1662: {}, // Cinder Pup
@@ -61,6 +62,7 @@ var SkipPets = map[int64]struct{}{
 	1687: {}, // Left Shark
 	4647: {}, // Mr. DELVER
 	1568: {}, // Puddle Terror
+	1907: {}, // Pygmy Owl
 	340:  {}, // Sea Pony
 	162:  {}, // Sinister Squashling
 	1628: {}, // Sister of Temptation
@@ -76,13 +78,13 @@ var SkipPets = map[int64]struct{}{
 	153:  {}, // Wolpertinger
 
 	// We collect pets to sell to Stephen; limit how many of each we collect
-	1963: {}, // Boneshard
 	191:  {}, // Clockwork Rocket Bot
 	1961: {}, // G0-R41-0n Ultratonk
+	67:   {}, // Hawk Owl
+	68:   {}, // Great Horned Owl
 	50:   {}, // Green Wing Macaw
 	2468: {}, // Laughing Stonekin
 	1727: {}, // Nursery Spider
-	1907: {}, // Pygmy Owl
 	44:   {}, // Siamese Cat
 	1721: {}, // Stormborne Whelpling
 	1151: {}, // Untamed Hatchling
