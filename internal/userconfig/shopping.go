@@ -75,11 +75,22 @@ var SkipPets = map[int64]struct{}{
 	120:  {}, // Winter's Little Helper
 	153:  {}, // Wolpertinger
 
-	// Pets that Stephen does not need right now
+	// We collect pets to sell to Stephen; limit how many of each we collect
 	1963: {}, // Boneshard
 	191:  {}, // Clockwork Rocket Bot
 	1961: {}, // G0-R41-0n Ultratonk
+	50:   {}, // Green Wing Macaw
 	2468: {}, // Laughing Stonekin
+	1727: {}, // Nursery Spider
 	1907: {}, // Pygmy Owl
+	44:   {}, // Siamese Cat
 	1721: {}, // Stormborne Whelpling
+	1151: {}, // Untamed Hatchling
+
+	//52:   {}, // Ancona Chicken
+	//2118: {}, // Docile Skyfin
+	//2467: {}, // Mischievous Zephyr
+	//3348: {}, // Primal Stormling
+	//1416: {}, // Teroclaw Hatchling
+	//1921: {}, // Untethered Wyrmling
 }
