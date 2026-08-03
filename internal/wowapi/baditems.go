@@ -1,8 +1,8 @@
 package wowapi
 
 var (
+	// badItemIDs are item IDs found in web API responses, but not found in the WoW database
 	badItemIDs = map[int64]struct{}{
-		// Items IDs found in web API responses, but not found in the WoW database
 		23704:  {},
 		23942:  {},
 		23943:  {},
