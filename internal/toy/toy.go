@@ -8,13 +8,13 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
-var (
-	allNames = map[int64]string{}
-	allOwned = map[int64]bool{}
-)
+type Toy struct {
+	names map[int64]string
+	owned map[int64]bool
+}
 
-// toyNames returns a map of all toy names by ID
-func toyNames() (map[int64]string, error) {
+// getNames returns a map of all toy names by ID
+func getNames() (map[int64]string, error) {
 	toys := map[int64]string{}
 
 	allToys, ok := wowapi.Toys()
@@ -31,8 +31,8 @@ func toyNames() (map[int64]string, error) {
 	return toys, nil
 }
 
-// owned returns the toys I own
-func owned() (map[int64]bool, error) {
+// getOwned returns the toys I own
+func getOwned() (map[int64]bool, error) {
 	myToys := map[int64]bool{}
 
 	toys, ok := wowapi.CollectionsToys()
@@ -49,26 +49,27 @@ func owned() (map[int64]bool, error) {
 	return myToys, nil
 }
 
-func Init() error {
+func New() (*Toy, error) {
+	var t Toy
 	var err error
 
-	allNames, err = toyNames()
+	t.names, err = getNames()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	allOwned, err = owned()
+	t.owned, err = getOwned()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &t, nil
 }
 
-func Own(i wowitem.Item) bool {
-	for toyID, name := range allNames {
+func (t *Toy) Owned(i wowitem.Item) bool {
+	for toyID, name := range t.names {
 		if i.Name() == name {
-			return allOwned[toyID]
+			return t.owned[toyID]
 		}
 	}
 	return false

@@ -31,7 +31,8 @@ const (
 )
 
 var (
-	mu sync.Mutex
+	mu   sync.Mutex
+	toys *toy.Toy
 )
 
 // appendFile appends 'contents' to a file
@@ -217,7 +218,7 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 			}
 
 			// Bargains on toys
-			if i.Toy() && !toy.Own(i) && auc.Buyout <= userconfig.ToyPriceMax {
+			if i.Toy() && !toys.Owned(i) && auc.Buyout <= userconfig.ToyPriceMax {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 				bargains = append(bargains, str)
 			}
@@ -376,7 +377,7 @@ func Shop(realms string, summarize bool) error {
 		return err
 	}
 
-	err = toy.Init()
+	toys, err = toy.New()
 	if err != nil {
 		return err
 	}
