@@ -349,7 +349,6 @@ func ConnectedRealmID(realm string) (string, bool) {
 		cr := ConnectedRealm(cRealmID)
 		if cr == nil {
 			continue
-			//return "", false
 		}
 		realms := cr["realms"].([]any)
 		for _, cRealm := range realms {
