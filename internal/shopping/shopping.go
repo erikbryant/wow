@@ -142,6 +142,28 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
+func findMissingProfessionTools(auctions map[int64][]auction.Auction) []string {
+	missing := []string{}
+
+	for itemID, _ := range auctions {
+		i, ok := wowItem.Get(itemID)
+		if !ok {
+			continue
+		}
+		if i.SellPriceRealizable() <= userConfig.ArbitrageProfitMin {
+			// Not enough profit to make it worth the WoW runtime it takes to scan the AH
+			continue
+		}
+		if i.ItemClassName() == "Profession" && !wowitem.Known(i.ID()) {
+			// We have not seen this profession tool before. Add iLevels for it in ilevel.go.
+			msg := fmt.Sprintf("%d: {}, // %s iLvl: %d", i.ID(), i.Name(), i.ItemLevel())
+			missing = append(missing, msg)
+		}
+	}
+
+	return missing
+}
+
 // findArbitrages returns auctions selling for lower than vendor prices
 func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]string, int64, error) {
 	arbitrages := []Arbitrage{}
@@ -166,16 +188,6 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 			}
 
 			arbitrages = append(arbitrages, Arbitrage{i, profit})
-
-			if i.ItemClassName() == "Profession" && !wowitem.Known(i.ID()) {
-				// We have not seen this profession tool before. Add iLevels for it in ilevel.go.
-				msg := fmt.Sprintf("%d: {}, // %s (%s)  iLvl: %d\n", i.ID(), i.Name(), i.ItemClassName(), i.ItemLevel())
-				err := appendFile(iLvlPath, msg)
-				if err != nil {
-					return nil, 0, err
-				}
-				fmt.Println(msg)
-			}
 		}
 	}
 
@@ -309,6 +321,14 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 	arbitrages, profit, err := findArbitrages(auctions, realm)
 	if err != nil {
 		return err
+	}
+
+	tools := findMissingProfessionTools(auctions)
+	if len(tools) > 0 {
+		err = appendFile(iLvlPath, strings.Join(tools, "\n"))
+		if err != nil {
+			return err
+		}
 	}
 
 	if summarize {
