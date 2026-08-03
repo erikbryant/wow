@@ -83,7 +83,7 @@ func row(item wowitem.Item) string {
 }
 
 // Table writes items as a human-readable table.
-func Table(w io.Writer, items []wowitem.Item) error {
+func Table(w io.Writer, items []wowitem.Item) {
 	writer := tabwriter.NewWriter(
 		w,
 		0,
@@ -102,5 +102,5 @@ func Table(w io.Writer, items []wowitem.Item) error {
 		fmt.Fprintf(writer, "%s\n", row(item))
 	}
 
-	return writer.Flush()
+	writer.Flush()
 }
