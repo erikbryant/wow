@@ -31,8 +31,9 @@ const (
 )
 
 var (
-	mu   sync.Mutex
-	toys *toy.Toy
+	battlePets *battlepet.BattlePet
+	mu         sync.Mutex
+	toys       *toy.Toy
 )
 
 // appendFile appends 'contents' to a file
@@ -63,11 +64,11 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 		if !ok {
 			continue
 		}
-		petID, ok := battlepet.PetSpell(i)
+		petID, ok := battlePets.PetSpell(i)
 		if !ok {
 			continue
 		}
-		if battlepet.Owned(petID) {
+		if battlePets.Owned(petID) {
 			continue
 		}
 
@@ -78,7 +79,7 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 			if auc.Buyout > userconfig.BattlePetPriceUnownedMax {
 				continue
 			}
-			stats := fmt.Sprintf("%s %s %s", battlepet.Name(petID), common.Gold(auc.Buyout), i.Quality())
+			stats := fmt.Sprintf("%s %s %s", battlePets.Name(petID), common.Gold(auc.Buyout), i.Quality())
 			bargains = append(bargains, stats)
 		}
 	}
@@ -91,7 +92,7 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for _, petAuction := range auctions[battlepet.PetCageItemID] {
-		if battlepet.Owned(petAuction.Pet.SpeciesID) {
+		if battlePets.Owned(petAuction.Pet.SpeciesID) {
 			continue
 		}
 		if petAuction.Buyout <= 0 {
@@ -100,7 +101,7 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 		if petAuction.Buyout > userconfig.BattlePetPriceUnownedMax {
 			continue
 		}
-		bargains = append(bargains, battlepet.Name(petAuction.Pet.SpeciesID))
+		bargains = append(bargains, battlePets.Name(petAuction.Pet.SpeciesID))
 	}
 
 	// Include any pets available via spells
@@ -132,7 +133,7 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 			continue
 		}
 
-		bargains = append(bargains, battlepet.Name(petAuction.Pet.SpeciesID))
+		bargains = append(bargains, battlePets.Name(petAuction.Pet.SpeciesID))
 	}
 
 	return bargains
@@ -372,7 +373,9 @@ func scanRealms(r string, summarize bool) error {
 }
 
 func Shop(realms string, summarize bool) error {
-	err := battlepet.Init()
+	var err error
+
+	battlePets, err = battlepet.New()
 	if err != nil {
 		return err
 	}
@@ -392,7 +395,7 @@ func Shop(realms string, summarize bool) error {
 	if err != nil {
 		return err
 	}
-	err = appendFile(battlePetPath, battlepet.Output())
+	err = appendFile(battlePetPath, battlePets.Output())
 	if err != nil {
 		return err
 	}
