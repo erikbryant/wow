@@ -333,16 +333,11 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 }
 
 // scanRealms processes auctions on all realms in 'r'
-func scanRealms(r string, summarize bool) error {
+func scanRealms(r string, summarize bool) ([]string, error) {
+
 	realms := strings.Split(r, ",")
 	results := []string{}
 	c := make(chan string)
-
-	// Ensure arbitrage log file is empty
-	err := os.WriteFile(arbitragePath, nil, 0600)
-	if err != nil {
-		return err
-	}
 
 	for _, realm := range realms {
 		go func() {
@@ -365,13 +360,26 @@ func scanRealms(r string, summarize bool) error {
 	}
 
 	sort.Strings(results)
-	fmt.Println(results)
 
-	err = wowItem.Items.Save()
+	return results, nil
+}
+
+func writeLogs() error {
+	// Ensure log file is empty
+	err := os.WriteFile(battlePetPath, nil, 0600)
+	if err != nil {
+		return err
+	}
+	err = appendFile(battlePetPath, battlePets.Output())
 	if err != nil {
 		return err
 	}
 
+	// Write the prices file for the WoW 'wowMerchant' addon to consume
+	err = os.WriteFile(priceCachePath, []byte(wowItem.Lua()), 0600)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -379,6 +387,12 @@ func Shop(realms string, summarize bool) error {
 	var err error
 
 	wowItem = wowitem.New()
+	defer func() {
+		err := wowItem.Items.Save()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "failed to save wow items persistence: %s\n", err)
+		}
+	}()
 
 	userConfig = userconfig.New(wowItem)
 
@@ -397,12 +411,8 @@ func Shop(realms string, summarize bool) error {
 		return err
 	}
 
-	// Ensure log file is empty
-	err = os.WriteFile(battlePetPath, nil, 0600)
-	if err != nil {
-		return err
-	}
-	err = appendFile(battlePetPath, battlePets.Output())
+	// Ensure arbitrage log file is empty
+	err = os.WriteFile(arbitragePath, nil, 0600)
 	if err != nil {
 		return err
 	}
@@ -415,13 +425,13 @@ func Shop(realms string, summarize bool) error {
 		userConfig.UsefulGoods[wowItem.Search(recipeName).ID()] = userConfig.RecipePriceMax
 	}
 
-	err = scanRealms(realms, summarize)
+	results, err := scanRealms(realms, summarize)
 	if err != nil {
 		return err
 	}
+	fmt.Println(results)
 
-	// Write the prices file for the WoW 'wowMerchant' addon to consume
-	err = os.WriteFile(priceCachePath, []byte(wowItem.Lua()), 0600)
+	err = writeLogs()
 	if err != nil {
 		return err
 	}
