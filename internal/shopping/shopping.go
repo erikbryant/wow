@@ -27,7 +27,6 @@ type Arbitrage struct {
 const (
 	arbitragePath  = "./exports/arbitrageLatest"
 	battlePetPath  = "./reports/battlePets"
-	iLvlPath       = "./reports/arbitrageWithiLvl"
 	priceCachePath = "./exports/PriceCache.lua"
 )
 
@@ -142,26 +141,12 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-func findMissingProfessionTools(auctions map[int64][]auction.Auction) []string {
-	missing := []string{}
-
-	for itemID, _ := range auctions {
-		i, ok := wowItem.Get(itemID)
-		if !ok {
-			continue
-		}
-		if i.SellPriceRealizable() <= userConfig.ArbitrageProfitMin {
-			// Not enough profit to make it worth the WoW runtime it takes to scan the AH
-			continue
-		}
-		if i.ItemClassName() == "Profession" && !wowitem.Known(i.ID()) {
-			// We have not seen this profession tool before. Add iLevels for it in ilevel.go.
-			msg := fmt.Sprintf("%d: {}, // %s iLvl: %d", i.ID(), i.Name(), i.ItemLevel())
-			missing = append(missing, msg)
-		}
+func missingProfessionTool(i wowitem.Item) bool {
+	if i.SellPriceRealizable() <= userConfig.ArbitrageProfitMin {
+		// Not enough profit to make it worth the WoW runtime it takes to scan the AH
+		return false
 	}
-
-	return missing
+	return i.ItemClassName() == "Profession" && !wowitem.Known(i.ID())
 }
 
 // findArbitrages returns auctions selling for lower than vendor prices
@@ -323,11 +308,14 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 		return err
 	}
 
-	tools := findMissingProfessionTools(auctions)
-	if len(tools) > 0 {
-		err = appendFile(iLvlPath, strings.Join(tools, "\n"))
-		if err != nil {
-			return err
+	for itemID, _ := range auctions {
+		i, ok := wowItem.Get(itemID)
+		if !ok {
+			continue
+		}
+		if missingProfessionTool(i) {
+			// We have not seen this profession tool before. Add iLevels for it in ilevel.go.
+			fmt.Printf("%d: {}, // %s iLvl: %d\n", i.ID(), i.Name(), i.ItemLevel())
 		}
 	}
 
