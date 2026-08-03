@@ -2,7 +2,6 @@ package common
 
 import (
 	"fmt"
-	"sort"
 	"strings"
 )
 
@@ -42,22 +41,4 @@ func QualityID(qualityName string) int64 {
 	}
 	fmt.Println("Unknown quality", qualityName)
 	return -1
-}
-
-// SortUnique returns a sorted and unique slice
-func SortUnique(values []string) []string {
-	alreadySeen := map[string]bool{}
-	unique := []string{}
-
-	for _, val := range values {
-		if alreadySeen[val] {
-			continue
-		}
-		alreadySeen[val] = true
-		unique = append(unique, val)
-	}
-
-	sort.Strings(unique)
-
-	return unique
 }

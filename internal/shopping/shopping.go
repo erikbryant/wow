@@ -95,59 +95,16 @@ func missingProfessionTool(i wowitem.Item) bool {
 	return i.ItemClassName() == "Profession" && !wowitem.Known(i.ID())
 }
 
-// findArbitrages returns auctions selling for lower than vendor prices
-func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]string, int64, error) {
-	arbitrages := []Arbitrage{}
-	totalProfit := int64(0)
-
-	for itemID, itemAuctions := range auctions {
-		i, ok := wowItem.Get(itemID)
-		if !ok {
-			continue
-		}
-		for _, auc := range itemAuctions {
-			if auc.Buyout <= 0 {
-				continue
-			}
-			if auc.Buyout >= i.SellPriceRealizable() {
-				continue
-			}
-			profit := (i.SellPriceRealizable() - auc.Buyout) * auc.Quantity
-			if profit < userConfig.ArbitrageProfitMin {
-				// Not enough profit to make it worth the WoW runtime it takes to scan the AH
-				continue
-			}
-
-			arbitrages = append(arbitrages, Arbitrage{i, profit})
-		}
+func isArbitrage(i wowitem.Item, auc auction.Auction) (int64, bool) {
+	if auc.Buyout >= i.SellPriceRealizable() {
+		return 0, false
 	}
-
-	bargains := []string{}
-	for _, arbitrage := range arbitrages {
-		totalProfit += arbitrage.profit
-
-		str := fmt.Sprintf("%s   %s", arbitrage.item.Name(), common.Gold(arbitrage.profit))
-		bargains = append(bargains, str)
-
-		if realm == "Commodities" {
-			// Commodities are not worth logging; their prices are too volatile
-			continue
-		}
-
-		iLevels := wowitem.ILevels(arbitrage.item.ID())
-		for _, iLevel := range iLevels {
-			logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", arbitrage.item.ID(), iLevel, arbitrage.item.Name())
-			err := appendFile(arbitragePath, logEntry)
-			if err != nil {
-				return nil, 0, err
-			}
-		}
+	profit := (i.SellPriceRealizable() - auc.Buyout) * auc.Quantity
+	if profit < userConfig.ArbitrageProfitMin {
+		// Not enough profit to make it worth the WoW runtime it takes to scan the AH
+		return 0, false
 	}
-
-	slices.Sort(bargains)
-	bargains = slices.Compact(bargains)
-
-	return bargains, totalProfit, nil
+	return profit, true
 }
 
 // toyBargain returns true if we need this toy, and it is at or below our price
@@ -179,7 +136,8 @@ func fmtShoppingList(label string, items []string, c *color.Color, summarize boo
 	if !summarize {
 		header = fmt.Sprintf("--- %s ---\n", label)
 	}
-	return c.Sprintf("%s%s\n", header, strings.Join(common.SortUnique(items), "\n"))
+	slices.Sort(items)
+	return c.Sprintf("%s%s\n", header, strings.Join(slices.Compact(items), "\n"))
 }
 
 // scanRealm retrieves auctions and prints suggestions for what to buy for a single realm
@@ -190,11 +148,8 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 		return err
 	}
 
-	arbitrages, profit, err := findArbitrages(auctions, realm)
-	if err != nil {
-		return err
-	}
-
+	arbitrages := []string{}
+	totalProfit := int64(0)
 	petNeededBargains := []string{}
 	bargains := []string{}
 	petResellBargains := []string{}
@@ -245,6 +200,25 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 					appearanceBargains = append(appearanceBargains, i.Name())
 				}
 			}
+
+			profit, ok := isArbitrage(i, auc)
+			if ok {
+				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(profit))
+				arbitrages = append(arbitrages, str)
+				totalProfit += profit
+
+				if realm != "Commodities" {
+					iLevels := wowitem.ILevels(i.ID())
+					for _, iLevel := range iLevels {
+						logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", i.ID(), iLevel, i.Name())
+						err := appendFile(arbitragePath, logEntry)
+						if err != nil {
+							c <- ""
+							return err
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -255,9 +229,9 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 	shoppingList += fmtShoppingList("Appearance Bargains", appearanceBargains, color.New(color.FgBlue), summarize)
 
 	if summarize {
-		if profit >= userConfig.ProfitToDisplayMin {
+		if totalProfit >= userConfig.ProfitToDisplayMin {
 			c := color.New(color.FgWhite)
-			shoppingList += c.Sprintf("Arbitrages: %s\n", common.Gold(profit))
+			shoppingList += c.Sprintf("Arbitrages: %s\n", common.Gold(totalProfit))
 		}
 	} else {
 		shoppingList += fmtShoppingList("Arbitrages", arbitrages, color.New(color.FgWhite), summarize)

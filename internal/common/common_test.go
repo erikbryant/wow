@@ -1,7 +1,6 @@
 package common
 
 import (
-	"slices"
 	"testing"
 )
 
@@ -123,60 +122,5 @@ func TestQualityIDCaseInsensitive(t *testing.T) {
 func TestQualityIDUnknown(t *testing.T) {
 	if got := QualityID("Banana"); got != -1 {
 		t.Fatalf("QualityID returned %d, want -1", got)
-	}
-}
-
-func TestSortUniqueEmpty(t *testing.T) {
-	got := SortUnique(nil)
-
-	if len(got) != 0 {
-		t.Fatalf("expected empty slice")
-	}
-}
-
-func TestSortUniqueAlreadySorted(t *testing.T) {
-	input := []string{"a", "b", "c"}
-
-	got := SortUnique(input)
-
-	if !slices.Equal(got, input) {
-		t.Fatalf("got %v want %v", got, input)
-	}
-}
-
-func TestSortUniqueUnsortedDuplicates(t *testing.T) {
-	input := []string{
-		"pear",
-		"apple",
-		"pear",
-		"banana",
-		"apple",
-		"banana",
-		"orange",
-	}
-
-	want := []string{
-		"apple",
-		"banana",
-		"orange",
-		"pear",
-	}
-
-	got := SortUnique(input)
-
-	if !slices.Equal(got, want) {
-		t.Fatalf("got %v want %v", got, want)
-	}
-}
-
-func TestSortUniqueOriginalSliceUnchanged(t *testing.T) {
-	input := []string{"b", "a", "b"}
-
-	original := append([]string(nil), input...)
-
-	_ = SortUnique(input)
-
-	if !slices.Equal(input, original) {
-		t.Fatal("SortUnique modified input slice")
 	}
 }
