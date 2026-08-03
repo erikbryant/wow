@@ -19,6 +19,15 @@ import (
 	"github.com/fatih/color"
 )
 
+type Recommendations struct {
+	Arbitrages         []string
+	ArbitrageProfit    int64
+	PetNeededBargains  []string
+	Bargains           []string
+	PetResellBargains  []string
+	AppearanceBargains []string
+}
+
 const (
 	arbitragePath  = "./exports/arbitrageLatest"
 	battlePetPath  = "./reports/battlePets"
@@ -135,13 +144,8 @@ func fmtShoppingList(label string, items []string, c *color.Color, summarize boo
 	return c.Sprintf("%s%s\n", header, strings.Join(slices.Compact(items), "\n"))
 }
 
-func iterateAuctions(auctions map[int64][]auction.Auction, logArbitrages bool) ([]string, int64, []string, []string, []string, []string, error) {
-	arbitrages := []string{}
-	arbitrageProfit := int64(0)
-	petNeededBargains := []string{}
-	bargains := []string{}
-	petResellBargains := []string{}
-	appearanceBargains := []string{}
+func iterateAuctions(auctions map[int64][]auction.Auction, logArbitrages bool) (*Recommendations, error) {
+	var recommendations Recommendations
 
 	for itemID, itemAuctions := range auctions {
 		i, ok := wowItem.Get(itemID)
@@ -161,10 +165,10 @@ func iterateAuctions(auctions map[int64][]auction.Auction, logArbitrages bool) (
 
 			if i.ID() == battlepet.PetCageItemID {
 				if petResellBargain(auc) {
-					petResellBargains = append(petResellBargains, battlePets.Name(auc.Pet.SpeciesID))
+					recommendations.PetResellBargains = append(recommendations.PetResellBargains, battlePets.Name(auc.Pet.SpeciesID))
 				}
 				if petNeeded(auc) {
-					petNeededBargains = append(petResellBargains, battlePets.Name(auc.Pet.SpeciesID))
+					recommendations.PetNeededBargains = append(recommendations.PetNeededBargains, battlePets.Name(auc.Pet.SpeciesID))
 				}
 				continue
 			}
@@ -172,28 +176,28 @@ func iterateAuctions(auctions map[int64][]auction.Auction, logArbitrages bool) (
 			if petSpellNeeded(i, auc) {
 				petID, _ := battlePets.PetSpell(i)
 				pet := fmt.Sprintf("%s %s (spell)", battlePets.Name(petID), i.Quality())
-				petNeededBargains = append(petResellBargains, pet)
+				recommendations.PetNeededBargains = append(recommendations.PetNeededBargains, pet)
 			}
 
 			if toyBargain(i, auc) || usefulGoodsBargain(i, auc) {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
-				bargains = append(bargains, str)
+				recommendations.Bargains = append(recommendations.Bargains, str)
 			}
 
 			if appearanceSetBargain(i, auc) {
-				appearanceBargains = append(appearanceBargains, i.Name()+" ---")
+				recommendations.AppearanceBargains = append(recommendations.AppearanceBargains, i.Name()+" ---")
 			} else {
 				// If the item is already a bargain, no need to check again
 				if appearanceBargain(i, auc) {
-					appearanceBargains = append(appearanceBargains, i.Name())
+					recommendations.AppearanceBargains = append(recommendations.AppearanceBargains, i.Name())
 				}
 			}
 
 			profit, ok := isArbitrage(i, auc)
 			if ok {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(profit))
-				arbitrages = append(arbitrages, str)
-				arbitrageProfit += profit
+				recommendations.Arbitrages = append(recommendations.Arbitrages, str)
+				recommendations.ArbitrageProfit += profit
 
 				if logArbitrages {
 					iLevels := wowitem.ILevels(i.ID())
@@ -201,7 +205,7 @@ func iterateAuctions(auctions map[int64][]auction.Auction, logArbitrages bool) (
 						logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", i.ID(), iLevel, i.Name())
 						err := appendFile(arbitragePath, logEntry)
 						if err != nil {
-							return nil, 0, nil, nil, nil, nil, err
+							return nil, err
 						}
 					}
 				}
@@ -209,7 +213,34 @@ func iterateAuctions(auctions map[int64][]auction.Auction, logArbitrages bool) (
 		}
 	}
 
-	return arbitrages, arbitrageProfit, petNeededBargains, bargains, petResellBargains, appearanceBargains, nil
+	return &recommendations, nil
+}
+
+func formatRecommendations(recommendations *Recommendations, realm string, numAuctions int, summarize bool) string {
+	shoppingList := ""
+	shoppingList += fmtShoppingList("Pets I Need", recommendations.PetNeededBargains, color.New(color.FgMagenta), summarize)
+	shoppingList += fmtShoppingList("Pets to Resell", recommendations.PetResellBargains, color.New(color.FgGreen), summarize)
+	shoppingList += fmtShoppingList("Useful Item Bargains", recommendations.Bargains, color.New(color.FgRed), summarize)
+	shoppingList += fmtShoppingList("Appearance Bargains", recommendations.AppearanceBargains, color.New(color.FgBlue), summarize)
+
+	if summarize {
+		if recommendations.ArbitrageProfit >= userConfig.ProfitToDisplayMin {
+			c := color.New(color.FgWhite)
+			shoppingList += c.Sprintf("Arbitrages: %s\n", common.Gold(recommendations.ArbitrageProfit))
+		}
+	} else {
+		shoppingList += fmtShoppingList("Arbitrages", recommendations.Arbitrages, color.New(color.FgWhite), summarize)
+	}
+
+	if len(shoppingList) == 0 {
+		// Nothing to buy
+		return ""
+	}
+
+	col := color.New(color.FgCyan)
+	msg := col.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", realm, numAuctions, shoppingList)
+
+	return msg
 }
 
 // scanRealm retrieves auctions and prints suggestions for what to buy for a single realm
@@ -220,37 +251,13 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 		return err
 	}
 
-	// Get shopping recommendations
-	arbitrages, arbitrageProfit, petNeededBargains, bargains, petResellBargains, appearanceBargains, err := iterateAuctions(auctions, realm == "Commodities")
+	recommendations, err := iterateAuctions(auctions, realm == "Commodities")
 	if err != nil {
 		c <- ""
 		return err
 	}
 
-	// Display shopping recommendations
-	shoppingList := ""
-	shoppingList += fmtShoppingList("Pets I Need", petNeededBargains, color.New(color.FgMagenta), summarize)
-	shoppingList += fmtShoppingList("Pets to Resell", petResellBargains, color.New(color.FgGreen), summarize)
-	shoppingList += fmtShoppingList("Useful Item Bargains", bargains, color.New(color.FgRed), summarize)
-	shoppingList += fmtShoppingList("Appearance Bargains", appearanceBargains, color.New(color.FgBlue), summarize)
-
-	if summarize {
-		if arbitrageProfit >= userConfig.ProfitToDisplayMin {
-			c := color.New(color.FgWhite)
-			shoppingList += c.Sprintf("Arbitrages: %s\n", common.Gold(arbitrageProfit))
-		}
-	} else {
-		shoppingList += fmtShoppingList("Arbitrages", arbitrages, color.New(color.FgWhite), summarize)
-	}
-
-	if len(shoppingList) == 0 {
-		// Nothing to buy
-		c <- ""
-		return nil
-	}
-
-	col := color.New(color.FgCyan)
-	c <- col.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", realm, len(auctions), shoppingList)
+	c <- formatRecommendations(recommendations, realm, len(auctions), summarize)
 
 	return nil
 }
