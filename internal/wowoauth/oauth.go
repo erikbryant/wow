@@ -13,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pkg/browser"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/endpoints"
 )
@@ -150,22 +149,4 @@ func shutdown() {
 	if err != nil {
 		log.Printf("server shutdown failed: %v\n", err)
 	}
-}
-
-// GetPAT returns a profile access token (to authenticate user profile API calls)
-func GetPAT(clientID, clientSecret string) (string, error) {
-	go start(clientID, clientSecret)
-	defer shutdown()
-
-	err := browser.OpenURL("http://localhost:8888/auth/blizzard/login")
-	if err != nil {
-		return "", fmt.Errorf("unable to open browser: %s", err)
-	}
-
-	for paToken == "" {
-		// Wait for Oauth to complete
-		time.Sleep(time.Second)
-	}
-
-	return paToken, nil
 }
