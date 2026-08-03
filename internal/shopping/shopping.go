@@ -113,32 +113,25 @@ func findPetNeeded(auctions map[int64][]auction.Auction) []string {
 	return bargains
 }
 
-// findPetBargains returns pets that are likely to sell for more than they are listed
-func findPetBargains(auctions map[int64][]auction.Auction) []string {
-	bargains := []string{}
-
-	for _, petAuction := range auctions[battlepet.PetCageItemID] {
-		_, ok := userConfig.SkipPets[petAuction.Pet.SpeciesID]
-		if ok {
-			continue
-		}
-		if petAuction.Buyout <= 0 {
-			continue
-		}
-		if petAuction.Pet.QualityID < common.QualityID("Rare") {
-			continue
-		}
-		if petAuction.Pet.Level < 25 {
-			continue
-		}
-		if petAuction.Buyout > userConfig.BattlePetPriceResellMax {
-			continue
-		}
-
-		bargains = append(bargains, battlePets.Name(petAuction.Pet.SpeciesID))
+// petBargain returns true if pet is likely to resell at a profit
+func petBargain(petAuction auction.Auction) bool {
+	_, ok := userConfig.SkipPets[petAuction.Pet.SpeciesID]
+	if ok {
+		return false
 	}
-
-	return bargains
+	if petAuction.Buyout <= 0 {
+		return false
+	}
+	if petAuction.Pet.QualityID < common.QualityID("Rare") {
+		return false
+	}
+	if petAuction.Pet.Level < 25 {
+		return false
+	}
+	if petAuction.Buyout > userConfig.BattlePetPriceResellMax {
+		return false
+	}
+	return true
 }
 
 func missingProfessionTool(i wowitem.Item) bool {
@@ -204,36 +197,16 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 	return bargains, totalProfit, nil
 }
 
-// findBargains returns auctions selling below our desired prices
-func findBargains(auctions map[int64][]auction.Auction) []string {
-	bargains := []string{}
+// toyBargain returns true if we need this toy and it is at or below our price
+func toyBargain(i wowitem.Item, auc auction.Auction) bool {
+	// Bargains on toys
+	return i.Toy() && !toys.Owned(i) && auc.Buyout <= userConfig.ToyPriceMax
+}
 
-	for itemID, itemAuctions := range auctions {
-		i, ok := wowItem.Get(itemID)
-		if !ok {
-			continue
-		}
-		for _, auc := range itemAuctions {
-			if auc.Buyout <= 0 {
-				continue
-			}
-
-			// Bargains on toys
-			if i.Toy() && !toys.Owned(i) && auc.Buyout <= userConfig.ToyPriceMax {
-				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
-				bargains = append(bargains, str)
-			}
-
-			// Bargains on specific items
-			maxPrice, ok := userConfig.UsefulGoods[itemID]
-			if ok && auc.Buyout <= maxPrice {
-				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
-				bargains = append(bargains, str)
-			}
-		}
-	}
-
-	return bargains
+// usefulGoodsBargain returns true if it is at or below our price
+func usefulGoodsBargain(i wowitem.Item, auc auction.Auction) bool {
+	maxPrice, ok := userConfig.UsefulGoods[i.ID()]
+	return ok && auc.Buyout <= maxPrice
 }
 
 // findAppearanceBargains returns appearances selling at a discount
@@ -299,25 +272,49 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 
 	shoppingList := ""
 	shoppingList += fmtShoppingList("Pets I Need", findPetNeeded(auctions), color.New(color.FgMagenta), summarize)
-	shoppingList += fmtShoppingList("Pets to Resell", findPetBargains(auctions), color.New(color.FgGreen), summarize)
-	shoppingList += fmtShoppingList("Useful Item Bargains", findBargains(auctions), color.New(color.FgRed), summarize)
-	shoppingList += fmtShoppingList("Appearance Bargains", findAppearanceBargains(auctions), color.New(color.FgBlue), summarize)
 
 	arbitrages, profit, err := findArbitrages(auctions, realm)
 	if err != nil {
 		return err
 	}
 
-	for itemID, _ := range auctions {
+	bargains := []string{}
+	petBargains := []string{}
+
+	for itemID, itemAuctions := range auctions {
 		i, ok := wowItem.Get(itemID)
 		if !ok {
 			continue
 		}
+
 		if missingProfessionTool(i) {
 			// We have not seen this profession tool before. Add iLevels for it in ilevel.go.
 			fmt.Printf("%d: {}, // %s iLvl: %d\n", i.ID(), i.Name(), i.ItemLevel())
 		}
+
+		for _, auc := range itemAuctions {
+			if auc.Buyout <= 0 {
+				continue
+			}
+
+			if i.ID() == battlepet.PetCageItemID {
+				if petBargain(auc) {
+					petBargains = append(petBargains, battlePets.Name(auc.Pet.SpeciesID))
+
+				}
+				continue
+			}
+
+			if toyBargain(i, auc) || usefulGoodsBargain(i, auc) {
+				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
+				bargains = append(bargains, str)
+			}
+		}
 	}
+
+	shoppingList += fmtShoppingList("Pets to Resell", petBargains, color.New(color.FgGreen), summarize)
+	shoppingList += fmtShoppingList("Useful Item Bargains", bargains, color.New(color.FgRed), summarize)
+	shoppingList += fmtShoppingList("Appearance Bargains", findAppearanceBargains(auctions), color.New(color.FgBlue), summarize)
 
 	if summarize {
 		if profit >= userConfig.ProfitToDisplayMin {
@@ -342,7 +339,6 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 
 // scanRealms processes auctions on all realms in 'r'
 func scanRealms(r string, summarize bool) ([]string, error) {
-
 	realms := strings.Split(r, ",")
 	results := []string{}
 	c := make(chan string)
