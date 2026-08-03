@@ -142,7 +142,7 @@ func unpackAuctions(auctions []any) map[int64][]Auction {
 	return a
 }
 
-// Get returns the current auctions and their hash
+// Get returns the current auctions binned by item ID
 func Get(realm string) (map[int64][]Auction, error) {
 	var ok bool
 	var auctions []any
