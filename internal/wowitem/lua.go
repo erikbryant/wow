@@ -7,18 +7,18 @@ import (
 )
 
 // itemIDs returns the sorted list of keys from the persistence file
-func itemIDs() []int64 {
-	keys := Items.Keys()
+func (wi *WoWItem) itemIDs() []int64 {
+	keys := wi.Items.Keys()
 	slices.Sort(keys)
 	return keys
 }
 
-func luaVendorPrice() (string, []string) {
+func (wi *WoWItem) luaVendorPrice() (string, []string) {
 	var lua strings.Builder
 
 	lua.WriteString(fmt.Sprintf("local VendorSellPriceCache = {\n"))
-	for _, id := range itemIDs() {
-		i, _ := Items.Get(id)
+	for _, id := range wi.itemIDs() {
+		i, _ := wi.Items.Get(id)
 		spr := i.SellPriceRealizable()
 		if spr <= 100 {
 			// To keep the lua table small, ignore anything that can't ever be a bargain
@@ -57,12 +57,12 @@ end
 	return lua.String(), []string{"VendorSellPrice", "ValidatePriceCache"}
 }
 
-func luaCosmetic() (string, []string) {
+func (wi *WoWItem) luaCosmetic() (string, []string) {
 	var lua strings.Builder
 
 	lua.WriteString(fmt.Sprintf("local Cosmetics = {\n"))
-	for _, id := range itemIDs() {
-		i, _ := Items.Get(id)
+	for _, id := range wi.itemIDs() {
+		i, _ := wi.Items.Get(id)
 		cosmetic := i.Cosmetic()
 		if !cosmetic {
 			continue
@@ -82,12 +82,12 @@ end
 }
 
 // Lua the cached vendor sell prices to stdout as a lua table and accessor
-func Lua() string {
+func (wi *WoWItem) Lua() string {
 	lua := ""
 
-	lua, fcns := luaVendorPrice()
+	lua, fcns := wi.luaVendorPrice()
 
-	lua2, fcns2 := luaCosmetic()
+	lua2, fcns2 := wi.luaCosmetic()
 
 	lua += "\n" + lua2
 	for _, fn := range fcns2 {

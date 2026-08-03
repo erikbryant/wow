@@ -8,14 +8,14 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
-func deleteItem(itemID int64) error {
+func deleteItem(itemID int64, wowItem *wowitem.WoWItem) error {
 	fmt.Println("Deleting itemID:", itemID)
-	wowitem.Items.Delete(itemID)
-	err := wowitem.Items.Save()
+	wowItem.Items.Delete(itemID)
+	err := wowItem.Items.Save()
 	return err
 }
 
-func runDelete(args []string) {
+func runDelete(args []string, wowItem *wowitem.WoWItem) {
 	flags := flag.NewFlagSet("delete", flag.ExitOnError)
 
 	itemID := flag.Int64("id", -1, "Item ID to look up")
@@ -30,7 +30,7 @@ func runDelete(args []string) {
 		os.Exit(2)
 	}
 
-	err := deleteItem(*itemID)
+	err := deleteItem(*itemID, wowItem)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}

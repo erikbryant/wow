@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 func usage() {
@@ -31,21 +33,23 @@ func main() {
 		os.Exit(1)
 	}
 
+	wowItems := wowitem.New()
+
 	command := os.Args[1]
 	args := os.Args[2:]
 
 	switch command {
 	case "delete":
-		runDelete(args)
+		runDelete(args, wowItems)
 
 	case "json":
-		runJSON(args)
+		runJSON(args, wowItems)
 
 	case "query":
-		runQuery(args)
+		runQuery(args, wowItems)
 
 	case "refresh":
-		runRefresh(args)
+		runRefresh(args, wowItems)
 
 	case "help":
 		usage()

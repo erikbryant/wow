@@ -9,8 +9,8 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
-func json(itemID int64) {
-	i, ok := wowitem.Get(itemID)
+func json(itemID int64, wowItem *wowitem.WoWItem) {
+	i, ok := wowItem.Get(itemID)
 	if !ok {
 		fmt.Fprintln(os.Stderr, "Failed to LookupItem: ", itemID)
 		os.Exit(2)
@@ -19,7 +19,7 @@ func json(itemID int64) {
 	output.JSON(os.Stdout, []wowitem.Item{i})
 }
 
-func runJSON(args []string) {
+func runJSON(args []string, wowItem *wowitem.WoWItem) {
 	flags := flag.NewFlagSet("json", flag.ExitOnError)
 
 	itemID := flags.Int64("id", -1, "Item ID to look up")
@@ -34,5 +34,5 @@ func runJSON(args []string) {
 		os.Exit(2)
 	}
 
-	json(*itemID)
+	json(*itemID, wowItem)
 }

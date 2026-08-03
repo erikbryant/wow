@@ -19,7 +19,7 @@ type UserConfig struct {
 	SkipPets    map[int64]struct{}
 }
 
-func New() *UserConfig {
+func New(wi *wowitem.WoWItem) *UserConfig {
 	return &UserConfig{
 		AppearancePriceMax:       common.Coppers(50, 0, 0),
 		AppearancePriceInSetMax:  common.Coppers(600, 0, 0),
@@ -40,17 +40,17 @@ func New() *UserConfig {
 			//wowitem.Search("Dawnweave Reagent Bag").ID():       common.Coppers(90, 0, 0), // 38 slot
 
 			// Fun weapon appearances
-			wowitem.Search("Blackfury").ID():                   common.Coppers(3000, 0, 0),
-			wowitem.Search("Tyrhold Broadsword").ID():          common.Coppers(3000, 0, 0),
-			wowitem.Search("Ameelton's Shot-Thrower").ID():     common.Coppers(3000, 0, 0),
-			wowitem.Search("Kickback 5000").ID():               common.Coppers(3000, 0, 0),
-			wowitem.Search("Extreme-Impact Hole Puncher").ID(): common.Coppers(3000, 0, 0),
+			wi.Search("Blackfury").ID():                   common.Coppers(3000, 0, 0),
+			wi.Search("Tyrhold Broadsword").ID():          common.Coppers(3000, 0, 0),
+			wi.Search("Ameelton's Shot-Thrower").ID():     common.Coppers(3000, 0, 0),
+			wi.Search("Kickback 5000").ID():               common.Coppers(3000, 0, 0),
+			wi.Search("Extreme-Impact Hole Puncher").ID(): common.Coppers(3000, 0, 0),
 
 			// Appearance set appearances
-			wowitem.Search("Tyrhold Visage").ID():            common.Coppers(2000, 0, 0),
-			wowitem.Search("Tyrhold Slippers").ID():          common.Coppers(2000, 0, 0),
-			wowitem.Search("Boots of the Black Flame").ID():  common.Coppers(2000, 0, 0),
-			wowitem.Search("Helm of the Tranquil Path").ID(): common.Coppers(2000, 0, 0),
+			wi.Search("Tyrhold Visage").ID():            common.Coppers(2000, 0, 0),
+			wi.Search("Tyrhold Slippers").ID():          common.Coppers(2000, 0, 0),
+			wi.Search("Boots of the Black Flame").ID():  common.Coppers(2000, 0, 0),
+			wi.Search("Helm of the Tranquil Path").ID(): common.Coppers(2000, 0, 0),
 		},
 
 		// SkipPets holds SpeciesID of pets that do not resell well

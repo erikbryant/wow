@@ -12,21 +12,27 @@ const (
 	persistName = "items"
 )
 
-var (
-	Items = persist.New[int64, Item](persistName)
-)
+type WoWItem struct {
+	Items *persist.Persistence[int64, Item]
+}
 
-func init() {
-	err := Items.Load()
-	if err != nil {
-		fmt.Printf("*** error opening items persist, creating new one: %v\n", err)
+func New() *WoWItem {
+	wi := &WoWItem{
+		Items: persist.New[int64, Item](persistName),
 	}
-	fmt.Printf("-- #Items persisted  : %d\n", Items.Len())
+
+	err := wi.Items.Load()
+	if err != nil {
+		fmt.Printf("*** error opening items persist, using an empty one: %v\n", err)
+	}
+	fmt.Printf("-- #Items persisted  : %d\n", wi.Items.Len())
+
+	return wi
 }
 
 // Search returns the item with name 's' or an empty item if not found
-func Search(s string) Item {
-	_, i, ok := Items.Search(func(v Item) bool {
+func (wi *WoWItem) Search(s string) Item {
+	_, i, ok := wi.Items.Search(func(v Item) bool {
 		return v.Name() == s
 	})
 	if !ok {
@@ -36,7 +42,7 @@ func Search(s string) Item {
 }
 
 // GetWeb retrieves a single item from the web and persists it.
-func GetWeb(id int64) (Item, bool) {
+func (wi *WoWItem) GetWeb(id int64) (Item, bool) {
 	fmt.Println("Downloading item:", id)
 	result, ok := wowapi.Item(web.ToString(id))
 	if !ok {
@@ -44,16 +50,16 @@ func GetWeb(id int64) (Item, bool) {
 	}
 
 	i := NewItem(result)
-	Items.Set(i.ID(), i)
+	wi.Items.Set(i.ID(), i)
 
 	return i, true
 }
 
 // Get retrieves a single item. From persistence if present, web if not.
-func Get(id int64) (Item, bool) {
-	i, ok := Items.Get(id)
+func (wi *WoWItem) Get(id int64) (Item, bool) {
+	i, ok := wi.Items.Get(id)
 	if ok {
 		return i, true
 	}
-	return GetWeb(id)
+	return wi.GetWeb(id)
 }

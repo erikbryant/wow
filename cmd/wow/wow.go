@@ -7,11 +7,6 @@ import (
 
 	"github.com/erikbryant/wow/internal/shopping"
 	"github.com/erikbryant/wow/internal/wowapi"
-	"github.com/erikbryant/wow/internal/wowitem"
-)
-
-const (
-	priceCachePath = "./exports/PriceCache.lua"
 )
 
 var (
@@ -41,13 +36,6 @@ func main() {
 	}
 
 	err = shopping.Shop(*realms, *summarize)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	// Write the prices file for the WoW 'wowMerchant' addon to consume
-	err = os.WriteFile(priceCachePath, []byte(wowitem.Lua()), 0600)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

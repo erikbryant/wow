@@ -10,7 +10,7 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
-func runQuery(args []string) {
+func runQuery(args []string, wowItem *wowitem.WoWItem) {
 	flags := flag.NewFlagSet("query", flag.ExitOnError)
 
 	rare := flags.Bool(
@@ -106,7 +106,7 @@ func runQuery(args []string) {
 		predicates = append(predicates, query.ItemID(*itemID))
 	}
 
-	items := wowitem.Items.Values()
+	items := wowItem.Items.Values()
 
 	results := query.Find(items, predicates...)
 

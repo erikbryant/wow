@@ -25,9 +25,10 @@ type Arbitrage struct {
 }
 
 const (
-	arbitragePath = "./exports/arbitrageLatest"
-	battlePetPath = "./reports/battlePets"
-	iLvlPath      = "./reports/arbitrageWithiLvl"
+	arbitragePath  = "./exports/arbitrageLatest"
+	battlePetPath  = "./reports/battlePets"
+	iLvlPath       = "./reports/arbitrageWithiLvl"
+	priceCachePath = "./exports/PriceCache.lua"
 )
 
 var (
@@ -35,6 +36,7 @@ var (
 	mu         sync.Mutex
 	toys       *toy.Toy
 	userConfig *userconfig.UserConfig
+	wowItem    *wowitem.WoWItem
 )
 
 // appendFile appends 'contents' to a file
@@ -61,7 +63,7 @@ func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for itemID, itemAuctions := range auctions {
-		i, ok := wowitem.Get(itemID)
+		i, ok := wowItem.Get(itemID)
 		if !ok {
 			continue
 		}
@@ -146,7 +148,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 	totalProfit := int64(0)
 
 	for itemID, itemAuctions := range auctions {
-		i, ok := wowitem.Get(itemID)
+		i, ok := wowItem.Get(itemID)
 		if !ok {
 			continue
 		}
@@ -210,7 +212,7 @@ func findBargains(auctions map[int64][]auction.Auction) []string {
 	bargains := []string{}
 
 	for itemID, itemAuctions := range auctions {
-		i, ok := wowitem.Get(itemID)
+		i, ok := wowItem.Get(itemID)
 		if !ok {
 			continue
 		}
@@ -242,7 +244,7 @@ func findAppearanceBargains(auctions map[int64][]auction.Auction) []string {
 	needed := map[string]bool{}
 
 	for itemID, itemAuctions := range auctions {
-		i, ok := wowitem.Get(itemID)
+		i, ok := wowItem.Get(itemID)
 		if !ok {
 			continue
 		}
@@ -365,7 +367,7 @@ func scanRealms(r string, summarize bool) error {
 	sort.Strings(results)
 	fmt.Println(results)
 
-	err = wowitem.Items.Save()
+	err = wowItem.Items.Save()
 	if err != nil {
 		return err
 	}
@@ -376,7 +378,9 @@ func scanRealms(r string, summarize bool) error {
 func Shop(realms string, summarize bool) error {
 	var err error
 
-	userConfig = userconfig.New()
+	wowItem = wowitem.New()
+
+	userConfig = userconfig.New(wowItem)
 
 	battlePets, err = battlepet.New()
 	if err != nil {
@@ -408,10 +412,16 @@ func Shop(realms string, summarize bool) error {
 		return err
 	}
 	for _, recipeName := range recipesNeeded {
-		userConfig.UsefulGoods[wowitem.Search(recipeName).ID()] = userConfig.RecipePriceMax
+		userConfig.UsefulGoods[wowItem.Search(recipeName).ID()] = userConfig.RecipePriceMax
 	}
 
 	err = scanRealms(realms, summarize)
+	if err != nil {
+		return err
+	}
+
+	// Write the prices file for the WoW 'wowMerchant' addon to consume
+	err = os.WriteFile(priceCachePath, []byte(wowItem.Lua()), 0600)
 	if err != nil {
 		return err
 	}

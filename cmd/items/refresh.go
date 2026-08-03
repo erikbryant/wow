@@ -12,23 +12,23 @@ import (
 )
 
 // refreshItem refreshes a single item
-func refreshItem(itemID int64) {
+func refreshItem(itemID int64, wowItem *wowitem.WoWItem) {
 	rows := []wowitem.Item{}
 
-	iOld, ok := wowitem.Items.Get(itemID)
+	iOld, ok := wowItem.Items.Get(itemID)
 	if ok {
 		rows = append(rows, iOld)
 		// Remove the item from the persistence
-		wowitem.Items.Delete(itemID)
+		wowItem.Items.Delete(itemID)
 	}
 
-	iNew, ok := wowitem.GetWeb(itemID)
+	iNew, ok := wowItem.GetWeb(itemID)
 	if !ok {
 		fmt.Fprintln(os.Stderr, "Could not retrieve item", itemID)
 		os.Exit(2)
 	}
 
-	err := wowitem.Items.Save()
+	err := wowItem.Items.Save()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Failed to save item persistence: ", err)
 		os.Exit(2)
@@ -39,22 +39,22 @@ func refreshItem(itemID int64) {
 }
 
 // refreshAll refreshes persisted items older than a certain age
-func refreshAll(maxRefresh int) {
+func refreshAll(maxRefresh int, wowItem *wowitem.WoWItem) {
 	maxAge := 24 * time.Hour * 7 // 1 week
 	needsRefresh := 0
 	refreshCount := 0
 
-	for _, i := range wowitem.Items.Values() {
+	for _, i := range wowItem.Items.Values() {
 		if i.Stale(maxAge) {
 			needsRefresh++
 			if refreshCount < maxRefresh {
-				wowitem.GetWeb(i.ID())
+				wowItem.GetWeb(i.ID())
 				refreshCount++
 			}
 		}
 	}
 
-	err := wowitem.Items.Save()
+	err := wowItem.Items.Save()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Failed to save item persistence: ", err)
 		os.Exit(2)
@@ -63,7 +63,7 @@ func refreshAll(maxRefresh int) {
 	fmt.Printf("Refreshed %d of %d stale items\n", refreshCount, needsRefresh)
 }
 
-func runRefresh(args []string) {
+func runRefresh(args []string, wowItem *wowitem.WoWItem) {
 	flags := flag.NewFlagSet("refresh", flag.ExitOnError)
 
 	passphrase := flags.String("passphrase", "", "Passphrase to unlock WoW API client ID/secret")
@@ -87,8 +87,8 @@ func runRefresh(args []string) {
 	}
 
 	if *itemID == -1 {
-		refreshAll(*maxRefresh)
+		refreshAll(*maxRefresh, wowItem)
 	} else {
-		refreshItem(*itemID)
+		refreshItem(*itemID, wowItem)
 	}
 }
