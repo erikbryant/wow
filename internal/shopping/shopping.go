@@ -57,64 +57,17 @@ func appendFile(name, contents string) error {
 	return nil
 }
 
-// findPetSpellNeeded returns pet spells for sale that I do not own
-func findPetSpellNeeded(auctions map[int64][]auction.Auction) []string {
-	bargains := []string{}
-
-	for itemID, itemAuctions := range auctions {
-		i, ok := wowItem.Get(itemID)
-		if !ok {
-			continue
-		}
-		petID, ok := battlePets.PetSpell(i)
-		if !ok {
-			continue
-		}
-		if battlePets.Owned(petID) {
-			continue
-		}
-
-		for _, auc := range itemAuctions {
-			if auc.Buyout <= 0 {
-				continue
-			}
-			if auc.Buyout > userConfig.BattlePetPriceUnownedMax {
-				continue
-			}
-			stats := fmt.Sprintf("%s %s %s", battlePets.Name(petID), common.Gold(auc.Buyout), i.Quality())
-			bargains = append(bargains, stats)
-		}
-	}
-
-	return bargains
+func petSpellNeeded(i wowitem.Item, auc auction.Auction) bool {
+	petID, ok := battlePets.PetSpell(i)
+	return ok && !battlePets.Owned(petID) && auc.Buyout <= userConfig.BattlePetPriceUnownedMax
 }
 
-// findPetNeeded returns pets for sale that I do not own
-func findPetNeeded(auctions map[int64][]auction.Auction) []string {
-	bargains := []string{}
-
-	for _, petAuction := range auctions[battlepet.PetCageItemID] {
-		if battlePets.Owned(petAuction.Pet.SpeciesID) {
-			continue
-		}
-		if petAuction.Buyout <= 0 {
-			continue
-		}
-		if petAuction.Buyout > userConfig.BattlePetPriceUnownedMax {
-			continue
-		}
-		bargains = append(bargains, battlePets.Name(petAuction.Pet.SpeciesID))
-	}
-
-	// Include any pets available via spells
-	spellBargains := findPetSpellNeeded(auctions)
-	bargains = append(bargains, spellBargains...)
-
-	return bargains
+func petNeeded(petAuction auction.Auction) bool {
+	return !battlePets.Owned(petAuction.Pet.SpeciesID) && petAuction.Buyout <= userConfig.BattlePetPriceUnownedMax
 }
 
-// petBargain returns true if pet is likely to resell at a profit
-func petBargain(petAuction auction.Auction) bool {
+// petResellBargain returns true if pet is likely to resell at a profit
+func petResellBargain(petAuction auction.Auction) bool {
 	_, ok := userConfig.SkipPets[petAuction.Pet.SpeciesID]
 	if ok {
 		return false
@@ -197,7 +150,7 @@ func findArbitrages(auctions map[int64][]auction.Auction, realm string) ([]strin
 	return bargains, totalProfit, nil
 }
 
-// toyBargain returns true if we need this toy and it is at or below our price
+// toyBargain returns true if we need this toy, and it is at or below our price
 func toyBargain(i wowitem.Item, auc auction.Auction) bool {
 	// Bargains on toys
 	return i.Toy() && !toys.Owned(i) && auc.Buyout <= userConfig.ToyPriceMax
@@ -237,16 +190,14 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 		return err
 	}
 
-	shoppingList := ""
-	shoppingList += fmtShoppingList("Pets I Need", findPetNeeded(auctions), color.New(color.FgMagenta), summarize)
-
 	arbitrages, profit, err := findArbitrages(auctions, realm)
 	if err != nil {
 		return err
 	}
 
+	petNeededBargains := []string{}
 	bargains := []string{}
-	petBargains := []string{}
+	petResellBargains := []string{}
 	appearanceBargains := []string{}
 
 	for itemID, itemAuctions := range auctions {
@@ -266,11 +217,19 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 			}
 
 			if i.ID() == battlepet.PetCageItemID {
-				if petBargain(auc) {
-					petBargains = append(petBargains, battlePets.Name(auc.Pet.SpeciesID))
-
+				if petResellBargain(auc) {
+					petResellBargains = append(petResellBargains, battlePets.Name(auc.Pet.SpeciesID))
+				}
+				if petNeeded(auc) {
+					petNeededBargains = append(petResellBargains, battlePets.Name(auc.Pet.SpeciesID))
 				}
 				continue
+			}
+
+			if petSpellNeeded(i, auc) {
+				petID, _ := battlePets.PetSpell(i)
+				pet := fmt.Sprintf("%s %s (spell)", battlePets.Name(petID), i.Quality())
+				petNeededBargains = append(petResellBargains, pet)
 			}
 
 			if toyBargain(i, auc) || usefulGoodsBargain(i, auc) {
@@ -289,7 +248,9 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 		}
 	}
 
-	shoppingList += fmtShoppingList("Pets to Resell", petBargains, color.New(color.FgGreen), summarize)
+	shoppingList := ""
+	shoppingList += fmtShoppingList("Pets I Need", petNeededBargains, color.New(color.FgMagenta), summarize)
+	shoppingList += fmtShoppingList("Pets to Resell", petResellBargains, color.New(color.FgGreen), summarize)
 	shoppingList += fmtShoppingList("Useful Item Bargains", bargains, color.New(color.FgRed), summarize)
 	shoppingList += fmtShoppingList("Appearance Bargains", appearanceBargains, color.New(color.FgBlue), summarize)
 
