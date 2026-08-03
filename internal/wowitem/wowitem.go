@@ -18,15 +18,6 @@ type Item struct {
 	XUpdated time.Time // Datetime when created or updated
 }
 
-// PetInfo contains the properties specific to a battle pet
-type PetInfo struct {
-	BreedID   int64
-	Level     int64
-	Name      string
-	QualityID int64
-	SpeciesID int64
-}
-
 // EquipSlotTypes is a lookup set for valid gear slots
 var EquipSlotTypes = map[string]struct{}{
 	"HEAD":       {},

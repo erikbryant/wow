@@ -8,7 +8,6 @@ import (
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/wowapi"
-	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 // Sample 'commodity auction' response. All have exactly these fields.
@@ -20,13 +19,22 @@ import (
 // Sample 'auction' response for a pet auction. ItemID 82800 is a 'Pet Cage'. Pet cages have no sell value.
 // map[buyout:9.99e+06 id:5.01784773e+08 item:map[id:82800 modifiers:[map[type:6 value:39130]] pet_breed_id:20 pet_level:1 pet_quality_id:2 pet_species_id:1446] quantity:1 time_left:VERY_LONG]
 
+// PetInfo contains the properties specific to a battle pet
+type PetInfo struct {
+	BreedID   int64
+	Level     int64
+	Name      string
+	QualityID int64
+	SpeciesID int64
+}
+
 // Auction contains the properties of a single auction house auction
 type Auction struct {
 	ID       int64
 	ItemID   int64
 	Buyout   int64 // For commodity auctions this stores 'unit_price'
 	Quantity int64
-	Pet      wowitem.PetInfo
+	Pet      PetInfo
 }
 
 func auctionID(msi any) int64 {
