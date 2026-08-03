@@ -209,45 +209,12 @@ func usefulGoodsBargain(i wowitem.Item, auc auction.Auction) bool {
 	return ok && auc.Buyout <= maxPrice
 }
 
-// findAppearanceBargains returns appearances selling at a discount
-func findAppearanceBargains(auctions map[int64][]auction.Auction) []string {
-	needed := map[string]bool{}
+func appearanceBargain(i wowitem.Item, auc auction.Auction) bool {
+	return auc.Buyout <= userConfig.AppearancePriceMax && transmog.NeedAppearance(i.Appearances())
+}
 
-	for itemID, itemAuctions := range auctions {
-		i, ok := wowItem.Get(itemID)
-		if !ok {
-			continue
-		}
-		for _, auc := range itemAuctions {
-			if auc.Buyout <= 0 {
-				continue
-			}
-
-			maxPrice := userConfig.AppearancePriceMax
-			appearanceSetSuffix := ""
-			if transmog.InAppearanceSet(i.Appearances()) {
-				maxPrice = userConfig.AppearancePriceInSetMax
-				appearanceSetSuffix = "    ---"
-			}
-
-			if auc.Buyout > maxPrice {
-				continue
-			}
-
-			if !transmog.NeedAppearance(i.Appearances()) {
-				continue
-			}
-
-			needed[i.Name()+appearanceSetSuffix] = true
-		}
-	}
-
-	bargains := []string{}
-	for name := range needed {
-		bargains = append(bargains, name)
-	}
-
-	return bargains
+func appearanceSetBargain(i wowitem.Item, auc auction.Auction) bool {
+	return auc.Buyout <= userConfig.AppearancePriceInSetMax && transmog.InAppearanceSet(i.Appearances()) && transmog.NeedAppearance(i.Appearances())
 }
 
 // fmtShoppingList returns a formatted string of the given items or "" if none
@@ -280,6 +247,7 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 
 	bargains := []string{}
 	petBargains := []string{}
+	appearanceBargains := []string{}
 
 	for itemID, itemAuctions := range auctions {
 		i, ok := wowItem.Get(itemID)
@@ -309,12 +277,21 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 				bargains = append(bargains, str)
 			}
+
+			if appearanceSetBargain(i, auc) {
+				appearanceBargains = append(appearanceBargains, i.Name()+" ---")
+			} else {
+				// If the item is already a bargain, no need to check again
+				if appearanceBargain(i, auc) {
+					appearanceBargains = append(appearanceBargains, i.Name())
+				}
+			}
 		}
 	}
 
 	shoppingList += fmtShoppingList("Pets to Resell", petBargains, color.New(color.FgGreen), summarize)
 	shoppingList += fmtShoppingList("Useful Item Bargains", bargains, color.New(color.FgRed), summarize)
-	shoppingList += fmtShoppingList("Appearance Bargains", findAppearanceBargains(auctions), color.New(color.FgBlue), summarize)
+	shoppingList += fmtShoppingList("Appearance Bargains", appearanceBargains, color.New(color.FgBlue), summarize)
 
 	if summarize {
 		if profit >= userConfig.ProfitToDisplayMin {
