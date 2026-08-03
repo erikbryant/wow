@@ -17,16 +17,22 @@ const (
 var (
 	appearanceIDsOwned         = map[int64]bool{}
 	appearanceSetAppearanceIDs = persist.New[int64, bool](persistName)
+
+	// Test hooks. These default to the real implementations.
+	collectionsTransmogs   = wowapi.CollectionsTransmogs
+	appearanceSetsIndexIDs = wowapi.ItemAppearanceSetsIndexIDs
+	appearanceSetIDs       = wowapi.ItemAppearanceSetIDs
+	flakyAppearanceID      = userconfig.FlakyAppearanceID
 )
 
-// getAppearanceSetAppearanceIDs returns all appearance IDs that are in any appearance set
-func getAppearanceSetAppearanceIDs() {
-	appearanceSetIDs := wowapi.ItemAppearanceSetsIndexIDs()
-	count := len(appearanceSetIDs)
-	for setID, setName := range appearanceSetIDs {
+// getAppearanceSetsAppearanceIDs returns all appearance IDs that are in any appearance set
+func getAppearanceSetsAppearanceIDs() {
+	appearanceSetsIDs := appearanceSetsIndexIDs()
+	count := len(appearanceSetsIDs)
+	for setID, setName := range appearanceSetsIDs {
 		fmt.Printf("%d\tAppearance set: %d   %s\n", count, setID, setName)
 		count--
-		for _, appearanceID := range wowapi.ItemAppearanceSetIDs(setID) {
+		for _, appearanceID := range appearanceSetIDs(setID) {
 			appearanceSetAppearanceIDs.Set(appearanceID, true)
 		}
 	}
@@ -36,7 +42,7 @@ func getAppearanceSetAppearanceIDs() {
 func getAppearanceIDsOwned() (map[int64]bool, error) {
 	myAppearanceIDs := map[int64]bool{}
 
-	t, ok := wowapi.CollectionsTransmogs()
+	t, ok := collectionsTransmogs()
 	if !ok {
 		return nil, fmt.Errorf("unable to obtain transmogs owned")
 	}
@@ -59,7 +65,7 @@ func Init() error {
 	err := appearanceSetAppearanceIDs.Load()
 	if err != nil {
 		fmt.Printf("*** error opening appearances persist, creating new one: %v\n", err)
-		getAppearanceSetAppearanceIDs()
+		getAppearanceSetsAppearanceIDs()
 		err = appearanceSetAppearanceIDs.Save()
 		if err != nil {
 			return fmt.Errorf("failed to save appearances persist: %s", err)
@@ -78,7 +84,7 @@ func Init() error {
 
 // needAppearanceID returns true if I need this appearance ID
 func needAppearanceID(id int64) bool {
-	if userconfig.FlakyAppearanceID(id) {
+	if flakyAppearanceID(id) {
 		return false
 	}
 	if !appearanceIDsOwned[id] {
