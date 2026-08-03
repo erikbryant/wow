@@ -391,7 +391,10 @@ func Shop(realms string, summarize bool) error {
 	if err != nil {
 		return err
 	}
-	appendFile(battlePetPath, battlepet.Output())
+	err = appendFile(battlePetPath, battlepet.Output())
+	if err != nil {
+		return err
+	}
 
 	recipesNeeded, err := cooking.RecipesNeeded()
 	if err != nil {
