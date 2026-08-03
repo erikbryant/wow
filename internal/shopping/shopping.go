@@ -101,6 +101,7 @@ func missingProfessionTool(i wowitem.Item) bool {
 
 func isArbitrage(i wowitem.Item, auc auction.Auction) (int64, bool) {
 	if auc.Buyout >= i.SellPriceRealizable() {
+		// Not enough profit to make it worth the WoW runtime it takes to scan the AH
 		return 0, false
 	}
 	profit := (i.SellPriceRealizable() - auc.Buyout) * auc.Quantity
@@ -144,8 +145,9 @@ func fmtShoppingList(label string, items []string, c *color.Color, summarize boo
 	return c.Sprintf("%s%s\n", header, strings.Join(slices.Compact(items), "\n"))
 }
 
-func iterateAuctions(auctions map[int64][]auction.Auction, logArbitrages bool) (*Recommendations, error) {
+func iterateAuctions(auctions map[int64][]auction.Auction) (*Recommendations, []string) {
 	var recommendations Recommendations
+	arbitrageLogs := []string{}
 
 	for itemID, itemAuctions := range auctions {
 		i, ok := wowItem.Get(itemID)
@@ -187,7 +189,7 @@ func iterateAuctions(auctions map[int64][]auction.Auction, logArbitrages bool) (
 			if appearanceSetBargain(i, auc) {
 				recommendations.AppearanceBargains = append(recommendations.AppearanceBargains, i.Name()+" ---")
 			} else {
-				// If the item is already a bargain, no need to check again
+				// The item is already a bargain, no need to check again
 				if appearanceBargain(i, auc) {
 					recommendations.AppearanceBargains = append(recommendations.AppearanceBargains, i.Name())
 				}
@@ -199,21 +201,15 @@ func iterateAuctions(auctions map[int64][]auction.Auction, logArbitrages bool) (
 				recommendations.Arbitrages = append(recommendations.Arbitrages, str)
 				recommendations.ArbitrageProfit += profit
 
-				if logArbitrages {
-					iLevels := wowitem.ILevels(i.ID())
-					for _, iLevel := range iLevels {
-						logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", i.ID(), iLevel, i.Name())
-						err := appendFile(arbitragePath, logEntry)
-						if err != nil {
-							return nil, err
-						}
-					}
+				for _, iLevel := range wowitem.ILevels(i.ID()) {
+					logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", i.ID(), iLevel, i.Name())
+					arbitrageLogs = append(arbitrageLogs, logEntry)
 				}
 			}
 		}
 	}
 
-	return &recommendations, nil
+	return &recommendations, arbitrageLogs
 }
 
 func formatRecommendations(recommendations *Recommendations, realm string, numAuctions int, summarize bool) string {
@@ -251,10 +247,14 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 		return err
 	}
 
-	recommendations, err := iterateAuctions(auctions, realm == "Commodities")
-	if err != nil {
-		c <- ""
-		return err
+	recommendations, arbitrageLogs := iterateAuctions(auctions)
+
+	if realm != "Commodities" {
+		err = appendFile(arbitragePath, strings.Join(arbitrageLogs, "\n"))
+		if err != nil {
+			c <- ""
+			return err
+		}
 	}
 
 	c <- formatRecommendations(recommendations, realm, len(auctions), summarize)
