@@ -18,8 +18,8 @@ import (
 )
 
 var (
-	// blizzardOauthConfig stores the OAUTH userconfig for authenticating with Blizzard
-	blizzardOauthConfig = &oauth2.Config{
+	// blizzardOAuthConfig stores the OAuth user config for authenticating with Blizzard
+	blizzardOAuthConfig = &oauth2.Config{
 		ClientID:     "", // Populated at runtime
 		ClientSecret: "", // Populated at runtime
 		Endpoint:     endpoints.Battlenet,
@@ -33,12 +33,12 @@ var (
 )
 
 const (
-	// cookieName is the name of the OAUTH cookie
+	// cookieName is the name of the OAuth cookie
 	cookieName = "oauthState"
 )
 
-// generateStateOauthCookie stores a unique identifier in a cookie and returns that same identifier
-func generateStateOauthCookie(w http.ResponseWriter) (string, error) {
+// generateStateOAuthCookie stores a unique identifier in a cookie and returns that same identifier
+func generateStateOAuthCookie(w http.ResponseWriter) (string, error) {
 	var expiration = time.Now().Add(20 * time.Minute)
 
 	b := make([]byte, 16)
@@ -53,19 +53,19 @@ func generateStateOauthCookie(w http.ResponseWriter) (string, error) {
 	return state, nil
 }
 
-// oauthBlizzardLogin creates the auth cookie and redirects to the Blizzard auth server
-func oauthBlizzardLogin(w http.ResponseWriter, r *http.Request) {
-	// Create oauthState cookie
-	oauthState, err := generateStateOauthCookie(w)
+// oAuthBlizzardLogin creates the auth cookie and redirects to the Blizzard auth server
+func oAuthBlizzardLogin(w http.ResponseWriter, r *http.Request) {
+	// Create oAuthState cookie
+	oAuthState, err := generateStateOAuthCookie(w)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "unable to create Oauth cookie:", err)
+		fmt.Fprintln(os.Stderr, "unable to create OAuth cookie:", err)
 		os.Exit(1)
 	}
 
 	// AuthCodeURL takes a unique, private state token to protect the user from CSRF attacks.
 	// You must always provide a non-empty string and validate it matches the state query
 	// parameter on your redirect callback.
-	u := blizzardOauthConfig.AuthCodeURL(oauthState)
+	u := blizzardOAuthConfig.AuthCodeURL(oAuthState)
 	// My account is homed in the US. battle.net resolves to whatever local country. Force it to use 'us'.
 	u = strings.Replace(u, "/battle.net/", "/us.battle.net/", 1)
 	http.Redirect(w, r, u, http.StatusTemporaryRedirect)
@@ -73,32 +73,32 @@ func oauthBlizzardLogin(w http.ResponseWriter, r *http.Request) {
 
 func tokenToPAT(code string) (string, error) {
 	data := url.Values{
-		"redirect_uri": {blizzardOauthConfig.RedirectURL},
+		"redirect_uri": {blizzardOAuthConfig.RedirectURL},
 		"grant_type":   {"authorization_code"},
 		"code":         {code},
 	}
 
-	return GetToken(data, blizzardOauthConfig.ClientID, blizzardOauthConfig.ClientSecret)
+	return GetToken(data, blizzardOAuthConfig.ClientID, blizzardOAuthConfig.ClientSecret)
 }
 
-// oauthBlizzardCallback receives the token, converts it to a PAT, and passes that to the webpage requester
-func oauthBlizzardCallback(w http.ResponseWriter, r *http.Request) {
+// oAuthBlizzardCallback receives the token, converts it to a PAT, and passes that to the webpage requester
+func oAuthBlizzardCallback(w http.ResponseWriter, r *http.Request) {
 	if r == nil {
-		log.Println("oauthBlizzardCallback: Empty request")
+		log.Println("oAuthBlizzardCallback: empty request")
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
-	// Read oauthState from Cookie
-	oauthState, err := r.Cookie(cookieName)
+	// Read OAuth state from Cookie
+	oAuthState, err := r.Cookie(cookieName)
 	if err != nil {
-		log.Println("oauthBlizzardCallback Cookie Error:", err)
+		log.Println("oAuthBlizzardCallback: cookie error:", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
-	if r.FormValue("state") != oauthState.Value {
-		log.Println("invalid oauth state")
+	if r.FormValue("state") != oAuthState.Value {
+		log.Println("oAuthBlizzardCallback: invalid OAuth state")
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
@@ -113,23 +113,23 @@ func oauthBlizzardCallback(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(msg))
 }
 
-// handlers registers the OAUTH endpoints
+// handlers registers the OAuth endpoints
 func handlers() http.Handler {
 	mux := http.NewServeMux()
 	// Root
 	mux.Handle("/", http.FileServer(http.Dir("templates/")))
 
-	// OAUTH endpoints
-	mux.HandleFunc("/auth/blizzard/login", oauthBlizzardLogin)
-	mux.HandleFunc("/auth/blizzard/profile", oauthBlizzardCallback)
+	// OAuth endpoints
+	mux.HandleFunc("/auth/blizzard/login", oAuthBlizzardLogin)
+	mux.HandleFunc("/auth/blizzard/profile", oAuthBlizzardCallback)
 
 	return mux
 }
 
 // start starts the webserver
 func start(clientID, clientSecret string) {
-	blizzardOauthConfig.ClientID = clientID
-	blizzardOauthConfig.ClientSecret = clientSecret
+	blizzardOAuthConfig.ClientID = clientID
+	blizzardOAuthConfig.ClientSecret = clientSecret
 
 	server = &http.Server{
 		Addr:    fmt.Sprintf(":8888"),

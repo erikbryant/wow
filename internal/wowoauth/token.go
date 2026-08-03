@@ -55,7 +55,7 @@ func GetPAT(clientID, clientSecret string) (string, error) {
 	}
 
 	for paToken == "" {
-		// Wait for Oauth to complete
+		// Wait for OAuth to complete
 		time.Sleep(time.Second)
 	}
 
