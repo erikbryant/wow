@@ -11,14 +11,13 @@ The map contains two top-level keys: "appearance_sets" and "slots". "appearance_
       },
       "name": "Wild Combatant's Leather Armor",
       "id": 23
-    },
-    ...
+    }
    ],
    "slots": [
      {
        "slot": {
-            "type": "HEAD",
-            "name": "Head"
+          "type": "HEAD",
+          "name": "Head"
        },
        "appearances": [
        {
@@ -26,22 +25,22 @@ The map contains two top-level keys: "appearance_sets" and "slots". "appearance_
             "href": "https:us.api.blizzard.com/data/wow/item-appearance/358?namespace=static-11.1.5_60179-us"
          },
          "id": 358
-       },
-       ...
+       }
+       ]
      },
      {
        "slot": {
          "type": "PROFESSION_TOOL",
          "name": "Profession Tool"
        },
-       "appearances": [...]
+       "appearances": []
      },
      {
        "slot": {
          "type": "PROFESSION_GEAR",
          "name": "Profession Equipment"
        },
-       "appearances": [...]
+       "appearances": []
      }
    ]
  }
