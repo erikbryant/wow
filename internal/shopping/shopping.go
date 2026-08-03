@@ -44,7 +44,7 @@ func appendFile(name, contents string) error {
 	mu.Lock()
 	defer mu.Unlock()
 
-	f, err := os.OpenFile(name, os.O_WRONLY|os.O_APPEND, 0600)
+	f, err := os.OpenFile(name, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
 	if err != nil {
 		return fmt.Errorf("failed to open log file %s: %s", name, err)
 	}
