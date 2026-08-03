@@ -19,11 +19,6 @@ import (
 	"github.com/fatih/color"
 )
 
-type Arbitrage struct {
-	item   wowitem.Item
-	profit int64
-}
-
 const (
 	arbitragePath  = "./exports/arbitrageLatest"
 	battlePetPath  = "./reports/battlePets"
@@ -140,16 +135,9 @@ func fmtShoppingList(label string, items []string, c *color.Color, summarize boo
 	return c.Sprintf("%s%s\n", header, strings.Join(slices.Compact(items), "\n"))
 }
 
-// scanRealm retrieves auctions and prints suggestions for what to buy for a single realm
-func scanRealm(realm string, c chan<- string, summarize bool) error {
-	auctions, err := auction.Get(realm)
-	if err != nil {
-		c <- ""
-		return err
-	}
-
+func iterateAuctions(auctions map[int64][]auction.Auction, logArbitrages bool) ([]string, int64, []string, []string, []string, []string, error) {
 	arbitrages := []string{}
-	totalProfit := int64(0)
+	arbitrageProfit := int64(0)
 	petNeededBargains := []string{}
 	bargains := []string{}
 	petResellBargains := []string{}
@@ -205,16 +193,15 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 			if ok {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(profit))
 				arbitrages = append(arbitrages, str)
-				totalProfit += profit
+				arbitrageProfit += profit
 
-				if realm != "Commodities" {
+				if logArbitrages {
 					iLevels := wowitem.ILevels(i.ID())
 					for _, iLevel := range iLevels {
 						logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", i.ID(), iLevel, i.Name())
 						err := appendFile(arbitragePath, logEntry)
 						if err != nil {
-							c <- ""
-							return err
+							return nil, 0, nil, nil, nil, nil, err
 						}
 					}
 				}
@@ -222,6 +209,25 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 		}
 	}
 
+	return arbitrages, arbitrageProfit, petNeededBargains, bargains, petResellBargains, appearanceBargains, nil
+}
+
+// scanRealm retrieves auctions and prints suggestions for what to buy for a single realm
+func scanRealm(realm string, c chan<- string, summarize bool) error {
+	auctions, err := auction.Get(realm)
+	if err != nil {
+		c <- ""
+		return err
+	}
+
+	// Get shopping recommendations
+	arbitrages, arbitrageProfit, petNeededBargains, bargains, petResellBargains, appearanceBargains, err := iterateAuctions(auctions, realm == "Commodities")
+	if err != nil {
+		c <- ""
+		return err
+	}
+
+	// Display shopping recommendations
 	shoppingList := ""
 	shoppingList += fmtShoppingList("Pets I Need", petNeededBargains, color.New(color.FgMagenta), summarize)
 	shoppingList += fmtShoppingList("Pets to Resell", petResellBargains, color.New(color.FgGreen), summarize)
@@ -229,9 +235,9 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 	shoppingList += fmtShoppingList("Appearance Bargains", appearanceBargains, color.New(color.FgBlue), summarize)
 
 	if summarize {
-		if totalProfit >= userConfig.ProfitToDisplayMin {
+		if arbitrageProfit >= userConfig.ProfitToDisplayMin {
 			c := color.New(color.FgWhite)
-			shoppingList += c.Sprintf("Arbitrages: %s\n", common.Gold(totalProfit))
+			shoppingList += c.Sprintf("Arbitrages: %s\n", common.Gold(arbitrageProfit))
 		}
 	} else {
 		shoppingList += fmtShoppingList("Arbitrages", arbitrages, color.New(color.FgWhite), summarize)
