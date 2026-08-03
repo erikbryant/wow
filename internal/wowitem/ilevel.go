@@ -63,6 +63,7 @@ var itemLevels = map[int64][]int64{
 	198715: {70, 71, 72, 73, 74}, // Runed Draconium Rod
 	193615: {71, 72, 73, 74},     // Jeweler's Cover
 	193480: {71, 72, 73, 74},     // Durable Pack
+	198234: {72, 74},             // Lapidary's Draconium Clamps
 
 	// iLvl 317 oddities
 	224114: {79, 85, 91, 98, 105}, // Runed Bismuth Rod
