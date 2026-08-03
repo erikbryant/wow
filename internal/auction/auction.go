@@ -124,7 +124,8 @@ func unpackAuctions(auctions []any) map[int64][]Auction {
 
 	for _, auc := range auctions {
 		aucStruct := newAuction(auc.(map[string]any))
-		if wowapi.SkipItem(aucStruct.ItemID) {
+		if wowapi.BadItemID(aucStruct.ItemID) {
+			// There are some item IDs for which WoW has no data. Ignore those.
 			continue
 		}
 		a[aucStruct.ItemID] = append(a[aucStruct.ItemID], aucStruct)

@@ -2,173 +2,10 @@ package wowapi
 
 import (
 	"fmt"
-	"net/url"
 	"strings"
 
-	"github.com/erikbryant/aes"
 	"github.com/erikbryant/web"
-	"github.com/erikbryant/wow/internal/wowoauth"
 )
-
-var (
-	clientIDCrypt      = "f7FhewxUd0lWQz/zPb27ZcwI/ZqkaMyd5YyuskFyEugQEeiKsfL7dvr11Kx1Y+Mi23qMciOAPe5ksCOy"
-	clientSecretCrypt  = "CtJH62iU6V3ZeqiHyKItECHahdUYgAFyfHmQ4DRabhWIv6JeK5K4dT7aiybot6MS4JitmDzuWSz1UHHv"
-	clientID           string
-	clientSecret       string
-	accessToken        string
-	profileAccessToken string
-
-	skipItems = map[int64]struct{}{
-		// Items not found in the WoW database
-		23704:  {},
-		23942:  {},
-		23943:  {},
-		23955:  {},
-		23958:  {},
-		23972:  {},
-		29557:  {},
-		29558:  {},
-		29566:  {},
-		42929:  {},
-		43557:  {},
-		54629:  {},
-		56054:  {},
-		56055:  {},
-		56056:  {},
-		60390:  {},
-		60405:  {},
-		60406:  {},
-		62370:  {},
-		62770:  {},
-		123865: {},
-		123868: {},
-		123869: {},
-		147455: {},
-		178149: {},
-		198485: {},
-		201420: {},
-		201421: {},
-		203932: {},
-		204834: {},
-		204835: {},
-		204836: {},
-		204837: {},
-		204838: {},
-		204839: {},
-		204840: {},
-		204841: {},
-		204842: {},
-		212531: {},
-		212533: {},
-		212534: {},
-		213234: {},
-		213235: {},
-		213236: {},
-		213237: {},
-		213238: {},
-		213239: {},
-		213240: {},
-		213241: {},
-		213242: {},
-		213245: {},
-		213246: {},
-		213247: {},
-		213248: {},
-		213249: {},
-		213250: {},
-		213251: {},
-		213252: {},
-		213253: {},
-		213254: {},
-		213255: {},
-		213256: {},
-		213257: {},
-		213258: {},
-		213259: {},
-		213260: {},
-		213261: {},
-		213262: {},
-		213263: {},
-		213265: {},
-		213266: {},
-		213267: {},
-		213268: {},
-		217387: {},
-		217958: {},
-		217959: {},
-		217962: {},
-		217969: {},
-		222906: {},
-		224153: {},
-		224154: {},
-		224155: {},
-		225218: {},
-		225219: {},
-		225236: {},
-		225237: {},
-		225254: {},
-		225784: {},
-		225787: {},
-		225839: {},
-		225840: {},
-		226001: {},
-		226002: {},
-		226003: {},
-		226004: {},
-		226005: {},
-		228386: {},
-		244052: {},
-		246040: {},
-		262792: {},
-		262793: {},
-		262794: {},
-		262795: {},
-		262796: {},
-		262797: {},
-		262798: {},
-		262799: {},
-		262800: {},
-		268944: {},
-		268945: {},
-		268946: {},
-		268947: {},
-		268948: {},
-		268949: {},
-		275670: {},
-	}
-)
-
-func Init(passphrase string) error {
-	var err error
-
-	clientID, err = aes.Decrypt(clientIDCrypt, passphrase)
-	if err != nil {
-		return fmt.Errorf("unable to decrypt clientID: %s", err)
-	}
-
-	clientSecret, err = aes.Decrypt(clientSecretCrypt, passphrase)
-	if err != nil {
-		return fmt.Errorf("unable to decrypt clientSecret: %s", err)
-	}
-
-	accessToken, err = wowAccessToken()
-	if err != nil {
-		return fmt.Errorf("unable to get access token: %s", err)
-	}
-
-	profileAccessToken, err = wowProfileAccessToken()
-	if err != nil {
-		return fmt.Errorf("unable to get profile access token: %s", err)
-	}
-
-	return nil
-}
-
-// SkipItem returns true if the caller should ignore this item
-func SkipItem(item int64) bool {
-	_, ok := skipItems[item]
-	return ok
-}
 
 // realmToSlug returns the slug form of a given realm name
 func realmToSlug(realm string) string {
@@ -200,20 +37,6 @@ func requestKey(url, token, key, caller string) ([]any, bool) {
 	}
 	response := r.(map[string]any)
 	return response[key].([]any), true
-}
-
-// wowProfileAccessToken returns a profile access token (to authenticate user profile API calls)
-func wowProfileAccessToken() (string, error) {
-	return wowoauth.GetPAT(clientID, clientSecret)
-}
-
-// wowAccessToken retrieves an access token. This token is used to authenticate API calls.
-func wowAccessToken() (string, error) {
-	data := url.Values{
-		"grant_type": {"client_credentials"},
-	}
-
-	return wowoauth.GetToken(data, clientID, clientSecret)
 }
 
 // ConnectedRealm returns all realms connected to the given realm ID
@@ -250,7 +73,8 @@ func ConnectedRealmSearch() map[string]any {
 	return response
 }
 
-var crIDs = map[string]string{
+// connectedRealmIDCache the calls to find a connected realm ID are slow, cache the responses here
+var connectedRealmIDCache = map[string]string{
 	"Aegwynn":           "1136",
 	"Agamaggan":         "1129",
 	"Aggramar":          "106",
@@ -329,7 +153,7 @@ var crIDs = map[string]string{
 
 // ConnectedRealmID returns the connected realm ID of the given realm
 func ConnectedRealmID(realm string) (string, bool) {
-	id, ok := crIDs[realm]
+	id, ok := connectedRealmIDCache[realm]
 	if ok {
 		return id, true
 	}
