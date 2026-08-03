@@ -85,7 +85,6 @@ func tokenToPAT(code string) (string, error) {
 func oAuthBlizzardCallback(w http.ResponseWriter, r *http.Request) {
 	if r == nil {
 		log.Println("oAuthBlizzardCallback: empty request")
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
