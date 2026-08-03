@@ -365,12 +365,8 @@ func scanRealms(r string, summarize bool) ([]string, error) {
 }
 
 func writeLogs() error {
-	// Ensure log file is empty
-	err := os.WriteFile(battlePetPath, nil, 0600)
-	if err != nil {
-		return err
-	}
-	err = appendFile(battlePetPath, battlePets.Output())
+	// Write the battle pet IDs/names
+	err := os.WriteFile(battlePetPath, []byte(battlePets.Output()), 0600)
 	if err != nil {
 		return err
 	}
@@ -380,6 +376,7 @@ func writeLogs() error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
