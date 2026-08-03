@@ -101,6 +101,5 @@ func ILevels(itemID int64) []int64 {
 	if !ok {
 		return []int64{0}
 	}
-
 	return iLevels
 }

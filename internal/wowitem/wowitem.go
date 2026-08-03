@@ -27,6 +27,28 @@ type PetInfo struct {
 	SpeciesID int64
 }
 
+// EquipSlotTypes is a lookup set for valid gear slots
+var EquipSlotTypes = map[string]struct{}{
+	"HEAD":       {},
+	"NECK":       {},
+	"SHOULDER":   {},
+	"CHEST":      {},
+	"WAIST":      {},
+	"LEGS":       {},
+	"FEET":       {},
+	"WRIST":      {},
+	"HANDS":      {},
+	"FINGER":     {},
+	"TRINKET":    {},
+	"CLOAK":      {},
+	"ONE_HANDED": {},
+	"TWO_HANDED": {},
+	"MAIN_HAND":  {},
+	"OFF_HAND":   {},
+	"RANGED":     {},
+	"SHIELD":     {},
+}
+
 // NewItem returns an Item populated with wowData
 func NewItem(wowData map[string]any) Item {
 	return Item{
@@ -53,28 +75,6 @@ func (i Item) InventoryType() string {
 	// The key is only sometimes there; do not error if it is missing
 	value, _ := web.MsiValued(i.XItem, []string{"inventory_type"}, "UNKNOWN")
 	return value.(string)
-}
-
-// EquipSlotTypes is a lookup set for valid gear slots
-var EquipSlotTypes = map[string]struct{}{
-	"HEAD":       {},
-	"NECK":       {},
-	"SHOULDER":   {},
-	"CHEST":      {},
-	"WAIST":      {},
-	"LEGS":       {},
-	"FEET":       {},
-	"WRIST":      {},
-	"HANDS":      {},
-	"FINGER":     {},
-	"TRINKET":    {},
-	"CLOAK":      {},
-	"ONE_HANDED": {},
-	"TWO_HANDED": {},
-	"MAIN_HAND":  {},
-	"OFF_HAND":   {},
-	"RANGED":     {},
-	"SHIELD":     {},
 }
 
 // Equippable returns true if the item is equippable
@@ -168,7 +168,6 @@ func (i Item) previewPrice() (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-
 	return web.ToInt64(v), nil
 }
 
@@ -179,7 +178,6 @@ func (i Item) SellPriceAdvertised() int64 {
 		// Items with no preview price don't sell
 		return 0
 	}
-
 	return pp
 }
 

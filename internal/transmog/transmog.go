@@ -10,10 +10,6 @@ import (
 	"github.com/erikbryant/wow/internal/wowapi"
 )
 
-const (
-	persistName = "appearances"
-)
-
 type appearanceSetStore interface {
 	Load() error
 	Save() error
@@ -21,6 +17,10 @@ type appearanceSetStore interface {
 	Get(int64) (bool, bool)
 	Len() int
 }
+
+const (
+	persistName = "appearances"
+)
 
 var (
 	appearanceIDsOwned = map[int64]bool{}

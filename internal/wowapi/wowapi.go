@@ -7,72 +7,6 @@ import (
 	"github.com/erikbryant/web"
 )
 
-// realmToSlug returns the slug form of a given realm name
-func realmToSlug(realm string) string {
-	slug := strings.ToLower(realm)
-	slug = strings.ReplaceAll(slug, "-", "")
-	slug = strings.ReplaceAll(slug, "'", "")
-	slug = strings.ReplaceAll(slug, " ", "-")
-	return slug
-}
-
-func request(url, token, caller string) (any, bool) {
-	headers := map[string]string{
-		"Authorization": "Bearer " + token,
-	}
-
-	response, err := web.RequestJSON(url, headers)
-	if err != nil {
-		fmt.Printf("%s: no data returned: %s\n", caller, err)
-		return nil, false
-	}
-
-	return response, true
-}
-
-func requestKey(url, token, key, caller string) ([]any, bool) {
-	r, ok := request(url, token, caller)
-	if !ok {
-		return nil, false
-	}
-	response := r.(map[string]any)
-	return response[key].([]any), true
-}
-
-// ConnectedRealm returns all realms connected to the given realm ID
-func ConnectedRealm(realmID string) map[string]any {
-	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + realmID + "?namespace=dynamic-us&locale=en_US"
-	r, ok := request(url, accessToken, "ConnectedRealm")
-	if !ok {
-		return nil
-	}
-
-	response := r.(map[string]any)
-	if response["code"] != nil {
-		fmt.Println("ConnectedRealm: Failed to get connected realm:", response)
-		return nil
-	}
-
-	return response
-}
-
-// ConnectedRealmSearch returns the set of all connected realms
-func ConnectedRealmSearch() map[string]any {
-	url := "https://us.api.blizzard.com/data/wow/search/connected-realm?namespace=dynamic-us&status.type=UP"
-	r, ok := request(url, accessToken, "ConnectedRealm")
-	if !ok {
-		return nil
-	}
-
-	response := r.(map[string]any)
-	if response["code"] != nil {
-		fmt.Println("ConnectedRealmSearch: Failed to get connected realms:", response)
-		return nil
-	}
-
-	return response
-}
-
 // connectedRealmIDCache the calls to find a connected realm ID are slow, cache the responses here
 var connectedRealmIDCache = map[string]string{
 	"Aegwynn":           "1136",
@@ -149,6 +83,72 @@ var connectedRealmIDCache = map[string]string{
 	"Drakkari":    "1425",
 	"Quel'Thalas": "1428",
 	"Ragnaros":    "1427",
+}
+
+// realmToSlug returns the slug form of a given realm name
+func realmToSlug(realm string) string {
+	slug := strings.ToLower(realm)
+	slug = strings.ReplaceAll(slug, "-", "")
+	slug = strings.ReplaceAll(slug, "'", "")
+	slug = strings.ReplaceAll(slug, " ", "-")
+	return slug
+}
+
+func request(url, token, caller string) (any, bool) {
+	headers := map[string]string{
+		"Authorization": "Bearer " + token,
+	}
+
+	response, err := web.RequestJSON(url, headers)
+	if err != nil {
+		fmt.Printf("%s: no data returned: %s\n", caller, err)
+		return nil, false
+	}
+
+	return response, true
+}
+
+func requestKey(url, token, key, caller string) ([]any, bool) {
+	r, ok := request(url, token, caller)
+	if !ok {
+		return nil, false
+	}
+	response := r.(map[string]any)
+	return response[key].([]any), true
+}
+
+// ConnectedRealm returns all realms connected to the given realm ID
+func ConnectedRealm(realmID string) map[string]any {
+	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + realmID + "?namespace=dynamic-us&locale=en_US"
+	r, ok := request(url, accessToken, "ConnectedRealm")
+	if !ok {
+		return nil
+	}
+
+	response := r.(map[string]any)
+	if response["code"] != nil {
+		fmt.Println("ConnectedRealm: Failed to get connected realm:", response)
+		return nil
+	}
+
+	return response
+}
+
+// ConnectedRealmSearch returns the set of all connected realms
+func ConnectedRealmSearch() map[string]any {
+	url := "https://us.api.blizzard.com/data/wow/search/connected-realm?namespace=dynamic-us&status.type=UP"
+	r, ok := request(url, accessToken, "ConnectedRealm")
+	if !ok {
+		return nil
+	}
+
+	response := r.(map[string]any)
+	if response["code"] != nil {
+		fmt.Println("ConnectedRealmSearch: Failed to get connected realms:", response)
+		return nil
+	}
+
+	return response
 }
 
 // ConnectedRealmID returns the connected realm ID of the given realm

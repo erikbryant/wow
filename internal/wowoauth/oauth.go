@@ -17,6 +17,11 @@ import (
 	"golang.org/x/oauth2/endpoints"
 )
 
+const (
+	// cookieName is the name of the OAuth cookie
+	cookieName = "oauthState"
+)
+
 var (
 	// blizzardOAuthConfig stores the OAuth user config for authenticating with Blizzard
 	blizzardOAuthConfig = &oauth2.Config{
@@ -30,11 +35,6 @@ var (
 	server = &http.Server{}
 	// paToken stores the last-known profile access token
 	paToken = ""
-)
-
-const (
-	// cookieName is the name of the OAuth cookie
-	cookieName = "oauthState"
 )
 
 // generateStateOAuthCookie stores a unique identifier in a cookie and returns that same identifier

@@ -19,14 +19,19 @@ import (
 	"github.com/fatih/color"
 )
 
-var (
-	mu sync.Mutex
-)
+type Arbitrage struct {
+	item   wowitem.Item
+	profit int64
+}
 
 const (
 	arbitragePath = "./exports/arbitrageLatest"
 	battlePetPath = "./reports/battlePets"
 	iLvlPath      = "./reports/arbitrageWithiLvl"
+)
+
+var (
+	mu sync.Mutex
 )
 
 // appendFile appends 'contents' to a file
@@ -130,11 +135,6 @@ func findPetBargains(auctions map[int64][]auction.Auction) []string {
 	}
 
 	return bargains
-}
-
-type Arbitrage struct {
-	item   wowitem.Item
-	profit int64
 }
 
 // findArbitrages returns auctions selling for lower than vendor prices
