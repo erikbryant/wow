@@ -11,7 +11,7 @@ import (
 
 type BattlePet struct {
 	petNames  map[int64]string
-	petsOwned map[int64][]wowitem.PetInfo
+	petsOwned map[int64]int64
 }
 
 const (
@@ -37,8 +37,8 @@ func getPetNames() (map[int64]string, error) {
 }
 
 // getPetsOwned downloads the list of pets I own from the WoW web API
-func getPetsOwned() (map[int64][]wowitem.PetInfo, error) {
-	myPets := map[int64][]wowitem.PetInfo{}
+func getPetsOwned() (map[int64]int64, error) {
+	myPets := map[int64]int64{}
 
 	pets, ok := wowapi.CollectionsPets()
 	if !ok {
@@ -48,34 +48,13 @@ func getPetsOwned() (map[int64][]wowitem.PetInfo, error) {
 	for _, petRaw := range pets {
 		pet := petRaw.(map[string]any)
 
-		var p wowitem.PetInfo
-
-		//stats, ok := pet["stats"].(map[string]any)
-		//if !ok {
-		//	return nil, fmt.Errorf("unable to obtain battle pet stats")
-		//}
-		//p.BreedID = web.ToInt64(stats["breed_id"])
-
-		//p.Level = web.ToInt64(pet["level"])
-
-		//quality, ok := pet["quality"].(map[string]any)
-		//if !ok {
-		//	return nil, fmt.Errorf("unable to obtain battle pet quality")
-		//}
-		//p.QualityID = common.QualityID(quality["name"].(string))
-
 		species, ok := pet["species"].(map[string]any)
 		if !ok {
 			return nil, fmt.Errorf("unable to obtain battle pet species")
 		}
-		p.SpeciesID = web.ToInt64(species["id"])
+		speciesID := web.ToInt64(species["id"])
 
-		_, ok = myPets[p.SpeciesID]
-		if !ok {
-			myPets[p.SpeciesID] = []wowitem.PetInfo{}
-		}
-
-		myPets[p.SpeciesID] = append(myPets[p.SpeciesID], p)
+		myPets[speciesID]++
 	}
 
 	return myPets, nil
@@ -95,6 +74,7 @@ func New() (*BattlePet, error) {
 		return nil, err
 	}
 
+	// Technically, this is _unique_ battle pets owned, but I don't keep dupes so it still works
 	fmt.Printf("-- #Battle pets owned: %d/%d\n", len(bp.petsOwned), len(bp.petNames))
 
 	return &bp, nil
@@ -122,7 +102,7 @@ func (bp *BattlePet) Name(petID int64) string {
 
 // Owned returns true if I own this pet ID
 func (bp *BattlePet) Owned(petID int64) bool {
-	return len(bp.petsOwned[petID]) > 0
+	return bp.petsOwned[petID] > 0
 }
 
 // Output returns all petID/names
