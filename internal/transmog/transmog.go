@@ -14,11 +14,20 @@ const (
 	persistName = "appearances"
 )
 
-var (
-	appearanceIDsOwned         = map[int64]bool{}
-	appearanceSetAppearanceIDs = persist.New[int64, bool](persistName)
+type appearanceSetStore interface {
+	Load() error
+	Save() error
+	Set(int64, bool)
+	Get(int64) (bool, bool)
+	Len() int
+}
 
-	// Test hooks. These default to the real implementations.
+var (
+	appearanceIDsOwned = map[int64]bool{}
+
+	// Define external dependencies such that they can be mocked in the tests.
+	appearanceSetAppearanceIDs appearanceSetStore = persist.New[int64, bool](persistName)
+
 	collectionsTransmogs   = wowapi.CollectionsTransmogs
 	appearanceSetsIndexIDs = wowapi.ItemAppearanceSetsIndexIDs
 	appearanceSetIDs       = wowapi.ItemAppearanceSetIDs
