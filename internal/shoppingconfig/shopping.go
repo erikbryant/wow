@@ -1,7 +1,8 @@
-package userconfig
+package shoppingconfig
 
 import (
 	"github.com/erikbryant/wow/internal/common"
+	"github.com/erikbryant/wow/internal/cooking"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
@@ -20,7 +21,7 @@ type UserConfig struct {
 }
 
 func New(wi *wowitem.WoWItem) *UserConfig {
-	return &UserConfig{
+	userConfig := UserConfig{
 		AppearancePriceMax:       common.Coppers(50, 0, 0),
 		AppearancePriceInSetMax:  common.Coppers(600, 0, 0),
 		ArbitrageProfitMin:       common.Coppers(0, 50, 0),
@@ -111,4 +112,11 @@ func New(wi *wowitem.WoWItem) *UserConfig {
 			//1921: {}, // Untethered Wyrmling
 		},
 	}
+
+	// Add any recipes that the user needs
+	for _, recipeName := range cooking.RecipesNeeded() {
+		userConfig.UsefulGoods[wi.Search(recipeName).ID()] = userConfig.RecipePriceMax
+	}
+
+	return &userConfig
 }

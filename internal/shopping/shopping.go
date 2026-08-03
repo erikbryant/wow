@@ -11,10 +11,9 @@ import (
 	"github.com/erikbryant/wow/internal/auction"
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/common"
-	"github.com/erikbryant/wow/internal/cooking"
+	"github.com/erikbryant/wow/internal/shoppingconfig"
 	"github.com/erikbryant/wow/internal/toy"
 	"github.com/erikbryant/wow/internal/transmog"
-	"github.com/erikbryant/wow/internal/userconfig"
 	"github.com/erikbryant/wow/internal/wowitem"
 	"github.com/fatih/color"
 )
@@ -35,11 +34,11 @@ const (
 )
 
 var (
-	battlePets *battlepet.BattlePet
-	mu         sync.Mutex
-	toys       *toy.Toy
-	userConfig *userconfig.UserConfig
-	wowItem    *wowitem.WoWItem
+	battlePets     *battlepet.BattlePet
+	mu             sync.Mutex
+	toys           *toy.Toy
+	shoppingConfig *shoppingconfig.UserConfig
+	wowItem        *wowitem.WoWItem
 )
 
 // appendFile appends 'contents' to a file
@@ -63,16 +62,16 @@ func appendFile(name, contents string) error {
 
 func petSpellNeeded(i wowitem.Item, auc auction.Auction) bool {
 	petID, ok := battlePets.PetSpell(i)
-	return ok && !battlePets.Owned(petID) && auc.Buyout <= userConfig.BattlePetPriceUnownedMax
+	return ok && !battlePets.Owned(petID) && auc.Buyout <= shoppingConfig.BattlePetPriceUnownedMax
 }
 
 func petNeeded(petAuction auction.Auction) bool {
-	return !battlePets.Owned(petAuction.Pet.SpeciesID) && petAuction.Buyout <= userConfig.BattlePetPriceUnownedMax
+	return !battlePets.Owned(petAuction.Pet.SpeciesID) && petAuction.Buyout <= shoppingConfig.BattlePetPriceUnownedMax
 }
 
 // petResellBargain returns true if pet is likely to resell at a profit
 func petResellBargain(petAuction auction.Auction) bool {
-	_, ok := userConfig.SkipPets[petAuction.Pet.SpeciesID]
+	_, ok := shoppingConfig.SkipPets[petAuction.Pet.SpeciesID]
 	if ok {
 		return false
 	}
@@ -85,14 +84,14 @@ func petResellBargain(petAuction auction.Auction) bool {
 	if petAuction.Pet.Level < 25 {
 		return false
 	}
-	if petAuction.Buyout > userConfig.BattlePetPriceResellMax {
+	if petAuction.Buyout > shoppingConfig.BattlePetPriceResellMax {
 		return false
 	}
 	return true
 }
 
 func missingProfessionTool(i wowitem.Item) bool {
-	if i.SellPriceRealizable() <= userConfig.ArbitrageProfitMin {
+	if i.SellPriceRealizable() <= shoppingConfig.ArbitrageProfitMin {
 		// Not enough profit to make it worth the WoW runtime it takes to scan the AH
 		return false
 	}
@@ -105,7 +104,7 @@ func isArbitrage(i wowitem.Item, auc auction.Auction) (int64, bool) {
 		return 0, false
 	}
 	profit := (i.SellPriceRealizable() - auc.Buyout) * auc.Quantity
-	if profit < userConfig.ArbitrageProfitMin {
+	if profit < shoppingConfig.ArbitrageProfitMin {
 		// Not enough profit to make it worth the WoW runtime it takes to scan the AH
 		return 0, false
 	}
@@ -115,21 +114,21 @@ func isArbitrage(i wowitem.Item, auc auction.Auction) (int64, bool) {
 // toyBargain returns true if we need this toy, and it is at or below our price
 func toyBargain(i wowitem.Item, auc auction.Auction) bool {
 	// Bargains on toys
-	return i.Toy() && !toys.Owned(i) && auc.Buyout <= userConfig.ToyPriceMax
+	return i.Toy() && !toys.Owned(i) && auc.Buyout <= shoppingConfig.ToyPriceMax
 }
 
 // usefulGoodsBargain returns true if it is at or below our price
 func usefulGoodsBargain(i wowitem.Item, auc auction.Auction) bool {
-	maxPrice, ok := userConfig.UsefulGoods[i.ID()]
+	maxPrice, ok := shoppingConfig.UsefulGoods[i.ID()]
 	return ok && auc.Buyout <= maxPrice
 }
 
 func appearanceBargain(i wowitem.Item, auc auction.Auction) bool {
-	return auc.Buyout <= userConfig.AppearancePriceMax && transmog.NeedAppearance(i.Appearances())
+	return auc.Buyout <= shoppingConfig.AppearancePriceMax && transmog.NeedAppearance(i.Appearances())
 }
 
 func appearanceSetBargain(i wowitem.Item, auc auction.Auction) bool {
-	return auc.Buyout <= userConfig.AppearancePriceInSetMax && transmog.InAppearanceSet(i.Appearances()) && transmog.NeedAppearance(i.Appearances())
+	return auc.Buyout <= shoppingConfig.AppearancePriceInSetMax && transmog.InAppearanceSet(i.Appearances()) && transmog.NeedAppearance(i.Appearances())
 }
 
 // fmtShoppingList returns a formatted string of the given items or "" if none
@@ -156,7 +155,7 @@ func iterateAuctions(auctions map[int64][]auction.Auction) (*Recommendations, []
 		}
 
 		if missingProfessionTool(i) {
-			// We have not seen this profession tool before. Add iLevels for it in ilevel.go.
+			// We have not seen this profession tool yet; add it to wowitem/ilevel.go
 			fmt.Printf("%d: {}, // %s iLvl: %d\n", i.ID(), i.Name(), i.ItemLevel())
 		}
 
@@ -220,7 +219,7 @@ func formatRecommendations(recommendations *Recommendations, realm string, numAu
 	shoppingList += fmtShoppingList("Appearance Bargains", recommendations.AppearanceBargains, color.New(color.FgBlue), summarize)
 
 	if summarize {
-		if recommendations.ArbitrageProfit >= userConfig.ProfitToDisplayMin {
+		if recommendations.ArbitrageProfit >= shoppingConfig.ProfitToDisplayMin {
 			c := color.New(color.FgWhite)
 			shoppingList += c.Sprintf("Arbitrages: %s\n", common.Gold(recommendations.ArbitrageProfit))
 		}
@@ -320,7 +319,7 @@ func Shop(realms string, summarize bool) error {
 		}
 	}()
 
-	userConfig = userconfig.New(wowItem)
+	shoppingConfig = shoppingconfig.New(wowItem)
 
 	battlePets, err = battlepet.New()
 	if err != nil {
@@ -341,14 +340,6 @@ func Shop(realms string, summarize bool) error {
 	err = os.WriteFile(arbitragePath, nil, 0600)
 	if err != nil {
 		return err
-	}
-
-	recipesNeeded, err := cooking.RecipesNeeded()
-	if err != nil {
-		return err
-	}
-	for _, recipeName := range recipesNeeded {
-		userConfig.UsefulGoods[wowItem.Search(recipeName).ID()] = userConfig.RecipePriceMax
 	}
 
 	results, err := scanRealms(realms, summarize)

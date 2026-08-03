@@ -147,13 +147,13 @@ func logRecipes(recipesNeededByAlt string, recipesNeededCount string) error {
 }
 
 // RecipesNeeded returns which recipes are needed and writes to the log file
-func RecipesNeeded() ([]string, error) {
+func RecipesNeeded() []string {
 	recipesNeededByAlt, recipesNeededCount, recipesNeeded := getRecipesNeeded()
 
 	err := logRecipes(recipesNeededByAlt, recipesNeededCount)
 	if err != nil {
-		return nil, err
+		fmt.Fprintln(os.Stderr, err)
 	}
 
-	return recipesNeeded, nil
+	return recipesNeeded
 }
