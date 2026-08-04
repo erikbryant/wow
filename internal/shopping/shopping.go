@@ -27,6 +27,13 @@ type Recommendations struct {
 	AppearanceBargains []string
 }
 
+type DataStore struct {
+	BattlePets     *battlepet.BattlePet
+	Toys           *toy.Toy
+	ShoppingConfig *shoppingconfig.UserConfig
+	WowItem        *wowitem.WoWItem
+}
+
 const (
 	arbitragePath  = "./exports/arbitrageLatest"
 	battlePetPath  = "./reports/battlePets"
@@ -34,12 +41,29 @@ const (
 )
 
 var (
-	battlePets     *battlepet.BattlePet
-	mu             sync.Mutex
-	toys           *toy.Toy
-	shoppingConfig *shoppingconfig.UserConfig
-	wowItem        *wowitem.WoWItem
+	mu sync.Mutex
 )
+
+func NewDataStore() (*DataStore, error) {
+	var err error
+	ds := DataStore{}
+
+	ds.WowItem = wowitem.New()
+
+	ds.ShoppingConfig = shoppingconfig.New(ds.WowItem)
+
+	ds.BattlePets, err = battlepet.New()
+	if err != nil {
+		return nil, err
+	}
+
+	ds.Toys, err = toy.New()
+	if err != nil {
+		return nil, err
+	}
+
+	return &ds, nil
+}
 
 // appendFile appends 'contents' to a file
 func appendFile(name, contents string) error {
@@ -60,18 +84,18 @@ func appendFile(name, contents string) error {
 	return nil
 }
 
-func petSpellNeeded(i wowitem.Item, auc auction.Auction) bool {
-	petID, ok := battlePets.PetSpell(i)
-	return ok && !battlePets.Owned(petID) && auc.Buyout <= shoppingConfig.BattlePetPriceUnownedMax
+func petSpellNeeded(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
+	petID, ok := ds.BattlePets.PetSpell(i)
+	return ok && !ds.BattlePets.Owned(petID) && auc.Buyout <= ds.ShoppingConfig.BattlePetPriceUnownedMax
 }
 
-func petNeeded(petAuction auction.Auction) bool {
-	return !battlePets.Owned(petAuction.Pet.SpeciesID) && petAuction.Buyout <= shoppingConfig.BattlePetPriceUnownedMax
+func petNeeded(petAuction auction.Auction, ds *DataStore) bool {
+	return !ds.BattlePets.Owned(petAuction.Pet.SpeciesID) && petAuction.Buyout <= ds.ShoppingConfig.BattlePetPriceUnownedMax
 }
 
 // petResellBargain returns true if pet is likely to resell at a profit
-func petResellBargain(petAuction auction.Auction) bool {
-	_, ok := shoppingConfig.SkipPets[petAuction.Pet.SpeciesID]
+func petResellBargain(petAuction auction.Auction, ds *DataStore) bool {
+	_, ok := ds.ShoppingConfig.SkipPets[petAuction.Pet.SpeciesID]
 	if ok {
 		return false
 	}
@@ -81,27 +105,27 @@ func petResellBargain(petAuction auction.Auction) bool {
 	if petAuction.Pet.Level < 25 {
 		return false
 	}
-	if petAuction.Buyout > shoppingConfig.BattlePetPriceResellMax {
+	if petAuction.Buyout > ds.ShoppingConfig.BattlePetPriceResellMax {
 		return false
 	}
 	return true
 }
 
-func missingProfessionTool(i wowitem.Item) bool {
-	if i.SellPriceRealizable() <= shoppingConfig.ArbitrageProfitMin {
+func missingProfessionTool(i wowitem.Item, ds *DataStore) bool {
+	if i.SellPriceRealizable() <= ds.ShoppingConfig.ArbitrageProfitMin {
 		// Not enough profit to make it worth the WoW runtime it takes to scan the AH
 		return false
 	}
 	return i.ItemClassName() == "Profession" && !wowitem.Known(i.ID())
 }
 
-func isArbitrage(i wowitem.Item, auc auction.Auction) (int64, bool) {
+func isArbitrage(i wowitem.Item, auc auction.Auction, ds *DataStore) (int64, bool) {
 	if auc.Buyout >= i.SellPriceRealizable() {
 		// Not enough profit to make it worth the WoW runtime it takes to scan the AH
 		return 0, false
 	}
 	profit := (i.SellPriceRealizable() - auc.Buyout) * auc.Quantity
-	if profit < shoppingConfig.ArbitrageProfitMin {
+	if profit < ds.ShoppingConfig.ArbitrageProfitMin {
 		// Not enough profit to make it worth the WoW runtime it takes to scan the AH
 		return 0, false
 	}
@@ -109,23 +133,23 @@ func isArbitrage(i wowitem.Item, auc auction.Auction) (int64, bool) {
 }
 
 // toyBargain returns true if we need this toy, and it is at or below our price
-func toyBargain(i wowitem.Item, auc auction.Auction) bool {
+func toyBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
 	// Bargains on toys
-	return i.Toy() && !toys.Owned(i) && auc.Buyout <= shoppingConfig.ToyPriceMax
+	return i.Toy() && !ds.Toys.Owned(i) && auc.Buyout <= ds.ShoppingConfig.ToyPriceMax
 }
 
 // usefulGoodsBargain returns true if it is at or below our price
-func usefulGoodsBargain(i wowitem.Item, auc auction.Auction) bool {
-	maxPrice, ok := shoppingConfig.UsefulGoods[i.ID()]
+func usefulGoodsBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
+	maxPrice, ok := ds.ShoppingConfig.UsefulGoods[i.ID()]
 	return ok && auc.Buyout <= maxPrice
 }
 
-func appearanceBargain(i wowitem.Item, auc auction.Auction) bool {
-	return auc.Buyout <= shoppingConfig.AppearancePriceMax && transmog.NeedAppearance(i.Appearances())
+func appearanceBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
+	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceMax && transmog.NeedAppearance(i.Appearances())
 }
 
-func appearanceSetBargain(i wowitem.Item, auc auction.Auction) bool {
-	return auc.Buyout <= shoppingConfig.AppearancePriceInSetMax && transmog.InAppearanceSet(i.Appearances()) && transmog.NeedAppearance(i.Appearances())
+func appearanceSetBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
+	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceInSetMax && transmog.InAppearanceSet(i.Appearances()) && transmog.NeedAppearance(i.Appearances())
 }
 
 // fmtShoppingList returns a formatted string of the given items or "" if none
@@ -141,53 +165,53 @@ func fmtShoppingList(label string, items []string, c *color.Color, summarize boo
 	return c.Sprintf("%s%s\n", header, strings.Join(slices.Compact(items), "\n"))
 }
 
-func iterateAuctions(auctions map[int64][]auction.Auction) (*Recommendations, []string) {
+func iterateAuctions(auctions map[int64][]auction.Auction, ds *DataStore) (*Recommendations, []string) {
 	var recommendations Recommendations
 	arbitrageLogs := []string{}
 
 	for itemID, itemAuctions := range auctions {
-		i, ok := wowItem.Get(itemID)
+		i, ok := ds.WowItem.Get(itemID)
 		if !ok {
 			continue
 		}
 
-		if missingProfessionTool(i) {
+		if missingProfessionTool(i, ds) {
 			// We have not seen this profession tool yet; add it to wowitem/ilevel.go
 			fmt.Printf("%d: {}, // %s iLvl: %d\n", i.ID(), i.Name(), i.ItemLevel())
 		}
 
 		for _, auc := range itemAuctions {
 			if i.ID() == battlepet.PetCageItemID {
-				if petResellBargain(auc) {
-					recommendations.PetResellBargains = append(recommendations.PetResellBargains, battlePets.Name(auc.Pet.SpeciesID))
+				if petResellBargain(auc, ds) {
+					recommendations.PetResellBargains = append(recommendations.PetResellBargains, ds.BattlePets.Name(auc.Pet.SpeciesID))
 				}
-				if petNeeded(auc) {
-					recommendations.PetNeededBargains = append(recommendations.PetNeededBargains, battlePets.Name(auc.Pet.SpeciesID))
+				if petNeeded(auc, ds) {
+					recommendations.PetNeededBargains = append(recommendations.PetNeededBargains, ds.BattlePets.Name(auc.Pet.SpeciesID))
 				}
 				continue
 			}
 
-			if petSpellNeeded(i, auc) {
-				petID, _ := battlePets.PetSpell(i)
-				pet := fmt.Sprintf("%s %s (spell)", battlePets.Name(petID), i.Quality())
+			if petSpellNeeded(i, auc, ds) {
+				petID, _ := ds.BattlePets.PetSpell(i)
+				pet := fmt.Sprintf("%s %s (spell)", ds.BattlePets.Name(petID), i.Quality())
 				recommendations.PetNeededBargains = append(recommendations.PetNeededBargains, pet)
 			}
 
-			if toyBargain(i, auc) || usefulGoodsBargain(i, auc) {
+			if toyBargain(i, auc, ds) || usefulGoodsBargain(i, auc, ds) {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 				recommendations.Bargains = append(recommendations.Bargains, str)
 			}
 
-			if appearanceSetBargain(i, auc) {
+			if appearanceSetBargain(i, auc, ds) {
 				recommendations.AppearanceBargains = append(recommendations.AppearanceBargains, i.Name()+" ---")
 			} else {
 				// The item is already a bargain, no need to check again
-				if appearanceBargain(i, auc) {
+				if appearanceBargain(i, auc, ds) {
 					recommendations.AppearanceBargains = append(recommendations.AppearanceBargains, i.Name())
 				}
 			}
 
-			profit, ok := isArbitrage(i, auc)
+			profit, ok := isArbitrage(i, auc, ds)
 			if ok {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(profit))
 				recommendations.Arbitrages = append(recommendations.Arbitrages, str)
@@ -204,7 +228,7 @@ func iterateAuctions(auctions map[int64][]auction.Auction) (*Recommendations, []
 	return &recommendations, arbitrageLogs
 }
 
-func formatRecommendations(recommendations *Recommendations, realm string, numAuctions int, summarize bool) string {
+func formatRecommendations(recommendations *Recommendations, realm string, numAuctions int, ds *DataStore, summarize bool) string {
 	shoppingList := ""
 	shoppingList += fmtShoppingList("Pets I Need", recommendations.PetNeededBargains, color.New(color.FgMagenta), summarize)
 	shoppingList += fmtShoppingList("Pets to Resell", recommendations.PetResellBargains, color.New(color.FgGreen), summarize)
@@ -212,7 +236,7 @@ func formatRecommendations(recommendations *Recommendations, realm string, numAu
 	shoppingList += fmtShoppingList("Appearance Bargains", recommendations.AppearanceBargains, color.New(color.FgBlue), summarize)
 
 	if summarize {
-		if recommendations.ArbitrageProfit >= shoppingConfig.ProfitToDisplayMin {
+		if recommendations.ArbitrageProfit >= ds.ShoppingConfig.ProfitToDisplayMin {
 			c := color.New(color.FgWhite)
 			shoppingList += c.Sprintf("Arbitrages: %s\n", common.Gold(recommendations.ArbitrageProfit))
 		}
@@ -232,14 +256,14 @@ func formatRecommendations(recommendations *Recommendations, realm string, numAu
 }
 
 // scanRealm retrieves auctions and prints suggestions for what to buy for a single realm
-func scanRealm(realm string, c chan<- string, summarize bool) error {
+func scanRealm(realm string, c chan<- string, ds *DataStore, summarize bool) error {
 	auctions, err := auction.Get(realm)
 	if err != nil {
 		c <- ""
 		return err
 	}
 
-	recommendations, arbitrageLogs := iterateAuctions(auctions)
+	recommendations, arbitrageLogs := iterateAuctions(auctions, ds)
 
 	if realm != "Commodities" {
 		err = appendFile(arbitragePath, strings.Join(arbitrageLogs, "\n"))
@@ -249,20 +273,20 @@ func scanRealm(realm string, c chan<- string, summarize bool) error {
 		}
 	}
 
-	c <- formatRecommendations(recommendations, realm, len(auctions), summarize)
+	c <- formatRecommendations(recommendations, realm, len(auctions), ds, summarize)
 
 	return nil
 }
 
 // scanRealms processes auctions on all realms in 'r'
-func scanRealms(r string, summarize bool) ([]string, error) {
+func scanRealms(r string, ds *DataStore, summarize bool) ([]string, error) {
 	realms := strings.Split(r, ",")
 	results := []string{}
 	c := make(chan string)
 
 	for _, realm := range realms {
 		go func() {
-			err := scanRealm(realm, c, summarize)
+			err := scanRealm(realm, c, ds, summarize)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "failed to scan realm %s: %s\n", realm, err)
 				os.Exit(1)
@@ -285,15 +309,15 @@ func scanRealms(r string, summarize bool) ([]string, error) {
 	return results, nil
 }
 
-func writeLogs() error {
+func writeLogs(ds *DataStore) error {
 	// Write the battle pet IDs/names
-	err := os.WriteFile(battlePetPath, []byte(battlePets.Output()), 0600)
+	err := os.WriteFile(battlePetPath, []byte(ds.BattlePets.Output()), 0600)
 	if err != nil {
 		return err
 	}
 
 	// Write the prices file for the WoW 'wowMerchant' addon to consume
-	err = os.WriteFile(priceCachePath, []byte(wowItem.Lua()), 0600)
+	err = os.WriteFile(priceCachePath, []byte(ds.WowItem.Lua()), 0600)
 	if err != nil {
 		return err
 	}
@@ -304,26 +328,15 @@ func writeLogs() error {
 func Shop(realms string, summarize bool) error {
 	var err error
 
-	wowItem = wowitem.New()
+	ds, err := NewDataStore()
 	defer func() {
-		err := wowItem.Items.Save()
+		err := ds.WowItem.Items.Save()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "failed to save wow items persistence: %s\n", err)
 		}
 	}()
 
-	shoppingConfig = shoppingconfig.New(wowItem)
-
-	battlePets, err = battlepet.New()
-	if err != nil {
-		return err
-	}
-
-	toys, err = toy.New()
-	if err != nil {
-		return err
-	}
-
+	// TODO: convert this to dataStore.Transmog = transmog.New()
 	err = transmog.Init()
 	if err != nil {
 		return err
@@ -335,13 +348,13 @@ func Shop(realms string, summarize bool) error {
 		return err
 	}
 
-	results, err := scanRealms(realms, summarize)
+	results, err := scanRealms(realms, ds, summarize)
 	if err != nil {
 		return err
 	}
 	fmt.Println(results)
 
-	err = writeLogs()
+	err = writeLogs(ds)
 	if err != nil {
 		return err
 	}
