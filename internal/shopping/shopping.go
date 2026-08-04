@@ -18,6 +18,7 @@ import (
 	"github.com/fatih/color"
 )
 
+// Recommendations holds all recommended auctions for a single realm
 type Recommendations struct {
 	Arbitrages         []string
 	ArbitrageLogs      []string
@@ -34,12 +35,11 @@ type DataStore struct {
 	// Initialize this first; some of the others depend on it
 	WowItem *wowitem.WoWItem
 
-	BattlePets     *battlepet.BattlePet
-	ShoppingConfig *shoppingconfig.UserConfig
-	Toys           *toy.Toy
-
-	AppearancesOwned *userconfig.AppearancesOwned
 	AppearanceSet    *appearanceset.AppearanceSets
+	AppearancesOwned *userconfig.AppearancesOwned
+	BattlePets       *battlepet.BattlePet
+	ShoppingConfig   *shoppingconfig.UserConfig
+	Toys             *toy.Toy
 }
 
 const (
@@ -49,6 +49,7 @@ const (
 	recommendationsPath = "./reports/recommendations"
 )
 
+// NewDataStore initializes all singleton data stores
 func NewDataStore() (*DataStore, error) {
 	var err error
 	ds := DataStore{}
@@ -73,11 +74,13 @@ func NewDataStore() (*DataStore, error) {
 	return &ds, nil
 }
 
+// petSpellNeeded returns true if we do not have this pet and it is a good price
 func petSpellNeeded(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
 	petID, ok := ds.BattlePets.PetSpell(i)
 	return ok && !ds.BattlePets.Owned(petID) && auc.Buyout <= ds.ShoppingConfig.BattlePetPriceUnownedMax
 }
 
+// petNeeded returns true if we do not have this pet and it is a good price
 func petNeeded(petAuction auction.Auction, ds *DataStore) bool {
 	return !ds.BattlePets.Owned(petAuction.Pet.SpeciesID) && petAuction.Buyout <= ds.ShoppingConfig.BattlePetPriceUnownedMax
 }
@@ -100,6 +103,7 @@ func petResellBargain(petAuction auction.Auction, ds *DataStore) bool {
 	return true
 }
 
+// missingProfessionTool returns true if we do not have an entry for this tool in wowitem/ilevel.go
 func missingProfessionTool(i wowitem.Item, ds *DataStore) bool {
 	if i.SellPriceRealizable() <= ds.ShoppingConfig.ArbitrageProfitMin {
 		// Not enough profit to make it worth the WoW runtime it takes to scan the AH
@@ -108,6 +112,7 @@ func missingProfessionTool(i wowitem.Item, ds *DataStore) bool {
 	return i.ItemClassName() == "Profession" && !wowitem.Known(i.ID())
 }
 
+// isArbitrage returns true if the item for auction sells to a vendor for more than the auction price
 func isArbitrage(i wowitem.Item, auc auction.Auction, ds *DataStore) (int64, bool) {
 	if auc.Buyout >= i.SellPriceRealizable() {
 		// Not enough profit to make it worth the WoW runtime it takes to scan the AH
@@ -127,33 +132,23 @@ func toyBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
 	return i.Toy() && !ds.Toys.Owned(i) && auc.Buyout <= ds.ShoppingConfig.ToyPriceMax
 }
 
-// usefulGoodsBargain returns true if it is at or below our price
+// usefulGoodsBargain returns true if the item for auction is at or below our price
 func usefulGoodsBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
 	maxPrice, ok := ds.ShoppingConfig.UsefulGoods[i.ID()]
 	return ok && auc.Buyout <= maxPrice
 }
 
+// appearanceSetBargain returns true if the item for auction provides an appearance we need at a good price
 func appearanceBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
 	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceMax && ds.AppearancesOwned.Need(i.Appearances())
 }
 
+// appearanceSetBargain returns true if the item for auction provides an appearance (that is in a set) we need at a good price
 func appearanceSetBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
 	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceInSetMax && ds.AppearanceSet.Contains(i.Appearances()) && ds.AppearancesOwned.Need(i.Appearances())
 }
 
-// fmtShoppingList returns a formatted string of the given items or "" if none
-func fmtShoppingList(label string, items []string, c *color.Color, summarize bool) string {
-	if len(items) == 0 {
-		return ""
-	}
-	header := ""
-	if !summarize {
-		header = fmt.Sprintf("--- %s ---\n", label)
-	}
-	slices.Sort(items)
-	return c.Sprintf("%s%s\n", header, strings.Join(slices.Compact(items), "\n"))
-}
-
+// iterateAuctions iterates over a single auction house, checking each auction for recommendation
 func iterateAuctions(auctions map[int64][]auction.Auction, ds *DataStore, realm string) *Recommendations {
 	r := Recommendations{
 		NumAuctions: len(auctions),
@@ -218,6 +213,51 @@ func iterateAuctions(auctions map[int64][]auction.Auction, ds *DataStore, realm 
 	return &r
 }
 
+// scanRealm retrieves auctions and prints suggestions for what to buy for a single realm
+func scanRealm(realm string, c chan<- Recommendations, ds *DataStore) {
+	auctions, err := auction.Get(realm)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "*** failed to scan realm %s: %s\n", realm, err)
+		return
+	}
+
+	r := iterateAuctions(auctions, ds, realm)
+
+	c <- *r
+}
+
+// scanRealms processes auctions on all realms in 'r'
+func scanRealms(r string, ds *DataStore) []Recommendations {
+	realms := strings.Split(r, ",")
+	results := []Recommendations{}
+	c := make(chan Recommendations)
+
+	for _, realm := range realms {
+		go scanRealm(realm, c, ds)
+	}
+
+	for range len(realms) {
+		r := <-c
+		results = append(results, r)
+	}
+
+	return results
+}
+
+// fmtShoppingList returns a formatted string of the given items or "" if none
+func fmtShoppingList(label string, items []string, c *color.Color, summarize bool) string {
+	if len(items) == 0 {
+		return ""
+	}
+	header := ""
+	if !summarize {
+		header = fmt.Sprintf("--- %s ---\n", label)
+	}
+	slices.Sort(items)
+	return c.Sprintf("%s%s\n", header, strings.Join(slices.Compact(items), "\n"))
+}
+
+// format converts a Recommendations to a string
 func (r *Recommendations) format(ds *DataStore, summarize bool) string {
 	shoppingList := ""
 	shoppingList += fmtShoppingList("Pets I Need", r.PetNeededBargains, color.New(color.FgMagenta), summarize)
@@ -251,37 +291,7 @@ func (r *Recommendations) format(ds *DataStore, summarize bool) string {
 	return msg
 }
 
-// scanRealm retrieves auctions and prints suggestions for what to buy for a single realm
-func scanRealm(realm string, c chan<- Recommendations, ds *DataStore) {
-	auctions, err := auction.Get(realm)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "*** failed to scan realm %s: %s\n", realm, err)
-		return
-	}
-
-	r := iterateAuctions(auctions, ds, realm)
-
-	c <- *r
-}
-
-// scanRealms processes auctions on all realms in 'r'
-func scanRealms(r string, ds *DataStore) []Recommendations {
-	realms := strings.Split(r, ",")
-	results := []Recommendations{}
-	c := make(chan Recommendations)
-
-	for _, realm := range realms {
-		go scanRealm(realm, c, ds)
-	}
-
-	for range len(realms) {
-		r := <-c
-		results = append(results, r)
-	}
-
-	return results
-}
-
+// generateOutput handles all output (console and files) for shopping
 func generateOutput(ds *DataStore, recommendations []Recommendations) error {
 	outputBrief := []string{}
 	outputVerbose := []string{}
@@ -329,6 +339,7 @@ func generateOutput(ds *DataStore, recommendations []Recommendations) error {
 	return nil
 }
 
+// Shop looks for auction house values across all realms
 func Shop(realms string) error {
 	var err error
 
