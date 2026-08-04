@@ -21,7 +21,6 @@ import (
 
 // PetInfo contains the properties specific to a battle pet
 type PetInfo struct {
-	BreedID   int64
 	Level     int64
 	Name      string
 	QualityID int64
@@ -73,14 +72,6 @@ func quantity(msi any) int64 {
 	return web.ToInt64(value)
 }
 
-func petBreedID(msi any) int64 {
-	value, err := web.MsiValue(msi, []string{"item", "pet_breed_id"})
-	if err != nil {
-		log.Fatalf("PetBreedID: %s in %v", err, msi)
-	}
-	return web.ToInt64(value)
-}
-
 func petLevel(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"item", "pet_level"})
 	if err != nil {
@@ -117,7 +108,6 @@ func newAuction(auc any) Auction {
 	// Is this a Pet Cage?
 	if a.ItemID == battlepet.PetCageItemID {
 		// A pet auction!
-		a.Pet.BreedID = petBreedID(auc)
 		a.Pet.Level = petLevel(auc)
 		a.Pet.QualityID = petQualityID(auc)
 		a.Pet.SpeciesID = petSpeciesID(auc)
