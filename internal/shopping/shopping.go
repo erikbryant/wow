@@ -78,25 +78,6 @@ func appendArbitrageRecord(record string) {
 	arbitrageRecords = append(arbitrageRecords, record)
 }
 
-// appendFile appends 'contents' to a file
-func appendFile(name, contents string) error {
-	mu.Lock()
-	defer mu.Unlock()
-
-	f, err := os.OpenFile(name, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
-	if err != nil {
-		return fmt.Errorf("failed to open log file %s: %s", name, err)
-	}
-	defer f.Close()
-
-	_, err = f.WriteString(contents)
-	if err != nil {
-		return fmt.Errorf("failed to write to log file %s: %s", name, err)
-	}
-
-	return nil
-}
-
 func petSpellNeeded(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
 	petID, ok := ds.BattlePets.PetSpell(i)
 	return ok && !ds.BattlePets.Owned(petID) && auc.Buyout <= ds.ShoppingConfig.BattlePetPriceUnownedMax
