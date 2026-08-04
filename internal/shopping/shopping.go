@@ -6,7 +6,6 @@ import (
 	"slices"
 	"sort"
 	"strings"
-	"sync"
 
 	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/auction"
@@ -44,14 +43,10 @@ type DataStore struct {
 }
 
 const (
-	arbitragePath  = "./exports/arbitrageLatest"
-	battlePetPath  = "./reports/battlePets"
-	priceCachePath = "./exports/PriceCache.lua"
-)
-
-var (
-	mu               sync.Mutex
-	arbitrageRecords []string
+	arbitragePath       = "./exports/arbitrageLatest"
+	battlePetPath       = "./reports/battlePets"
+	priceCachePath      = "./exports/PriceCache.lua"
+	recommendationsPath = "./reports/recommendations"
 )
 
 func NewDataStore() (*DataStore, error) {
@@ -76,12 +71,6 @@ func NewDataStore() (*DataStore, error) {
 	ds.AppearanceSet = appearanceset.New()
 
 	return &ds, nil
-}
-
-func appendArbitrageRecord(record string) {
-	mu.Lock()
-	defer mu.Unlock()
-	arbitrageRecords = append(arbitrageRecords, record)
 }
 
 func petSpellNeeded(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
@@ -250,58 +239,69 @@ func (r *Recommendations) format(ds *DataStore, summarize bool) string {
 		return ""
 	}
 
+	// Hack to get Commodities to sort to end of output
+	realm := r.Realm
+	if realm == "Commodities" {
+		realm = "_Commodities_"
+	}
+
 	col := color.New(color.FgCyan)
-	msg := col.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", r.Realm, r.NumAuctions, shoppingList)
+	msg := col.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", realm, r.NumAuctions, shoppingList)
 
 	return msg
 }
 
 // scanRealm retrieves auctions and prints suggestions for what to buy for a single realm
-func scanRealm(realm string, c chan<- string, ds *DataStore, summarize bool) {
+func scanRealm(realm string, c chan<- Recommendations, ds *DataStore) {
 	auctions, err := auction.Get(realm)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "*** failed to scan realm %s: %s\n", realm, err)
-		c <- ""
 		return
 	}
 
 	r := iterateAuctions(auctions, ds, realm)
 
-	if r.Realm != "Commodities" {
-		for _, record := range r.ArbitrageLogs {
-			appendArbitrageRecord(record)
-		}
-	}
-
-	c <- r.format(ds, summarize)
+	c <- *r
 }
 
 // scanRealms processes auctions on all realms in 'r'
-func scanRealms(r string, ds *DataStore, summarize bool) []string {
+func scanRealms(r string, ds *DataStore) []Recommendations {
 	realms := strings.Split(r, ",")
-	results := []string{}
-	c := make(chan string)
+	results := []Recommendations{}
+	c := make(chan Recommendations)
 
 	for _, realm := range realms {
-		go scanRealm(realm, c, ds, summarize)
+		go scanRealm(realm, c, ds)
 	}
 
 	for range len(realms) {
-		s := <-c
-		if s == "" {
-			continue
-		}
-		// Hack to get Commodities to sort to end of slice
-		s = strings.Replace(s, " Commodities ", " _Commodities_ ", 1)
-		results = append(results, s)
+		r := <-c
+		results = append(results, r)
 	}
-
-	sort.Strings(results)
 
 	return results
 }
 
-func writeLogs(ds *DataStore) error {
+func generateOutput(ds *DataStore, recommendations []Recommendations) error {
+	outputBrief := []string{}
+	outputVerbose := []string{}
+	arbitrageRecords := []string{}
+
+	for _, r := range recommendations {
+		if r.Realm != "Commodities" {
+			for _, record := range r.ArbitrageLogs {
+				arbitrageRecords = append(arbitrageRecords, record)
+			}
+		}
+		outputBrief = append(outputBrief, r.format(ds, true))
+		outputVerbose = append(outputVerbose, r.format(ds, false))
+	}
+
+	sort.Strings(outputBrief)
+	sort.Strings(outputVerbose)
+
+	fmt.Println(outputBrief)
+
 	// Write the battle pet IDs/names
 	err := os.WriteFile(battlePetPath, []byte(ds.BattlePets.Output()), 0600)
 	if err != nil {
@@ -315,9 +315,13 @@ func writeLogs(ds *DataStore) error {
 	}
 
 	// Write the arbitrages file for the WoW 'wowMerchant' addon to consume
-	mu.Lock()
 	err = os.WriteFile(arbitragePath, []byte(strings.Join(arbitrageRecords, "\n")+"\n"), 0600)
-	mu.Unlock()
+	if err != nil {
+		return err
+	}
+
+	// Write the verbose form of the recommendations
+	err = os.WriteFile(recommendationsPath, []byte(strings.Join(outputVerbose, "\n")+"\n"), 0600)
 	if err != nil {
 		return err
 	}
@@ -325,21 +329,22 @@ func writeLogs(ds *DataStore) error {
 	return nil
 }
 
-func Shop(realms string, summarize bool) error {
+func Shop(realms string) error {
 	var err error
 
 	ds, err := NewDataStore()
-	defer func() {
-		err := ds.WowItem.Items.Save()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "*** failed to save wow items persistence: %s\n", err)
-		}
-	}()
+	if err != nil {
+		return err
+	}
 
-	results := scanRealms(realms, ds, summarize)
-	fmt.Println(results)
+	recommendations := scanRealms(realms, ds)
 
-	err = writeLogs(ds)
+	err = ds.WowItem.Items.Save()
+	if err != nil {
+		return fmt.Errorf("failed to save wow items persistence: %s", err)
+	}
+
+	err = generateOutput(ds, recommendations)
 	if err != nil {
 		return err
 	}
