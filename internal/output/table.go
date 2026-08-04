@@ -34,7 +34,7 @@ var columns = []Column{
 		header: "App Set",
 		value: func(item wowitem.Item) string {
 			// TODO: Move this to a singleton initializer model
-			t, _ := transmog.New()
+			t, _ := transmog.New(false)
 			return fmt.Sprintf("%t", t.InAppearanceSet(item.Appearances()))
 		},
 	},

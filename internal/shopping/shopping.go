@@ -64,7 +64,7 @@ func NewDataStore() (*DataStore, error) {
 		return nil, err
 	}
 
-	ds.Transmog, err = transmog.New()
+	ds.Transmog, err = transmog.New(true)
 	if err != nil {
 		return nil, err
 	}

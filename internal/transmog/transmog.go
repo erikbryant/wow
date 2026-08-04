@@ -71,7 +71,7 @@ func getAppearanceIDsOwned() (map[int64]bool, error) {
 	return myAppearanceIDs, nil
 }
 
-func New() (*Transmog, error) {
+func New(useWeb bool) (*Transmog, error) {
 	t := Transmog{
 		appearanceSetAppearanceIDs: persist.New[int64, bool](persistName),
 	}
@@ -84,6 +84,10 @@ func New() (*Transmog, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to save appearances persist: %s", err)
 		}
+	}
+
+	if !useWeb {
+		return &t, nil
 	}
 
 	t.appearanceIDsOwned, err = getAppearanceIDsOwned()
