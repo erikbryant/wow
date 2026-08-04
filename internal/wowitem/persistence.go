@@ -8,6 +8,8 @@ import (
 	"github.com/erikbryant/wow/internal/wowapi"
 )
 
+// TODO: Convert this to a singleton package (like appearanceset.go)
+
 const (
 	persistName = "items"
 )

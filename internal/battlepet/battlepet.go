@@ -9,6 +9,8 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
+// TODO: Convert this to a singleton package (like appearanceset.go)
+
 type BattlePet struct {
 	petNames  map[int64]string
 	petsOwned map[int64]int64
