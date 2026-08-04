@@ -2,6 +2,7 @@ package toy
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/wowapi"
@@ -12,6 +13,11 @@ type Toy struct {
 	names map[int64]string
 	owned map[int64]bool
 }
+
+var (
+	once = sync.Once{}
+	toys *Toy
+)
 
 // getNames returns a map of all toy names by ID
 func getNames() (map[int64]string, error) {
@@ -49,21 +55,31 @@ func getOwned() (map[int64]bool, error) {
 	return myToys, nil
 }
 
-func New() (*Toy, error) {
+func get() error {
 	var t Toy
 	var err error
 
 	t.names, err = getNames()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	t.owned, err = getOwned()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &t, nil
+	toys = &t
+
+	return nil
+}
+
+func New() (*Toy, error) {
+	var err error
+	once.Do(func() {
+		err = get()
+	})
+	return toys, err
 }
 
 func (t *Toy) Owned(i wowitem.Item) bool {
