@@ -1,6 +1,9 @@
 package wowitem
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 var itemLevels = map[int64][]int64{
 	// iLvl 70
@@ -181,7 +184,7 @@ func ILevels(itemID int64) []int64 {
 		return []int64{0}
 	}
 	if len(iLevels) == 0 {
-		fmt.Println("Missing item levels for:", itemID)
+		fmt.Fprintf(os.Stderr, "*** missing item levels for: %d\n", itemID)
 	}
 	return iLevels
 }

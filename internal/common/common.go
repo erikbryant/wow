@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -39,6 +40,6 @@ func QualityID(qualityName string) int64 {
 			return qID
 		}
 	}
-	fmt.Println("Unknown quality", qualityName)
+	fmt.Fprintf(os.Stderr, "*** unknown quality: %s\n", qualityName)
 	return -1
 }

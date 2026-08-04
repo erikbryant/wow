@@ -2,6 +2,7 @@ package wowitem
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/persist"
@@ -25,7 +26,7 @@ func New() *WoWItem {
 
 	err := wi.Items.Load()
 	if err != nil {
-		fmt.Printf("*** error opening items persist, using an empty one: %v\n", err)
+		fmt.Fprintf(os.Stderr, "*** error opening items persist, using an empty one: %s\n", err)
 	}
 	fmt.Printf("-- #Items persisted  : %d\n", wi.Items.Len())
 
@@ -38,7 +39,7 @@ func (wi *WoWItem) Search(s string) Item {
 		return v.Name() == s
 	})
 	if !ok {
-		fmt.Println("Did not find item for search string: ", s)
+		fmt.Fprintf(os.Stderr, "*** did not find item for search string: %s\n", s)
 	}
 	return i
 }

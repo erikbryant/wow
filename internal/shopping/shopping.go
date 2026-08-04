@@ -173,7 +173,7 @@ func iterateAuctions(auctions map[int64][]auction.Auction, ds *DataStore, saveRe
 
 		if missingProfessionTool(i, ds) {
 			// We have not seen this profession tool yet; add it to wowitem/ilevel.go
-			fmt.Printf("%d: {}, // %s iLvl: %d\n", i.ID(), i.Name(), i.ItemLevel())
+			fmt.Fprintf(os.Stderr, "%d: {}, // %s iLvl: %d\n", i.ID(), i.Name(), i.ItemLevel())
 		}
 
 		for _, auc := range itemAuctions {
@@ -256,7 +256,7 @@ func formatRecommendations(recommendations *Recommendations, realm string, numAu
 func scanRealm(realm string, c chan<- string, ds *DataStore, summarize bool) {
 	auctions, err := auction.Get(realm)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to scan realm %s: %s\n", realm, err)
+		fmt.Fprintf(os.Stderr, "*** failed to scan realm %s: %s\n", realm, err)
 		c <- ""
 		return
 	}
@@ -322,7 +322,7 @@ func Shop(realms string, summarize bool) error {
 	defer func() {
 		err := ds.WowItem.Items.Save()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "failed to save wow items persistence: %s\n", err)
+			fmt.Fprintf(os.Stderr, "*** failed to save wow items persistence: %s\n", err)
 		}
 	}()
 

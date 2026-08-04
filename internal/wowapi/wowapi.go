@@ -2,6 +2,7 @@ package wowapi
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/erikbryant/web"
@@ -101,7 +102,7 @@ func request(url, token, caller string) (any, bool) {
 
 	response, err := web.RequestJSON(url, headers)
 	if err != nil {
-		fmt.Printf("%s: no data returned: %s\n", caller, err)
+		fmt.Fprintf(os.Stderr, "%s: no data returned: %s\n", caller, err)
 		return nil, false
 	}
 
@@ -127,7 +128,7 @@ func ConnectedRealm(realmID string) map[string]any {
 
 	response := r.(map[string]any)
 	if response["code"] != nil {
-		fmt.Println("ConnectedRealm: Failed to get connected realm:", response)
+		fmt.Fprintf(os.Stderr, "ConnectedRealm failed to get connected realm: %v\n", response)
 		return nil
 	}
 
@@ -144,7 +145,7 @@ func ConnectedRealmSearch() map[string]any {
 
 	response := r.(map[string]any)
 	if response["code"] != nil {
-		fmt.Println("ConnectedRealmSearch: Failed to get connected realms:", response)
+		fmt.Fprintf(os.Stderr, "ConnectedRealmSearch failed to get connected realms: %v\n", response)
 		return nil
 	}
 
@@ -178,14 +179,12 @@ func ConnectedRealmID(realm string) (string, bool) {
 		for _, cRealm := range realms {
 			realmSlug := cRealm.(map[string]any)["slug"].(string)
 			if slug == realmSlug {
-				mapItem := fmt.Sprintf("  \"%s\": \"%s\",\n", realm, cRealmID)
-				fmt.Println(mapItem)
 				return cRealmID, true
 			}
 		}
 	}
 
-	fmt.Println("ConnectedRealmID: Failed to find realm:", realm)
+	fmt.Fprintf(os.Stderr, "ConnectedRealmID failed to find realm: %s\n", realm)
 	return "", false
 }
 
@@ -193,7 +192,7 @@ func ConnectedRealmID(realm string) (string, bool) {
 func Auctions(realm string) ([]any, bool) {
 	connectedRealmID, ok := ConnectedRealmID(realm)
 	if !ok {
-		fmt.Println("Auctions: no connected realm ID found")
+		fmt.Fprintln(os.Stderr, "Auctions: no connected realm ID found")
 		return nil, false
 	}
 
@@ -205,7 +204,7 @@ func Auctions(realm string) ([]any, bool) {
 
 	response := r.(map[string]any)
 	if response["code"] != nil {
-		fmt.Println("Auctions HTTP error:", response)
+		fmt.Fprintf(os.Stderr, "Auctions: HTTP error: %v\n", response)
 		return nil, false
 	}
 
@@ -229,12 +228,12 @@ func Item(id string) (map[string]any, bool) {
 
 	response := r.(map[string]any)
 	if response["status"] == "nok" {
-		fmt.Println("INFO: ", response["reason"], "id: ", id)
+		fmt.Fprintf(os.Stderr, "Item: bad status for itemID %s: %v\n", id, response["reason"])
 		return nil, false
 	}
 	_, ok = response["code"]
 	if ok {
-		fmt.Println("Error retrieving id: ", id, response)
+		fmt.Fprintf(os.Stderr, "Item: error retrieving itemID %s: %v\n", id, response)
 		return nil, false
 	}
 

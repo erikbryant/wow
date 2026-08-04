@@ -141,7 +141,7 @@ var (
 func getAppearanceIDsOwned() {
 	t, ok := wowapi.CollectionsTransmogs()
 	if !ok {
-		fmt.Fprintf(os.Stderr, "unable to obtain transmogs owned\n")
+		fmt.Fprintf(os.Stderr, "*** unable to obtain transmogs owned\n")
 		return
 	}
 

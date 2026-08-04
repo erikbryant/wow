@@ -28,7 +28,7 @@ func getAppearanceSetsAppearanceIDs() {
 	count := len(appearanceSetsIDs)
 
 	for setID, setName := range appearanceSetsIDs {
-		fmt.Printf("%d\tLoading appearance set: %d   %s\n", count, setID, setName)
+		fmt.Fprintf(os.Stderr, "%d\tLoading appearance set: %d   %s\n", count, setID, setName)
 		count--
 		for _, appearanceID := range wowapi.ItemAppearanceSetIDs(setID) {
 			as.IDs.Set(appearanceID, true)

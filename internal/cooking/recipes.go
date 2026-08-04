@@ -39,7 +39,7 @@ func makeRecipe(r any) Recipe {
 func knownRecipes(realm, alt, tierName string) map[int64]Recipe {
 	result, ok := wowapi.Professions(realm, alt)
 	if !ok {
-		fmt.Println("No professions!", realm, alt, result)
+		fmt.Fprintf(os.Stderr, "*** no professions found: %s, %s, %v", realm, alt, result)
 	}
 
 	s, _ := web.MsiValued(result, []string{"secondaries"}, nil)
@@ -152,7 +152,7 @@ func RecipesNeeded() []string {
 
 	err := logRecipes(recipesNeededByAlt, recipesNeededCount)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintf(os.Stderr, "*** %s\n", err)
 	}
 
 	return recipesNeeded
