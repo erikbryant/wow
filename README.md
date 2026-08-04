@@ -26,6 +26,10 @@ The wowMerchant AddOn depends on certain data from the wow application. Scrape t
 
 This includes a cache of all current vendor prices. It also includes arbitrage items (selling at a discount to vendor prices).
 
+# items
+
+A command line tool for searching and modifying the WoW item persistence gob file.
+
 # Development notes
 
 The auction house downloadable data is updated once an hour. The precise time might depend upon when the service was last started up after a maintenance. Sampling multiple times during a one-hour window will result in identical downloads. There are other people playing this same arbitrage game, so you have to be *very* quick (right at 10 after) to get in on the bargains before they are gone.
@@ -46,3 +50,17 @@ This callback has been registered with Blizzard for this client ID:
 ```text
 redirect_uri = 'http://localhost:8000/auth/wow/callback'
 ```
+
+### Areas for improvement
+
+Convert battlepet.go to a singleton (like appearanceset.go)
+
+Convert persistence.go to a singleton (like appearanceset.go)
+
+In the wowapi package, return err instead of bool from request()
+
+Replace fmt.Fprint with error propagation to caller
+
+Add tests
+
+In shopping.go, why does outputVerbose have leading blank lines while outputBrief does not?
