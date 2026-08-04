@@ -100,16 +100,11 @@ func New(wi *wowitem.WoWItem) *UserConfig {
 			50:   {}, // Green Wing Macaw
 			2468: {}, // Laughing Stonekin
 			1727: {}, // Nursery Spider
+			175:  {}, // Phoenix Hatchling
 			44:   {}, // Siamese Cat
 			1721: {}, // Stormborne Whelpling
 			1151: {}, // Untamed Hatchling
-
-			//52:   {}, // Ancona Chicken
-			//2118: {}, // Docile Skyfin
-			//2467: {}, // Mischievous Zephyr
-			//3348: {}, // Primal Stormling
-			//1416: {}, // Teroclaw Hatchling
-			//1921: {}, // Untethered Wyrmling
+			1394: {}, // Weebomination
 		},
 	}
 
