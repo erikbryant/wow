@@ -2,7 +2,6 @@ package wowapi
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/erikbryant/web"
@@ -95,73 +94,70 @@ func realmToSlug(realm string) string {
 	return slug
 }
 
-func request(url, token, caller string) (any, bool) {
+func request(url, token, caller string) (any, error) {
 	headers := map[string]string{
 		"Authorization": "Bearer " + token,
 	}
 
 	response, err := web.RequestJSON(url, headers)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s: no data returned: %s\n", caller, err)
-		return nil, false
+		return nil, fmt.Errorf("%s: no data returned: %s", caller, err)
 	}
 
-	return response, true
+	return response, nil
 }
 
-func requestKey(url, token, key, caller string) ([]any, bool) {
-	r, ok := request(url, token, caller)
-	if !ok {
-		return nil, false
+func requestKey(url, token, key, caller string) ([]any, error) {
+	r, err := request(url, token, caller)
+	if err != nil {
+		return nil, err
 	}
 	response := r.(map[string]any)
-	return response[key].([]any), true
+	return response[key].([]any), nil
 }
 
 // ConnectedRealm returns all realms connected to the given realm ID
-func ConnectedRealm(realmID string) map[string]any {
+func ConnectedRealm(realmID string) (map[string]any, error) {
 	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + realmID + "?namespace=dynamic-us&locale=en_US"
-	r, ok := request(url, accessToken, "ConnectedRealm")
-	if !ok {
-		return nil
+	r, err := request(url, accessToken, "ConnectedRealm")
+	if err != nil {
+		return nil, err
 	}
 
 	response := r.(map[string]any)
 	if response["code"] != nil {
-		fmt.Fprintf(os.Stderr, "ConnectedRealm failed to get connected realm: %v\n", response)
-		return nil
+		return nil, fmt.Errorf("ConnectedRealm failed to get connected realm: %v", response)
 	}
 
-	return response
+	return response, nil
 }
 
 // ConnectedRealmSearch returns the set of all connected realms
-func ConnectedRealmSearch() map[string]any {
+func ConnectedRealmSearch() (map[string]any, error) {
 	url := "https://us.api.blizzard.com/data/wow/search/connected-realm?namespace=dynamic-us&status.type=UP"
-	r, ok := request(url, accessToken, "ConnectedRealm")
-	if !ok {
-		return nil
+	r, err := request(url, accessToken, "ConnectedRealm")
+	if err != nil {
+		return nil, err
 	}
 
 	response := r.(map[string]any)
 	if response["code"] != nil {
-		fmt.Fprintf(os.Stderr, "ConnectedRealmSearch failed to get connected realms: %v\n", response)
-		return nil
+		return nil, fmt.Errorf("ConnectedRealmSearch failed to get connected realms: %v", response)
 	}
 
-	return response
+	return response, nil
 }
 
 // ConnectedRealmID returns the connected realm ID of the given realm
-func ConnectedRealmID(realm string) (string, bool) {
+func ConnectedRealmID(realm string) (string, error) {
 	id, ok := connectedRealmIDCache[realm]
 	if ok {
-		return id, true
+		return id, nil
 	}
 
-	connectedRealms := ConnectedRealmSearch()
-	if connectedRealms == nil {
-		return "", false
+	connectedRealms, err := ConnectedRealmSearch()
+	if err != nil {
+		return "", fmt.Errorf("no connected realm found: %s", err)
 	}
 
 	slug := realmToSlug(realm)
@@ -171,7 +167,10 @@ func ConnectedRealmID(realm string) (string, bool) {
 		r := result.(map[string]any)
 		data := r["data"].(map[string]any)
 		cRealmID := web.ToString(data["id"])
-		cr := ConnectedRealm(cRealmID)
+		cr, err := ConnectedRealm(cRealmID)
+		if err != nil {
+			return "", err
+		}
 		if cr == nil {
 			continue
 		}
@@ -179,102 +178,98 @@ func ConnectedRealmID(realm string) (string, bool) {
 		for _, cRealm := range realms {
 			realmSlug := cRealm.(map[string]any)["slug"].(string)
 			if slug == realmSlug {
-				return cRealmID, true
+				return cRealmID, nil
 			}
 		}
 	}
 
-	fmt.Fprintf(os.Stderr, "ConnectedRealmID failed to find realm: %s\n", realm)
-	return "", false
+	return "", fmt.Errorf("ConnectedRealmID failed to find realm: %s", realm)
 }
 
 // Auctions returns the current auctions from the auction house
-func Auctions(realm string) ([]any, bool) {
-	connectedRealmID, ok := ConnectedRealmID(realm)
-	if !ok {
-		fmt.Fprintln(os.Stderr, "Auctions: no connected realm ID found")
-		return nil, false
+func Auctions(realm string) ([]any, error) {
+	connectedRealmID, err := ConnectedRealmID(realm)
+	if err != nil {
+		return nil, fmt.Errorf("auctions: no connected realm ID found: %s", err)
 	}
 
 	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + connectedRealmID + "/auctions?namespace=dynamic-us&locale=en_US"
-	r, ok := request(url, accessToken, "Auctions")
-	if !ok {
-		return nil, false
+	r, err := request(url, accessToken, "Auctions")
+	if err != nil {
+		return nil, err
 	}
 
 	response := r.(map[string]any)
 	if response["code"] != nil {
-		fmt.Fprintf(os.Stderr, "Auctions: HTTP error: %v\n", response)
-		return nil, false
+		return nil, fmt.Errorf("auctions: HTTP error: %v", response)
 	}
 
 	auctions := response["auctions"].([]any)
-	return auctions, true
+
+	return auctions, nil
 }
 
 // Commodities returns the current commodity auctions from the auction house
-func Commodities() ([]any, bool) {
+func Commodities() ([]any, error) {
 	url := "https://us.api.blizzard.com/data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US"
 	return requestKey(url, accessToken, "auctions", "Commodities")
 }
 
 // Item retrieves a single item from the WoW web API
-func Item(id string) (map[string]any, bool) {
+func Item(id string) (map[string]any, error) {
 	url := "https://us.api.blizzard.com/data/wow/item/" + id + "?namespace=static-us&locale=en_US"
-	r, ok := request(url, accessToken, "Item")
-	if !ok {
-		return nil, false
+	r, err := request(url, accessToken, "Item")
+	if err != nil {
+		return nil, err
 	}
 
 	response := r.(map[string]any)
 	if response["status"] == "nok" {
-		fmt.Fprintf(os.Stderr, "Item: bad status for itemID %s: %v\n", id, response["reason"])
-		return nil, false
+		return nil, fmt.Errorf("item: bad status for itemID %s: %v", id, response["reason"])
 	}
-	_, ok = response["code"]
+	_, ok := response["code"]
 	if ok {
-		fmt.Fprintf(os.Stderr, "Item: error retrieving itemID %s: %v\n", id, response)
-		return nil, false
+		return nil, fmt.Errorf("item: error retrieving itemID %s: %v", id, response)
 	}
 
-	return response, true
+	return response, nil
 }
 
 // Pets returns a list of all battle pets in the game
-func Pets() ([]any, bool) {
+func Pets() ([]any, error) {
 	url := "https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US"
 	return requestKey(url, profileAccessToken, "pets", "Pets")
 }
 
 // CollectionsPets returns the battle pets the user owns
-func CollectionsPets() ([]any, bool) {
+func CollectionsPets() ([]any, error) {
 	url := "https://us.api.blizzard.com/profile/user/wow/collections/pets?namespace=profile-us&locale=en_US"
 	return requestKey(url, profileAccessToken, "pets", "CollectionsPets")
 }
 
 // Toys returns a list of all toys in the game
-func Toys() ([]any, bool) {
+func Toys() ([]any, error) {
 	url := "https://us.api.blizzard.com/data/wow/toy/index?namespace=static-us&locale=en_US"
 	return requestKey(url, profileAccessToken, "toys", "Toys")
 }
 
 // CollectionsToys returns the toys the user owns
-func CollectionsToys() ([]any, bool) {
+func CollectionsToys() ([]any, error) {
 	url := "https://us.api.blizzard.com/profile/user/wow/collections/toys?namespace=profile-us&locale=en_US"
 	return requestKey(url, profileAccessToken, "toys", "CollectionsToys")
 }
 
 // ItemAppearanceSetsIndex returns IDs of each appearance set
-func ItemAppearanceSetsIndex() ([]any, bool) {
+func ItemAppearanceSetsIndex() ([]any, error) {
 	url := "https://us.api.blizzard.com/data/wow/item-appearance/set/index?namespace=static-us&locale=en_US"
 	return requestKey(url, accessToken, "appearance_sets", "ItemAppearanceSetsIndex")
 }
 
 // ItemAppearanceSetsIndexIDs returns the ID and name of each appearance set
-func ItemAppearanceSetsIndexIDs() map[int64]string {
-	index, ok := ItemAppearanceSetsIndex()
-	if !ok {
-		return nil
+func ItemAppearanceSetsIndexIDs() (map[int64]string, error) {
+	index, err := ItemAppearanceSetsIndex()
+	if err != nil {
+		return nil, err
 	}
 
 	indexMap := map[int64]string{}
@@ -285,20 +280,20 @@ func ItemAppearanceSetsIndexIDs() map[int64]string {
 		indexMap[id] = name
 	}
 
-	return indexMap
+	return indexMap, nil
 }
 
 // ItemAppearanceSet returns the appearance IDs of the given appearance set
-func ItemAppearanceSet(appearanceID int64) ([]any, bool) {
+func ItemAppearanceSet(appearanceID int64) ([]any, error) {
 	url := fmt.Sprintf("https://us.api.blizzard.com/data/wow/item-appearance/set/%d?namespace=static-us&locale=en_US", appearanceID)
 	return requestKey(url, accessToken, "appearances", "ItemAppearanceSet")
 }
 
 // ItemAppearanceSetIDs returns the appearance IDs that comprise the given appearance set
-func ItemAppearanceSetIDs(appearanceID int64) []int64 {
-	itemSet, ok := ItemAppearanceSet(appearanceID)
-	if !ok {
-		return nil
+func ItemAppearanceSetIDs(appearanceID int64) ([]int64, error) {
+	itemSet, err := ItemAppearanceSet(appearanceID)
+	if err != nil {
+		return nil, err
 	}
 
 	appearanceIDs := []int64{}
@@ -307,17 +302,17 @@ func ItemAppearanceSetIDs(appearanceID int64) []int64 {
 		appearanceIDs = append(appearanceIDs, web.ToInt64(i["id"]))
 	}
 
-	return appearanceIDs
+	return appearanceIDs, nil
 }
 
 // CollectionsTransmogs returns the transmogs the user owns
-func CollectionsTransmogs() (any, bool) {
+func CollectionsTransmogs() (any, error) {
 	url := "https://us.api.blizzard.com/profile/user/wow/collections/transmogs?namespace=profile-us&locale=en_US"
 	return request(url, profileAccessToken, "CollectionsTransmogs")
 }
 
 // Professions returns the professions this alt knows
-func Professions(realm, alt string) (any, bool) {
+func Professions(realm, alt string) (any, error) {
 	realm = strings.ToLower(realm)
 	realm = realmToSlug(realm)
 	alt = strings.ToLower(alt)

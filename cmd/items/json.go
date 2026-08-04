@@ -10,9 +10,9 @@ import (
 )
 
 func json(itemID int64, wowItem *wowitem.WoWItem) {
-	i, ok := wowItem.Get(itemID)
-	if !ok {
-		fmt.Fprintln(os.Stderr, "Failed to LookupItem: ", itemID)
+	i, err := wowItem.Get(itemID)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to get itemID %d: %s\n", itemID, err)
 		os.Exit(2)
 	}
 

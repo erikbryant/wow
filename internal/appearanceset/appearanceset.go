@@ -23,44 +23,73 @@ var (
 )
 
 // getAppearanceSetsAppearanceIDs loads all appearance IDs that are in any appearance set
-func getAppearanceSetsAppearanceIDs() {
-	appearanceSetsIDs := wowapi.ItemAppearanceSetsIndexIDs()
+func getAppearanceSetsAppearanceIDs() error {
+	appearanceSetsIDs, err := wowapi.ItemAppearanceSetsIndexIDs()
+	if err != nil {
+		return err
+	}
 	count := len(appearanceSetsIDs)
 
 	for setID, setName := range appearanceSetsIDs {
 		fmt.Fprintf(os.Stderr, "%d\tLoading appearance set: %d   %s\n", count, setID, setName)
 		count--
-		for _, appearanceID := range wowapi.ItemAppearanceSetIDs(setID) {
+		asIDs, err := wowapi.ItemAppearanceSetIDs(setID)
+		if err != nil {
+			return err
+		}
+		for _, appearanceID := range asIDs {
 			as.IDs.Set(appearanceID, true)
 		}
 	}
+
+	return nil
 }
 
-func createFromWeb() {
-	getAppearanceSetsAppearanceIDs()
-	err := as.IDs.Save()
+func createFromWeb() error {
+	err := getAppearanceSetsAppearanceIDs()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "*** failed to save appearances persist: %s\n", err)
+		return fmt.Errorf("failed to get appearances: %s", err)
 	}
+
+	err = as.IDs.Save()
+	if err != nil {
+
+		return fmt.Errorf("failed to save appearances persist: %s", err)
+	}
+
+	return nil
 }
 
-func load() {
+func load() error {
 	as = &AppearanceSets{
 		IDs: persist.New[int64, bool](persistName),
 	}
 
 	err := as.IDs.Load()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "*** error opening appearances persist, creating new one: %v\n", err)
-		createFromWeb()
+		fmt.Fprintf(os.Stderr, "*** error opening appearances persist, creating new one: %s", err)
+		err = createFromWeb()
+		if err != nil {
+			return fmt.Errorf("failed to load or create appearances: %s", err)
+		}
 	}
 
 	fmt.Printf("-- #Appearances known: %d\n", as.IDs.Len())
+
+	return nil
 }
 
-func New() *AppearanceSets {
-	once.Do(load)
-	return as
+func New() (*AppearanceSets, error) {
+	var err error
+
+	once.Do(func() {
+		err = load()
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return as, nil
 }
 
 // Contains returns true if any of these appearance IDs are in an appearance set

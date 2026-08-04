@@ -56,6 +56,16 @@ func NewDataStore() (*DataStore, error) {
 
 	ds.WowItem = wowitem.New()
 
+	ds.AppearanceSet, err = appearanceset.New()
+	if err != nil {
+		return nil, err
+	}
+
+	ds.AppearancesOwned, err = userconfig.NewAppearancesOwned()
+	if err != nil {
+		return nil, err
+	}
+
 	ds.BattlePets, err = battlepet.New()
 	if err != nil {
 		return nil, err
@@ -67,9 +77,6 @@ func NewDataStore() (*DataStore, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	ds.AppearancesOwned = userconfig.NewAppearancesOwned()
-	ds.AppearanceSet = appearanceset.New()
 
 	return &ds, nil
 }
@@ -156,8 +163,8 @@ func iterateAuctions(auctions map[int64][]auction.Auction, ds *DataStore, realm 
 	}
 
 	for itemID, itemAuctions := range auctions {
-		i, ok := ds.WowItem.Get(itemID)
-		if !ok {
+		i, err := ds.WowItem.Get(itemID)
+		if err != nil {
 			continue
 		}
 

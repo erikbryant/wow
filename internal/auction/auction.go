@@ -138,16 +138,16 @@ func bin(auctions []any) map[int64][]Auction {
 
 // Get returns the current auctions binned by item ID
 func Get(realm string) (map[int64][]Auction, error) {
-	var ok bool
+	var err error
 	var auctions []any
 
 	if strings.ToLower(realm) == "commodities" {
-		auctions, ok = wowapi.Commodities()
+		auctions, err = wowapi.Commodities()
 	} else {
-		auctions, ok = wowapi.Auctions(realm)
+		auctions, err = wowapi.Auctions(realm)
 	}
-	if !ok {
-		return nil, fmt.Errorf("unable to obtain auctions for: %s", realm)
+	if err != nil {
+		return nil, fmt.Errorf("unable to obtain auctions for %s: %s", realm, err)
 	}
 
 	return bin(auctions), nil

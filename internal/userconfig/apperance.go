@@ -2,7 +2,6 @@ package userconfig
 
 import (
 	"fmt"
-	"os"
 	"slices"
 	"sync"
 
@@ -138,11 +137,10 @@ var (
 )
 
 // getAppearanceIDsOwned returns the appearance IDs I own
-func getAppearanceIDsOwned() {
-	t, ok := wowapi.CollectionsTransmogs()
-	if !ok {
-		fmt.Fprintf(os.Stderr, "*** unable to obtain transmogs owned\n")
-		return
+func getAppearanceIDsOwned() error {
+	t, err := wowapi.CollectionsTransmogs()
+	if err != nil {
+		return fmt.Errorf("unable to obtain transmogs owned: %s", err)
 	}
 
 	appearancesOwned = &AppearancesOwned{
@@ -159,12 +157,22 @@ func getAppearanceIDsOwned() {
 			appearancesOwned.IDs[id] = true
 		}
 	}
+
+	return nil
 }
 
-func NewAppearancesOwned() *AppearancesOwned {
-	once.Do(getAppearanceIDsOwned)
+func NewAppearancesOwned() (*AppearancesOwned, error) {
+	var err error
+
+	once.Do(func() {
+		err = getAppearanceIDsOwned()
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	fmt.Printf("-- #Appearances owned: %d\n", len(appearancesOwned.IDs))
-	return appearancesOwned
+	return appearancesOwned, nil
 }
 
 // needAppearanceID returns true if I need this appearance ID

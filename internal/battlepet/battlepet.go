@@ -24,9 +24,9 @@ const (
 func getPetNames() (map[int64]string, error) {
 	petNames := map[int64]string{}
 
-	allPets, ok := wowapi.Pets()
-	if !ok {
-		return nil, fmt.Errorf("unable to obtain battle pet names")
+	allPets, err := wowapi.Pets()
+	if err != nil {
+		return nil, fmt.Errorf("unable to obtain battle pet names: %s", err)
 	}
 
 	for _, petRaw := range allPets {
@@ -42,9 +42,9 @@ func getPetNames() (map[int64]string, error) {
 func getPetsOwned() (map[int64]int64, error) {
 	myPets := map[int64]int64{}
 
-	pets, ok := wowapi.CollectionsPets()
-	if !ok {
-		return nil, fmt.Errorf("unable to obtain battle pets owned")
+	pets, err := wowapi.CollectionsPets()
+	if err != nil {
+		return nil, fmt.Errorf("unable to obtain battle pets owned: %s", err)
 	}
 
 	for _, petRaw := range pets {

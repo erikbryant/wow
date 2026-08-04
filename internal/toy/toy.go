@@ -21,32 +21,32 @@ var (
 
 // getNames returns a map of all toy names by ID
 func getNames() (map[int64]string, error) {
-	toys := map[int64]string{}
+	toyNames := map[int64]string{}
 
-	allToys, ok := wowapi.Toys()
-	if !ok {
-		return nil, fmt.Errorf("unable to obtain toy names")
+	allToys, err := wowapi.Toys()
+	if err != nil {
+		return nil, fmt.Errorf("unable to obtain toy names: %s", err)
 	}
 
 	for _, toyRaw := range allToys {
 		toy := toyRaw.(map[string]any)
 		id := web.ToInt64(toy["id"])
-		toys[id] = toy["name"].(string)
+		toyNames[id] = toy["name"].(string)
 	}
 
-	return toys, nil
+	return toyNames, nil
 }
 
 // getOwned returns the toys I own
 func getOwned() (map[int64]bool, error) {
 	myToys := map[int64]bool{}
 
-	toys, ok := wowapi.CollectionsToys()
-	if !ok {
-		return nil, fmt.Errorf("unable to obtain toys owned")
+	toysOwned, err := wowapi.CollectionsToys()
+	if err != nil {
+		return nil, fmt.Errorf("unable to obtain toys owned: %s", err)
 	}
 
-	for _, toyRaw := range toys {
+	for _, toyRaw := range toysOwned {
 		toy := toyRaw.(map[string]any)
 		id, _ := web.MsiValued(toy, []string{"toy", "id"}, 0)
 		myToys[web.ToInt64(id)] = true

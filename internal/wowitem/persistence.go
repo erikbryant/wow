@@ -45,24 +45,24 @@ func (wi *WoWItem) Search(s string) Item {
 }
 
 // GetWeb retrieves a single item from the web and persists it.
-func (wi *WoWItem) GetWeb(id int64) (Item, bool) {
+func (wi *WoWItem) GetWeb(id int64) (Item, error) {
 	fmt.Println("Downloading item:", id)
-	result, ok := wowapi.Item(web.ToString(id))
-	if !ok {
-		return Item{}, false
+	result, err := wowapi.Item(web.ToString(id))
+	if err != nil {
+		return Item{}, err
 	}
 
 	i := NewItem(result)
 	wi.Items.Set(i.ID(), i)
 
-	return i, true
+	return i, nil
 }
 
 // Get retrieves a single item. From persistence if present, web if not.
-func (wi *WoWItem) Get(id int64) (Item, bool) {
+func (wi *WoWItem) Get(id int64) (Item, error) {
 	i, ok := wi.Items.Get(id)
 	if ok {
-		return i, true
+		return i, nil
 	}
 	return wi.GetWeb(id)
 }

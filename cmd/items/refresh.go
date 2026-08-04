@@ -22,13 +22,13 @@ func refreshItem(itemID int64, wowItem *wowitem.WoWItem) {
 		wowItem.Items.Delete(itemID)
 	}
 
-	iNew, ok := wowItem.GetWeb(itemID)
-	if !ok {
-		fmt.Fprintln(os.Stderr, "Could not retrieve item", itemID)
+	iNew, err := wowItem.GetWeb(itemID)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not retrieve itemID %d: %s\n", itemID, err)
 		os.Exit(2)
 	}
 
-	err := wowItem.Items.Save()
+	err = wowItem.Items.Save()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Failed to save item persistence: ", err)
 		os.Exit(2)
