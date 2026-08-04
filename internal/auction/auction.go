@@ -116,9 +116,9 @@ func newAuction(auc any) Auction {
 	return a
 }
 
-// unpackAuctions converts the []interface{} format we get from the web into structs
-func unpackAuctions(auctions []any) map[int64][]Auction {
-	a := map[int64][]Auction{}
+// bin bins auctions by itemID
+func bin(auctions []any) map[int64][]Auction {
+	bins := map[int64][]Auction{}
 
 	for _, auc := range auctions {
 		aucStruct := newAuction(auc.(map[string]any))
@@ -130,10 +130,10 @@ func unpackAuctions(auctions []any) map[int64][]Auction {
 			// These accept bids, but not purchases. Ignore these.
 			continue
 		}
-		a[aucStruct.ItemID] = append(a[aucStruct.ItemID], aucStruct)
+		bins[aucStruct.ItemID] = append(bins[aucStruct.ItemID], aucStruct)
 	}
 
-	return a
+	return bins
 }
 
 // Get returns the current auctions binned by item ID
@@ -150,5 +150,5 @@ func Get(realm string) (map[int64][]Auction, error) {
 		return nil, fmt.Errorf("unable to obtain auctions for: %s", realm)
 	}
 
-	return unpackAuctions(auctions), nil
+	return bin(auctions), nil
 }
