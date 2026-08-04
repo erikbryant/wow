@@ -9,8 +9,8 @@ import (
 )
 
 func deleteItem(itemID int64, wowItem *wowitem.WoWItem) error {
-	fmt.Println("Deleting itemID:", itemID)
 	wowItem.Items.Delete(itemID)
+	fmt.Println("Deleted itemID:", itemID)
 	err := wowItem.Items.Save()
 	return err
 }
