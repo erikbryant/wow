@@ -21,10 +21,13 @@ import (
 
 type Recommendations struct {
 	Arbitrages         []string
+	ArbitrageLogs      []string
 	ArbitrageProfit    int64
 	PetNeededBargains  []string
 	Bargains           []string
+	NumAuctions        int
 	PetResellBargains  []string
+	Realm              string
 	AppearanceBargains []string
 }
 
@@ -162,8 +165,11 @@ func fmtShoppingList(label string, items []string, c *color.Color, summarize boo
 	return c.Sprintf("%s%s\n", header, strings.Join(slices.Compact(items), "\n"))
 }
 
-func iterateAuctions(auctions map[int64][]auction.Auction, ds *DataStore, saveRecords bool) *Recommendations {
-	var recommendations Recommendations
+func iterateAuctions(auctions map[int64][]auction.Auction, ds *DataStore, realm string) *Recommendations {
+	r := Recommendations{
+		NumAuctions: len(auctions),
+		Realm:       realm,
+	}
 
 	for itemID, itemAuctions := range auctions {
 		i, ok := ds.WowItem.Get(itemID)
@@ -179,10 +185,10 @@ func iterateAuctions(auctions map[int64][]auction.Auction, ds *DataStore, saveRe
 		for _, auc := range itemAuctions {
 			if i.ID() == battlepet.PetCageItemID {
 				if petResellBargain(auc, ds) {
-					recommendations.PetResellBargains = append(recommendations.PetResellBargains, ds.BattlePets.Name(auc.Pet.SpeciesID))
+					r.PetResellBargains = append(r.PetResellBargains, ds.BattlePets.Name(auc.Pet.SpeciesID))
 				}
 				if petNeeded(auc, ds) {
-					recommendations.PetNeededBargains = append(recommendations.PetNeededBargains, ds.BattlePets.Name(auc.Pet.SpeciesID))
+					r.PetNeededBargains = append(r.PetNeededBargains, ds.BattlePets.Name(auc.Pet.SpeciesID))
 				}
 				continue
 			}
@@ -190,55 +196,53 @@ func iterateAuctions(auctions map[int64][]auction.Auction, ds *DataStore, saveRe
 			if petSpellNeeded(i, auc, ds) {
 				petID, _ := ds.BattlePets.PetSpell(i)
 				pet := fmt.Sprintf("%s %s (spell)", ds.BattlePets.Name(petID), i.Quality())
-				recommendations.PetNeededBargains = append(recommendations.PetNeededBargains, pet)
+				r.PetNeededBargains = append(r.PetNeededBargains, pet)
 			}
 
 			if toyBargain(i, auc, ds) || usefulGoodsBargain(i, auc, ds) {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
-				recommendations.Bargains = append(recommendations.Bargains, str)
+				r.Bargains = append(r.Bargains, str)
 			}
 
 			if appearanceSetBargain(i, auc, ds) {
-				recommendations.AppearanceBargains = append(recommendations.AppearanceBargains, i.Name()+" ---")
+				r.AppearanceBargains = append(r.AppearanceBargains, i.Name()+" ---")
 			} else {
 				// The item is already a bargain, no need to check again
 				if appearanceBargain(i, auc, ds) {
-					recommendations.AppearanceBargains = append(recommendations.AppearanceBargains, i.Name())
+					r.AppearanceBargains = append(r.AppearanceBargains, i.Name())
 				}
 			}
 
 			profit, ok := isArbitrage(i, auc, ds)
 			if ok {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(profit))
-				recommendations.Arbitrages = append(recommendations.Arbitrages, str)
-				recommendations.ArbitrageProfit += profit
-				if saveRecords {
-					for _, iLevel := range wowitem.ILevels(i.ID()) {
-						record := fmt.Sprintf("    {%d, %d}, -- %s", i.ID(), iLevel, i.Name())
-						appendArbitrageRecord(record)
-					}
+				r.Arbitrages = append(r.Arbitrages, str)
+				r.ArbitrageProfit += profit
+				for _, iLevel := range wowitem.ILevels(i.ID()) {
+					record := fmt.Sprintf("    {%d, %d}, -- %s", i.ID(), iLevel, i.Name())
+					r.ArbitrageLogs = append(r.ArbitrageLogs, record)
 				}
 			}
 		}
 	}
 
-	return &recommendations
+	return &r
 }
 
-func formatRecommendations(recommendations *Recommendations, realm string, numAuctions int, ds *DataStore, summarize bool) string {
+func (r *Recommendations) format(ds *DataStore, summarize bool) string {
 	shoppingList := ""
-	shoppingList += fmtShoppingList("Pets I Need", recommendations.PetNeededBargains, color.New(color.FgMagenta), summarize)
-	shoppingList += fmtShoppingList("Pets to Resell", recommendations.PetResellBargains, color.New(color.FgGreen), summarize)
-	shoppingList += fmtShoppingList("Useful Item Bargains", recommendations.Bargains, color.New(color.FgRed), summarize)
-	shoppingList += fmtShoppingList("Appearance Bargains", recommendations.AppearanceBargains, color.New(color.FgBlue), summarize)
+	shoppingList += fmtShoppingList("Pets I Need", r.PetNeededBargains, color.New(color.FgMagenta), summarize)
+	shoppingList += fmtShoppingList("Pets to Resell", r.PetResellBargains, color.New(color.FgGreen), summarize)
+	shoppingList += fmtShoppingList("Useful Item Bargains", r.Bargains, color.New(color.FgRed), summarize)
+	shoppingList += fmtShoppingList("Appearance Bargains", r.AppearanceBargains, color.New(color.FgBlue), summarize)
 
 	if summarize {
-		if recommendations.ArbitrageProfit >= ds.ShoppingConfig.ProfitToDisplayMin {
+		if r.ArbitrageProfit >= ds.ShoppingConfig.ProfitToDisplayMin {
 			c := color.New(color.FgWhite)
-			shoppingList += c.Sprintf("Arbitrages: %s\n", common.Gold(recommendations.ArbitrageProfit))
+			shoppingList += c.Sprintf("Arbitrages: %s\n", common.Gold(r.ArbitrageProfit))
 		}
 	} else {
-		shoppingList += fmtShoppingList("Arbitrages", recommendations.Arbitrages, color.New(color.FgWhite), summarize)
+		shoppingList += fmtShoppingList("Arbitrages", r.Arbitrages, color.New(color.FgWhite), summarize)
 	}
 
 	if len(shoppingList) == 0 {
@@ -247,7 +251,7 @@ func formatRecommendations(recommendations *Recommendations, realm string, numAu
 	}
 
 	col := color.New(color.FgCyan)
-	msg := col.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", realm, numAuctions, shoppingList)
+	msg := col.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", r.Realm, r.NumAuctions, shoppingList)
 
 	return msg
 }
@@ -261,9 +265,15 @@ func scanRealm(realm string, c chan<- string, ds *DataStore, summarize bool) {
 		return
 	}
 
-	recommendations := iterateAuctions(auctions, ds, realm != "Commodities")
+	r := iterateAuctions(auctions, ds, realm)
 
-	c <- formatRecommendations(recommendations, realm, len(auctions), ds, summarize)
+	if r.Realm != "Commodities" {
+		for _, record := range r.ArbitrageLogs {
+			appendArbitrageRecord(record)
+		}
+	}
+
+	c <- r.format(ds, summarize)
 }
 
 // scanRealms processes auctions on all realms in 'r'
