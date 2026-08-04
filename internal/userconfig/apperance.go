@@ -178,7 +178,7 @@ func (ao *AppearancesOwned) needAppearanceID(id int64) bool {
 	return !ao.IDs[id]
 }
 
-// NeedAppearance returns true if I need any of these appearance IDs
-func (ao *AppearancesOwned) NeedAppearance(appearanceIDs []int64) bool {
+// Need returns true if I need any of these appearance IDs
+func (ao *AppearancesOwned) Need(appearanceIDs []int64) bool {
 	return slices.ContainsFunc(appearanceIDs, ao.needAppearanceID)
 }

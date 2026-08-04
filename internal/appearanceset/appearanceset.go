@@ -1,4 +1,4 @@
-package transmog
+package appearanceset
 
 import (
 	"fmt"
@@ -9,8 +9,8 @@ import (
 	"github.com/erikbryant/wow/internal/wowapi"
 )
 
-type Transmog struct {
-	appearanceSetAppearanceIDs *persist.Persistence[int64, bool]
+type AppearanceSets struct {
+	IDs *persist.Persistence[int64, bool]
 }
 
 const (
@@ -19,7 +19,7 @@ const (
 
 var (
 	once sync.Once
-	tr   *Transmog
+	as   *AppearanceSets
 )
 
 // getAppearanceSetsAppearanceIDs loads all appearance IDs that are in any appearance set
@@ -31,42 +31,42 @@ func getAppearanceSetsAppearanceIDs() {
 		fmt.Printf("%d\tLoading appearance set: %d   %s\n", count, setID, setName)
 		count--
 		for _, appearanceID := range wowapi.ItemAppearanceSetIDs(setID) {
-			tr.appearanceSetAppearanceIDs.Set(appearanceID, true)
+			as.IDs.Set(appearanceID, true)
 		}
 	}
 }
 
 func createFromWeb() {
 	getAppearanceSetsAppearanceIDs()
-	err := tr.appearanceSetAppearanceIDs.Save()
+	err := as.IDs.Save()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "*** failed to save appearances persist: %s\n", err)
 	}
 }
 
 func load() {
-	tr = &Transmog{
-		appearanceSetAppearanceIDs: persist.New[int64, bool](persistName),
+	as = &AppearanceSets{
+		IDs: persist.New[int64, bool](persistName),
 	}
 
-	err := tr.appearanceSetAppearanceIDs.Load()
+	err := as.IDs.Load()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "*** error opening appearances persist, creating new one: %v\n", err)
 		createFromWeb()
 	}
 
-	fmt.Printf("-- #Appearances known: %d\n", tr.appearanceSetAppearanceIDs.Len())
+	fmt.Printf("-- #Appearances known: %d\n", as.IDs.Len())
 }
 
-func New() *Transmog {
+func New() *AppearanceSets {
 	once.Do(load)
-	return tr
+	return as
 }
 
-// InAppearanceSet returns true if any of these appearance IDs are in an appearance set
-func (t *Transmog) InAppearanceSet(appearanceIDs []int64) bool {
+// Has returns true if any of these appearance IDs are in an appearance set
+func (as *AppearanceSets) Has(appearanceIDs []int64) bool {
 	for _, appearanceID := range appearanceIDs {
-		inSet, ok := t.appearanceSetAppearanceIDs.Get(appearanceID)
+		inSet, ok := as.IDs.Get(appearanceID)
 		if !ok {
 			continue
 		}

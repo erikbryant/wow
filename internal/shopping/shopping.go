@@ -8,12 +8,12 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/auction"
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/shoppingconfig"
 	"github.com/erikbryant/wow/internal/toy"
-	"github.com/erikbryant/wow/internal/transmog"
 	"github.com/erikbryant/wow/internal/userconfig"
 	"github.com/erikbryant/wow/internal/wowitem"
 	"github.com/fatih/color"
@@ -37,7 +37,7 @@ type DataStore struct {
 	Toys           *toy.Toy
 
 	AppearancesOwned *userconfig.AppearancesOwned
-	Transmog         *transmog.Transmog
+	AppearanceSet    *appearanceset.AppearanceSets
 }
 
 const (
@@ -70,7 +70,7 @@ func NewDataStore() (*DataStore, error) {
 	}
 
 	ds.AppearancesOwned = userconfig.NewAppearancesOwned()
-	ds.Transmog = transmog.New()
+	ds.AppearanceSet = appearanceset.New()
 
 	return &ds, nil
 }
@@ -142,11 +142,11 @@ func usefulGoodsBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool
 }
 
 func appearanceBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
-	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceMax && ds.AppearancesOwned.NeedAppearance(i.Appearances())
+	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceMax && ds.AppearancesOwned.Need(i.Appearances())
 }
 
 func appearanceSetBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
-	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceInSetMax && ds.Transmog.InAppearanceSet(i.Appearances()) && ds.AppearancesOwned.NeedAppearance(i.Appearances())
+	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceInSetMax && ds.AppearanceSet.Has(i.Appearances()) && ds.AppearancesOwned.Need(i.Appearances())
 }
 
 // fmtShoppingList returns a formatted string of the given items or "" if none

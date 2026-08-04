@@ -6,8 +6,8 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/common"
-	"github.com/erikbryant/wow/internal/transmog"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
@@ -33,8 +33,8 @@ var columns = []Column{
 	{
 		header: "App Set",
 		value: func(item wowitem.Item) string {
-			t := transmog.New()
-			return fmt.Sprintf("%t", t.InAppearanceSet(item.Appearances()))
+			t := appearanceset.New()
+			return fmt.Sprintf("%t", t.Has(item.Appearances()))
 		},
 	},
 	{

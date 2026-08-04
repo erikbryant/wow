@@ -3,15 +3,15 @@ package query
 import (
 	"strings"
 
-	"github.com/erikbryant/wow/internal/transmog"
+	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 // AppearanceSet returns true for items that are in an appearance set.
 func AppearanceSet() Predicate {
-	t := transmog.New()
+	t := appearanceset.New()
 	return func(item wowitem.Item) bool {
-		return t.InAppearanceSet(item.Appearances())
+		return t.Has(item.Appearances())
 	}
 }
 
