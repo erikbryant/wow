@@ -34,7 +34,7 @@ var columns = []Column{
 		header: "App Set",
 		value: func(item wowitem.Item) string {
 			t := appearanceset.New()
-			return fmt.Sprintf("%t", t.Has(item.Appearances()))
+			return fmt.Sprintf("%t", t.Contains(item.Appearances()))
 		},
 	},
 	{

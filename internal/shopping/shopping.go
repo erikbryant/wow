@@ -146,7 +146,7 @@ func appearanceBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool 
 }
 
 func appearanceSetBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
-	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceInSetMax && ds.AppearanceSet.Has(i.Appearances()) && ds.AppearancesOwned.Need(i.Appearances())
+	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceInSetMax && ds.AppearanceSet.Contains(i.Appearances()) && ds.AppearancesOwned.Need(i.Appearances())
 }
 
 // fmtShoppingList returns a formatted string of the given items or "" if none

@@ -11,7 +11,7 @@ import (
 func AppearanceSet() Predicate {
 	t := appearanceset.New()
 	return func(item wowitem.Item) bool {
-		return t.Has(item.Appearances())
+		return t.Contains(item.Appearances())
 	}
 }
 

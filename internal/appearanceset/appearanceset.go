@@ -63,8 +63,8 @@ func New() *AppearanceSets {
 	return as
 }
 
-// Has returns true if any of these appearance IDs are in an appearance set
-func (as *AppearanceSets) Has(appearanceIDs []int64) bool {
+// Contains returns true if any of these appearance IDs are in an appearance set
+func (as *AppearanceSets) Contains(appearanceIDs []int64) bool {
 	for _, appearanceID := range appearanceIDs {
 		inSet, ok := as.IDs.Get(appearanceID)
 		if !ok {
