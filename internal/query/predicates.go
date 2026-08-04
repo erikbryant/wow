@@ -9,8 +9,7 @@ import (
 
 // AppearanceSet returns true for items that are in an appearance set.
 func AppearanceSet() Predicate {
-	// TODO: Move this to a singleton initializer model
-	t, _ := transmog.New(false)
+	t := transmog.New()
 	return func(item wowitem.Item) bool {
 		return t.InAppearanceSet(item.Appearances())
 	}

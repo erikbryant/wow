@@ -1,5 +1,15 @@
 package userconfig
 
+import (
+	"fmt"
+	"os"
+	"slices"
+	"sync"
+
+	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/internal/wowapi"
+)
+
 // FlakyAppearanceIDs WoW says I own them, but this app thinks I don't
 var FlakyAppearanceIDs = map[int64]struct{}{
 	// These are not real appearances; they generate false positives
@@ -113,7 +123,62 @@ var FlakyAppearanceIDs = map[int64]struct{}{
 
 }
 
-func FlakyAppearanceID(id int64) bool {
+func flakyAppearanceID(id int64) bool {
 	_, ok := FlakyAppearanceIDs[id]
 	return ok
+}
+
+type AppearancesOwned struct {
+	IDs map[int64]bool
+}
+
+var (
+	once             sync.Once
+	appearancesOwned *AppearancesOwned
+)
+
+// getAppearanceIDsOwned returns the appearance IDs I own
+func getAppearanceIDsOwned() {
+	t, ok := wowapi.CollectionsTransmogs()
+	if !ok {
+		fmt.Fprintf(os.Stderr, "unable to obtain transmogs owned\n")
+		return
+	}
+
+	appearancesOwned = &AppearancesOwned{
+		IDs: map[int64]bool{},
+	}
+
+	transmogs := t.(map[string]any)
+
+	for _, slot := range transmogs["slots"].([]any) {
+		slot := slot.(map[string]any)
+		for _, appearance := range slot["appearances"].([]any) {
+			appearance := appearance.(map[string]any)
+			id := web.ToInt64(appearance["id"])
+			appearancesOwned.IDs[id] = true
+		}
+	}
+}
+
+func NewAppearancesOwned() *AppearancesOwned {
+	once.Do(getAppearanceIDsOwned)
+	fmt.Printf("-- #Appearances owned: %d\n", len(appearancesOwned.IDs))
+	return appearancesOwned
+}
+
+// needAppearanceID returns true if I need this appearance ID
+func (ao *AppearancesOwned) needAppearanceID(id int64) bool {
+	if flakyAppearanceID(id) {
+		return false
+	}
+	if !ao.IDs[id] {
+		fmt.Println("NEED APPEARANCE ID: ", id)
+	}
+	return !ao.IDs[id]
+}
+
+// NeedAppearance returns true if I need any of these appearance IDs
+func (ao *AppearancesOwned) NeedAppearance(appearanceIDs []int64) bool {
+	return slices.ContainsFunc(appearanceIDs, ao.needAppearanceID)
 }
