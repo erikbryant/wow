@@ -75,9 +75,6 @@ func petResellBargain(petAuction auction.Auction) bool {
 	if ok {
 		return false
 	}
-	if petAuction.Buyout <= 0 {
-		return false
-	}
 	if petAuction.Pet.QualityID < common.QualityID("Rare") {
 		return false
 	}
@@ -160,10 +157,6 @@ func iterateAuctions(auctions map[int64][]auction.Auction) (*Recommendations, []
 		}
 
 		for _, auc := range itemAuctions {
-			if auc.Buyout <= 0 {
-				continue
-			}
-
 			if i.ID() == battlepet.PetCageItemID {
 				if petResellBargain(auc) {
 					recommendations.PetResellBargains = append(recommendations.PetResellBargains, battlePets.Name(auc.Pet.SpeciesID))

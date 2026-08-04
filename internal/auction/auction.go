@@ -136,6 +136,10 @@ func unpackAuctions(auctions []any) map[int64][]Auction {
 			// There are some item IDs for which WoW has no data. Ignore those.
 			continue
 		}
+		if aucStruct.Buyout <= 0 {
+			// These accept bids, but not purchases. Ignore these.
+			continue
+		}
 		a[aucStruct.ItemID] = append(a[aucStruct.ItemID], aucStruct)
 	}
 
