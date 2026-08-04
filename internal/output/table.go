@@ -32,7 +32,11 @@ var columns = []Column{
 	},
 	{
 		header: "App Set",
-		value:  func(item wowitem.Item) string { return fmt.Sprintf("%t", transmog.InAppearanceSet(item.Appearances())) },
+		value: func(item wowitem.Item) string {
+			// TODO: Move this to a singleton initializer model
+			t, _ := transmog.New()
+			return fmt.Sprintf("%t", t.InAppearanceSet(item.Appearances()))
+		},
 	},
 	{
 		header: "Sell Price",

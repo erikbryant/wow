@@ -18,31 +18,32 @@ type appearanceSetStore interface {
 	Len() int
 }
 
+type Transmog struct {
+	appearanceIDsOwned         map[int64]bool
+	appearanceSetAppearanceIDs appearanceSetStore
+}
+
 const (
 	persistName = "appearances"
 )
 
 var (
-	appearanceIDsOwned = map[int64]bool{}
-
 	// Define external dependencies such that they can be mocked in the tests.
-	appearanceSetAppearanceIDs appearanceSetStore = persist.New[int64, bool](persistName)
-
 	collectionsTransmogs   = wowapi.CollectionsTransmogs
 	appearanceSetsIndexIDs = wowapi.ItemAppearanceSetsIndexIDs
 	appearanceSetIDs       = wowapi.ItemAppearanceSetIDs
 	flakyAppearanceID      = userconfig.FlakyAppearanceID
 )
 
-// getAppearanceSetsAppearanceIDs returns all appearance IDs that are in any appearance set
-func getAppearanceSetsAppearanceIDs() {
+// getAppearanceSetsAppearanceIDs loads all appearance IDs that are in any appearance set
+func (t *Transmog) getAppearanceSetsAppearanceIDs() {
 	appearanceSetsIDs := appearanceSetsIndexIDs()
 	count := len(appearanceSetsIDs)
 	for setID, setName := range appearanceSetsIDs {
 		fmt.Printf("%d\tAppearance set: %d   %s\n", count, setID, setName)
 		count--
 		for _, appearanceID := range appearanceSetIDs(setID) {
-			appearanceSetAppearanceIDs.Set(appearanceID, true)
+			t.appearanceSetAppearanceIDs.Set(appearanceID, true)
 		}
 	}
 }
@@ -70,47 +71,51 @@ func getAppearanceIDsOwned() (map[int64]bool, error) {
 	return myAppearanceIDs, nil
 }
 
-func Init() error {
-	err := appearanceSetAppearanceIDs.Load()
+func New() (*Transmog, error) {
+	t := Transmog{
+		appearanceSetAppearanceIDs: persist.New[int64, bool](persistName),
+	}
+
+	err := t.appearanceSetAppearanceIDs.Load()
 	if err != nil {
 		fmt.Printf("*** error opening appearances persist, creating new one: %v\n", err)
-		getAppearanceSetsAppearanceIDs()
-		err = appearanceSetAppearanceIDs.Save()
+		t.getAppearanceSetsAppearanceIDs()
+		err = t.appearanceSetAppearanceIDs.Save()
 		if err != nil {
-			return fmt.Errorf("failed to save appearances persist: %s", err)
+			return nil, fmt.Errorf("failed to save appearances persist: %s", err)
 		}
 	}
 
-	appearanceIDsOwned, err = getAppearanceIDsOwned()
+	t.appearanceIDsOwned, err = getAppearanceIDsOwned()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	fmt.Printf("-- #Appearances owned: %d/%d\n", len(appearanceIDsOwned), appearanceSetAppearanceIDs.Len())
+	fmt.Printf("-- #Appearances owned: %d/%d\n", len(t.appearanceIDsOwned), t.appearanceSetAppearanceIDs.Len())
 
-	return nil
+	return &t, nil
 }
 
 // needAppearanceID returns true if I need this appearance ID
-func needAppearanceID(id int64) bool {
+func (t *Transmog) needAppearanceID(id int64) bool {
 	if flakyAppearanceID(id) {
 		return false
 	}
-	if !appearanceIDsOwned[id] {
+	if !t.appearanceIDsOwned[id] {
 		fmt.Println("NEED APPEARANCE ID: ", id)
 	}
-	return !appearanceIDsOwned[id]
+	return !t.appearanceIDsOwned[id]
 }
 
 // NeedAppearance returns true if I need any of these appearance IDs
-func NeedAppearance(appearanceIDs []int64) bool {
-	return slices.ContainsFunc(appearanceIDs, needAppearanceID)
+func (t *Transmog) NeedAppearance(appearanceIDs []int64) bool {
+	return slices.ContainsFunc(appearanceIDs, t.needAppearanceID)
 }
 
 // InAppearanceSet returns true if any of these appearance IDs are in an appearance set
-func InAppearanceSet(appearanceIDs []int64) bool {
+func (t *Transmog) InAppearanceSet(appearanceIDs []int64) bool {
 	for _, appearanceID := range appearanceIDs {
-		inSet, ok := appearanceSetAppearanceIDs.Get(appearanceID)
+		inSet, ok := t.appearanceSetAppearanceIDs.Get(appearanceID)
 		if !ok {
 			continue
 		}

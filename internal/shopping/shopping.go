@@ -28,10 +28,11 @@ type Recommendations struct {
 }
 
 type DataStore struct {
-	BattlePets     *battlepet.BattlePet
-	Toys           *toy.Toy
-	ShoppingConfig *shoppingconfig.UserConfig
 	WowItem        *wowitem.WoWItem
+	BattlePets     *battlepet.BattlePet
+	ShoppingConfig *shoppingconfig.UserConfig
+	Toys           *toy.Toy
+	Transmog       *transmog.Transmog
 }
 
 const (
@@ -50,14 +51,19 @@ func NewDataStore() (*DataStore, error) {
 
 	ds.WowItem = wowitem.New()
 
-	ds.ShoppingConfig = shoppingconfig.New(ds.WowItem)
-
 	ds.BattlePets, err = battlepet.New()
 	if err != nil {
 		return nil, err
 	}
 
+	ds.ShoppingConfig = shoppingconfig.New(ds.WowItem)
+
 	ds.Toys, err = toy.New()
+	if err != nil {
+		return nil, err
+	}
+
+	ds.Transmog, err = transmog.New()
 	if err != nil {
 		return nil, err
 	}
@@ -145,11 +151,11 @@ func usefulGoodsBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool
 }
 
 func appearanceBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
-	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceMax && transmog.NeedAppearance(i.Appearances())
+	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceMax && ds.Transmog.NeedAppearance(i.Appearances())
 }
 
 func appearanceSetBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
-	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceInSetMax && transmog.InAppearanceSet(i.Appearances()) && transmog.NeedAppearance(i.Appearances())
+	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceInSetMax && ds.Transmog.InAppearanceSet(i.Appearances()) && ds.Transmog.NeedAppearance(i.Appearances())
 }
 
 // fmtShoppingList returns a formatted string of the given items or "" if none
@@ -335,12 +341,6 @@ func Shop(realms string, summarize bool) error {
 			fmt.Fprintf(os.Stderr, "failed to save wow items persistence: %s\n", err)
 		}
 	}()
-
-	// TODO: convert this to dataStore.Transmog = transmog.New()
-	err = transmog.Init()
-	if err != nil {
-		return err
-	}
 
 	// Ensure arbitrage log file is empty
 	err = os.WriteFile(arbitragePath, nil, 0600)
