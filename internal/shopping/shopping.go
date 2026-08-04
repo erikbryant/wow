@@ -42,7 +42,8 @@ const (
 )
 
 var (
-	mu sync.Mutex
+	mu               sync.Mutex
+	arbitrageRecords []string
 )
 
 func NewDataStore() (*DataStore, error) {
@@ -69,6 +70,12 @@ func NewDataStore() (*DataStore, error) {
 	}
 
 	return &ds, nil
+}
+
+func appendArbitrageRecord(record string) {
+	mu.Lock()
+	defer mu.Unlock()
+	arbitrageRecords = append(arbitrageRecords, record)
 }
 
 // appendFile appends 'contents' to a file
@@ -171,9 +178,8 @@ func fmtShoppingList(label string, items []string, c *color.Color, summarize boo
 	return c.Sprintf("%s%s\n", header, strings.Join(slices.Compact(items), "\n"))
 }
 
-func iterateAuctions(auctions map[int64][]auction.Auction, ds *DataStore) (*Recommendations, []string) {
+func iterateAuctions(auctions map[int64][]auction.Auction, ds *DataStore, saveRecords bool) *Recommendations {
 	var recommendations Recommendations
-	arbitrageLogs := []string{}
 
 	for itemID, itemAuctions := range auctions {
 		i, ok := ds.WowItem.Get(itemID)
@@ -222,16 +228,17 @@ func iterateAuctions(auctions map[int64][]auction.Auction, ds *DataStore) (*Reco
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(profit))
 				recommendations.Arbitrages = append(recommendations.Arbitrages, str)
 				recommendations.ArbitrageProfit += profit
-
-				for _, iLevel := range wowitem.ILevels(i.ID()) {
-					logEntry := fmt.Sprintf("    {%d, %d}, -- %s\n", i.ID(), iLevel, i.Name())
-					arbitrageLogs = append(arbitrageLogs, logEntry)
+				if saveRecords {
+					for _, iLevel := range wowitem.ILevels(i.ID()) {
+						record := fmt.Sprintf("    {%d, %d}, -- %s", i.ID(), iLevel, i.Name())
+						appendArbitrageRecord(record)
+					}
 				}
 			}
 		}
 	}
 
-	return &recommendations, arbitrageLogs
+	return &recommendations
 }
 
 func formatRecommendations(recommendations *Recommendations, realm string, numAuctions int, ds *DataStore, summarize bool) string {
@@ -262,42 +269,27 @@ func formatRecommendations(recommendations *Recommendations, realm string, numAu
 }
 
 // scanRealm retrieves auctions and prints suggestions for what to buy for a single realm
-func scanRealm(realm string, c chan<- string, ds *DataStore, summarize bool) error {
+func scanRealm(realm string, c chan<- string, ds *DataStore, summarize bool) {
 	auctions, err := auction.Get(realm)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to scan realm %s: %s\n", realm, err)
 		c <- ""
-		return err
+		return
 	}
 
-	recommendations, arbitrageLogs := iterateAuctions(auctions, ds)
-
-	if realm != "Commodities" {
-		err = appendFile(arbitragePath, strings.Join(arbitrageLogs, "\n"))
-		if err != nil {
-			c <- ""
-			return err
-		}
-	}
+	recommendations := iterateAuctions(auctions, ds, realm != "Commodities")
 
 	c <- formatRecommendations(recommendations, realm, len(auctions), ds, summarize)
-
-	return nil
 }
 
 // scanRealms processes auctions on all realms in 'r'
-func scanRealms(r string, ds *DataStore, summarize bool) ([]string, error) {
+func scanRealms(r string, ds *DataStore, summarize bool) []string {
 	realms := strings.Split(r, ",")
 	results := []string{}
 	c := make(chan string)
 
 	for _, realm := range realms {
-		go func() {
-			err := scanRealm(realm, c, ds, summarize)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "failed to scan realm %s: %s\n", realm, err)
-				os.Exit(1)
-			}
-		}()
+		go scanRealm(realm, c, ds, summarize)
 	}
 
 	for range len(realms) {
@@ -312,7 +304,7 @@ func scanRealms(r string, ds *DataStore, summarize bool) ([]string, error) {
 
 	sort.Strings(results)
 
-	return results, nil
+	return results
 }
 
 func writeLogs(ds *DataStore) error {
@@ -324,6 +316,14 @@ func writeLogs(ds *DataStore) error {
 
 	// Write the prices file for the WoW 'wowMerchant' addon to consume
 	err = os.WriteFile(priceCachePath, []byte(ds.WowItem.Lua()), 0600)
+	if err != nil {
+		return err
+	}
+
+	// Write the arbitrages file for the WoW 'wowMerchant' addon to consume
+	mu.Lock()
+	err = os.WriteFile(arbitragePath, []byte(strings.Join(arbitrageRecords, "\n")+"\n"), 0600)
+	mu.Unlock()
 	if err != nil {
 		return err
 	}
@@ -342,16 +342,7 @@ func Shop(realms string, summarize bool) error {
 		}
 	}()
 
-	// Ensure arbitrage log file is empty
-	err = os.WriteFile(arbitragePath, nil, 0600)
-	if err != nil {
-		return err
-	}
-
-	results, err := scanRealms(realms, ds, summarize)
-	if err != nil {
-		return err
-	}
+	results := scanRealms(realms, ds, summarize)
 	fmt.Println(results)
 
 	err = writeLogs(ds)
