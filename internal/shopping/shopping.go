@@ -338,7 +338,7 @@ func generateOutput(ds *DataStore, recommendations []Recommendations) error {
 	}
 
 	// Write the verbose form of the recommendations
-	err = os.WriteFile(recommendationsPath, []byte(strings.Join(outputVerbose, "\n")+"\n"), 0600)
+	err = os.WriteFile(recommendationsPath, []byte(strings.Join(outputVerbose, "")), 0600)
 	if err != nil {
 		return err
 	}
