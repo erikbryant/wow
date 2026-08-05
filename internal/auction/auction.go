@@ -2,7 +2,6 @@ package auction
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/erikbryant/web"
@@ -39,7 +38,7 @@ type Auction struct {
 func auctionID(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"id"})
 	if err != nil {
-		log.Fatalf("ID: %s in %v", err, msi)
+		panic(fmt.Errorf("auction id: %s in %v", err, msi))
 	}
 	return web.ToInt64(value)
 }
@@ -47,7 +46,7 @@ func auctionID(msi any) int64 {
 func itemID(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"item", "id"})
 	if err != nil {
-		log.Fatalf("ItemID: %s in %v", err, msi)
+		panic(fmt.Errorf("item: %s in %v", err, msi))
 	}
 	return web.ToInt64(value)
 }
@@ -67,7 +66,7 @@ func buyout(msi any) int64 {
 func quantity(msi any) int64 {
 	value, err := web.MsiValued(msi, []string{"quantity"}, 0)
 	if err != nil {
-		log.Fatalf("Quantity: %s in %v", err, msi)
+		panic(fmt.Errorf("quantity: %s in %v", err, msi))
 	}
 	return web.ToInt64(value)
 }
@@ -75,7 +74,7 @@ func quantity(msi any) int64 {
 func petLevel(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"item", "pet_level"})
 	if err != nil {
-		log.Fatalf("PetLevel: %s in %v", err, msi)
+		panic(fmt.Errorf("pet_level: %s in %v", err, msi))
 	}
 	return web.ToInt64(value)
 }
@@ -83,7 +82,7 @@ func petLevel(msi any) int64 {
 func petQualityID(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"item", "pet_quality_id"})
 	if err != nil {
-		log.Fatalf("PetQualityID: %s in %v", err, msi)
+		panic(fmt.Errorf("pet_quality_id: %s in %v", err, msi))
 	}
 	return web.ToInt64(value)
 }
@@ -91,7 +90,7 @@ func petQualityID(msi any) int64 {
 func petSpeciesID(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"item", "pet_species_id"})
 	if err != nil {
-		log.Fatalf("PetSpeciesID: %s in %v", err, msi)
+		panic(fmt.Errorf("pet_species_id: %s in %v", err, msi))
 	}
 	return web.ToInt64(value)
 }

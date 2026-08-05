@@ -1,7 +1,7 @@
 package wowitem
 
 import (
-	"log"
+	"fmt"
 	"time"
 
 	"github.com/erikbryant/web"
@@ -86,7 +86,7 @@ func (i Item) Equippable() bool {
 func (i Item) ItemLevel() int64 {
 	v, err := web.MsiValue(i.XItem, []string{"level"})
 	if err != nil {
-		log.Fatalf("Level: %s in %v", err, i.XItem)
+		panic(fmt.Errorf("level: %s in %v", err, i.XItem))
 	}
 	return web.ToInt64(v)
 }
@@ -128,7 +128,7 @@ func (i Item) Cosmetic() bool {
 func (i Item) ItemClassName() string {
 	v, err := web.MsiValue(i.XItem, []string{"item_class", "name"})
 	if err != nil {
-		log.Fatalf("ItemClassName: %s in %v", err, i.XItem)
+		panic(fmt.Errorf("item_class: %s in %v", err, i.XItem))
 	}
 	return v.(string)
 }
@@ -137,7 +137,7 @@ func (i Item) ItemClassName() string {
 func (i Item) Stackable() bool {
 	v, err := web.MsiValue(i.XItem, []string{"is_stackable"})
 	if err != nil {
-		log.Fatalf("Stackable: %s in %v", err, i.XItem)
+		panic(fmt.Errorf("is_stackable: %s in %v", err, i.XItem))
 	}
 	return v.(bool)
 }
