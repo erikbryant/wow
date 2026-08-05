@@ -93,18 +93,18 @@ func New(wi *wowitem.WoWItem) *UserConfig {
 			153:  {}, // Wolpertinger
 
 			// We collect pets to sell to Stephen; limit how many of each we collect
-			191:  {}, // Clockwork Rocket Bot
-			1961: {}, // G0-R41-0n Ultratonk
-			67:   {}, // Hawk Owl
-			68:   {}, // Great Horned Owl
-			50:   {}, // Green Wing Macaw
-			2468: {}, // Laughing Stonekin
-			1727: {}, // Nursery Spider
-			175:  {}, // Phoenix Hatchling
-			44:   {}, // Siamese Cat
-			1721: {}, // Stormborne Whelpling
-			1151: {}, // Untamed Hatchling
-			1394: {}, // Weebomination
+			//191:  {}, // Clockwork Rocket Bot
+			//1961: {}, // G0-R41-0n Ultratonk
+			//67:   {}, // Hawk Owl
+			//68:   {}, // Great Horned Owl
+			//50:   {}, // Green Wing Macaw
+			//2468: {}, // Laughing Stonekin
+			//1727: {}, // Nursery Spider
+			//175:  {}, // Phoenix Hatchling
+			//44:   {}, // Siamese Cat
+			//1721: {}, // Stormborne Whelpling
+			//1151: {}, // Untamed Hatchling
+			//1394: {}, // Weebomination
 		},
 	}
 
