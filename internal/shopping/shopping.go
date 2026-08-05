@@ -29,6 +29,7 @@ type Recommendations struct {
 	PetNeededBargains  []string
 	PetResellBargains  []string
 	Realm              string
+	Err                error
 }
 
 type DataStore struct {
@@ -156,12 +157,7 @@ func appearanceSetBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bo
 }
 
 // iterateAuctions iterates over a single auction house, checking each auction for recommendation
-func iterateAuctions(auctions map[int64][]auction.Auction, ds *DataStore, realm string) *Recommendations {
-	r := Recommendations{
-		NumAuctions: len(auctions),
-		Realm:       realm,
-	}
-
+func (r *Recommendations) iterateAuctions(auctions map[int64][]auction.Auction, ds *DataStore) {
 	for itemID, itemAuctions := range auctions {
 		i, err := ds.WowItem.Get(itemID)
 		if err != nil {
@@ -216,21 +212,25 @@ func iterateAuctions(auctions map[int64][]auction.Auction, ds *DataStore, realm 
 			}
 		}
 	}
-
-	return &r
 }
 
 // scanRealm retrieves auctions and prints suggestions for what to buy for a single realm
 func scanRealm(realm string, c chan<- Recommendations, ds *DataStore) {
+	r := Recommendations{
+		Realm: realm,
+	}
+
 	auctions, err := auction.Get(realm)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "*** failed to scan realm %s: %s\n", realm, err)
+		r.Err = err
+		c <- r
 		return
 	}
 
-	r := iterateAuctions(auctions, ds, realm)
+	r.NumAuctions = len(auctions)
+	r.iterateAuctions(auctions, ds)
 
-	c <- *r
+	c <- r
 }
 
 // scanRealms processes auctions on all realms in 'r'
@@ -245,6 +245,10 @@ func scanRealms(r string, ds *DataStore) []Recommendations {
 
 	for range len(realms) {
 		r := <-c
+		if r.Err != nil {
+			fmt.Fprintf(os.Stderr, "*** failed to scan realm %s: %s\n", r.Realm, r.Err)
+			continue
+		}
 		results = append(results, r)
 	}
 
