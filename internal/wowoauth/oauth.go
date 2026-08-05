@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -58,7 +57,7 @@ func oAuthBlizzardLogin(w http.ResponseWriter, r *http.Request) {
 	// Create oAuthState cookie
 	oAuthState, err := generateStateOAuthCookie(w)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "unable to create OAuth cookie:", err)
+		fmt.Fprintf(os.Stderr, "*** unable to create OAuth cookie: %s\n", err)
 		os.Exit(1)
 	}
 
@@ -84,20 +83,20 @@ func tokenToPAT(code string) (string, error) {
 // oAuthBlizzardCallback receives the token, converts it to a PAT, and passes that to the webpage requester
 func oAuthBlizzardCallback(w http.ResponseWriter, r *http.Request) {
 	if r == nil {
-		log.Println("oAuthBlizzardCallback: empty request")
+		fmt.Fprintf(os.Stderr, "*** oAuthBlizzardCallback empty request\n")
 		return
 	}
 
 	// Read OAuth state from Cookie
 	oAuthState, err := r.Cookie(cookieName)
 	if err != nil {
-		log.Println("oAuthBlizzardCallback: cookie error:", err)
+		fmt.Fprintf(os.Stderr, "*** oAuthBlizzardCallback cookie error: %s\n", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
 	if r.FormValue("state") != oAuthState.Value {
-		log.Println("oAuthBlizzardCallback: invalid OAuth state")
+		fmt.Fprintf(os.Stderr, "*** oAuthBlizzardCallback invalid OAuth state\n")
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
@@ -135,10 +134,9 @@ func start(clientID, clientSecret string) {
 		Handler: handlers(),
 	}
 
-	//log.Printf("Starting HTTP Server. Listening at %v", server.Addr)
 	err := server.ListenAndServe()
 	if !errors.Is(err, http.ErrServerClosed) {
-		log.Printf("%v", err)
+		fmt.Fprintf(os.Stderr, "*** failed to listen and serve: %s\n", err)
 	}
 }
 
@@ -146,6 +144,6 @@ func start(clientID, clientSecret string) {
 func shutdown() {
 	err := server.Shutdown(context.Background())
 	if err != nil {
-		log.Printf("server shutdown failed: %v\n", err)
+		fmt.Fprintf(os.Stderr, "*** server shutdown failed: %v\n", err)
 	}
 }

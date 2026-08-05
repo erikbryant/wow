@@ -67,7 +67,7 @@ func load() error {
 
 	err := as.IDs.Load()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "*** error opening appearances persist, creating new one: %s", err)
+		fmt.Fprintf(os.Stderr, "*** error opening appearances persist, creating new one: %s\n", err)
 		err = createFromWeb()
 		if err != nil {
 			return fmt.Errorf("failed to load or create appearances: %s", err)
