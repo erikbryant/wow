@@ -20,15 +20,15 @@ import (
 
 // Recommendations holds all recommended auctions for a single realm
 type Recommendations struct {
-	Arbitrages         []string
+	AppearanceBargains []string
 	ArbitrageLogs      []string
 	ArbitrageProfit    int64
-	PetNeededBargains  []string
+	Arbitrages         []string
 	Bargains           []string
 	NumAuctions        int
+	PetNeededBargains  []string
 	PetResellBargains  []string
 	Realm              string
-	AppearanceBargains []string
 }
 
 type DataStore struct {
