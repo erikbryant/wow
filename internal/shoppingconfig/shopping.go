@@ -21,6 +21,9 @@ type UserConfig struct {
 }
 
 func New(wi *wowitem.WoWItem) *UserConfig {
+	bagPriceMax := common.Coppers(100, 0, 0)
+	reagentBagPriceMax := common.Coppers(100, 0, 0)
+
 	userConfig := UserConfig{
 		AppearancePriceMax:       common.Coppers(50, 0, 0),
 		AppearancePriceInSetMax:  common.Coppers(600, 0, 0),
@@ -34,11 +37,18 @@ func New(wi *wowitem.WoWItem) *UserConfig {
 		// UsefulGoods are useful items I want, if the price is right
 		UsefulGoods: map[int64]int64{
 			// Bags
-			//wowitem.Search("Hexweave Bag").ID(): common.Coppers(120, 0, 0), // 30 slot
-			//wowitem.Search("Simply Stitched Reagent Bag").ID(): common.Coppers(90, 0, 0), // 32 slot
-			//wowitem.Search("Chronocloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
-			//wowitem.Search("Weavercloth Reagent Bag").ID():     common.Coppers(90, 0, 0), // 36 slot
-			//wowitem.Search("Dawnweave Reagent Bag").ID():       common.Coppers(90, 0, 0), // 38 slot
+			wi.Search("Weavercloth Bag").ID():              bagPriceMax, // 34 slot
+			wi.Search("Azureweave Expedition Pack").ID():   bagPriceMax, // 34 slot
+			wi.Search("Imbued Bright Linen Backpack").ID(): bagPriceMax, // 36 slot
+			wi.Search("Duskweave Bag").ID():                bagPriceMax, // 36 slot
+			wi.Search("Sunfire Silk Backpack").ID():        bagPriceMax, // 38 slot
+
+			// Reagent bags
+			wi.Search("Chronocloth Reagent Bag").ID():      reagentBagPriceMax, // 36 slot
+			wi.Search("Weavercloth Reagent Bag").ID():      reagentBagPriceMax, // 36 slot
+			wi.Search("Dawnweave Reagent Bag").ID():        reagentBagPriceMax, // 38 slot
+			wi.Search("Bright Linen Reagent Satchel").ID(): reagentBagPriceMax, // 38 slot
+			wi.Search("Arcanoweave Reagent Rucksack").ID(): reagentBagPriceMax, // 40 slot
 
 			// Fun weapon appearances
 			wi.Search("Blackfury").ID():                   common.Coppers(3000, 0, 0),
