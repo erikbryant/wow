@@ -47,7 +47,7 @@ const (
 	arbitragePath       = "./exports/arbitrageLatest"
 	battlePetPath       = "./reports/battlePets"
 	priceCachePath      = "./exports/PriceCache.lua"
-	recommendationsPath = "./reports/recommendations"
+	recommendationsPath = "./reports/shopping"
 )
 
 // NewDataStore initializes all singleton data stores
