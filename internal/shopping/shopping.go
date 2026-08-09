@@ -11,6 +11,7 @@ import (
 	"github.com/erikbryant/wow/internal/auction"
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/common"
+	"github.com/erikbryant/wow/internal/cooking"
 	"github.com/erikbryant/wow/internal/shoppingconfig"
 	"github.com/erikbryant/wow/internal/toy"
 	"github.com/erikbryant/wow/internal/userconfig"
@@ -39,6 +40,7 @@ type DataStore struct {
 	AppearanceSet    *appearanceset.AppearanceSets
 	AppearancesOwned *userconfig.AppearancesOwned
 	BattlePets       *battlepet.BattlePet
+	CookingRecipes   *cooking.CookingRecipe
 	ShoppingConfig   *shoppingconfig.UserConfig
 	Toys             *toy.Toy
 }
@@ -47,6 +49,7 @@ const (
 	arbitragePath       = "./exports/arbitrageLatest"
 	battlePetPath       = "./reports/battlePets"
 	priceCachePath      = "./exports/PriceCache.lua"
+	recipesNeededPath   = "./reports/recipesNeeded"
 	recommendationsPath = "./reports/shopping"
 )
 
@@ -72,7 +75,9 @@ func NewDataStore() (*DataStore, error) {
 		return nil, err
 	}
 
-	ds.ShoppingConfig = shoppingconfig.New(ds.WowItem)
+	ds.CookingRecipes = cooking.New()
+
+	ds.ShoppingConfig = shoppingconfig.New(ds.WowItem, ds.CookingRecipes)
 
 	ds.Toys, err = toy.New()
 	if err != nil {
@@ -337,6 +342,12 @@ func generateOutput(ds *DataStore, recommendations []Recommendations) error {
 
 	// Prices file for the WoW 'wowMerchant' addon to consume
 	err = os.WriteFile(priceCachePath, []byte(ds.WowItem.Lua()), 0600)
+	if err != nil {
+		return err
+	}
+
+	// Recipes needed
+	err = os.WriteFile(recipesNeededPath, []byte(ds.CookingRecipes.Output()), 0600)
 	if err != nil {
 		return err
 	}

@@ -19,9 +19,10 @@ type Recipe struct {
 	id     int64
 }
 
-const (
-	recipesNeededPath = "./reports/recipesNeeded"
-)
+type CookingRecipe struct {
+	recipesThatWeNeed []string
+	recipeOutputLog   string
+}
 
 func makeRecipe(r any) Recipe {
 	recipe := Recipe{}
@@ -89,64 +90,58 @@ func scanAlts() (map[int64]Recipe, map[string]map[int64]Recipe) {
 	return allRecipes, recipesByAlt
 }
 
-func getRecipesNeeded() (string, string, []string) {
-	allRecipes, recipesByAlt := scanAlts()
-	recipesNeeded := map[string]int{}
-	var recipesNeededByAlt strings.Builder
+func logRecipes(recipesNeededByAlt map[string]string, recipesNeededCount map[string]int) string {
+	var recipeOutputLog strings.Builder
 
-	// Enumerate missing recipes
-	for alt, recipes := range recipesByAlt {
+	recipeOutputLog.WriteString("Cooking recipes needed by alt:\n")
+	alts := slices.Collect(maps.Keys(recipesNeededByAlt))
+	slices.Sort(alts)
+	for _, alt := range alts {
+		recipeOutputLog.WriteString(fmt.Sprintf("%-40s %s\n", alt, recipesNeededByAlt[alt]))
+	}
+
+	recipeOutputLog.WriteString("\nCooking recipes needed by count:\n")
+	recipes := slices.Collect(maps.Keys(recipesNeededCount))
+	for _, recipe := range recipes {
+		recipeOutputLog.WriteString(fmt.Sprintf("%-40s  %2d\n", recipe, recipesNeededCount[recipe]))
+
+	}
+
+	return recipeOutputLog.String()
+}
+
+func New() *CookingRecipe {
+	allRecipes, recipesByAlt := scanAlts()
+	recipesNeededCount := map[string]int{}
+	recipesNeededByAlt := map[string]string{}
+
+	// For each alt...
+	for alt, altRecipes := range recipesByAlt {
+		// For all known recipes, is this alt missing that recipe?
 		for _, recipe := range allRecipes {
-			_, ok := recipes[recipe.id]
+			_, ok := altRecipes[recipe.id]
 			if !ok {
-				recipesNeeded[recipe.name]++
-				recipesNeededByAlt.WriteString(fmt.Sprintf("%s %s\n", alt, recipe.name))
+				recipeName := "Recipe: " + recipe.name
+				recipesNeededCount[recipeName]++
+				recipesNeededByAlt[alt] = recipeName
 			}
 		}
 	}
 
-	rn := []string{}
-	rnc := []string{}
-	for recipe, count := range recipesNeeded {
-		rn = append(rn, "Recipe: "+recipe)
-		r := fmt.Sprintf("%-30s  %2d", recipe, count)
-		rnc = append(rnc, r)
+	cr := CookingRecipe{
+		recipesThatWeNeed: slices.Collect(maps.Keys(recipesNeededCount)),
+		recipeOutputLog:   logRecipes(recipesNeededByAlt, recipesNeededCount),
 	}
-	slices.Sort(rn)
-	slices.Sort(rnc)
 
-	return recipesNeededByAlt.String(), strings.Join(rnc, "\n"), rn
+	slices.Sort(cr.recipesThatWeNeed)
+
+	return &cr
 }
 
-func logRecipes(recipesNeededByAlt string, recipesNeededCount string) error {
-	// Ensure log file is empty
-	f, err := os.Create(recipesNeededPath)
-	if err != nil {
-		return fmt.Errorf("could not create recipes needed file: %v", err)
-	}
-	defer f.Close()
-
-	_, err = f.WriteString("Cooking recipes needed by alt:\n" + recipesNeededByAlt)
-	if err != nil {
-		return fmt.Errorf("failed to write cooking recipes needed: %s", err)
-	}
-
-	_, err = f.WriteString("\nCooking recipes needed by count:\n" + recipesNeededCount + "\n")
-	if err != nil {
-		return fmt.Errorf("failed to write cooking recipes count: %s", err)
-	}
-
-	return nil
+func (cr *CookingRecipe) RecipesNeeded() []string {
+	return cr.recipesThatWeNeed
 }
 
-// RecipesNeeded returns which recipes are needed and writes to the log file
-func RecipesNeeded() []string {
-	recipesNeededByAlt, recipesNeededCount, recipesNeeded := getRecipesNeeded()
-
-	err := logRecipes(recipesNeededByAlt, recipesNeededCount)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "*** %s\n", err)
-	}
-
-	return recipesNeeded
+func (cr *CookingRecipe) Output() string {
+	return cr.recipeOutputLog
 }

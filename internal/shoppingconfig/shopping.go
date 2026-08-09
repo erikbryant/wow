@@ -20,7 +20,7 @@ type UserConfig struct {
 	SkipPets    map[int64]struct{}
 }
 
-func New(wi *wowitem.WoWItem) *UserConfig {
+func New(wi *wowitem.WoWItem, cr *cooking.CookingRecipe) *UserConfig {
 	bagPriceMax := common.Coppers(100, 0, 0)
 	reagentBagPriceMax := common.Coppers(100, 0, 0)
 
@@ -120,7 +120,7 @@ func New(wi *wowitem.WoWItem) *UserConfig {
 	}
 
 	// Add any recipes that the user needs
-	for _, recipeName := range cooking.RecipesNeeded() {
+	for _, recipeName := range cr.RecipesNeeded() {
 		userConfig.UsefulGoods[wi.Search(recipeName).ID()] = userConfig.RecipePriceMax
 	}
 
