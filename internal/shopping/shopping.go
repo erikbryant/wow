@@ -146,7 +146,7 @@ func usefulGoodsBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool
 	return ok && auc.Buyout <= maxPrice
 }
 
-// appearanceSetBargain returns true if the item for auction provides an appearance we need at a good price
+// appearanceBargain returns true if the item for auction provides an appearance we need at a good price
 func appearanceBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
 	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceMax && ds.AppearancesOwned.Need(i.Appearances())
 }
@@ -321,27 +321,27 @@ func generateOutput(ds *DataStore, recommendations []Recommendations) error {
 	sort.Strings(outputBrief)
 	sort.Strings(outputVerbose)
 
-	fmt.Println(outputBrief)
+	fmt.Println(strings.Join(outputBrief, ""))
 
-	// Write the battle pet IDs/names
-	err := os.WriteFile(battlePetPath, []byte(ds.BattlePets.Output()), 0600)
+	// Arbitrages file for the WoW 'wowMerchant' addon to consume
+	err := os.WriteFile(arbitragePath, []byte(strings.Join(arbitrageRecords, "\n")+"\n"), 0600)
 	if err != nil {
 		return err
 	}
 
-	// Write the prices file for the WoW 'wowMerchant' addon to consume
+	// Battle pet IDs/names
+	err = os.WriteFile(battlePetPath, []byte(ds.BattlePets.Output()), 0600)
+	if err != nil {
+		return err
+	}
+
+	// Prices file for the WoW 'wowMerchant' addon to consume
 	err = os.WriteFile(priceCachePath, []byte(ds.WowItem.Lua()), 0600)
 	if err != nil {
 		return err
 	}
 
-	// Write the arbitrages file for the WoW 'wowMerchant' addon to consume
-	err = os.WriteFile(arbitragePath, []byte(strings.Join(arbitrageRecords, "\n")+"\n"), 0600)
-	if err != nil {
-		return err
-	}
-
-	// Write the verbose form of the recommendations
+	// Verbose form of the shopping recommendations
 	err = os.WriteFile(recommendationsPath, []byte(strings.Join(outputVerbose, "")), 0600)
 	if err != nil {
 		return err
