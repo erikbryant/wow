@@ -81,7 +81,7 @@ end
 	return lua.String(), []string{"Cosmetic"}
 }
 
-// Lua the cached vendor sell prices to stdout as a lua table and accessor
+// Lua writes the cached vendor sell prices as a lua table and accessor
 func (wi *WoWItem) Lua() string {
 	lua := ""
 
