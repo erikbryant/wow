@@ -4,11 +4,15 @@ fmt:
 vet: fmt
 	go vet ./...
 
-test: vet
+vuln: vet
+	govulncheck ./...
+
+test: vuln
 	go test ./...
 
 run: test
-	go run ./...
+	go run ./cmd/wow
+	go run ./cmd/items
 
 # Targets that do not represent actual files
 .PHONY: fmt test vet run
