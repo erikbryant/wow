@@ -17,7 +17,7 @@ var (
 // usage prints a usage message and terminates the program with an error
 func usage() {
 	fmt.Println(`Usage:
-  wow -passphrase <phrase> [-realms=<realm1,realm2,...>] [-summarize=true|false]`)
+  wow -passphrase <phrase> [-realms=<realm1,realm2,...>]`)
 }
 
 func main() {
