@@ -53,8 +53,8 @@ func (c *Persistence[K, V]) Load() error {
 }
 
 func (c *Persistence[K, V]) Save() error {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	if !c.dirty {
 		// Nothing changed, no need to save
@@ -103,6 +103,8 @@ func (c *Persistence[K, V]) Get(key K) (V, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	v, ok := c.data[key]
+
+	// Values returned by Persistence must be treated as immutable.
 	return v, ok
 }
 
@@ -116,8 +118,11 @@ func (c *Persistence[K, V]) Set(key K, value V) {
 func (c *Persistence[K, V]) Delete(key K) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	delete(c.data, key)
-	c.dirty = true
+	_, ok := c.data[key]
+	if ok {
+		delete(c.data, key)
+		c.dirty = true
+	}
 }
 
 func (c *Persistence[K, V]) Keys() []K {

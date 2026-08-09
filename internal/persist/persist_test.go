@@ -95,8 +95,8 @@ func TestDeleteMissing(t *testing.T) {
 
 	p.Delete("missing")
 
-	if !p.dirty {
-		t.Fatal("Delete should mark dirty")
+	if p.dirty {
+		t.Fatal("Delete marked unchanged data 'dirty'")
 	}
 }
 
