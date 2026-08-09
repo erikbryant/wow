@@ -86,13 +86,6 @@ func scanAlts() (map[int64]Recipe, map[string]map[int64]Recipe) {
 		recipesByAlt[key(alt)] = kr
 	}
 
-	// Merge all known recipes into one list
-	for _, recipes := range recipesByAlt {
-		for _, recipe := range recipes {
-			allRecipes[recipe.id] = recipe
-		}
-	}
-
 	return allRecipes, recipesByAlt
 }
 
