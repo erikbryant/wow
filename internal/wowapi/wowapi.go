@@ -7,6 +7,10 @@ import (
 	"github.com/erikbryant/web"
 )
 
+const (
+	apiBase = "https://us.api.blizzard.com"
+)
+
 // connectedRealmIDCache the calls to find a connected realm ID are slow, cache the responses here
 var connectedRealmIDCache = map[string]string{
 	"Aegwynn":           "1136",
@@ -118,7 +122,7 @@ func requestKey(url, token, key, caller string) ([]any, error) {
 
 // ConnectedRealm returns all realms connected to the given realm ID
 func ConnectedRealm(realmID string) (map[string]any, error) {
-	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + realmID + "?namespace=dynamic-us&locale=en_US"
+	url := apiBase + "/data/wow/connected-realm/" + realmID + "?namespace=dynamic-us&locale=en_US"
 	r, err := request(url, accessToken, "ConnectedRealm")
 	if err != nil {
 		return nil, err
@@ -134,7 +138,7 @@ func ConnectedRealm(realmID string) (map[string]any, error) {
 
 // ConnectedRealmSearch returns the set of all connected realms
 func ConnectedRealmSearch() (map[string]any, error) {
-	url := "https://us.api.blizzard.com/data/wow/search/connected-realm?namespace=dynamic-us&status.type=UP"
+	url := apiBase + "/data/wow/search/connected-realm?namespace=dynamic-us&status.type=UP"
 	r, err := request(url, accessToken, "ConnectedRealm")
 	if err != nil {
 		return nil, err
@@ -193,7 +197,7 @@ func Auctions(realm string) ([]any, error) {
 		return nil, fmt.Errorf("auctions: no connected realm ID found: %s", err)
 	}
 
-	url := "https://us.api.blizzard.com/data/wow/connected-realm/" + connectedRealmID + "/auctions?namespace=dynamic-us&locale=en_US"
+	url := apiBase + "/data/wow/connected-realm/" + connectedRealmID + "/auctions?namespace=dynamic-us&locale=en_US"
 	r, err := request(url, accessToken, "Auctions")
 	if err != nil {
 		return nil, err
@@ -211,13 +215,13 @@ func Auctions(realm string) ([]any, error) {
 
 // Commodities returns the current commodity auctions from the auction house
 func Commodities() ([]any, error) {
-	url := "https://us.api.blizzard.com/data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US"
+	url := apiBase + "/data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US"
 	return requestKey(url, accessToken, "auctions", "Commodities")
 }
 
 // Item retrieves a single item from the WoW web API
 func Item(id string) (map[string]any, error) {
-	url := "https://us.api.blizzard.com/data/wow/item/" + id + "?namespace=static-us&locale=en_US"
+	url := apiBase + "/data/wow/item/" + id + "?namespace=static-us&locale=en_US"
 	r, err := request(url, accessToken, "Item")
 	if err != nil {
 		return nil, err
@@ -237,31 +241,31 @@ func Item(id string) (map[string]any, error) {
 
 // Pets returns a list of all battle pets in the game
 func Pets() ([]any, error) {
-	url := "https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US"
+	url := apiBase + "/data/wow/pet/index?namespace=static-us&locale=en_US"
 	return requestKey(url, profileAccessToken, "pets", "Pets")
 }
 
 // CollectionsPets returns the battle pets the user owns
 func CollectionsPets() ([]any, error) {
-	url := "https://us.api.blizzard.com/profile/user/wow/collections/pets?namespace=profile-us&locale=en_US"
+	url := apiBase + "/profile/user/wow/collections/pets?namespace=profile-us&locale=en_US"
 	return requestKey(url, profileAccessToken, "pets", "CollectionsPets")
 }
 
 // Toys returns a list of all toys in the game
 func Toys() ([]any, error) {
-	url := "https://us.api.blizzard.com/data/wow/toy/index?namespace=static-us&locale=en_US"
+	url := apiBase + "/data/wow/toy/index?namespace=static-us&locale=en_US"
 	return requestKey(url, profileAccessToken, "toys", "Toys")
 }
 
 // CollectionsToys returns the toys the user owns
 func CollectionsToys() ([]any, error) {
-	url := "https://us.api.blizzard.com/profile/user/wow/collections/toys?namespace=profile-us&locale=en_US"
+	url := apiBase + "/profile/user/wow/collections/toys?namespace=profile-us&locale=en_US"
 	return requestKey(url, profileAccessToken, "toys", "CollectionsToys")
 }
 
 // ItemAppearanceSetsIndex returns IDs of each appearance set
 func ItemAppearanceSetsIndex() ([]any, error) {
-	url := "https://us.api.blizzard.com/data/wow/item-appearance/set/index?namespace=static-us&locale=en_US"
+	url := apiBase + "/data/wow/item-appearance/set/index?namespace=static-us&locale=en_US"
 	return requestKey(url, accessToken, "appearance_sets", "ItemAppearanceSetsIndex")
 }
 
@@ -285,7 +289,7 @@ func ItemAppearanceSetsIndexIDs() (map[int64]string, error) {
 
 // ItemAppearanceSet returns the appearance IDs of the given appearance set
 func ItemAppearanceSet(appearanceID int64) ([]any, error) {
-	url := fmt.Sprintf("https://us.api.blizzard.com/data/wow/item-appearance/set/%d?namespace=static-us&locale=en_US", appearanceID)
+	url := fmt.Sprintf(apiBase+"/data/wow/item-appearance/set/%d?namespace=static-us&locale=en_US", appearanceID)
 	return requestKey(url, accessToken, "appearances", "ItemAppearanceSet")
 }
 
@@ -307,7 +311,7 @@ func ItemAppearanceSetIDs(appearanceID int64) ([]int64, error) {
 
 // CollectionsTransmogs returns the transmogs the user owns
 func CollectionsTransmogs() (any, error) {
-	url := "https://us.api.blizzard.com/profile/user/wow/collections/transmogs?namespace=profile-us&locale=en_US"
+	url := apiBase + "/profile/user/wow/collections/transmogs?namespace=profile-us&locale=en_US"
 	return request(url, profileAccessToken, "CollectionsTransmogs")
 }
 
@@ -316,6 +320,6 @@ func Professions(realm, alt string) (any, error) {
 	realm = strings.ToLower(realm)
 	realm = realmToSlug(realm)
 	alt = strings.ToLower(alt)
-	url := "https://us.api.blizzard.com/profile/wow/character/" + realm + "/" + alt + "/professions?namespace=profile-us&locale=en_US"
+	url := apiBase + "/profile/wow/character/" + realm + "/" + alt + "/professions?namespace=profile-us&locale=en_US"
 	return request(url, profileAccessToken, "Professions")
 }
