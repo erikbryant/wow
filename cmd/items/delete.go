@@ -18,7 +18,7 @@ func deleteItem(itemID int64, wowItem *wowitem.WoWItem) error {
 func runDelete(args []string, wowItem *wowitem.WoWItem) {
 	flags := flag.NewFlagSet("delete", flag.ExitOnError)
 
-	itemID := flag.Int64("id", -1, "Item ID to look up")
+	itemID := flags.Int64("id", -1, "Item ID to look up")
 
 	if err := flags.Parse(args); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -33,5 +33,6 @@ func runDelete(args []string, wowItem *wowitem.WoWItem) {
 	err := deleteItem(*itemID, wowItem)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
 	}
 }
