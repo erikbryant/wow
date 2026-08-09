@@ -1,0 +1,17 @@
+name: go fmt
+
+on: [push, pull_request]
+
+jobs:
+  govulncheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: 'stable'
+          check-latest: 'true'
+      - name: Check out sourcce code
+        uses: actions/checkout@v6
+      - name: Run govulncheck
+        uses: golang/govulncheck-action@v1
