@@ -9,8 +9,8 @@ import (
 	"github.com/erikbryant/wow/internal/wowapi"
 )
 
-// FlakyAppearanceIDs WoW says I own them, but this app thinks I don't
-var FlakyAppearanceIDs = map[int64]struct{}{
+// flakyAppearanceIDs WoW says I own them, but this app thinks I don't
+var flakyAppearanceIDs = map[int64]struct{}{
 	// These are not real appearances; they generate false positives
 	573:   {}, // Various equippable profession items
 	577:   {}, // Various equippable profession items
@@ -125,7 +125,7 @@ var FlakyAppearanceIDs = map[int64]struct{}{
 }
 
 func flakyAppearanceID(id int64) bool {
-	_, ok := FlakyAppearanceIDs[id]
+	_, ok := flakyAppearanceIDs[id]
 	return ok
 }
 
