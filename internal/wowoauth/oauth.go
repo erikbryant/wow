@@ -46,7 +46,14 @@ func generateStateOAuthCookie(w http.ResponseWriter) (string, error) {
 		return "", err
 	}
 	state := base64.URLEncoding.EncodeToString(b)
-	cookie := http.Cookie{Name: cookieName, Value: state, Expires: expiration}
+	cookie := http.Cookie{
+		Expires:  expiration,
+		HttpOnly: true,
+		Name:     cookieName,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   false,
+		Value:    state,
+	}
 	http.SetCookie(w, &cookie)
 
 	return state, nil
@@ -130,7 +137,7 @@ func start(clientID, clientSecret string) {
 	blizzardOAuthConfig.ClientSecret = clientSecret
 
 	server = &http.Server{
-		Addr:    fmt.Sprintf(":8888"),
+		Addr:    ":8888",
 		Handler: handlers(),
 	}
 

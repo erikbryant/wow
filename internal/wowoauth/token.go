@@ -41,6 +41,10 @@ func GetToken(data url.Values, clientID, clientSecret string) (string, error) {
 		return "", err
 	}
 
+	if response.StatusCode < 200 || response.StatusCode >= 300 {
+		return "", fmt.Errorf("unexpected status code: %d", response.StatusCode)
+	}
+
 	return jsonObject["access_token"].(string), nil
 }
 
