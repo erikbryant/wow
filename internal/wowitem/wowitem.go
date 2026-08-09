@@ -18,8 +18,8 @@ type Item struct {
 	XUpdated time.Time // Datetime when created or updated
 }
 
-// EquipSlotTypes is a lookup set for valid gear slots
-var EquipSlotTypes = map[string]struct{}{
+// equipSlotTypes is a lookup set for valid gear slots
+var equipSlotTypes = map[string]struct{}{
 	"HEAD":       {},
 	"NECK":       {},
 	"SHOULDER":   {},
@@ -78,7 +78,7 @@ func (i Item) Equippable() bool {
 	}
 
 	// Fallback: inventory_type
-	_, isEquipSlot := EquipSlotTypes[i.InventoryType()]
+	_, isEquipSlot := equipSlotTypes[i.InventoryType()]
 	return isEquipSlot
 }
 
@@ -201,7 +201,7 @@ func (i Item) Stale(age time.Duration) bool {
 	if age == 0 {
 		return false
 	}
-	return time.Now().Sub(i.Updated()) > age
+	return time.Since(i.Updated()) > age
 }
 
 // Toy returns true if this item is a toy
