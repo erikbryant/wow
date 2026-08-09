@@ -1,6 +1,6 @@
 module github.com/erikbryant/wow
 
-go 1.26.3
+go 1.26.5
 
 require (
 	github.com/erikbryant/aes v0.5.0
