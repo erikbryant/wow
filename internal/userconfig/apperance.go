@@ -80,10 +80,11 @@ var FlakyAppearanceIDs = map[int64]struct{}{
 	//22906: {}, // Hexweave Bracers
 	//22915: {}, // Hexweave Bracers
 	//23247: {}, // {}steel Armguards
-	//24178: {}, // {Brilliant, Nimble, Powerful} Burnished Cloak
-	//24180: {}, // {Brilliant, Nimble, Powerful} Burnished Cloak
+	24178: {}, // {Brilliant, Nimble, Powerful} Burnished Cloak
+	24180: {}, // {Brilliant, Nimble, Powerful} Burnished Cloak
 	32066: {}, // Fashionable Autumn Cloak
 	32237: {}, // Aristocrat's Winter Drape
+	33276: {}, // Greaves of the Felblade Defenders
 	//33357: {}, // Sash of the Unredeemed
 	//33365: {}, // Sash of the Unredeemed
 	33423: {}, // Treads of Panicked Escape
@@ -92,13 +93,14 @@ var FlakyAppearanceIDs = map[int64]struct{}{
 	33497: {}, // Treads of Violent Intrusion
 	//33716: {}, // Moon-Wrought Clasp
 	//34314: {}, // Pristine Moon-Wrought Clasp
-	//34558: {}, // Cuffs of the Viridian Flameweavers
+	34558: {}, // Cuffs of the Viridian Flameweavers
+	34622: {}, // Greaves of the Felblade Defenders
 	//34870: {}, // Gloves of Abhorrent Strategies
 	//34886: {}, // Gloves of Abhorrent Strategies
 	35092: {}, // Wristguards of Ominous Forging
 	35101: {}, // Wristguards of Ominous Forging
-	//38275: {}, // Reinforced Test Subject Shackles
-	//38291: {}, // Reinforced Test Subject Shackles
+	38275: {}, // Reinforced Test Subject Shackles
+	38291: {}, // Reinforced Test Subject Shackles
 	38359: {}, // Bloody Experimenter's Wraps
 	38409: {}, // Crushproof Vambraces
 	38830: {}, // Cord of Zandalari Resolve
