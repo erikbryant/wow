@@ -90,14 +90,16 @@ func scanAlts() (map[int64]Recipe, map[string]map[int64]Recipe) {
 	return allRecipes, recipesByAlt
 }
 
-func logRecipes(recipesNeededByAlt map[string]string, recipesNeededCount map[string]int) string {
+func logRecipes(recipesNeededByAlt map[string][]string, recipesNeededCount map[string]int) string {
 	var recipeOutputLog strings.Builder
 
 	recipeOutputLog.WriteString("Cooking recipes needed by alt:\n")
 	alts := slices.Collect(maps.Keys(recipesNeededByAlt))
 	slices.Sort(alts)
 	for _, alt := range alts {
-		recipeOutputLog.WriteString(fmt.Sprintf("%-40s %s\n", alt, recipesNeededByAlt[alt]))
+		for _, recipe := range recipesNeededByAlt[alt] {
+			recipeOutputLog.WriteString(fmt.Sprintf("%-40s %s\n", alt, recipe))
+		}
 	}
 
 	recipeOutputLog.WriteString("\nCooking recipes needed by count:\n")
@@ -113,7 +115,7 @@ func logRecipes(recipesNeededByAlt map[string]string, recipesNeededCount map[str
 func New() *CookingRecipe {
 	allRecipes, recipesByAlt := scanAlts()
 	recipesNeededCount := map[string]int{}
-	recipesNeededByAlt := map[string]string{}
+	recipesNeededByAlt := map[string][]string{}
 
 	// For each alt...
 	for alt, altRecipes := range recipesByAlt {
@@ -123,7 +125,7 @@ func New() *CookingRecipe {
 			if !ok {
 				recipeName := "Recipe: " + recipe.name
 				recipesNeededCount[recipeName]++
-				recipesNeededByAlt[alt] = recipeName
+				recipesNeededByAlt[alt] = append(recipesNeededByAlt[alt], recipeName)
 			}
 		}
 	}
