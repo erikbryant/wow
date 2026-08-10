@@ -94,7 +94,6 @@ var (
 		33423: {}, // Treads of Panicked Escape
 		33439: {}, // Treads of Panicked Escape
 		33496: {}, // Cord of Pilfered Rosaries
-		33497: {}, // Treads of Violent Intrusion
 		34558: {}, // Cuffs of the Viridian Flameweavers
 		34622: {}, // Greaves of the Felblade Defenders
 		34870: {}, // Gloves of Abhorrent Strategies
