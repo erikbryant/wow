@@ -3,7 +3,7 @@ name: go vet
 on: [push, pull_request]
 
 jobs:
-  build:
+  vet:
     runs-on: ubuntu-latest
     steps:
     - name: Set up Golang

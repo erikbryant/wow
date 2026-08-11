@@ -1,9 +1,9 @@
-name: govulncheck
+name: go fmt
 
 on: [push, pull_request]
 
 jobs:
-  build:
+  fmt:
     runs-on: ubuntu-latest
     steps:
     - name: Set up Golang
