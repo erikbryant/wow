@@ -4,21 +4,17 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/erikbryant/aes"
+	"github.com/erikbryant/wow/internal/credentials"
 	"github.com/erikbryant/wow/internal/wowoauth"
 )
 
 var (
-	clientIDCrypt      = "f7FhewxUd0lWQz/zPb27ZcwI/ZqkaMyd5YyuskFyEugQEeiKsfL7dvr11Kx1Y+Mi23qMciOAPe5ksCOy"
-	clientSecretCrypt  = "CtJH62iU6V3ZeqiHyKItECHahdUYgAFyfHmQ4DRabhWIv6JeK5K4dT7aiybot6MS4JitmDzuWSz1UHHv"
-	clientID           string
-	clientSecret       string
 	accessToken        string
 	profileAccessToken string
 )
 
 // wowAccessToken retrieves an access token (to authenticate API calls)
-func wowAccessToken() (string, error) {
+func wowAccessToken(clientID, clientSecret string) (string, error) {
 	data := url.Values{
 		"grant_type": {"client_credentials"},
 	}
@@ -27,31 +23,31 @@ func wowAccessToken() (string, error) {
 }
 
 // wowProfileAccessToken returns a profile access token (to authenticate user profile API calls)
-func wowProfileAccessToken() (string, error) {
+func wowProfileAccessToken(clientID, clientSecret string) (string, error) {
 	return wowoauth.GetPAT(clientID, clientSecret)
 }
 
-func Init(passphrase string) error {
-	var err error
+func Init() error {
+	c := credentials.New()
 
-	clientID, err = aes.Decrypt(clientIDCrypt, passphrase)
+	clientID, err := c.Get("clientID")
 	if err != nil {
-		return fmt.Errorf("unable to decrypt clientID: %s", err)
+		return fmt.Errorf("get clientID: %w", err)
 	}
 
-	clientSecret, err = aes.Decrypt(clientSecretCrypt, passphrase)
+	clientSecret, err := c.Get("clientSecret")
 	if err != nil {
-		return fmt.Errorf("unable to decrypt clientSecret: %s", err)
+		return fmt.Errorf("get clientSecret: %w", err)
 	}
 
-	accessToken, err = wowAccessToken()
+	accessToken, err = wowAccessToken(clientID, clientSecret)
 	if err != nil {
-		return fmt.Errorf("unable to get access token: %s", err)
+		return fmt.Errorf("unable to get access token: %w", err)
 	}
 
-	profileAccessToken, err = wowProfileAccessToken()
+	profileAccessToken, err = wowProfileAccessToken(clientID, clientSecret)
 	if err != nil {
-		return fmt.Errorf("unable to get profile access token: %s", err)
+		return fmt.Errorf("unable to get profile access token: %w", err)
 	}
 
 	return nil

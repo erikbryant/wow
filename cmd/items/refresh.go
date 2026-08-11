@@ -12,23 +12,25 @@ import (
 )
 
 // refreshItem refreshes a single item
-func refreshItem(itemID int64, wowItem *wowitem.WoWItem) {
+func refreshItem(itemID int64) {
+	wowItems := wowitem.New()
+
 	rows := []wowitem.Item{}
 
-	iOld, ok := wowItem.Items.Get(itemID)
+	iOld, ok := wowItems.Items.Get(itemID)
 	if ok {
 		rows = append(rows, iOld)
 		// Remove the item from the persistence
-		wowItem.Items.Delete(itemID)
+		wowItems.Items.Delete(itemID)
 	}
 
-	iNew, err := wowItem.GetWeb(itemID)
+	iNew, err := wowItems.GetWeb(itemID)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could not retrieve itemID %d: %s\n", itemID, err)
 		os.Exit(2)
 	}
 
-	err = wowItem.Items.Save()
+	err = wowItems.Items.Save()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Failed to save item persistence: ", err)
 		os.Exit(2)
@@ -39,22 +41,23 @@ func refreshItem(itemID int64, wowItem *wowitem.WoWItem) {
 }
 
 // refreshAll refreshes persisted items older than a certain age
-func refreshAll(maxRefresh int, wowItem *wowitem.WoWItem) {
+func refreshAll(maxRefresh int) {
+	wowItems := wowitem.New()
 	maxAge := 24 * time.Hour * 7 // 1 week
 	needsRefresh := 0
 	refreshCount := 0
 
-	for _, i := range wowItem.Items.Values() {
+	for _, i := range wowItems.Items.Values() {
 		if i.Stale(maxAge) {
 			needsRefresh++
 			if refreshCount < maxRefresh {
-				wowItem.GetWeb(i.ID())
+				wowItems.GetWeb(i.ID())
 				refreshCount++
 			}
 		}
 	}
 
-	err := wowItem.Items.Save()
+	err := wowItems.Items.Save()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Failed to save item persistence: ", err)
 		os.Exit(2)
@@ -63,10 +66,9 @@ func refreshAll(maxRefresh int, wowItem *wowitem.WoWItem) {
 	fmt.Printf("Refreshed %d of %d stale items\n", refreshCount, needsRefresh)
 }
 
-func runRefresh(args []string, wowItem *wowitem.WoWItem) {
+func runRefresh(args []string) {
 	flags := flag.NewFlagSet("refresh", flag.ExitOnError)
 
-	passphrase := flags.String("passphrase", "", "Passphrase to unlock WoW API client ID/secret")
 	maxRefresh := flags.Int("max-refresh", 1000, "Maximum number of items to refresh")
 	itemID := flags.Int64("id", -1, "Item ID to look up")
 
@@ -75,20 +77,15 @@ func runRefresh(args []string, wowItem *wowitem.WoWItem) {
 		os.Exit(2)
 	}
 
-	if *passphrase == "" {
-		fmt.Fprintln(os.Stderr, "items refresh requires -passphrase")
-		os.Exit(2)
-	}
-
-	err := wowapi.Init(*passphrase)
+	err := wowapi.Init()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
 	}
 
 	if *itemID == -1 {
-		refreshAll(*maxRefresh, wowItem)
+		refreshAll(*maxRefresh)
 	} else {
-		refreshItem(*itemID, wowItem)
+		refreshItem(*itemID)
 	}
 }

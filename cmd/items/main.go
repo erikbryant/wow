@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-
-	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 func usage() {
@@ -12,6 +10,7 @@ func usage() {
   items <command>
 
 Commands:
+  credentials {delete|get|set}                       Manage credentials
   delete -id <id>                                    Delete persisted item
   json -id <id>                                      Show JSON for an item
   query [options]                                    Search for items
@@ -19,12 +18,15 @@ Commands:
   help                                               Display this help message
 
 Examples:
+  items credentials delete <name>
+  items credentials get <name>
+  items credentials set <name> <value>
   items delete -id 12345
   items json -id 12345
   items query
   items query -rare -in-appearance-set
-  items refresh -passphrase foobar -max-refresh=42
-  items refresh -passphrase foobar -id 12345`)
+  items refresh -max-refresh=42
+  items refresh -id 12345`)
 }
 
 func main() {
@@ -33,23 +35,24 @@ func main() {
 		os.Exit(1)
 	}
 
-	wowItems := wowitem.New()
-
 	command := os.Args[1]
 	args := os.Args[2:]
 
 	switch command {
+	case "credentials":
+		runCredentials(args)
+
 	case "delete":
-		runDelete(args, wowItems)
+		runDelete(args)
 
 	case "json":
-		runJSON(args, wowItems)
+		runJSON(args)
 
 	case "query":
-		runQuery(args, wowItems)
+		runQuery(args)
 
 	case "refresh":
-		runRefresh(args, wowItems)
+		runRefresh(args)
 
 	case "help":
 		usage()

@@ -19,6 +19,7 @@ vspace () {
   echo
 }
 
+
 waitForInternet
 
 if pgrep -x "World of Warcraft" > /dev/null; then
@@ -34,7 +35,7 @@ open -a "Google Chrome"
 vspace
 
 cd ~/dev/wow
-go run cmd/wow/wow.go -passphrase burgermeister
+go run cmd/wow/wow.go
 
 vspace
 
