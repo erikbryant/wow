@@ -12,11 +12,11 @@ import (
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/cooking"
+	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/shoppingconfig"
 	"github.com/erikbryant/wow/internal/toy"
 	"github.com/erikbryant/wow/internal/userconfig"
 	"github.com/erikbryant/wow/internal/wowitem"
-	"github.com/fatih/color"
 )
 
 // Recommendations holds all recommended auctions for a single realm
@@ -261,7 +261,7 @@ func scanRealms(r string, ds *DataStore) []Recommendations {
 }
 
 // fmtShoppingList returns a formatted string of the given items or "" if none
-func fmtShoppingList(label string, items []string, c *color.Color, summarize bool) string {
+func fmtShoppingList(label string, items []string, fgColor int, summarize bool) string {
 	if len(items) == 0 {
 		return ""
 	}
@@ -270,24 +270,23 @@ func fmtShoppingList(label string, items []string, c *color.Color, summarize boo
 		header = fmt.Sprintf("--- %s ---\n", label)
 	}
 	slices.Sort(items)
-	return c.Sprintf("%s%s\n", header, strings.Join(slices.Compact(items), "\n"))
+	return output.Colorize(fmt.Sprintf("%s%s\n", header, strings.Join(slices.Compact(items), "\n")), fgColor)
 }
 
 // format converts a Recommendations to a string
 func (r *Recommendations) format(ds *DataStore, summarize bool) string {
 	shoppingList := ""
-	shoppingList += fmtShoppingList("Pets I Need", r.PetNeededBargains, color.New(color.FgMagenta), summarize)
-	shoppingList += fmtShoppingList("Pets to Resell", r.PetResellBargains, color.New(color.FgGreen), summarize)
-	shoppingList += fmtShoppingList("Useful Item Bargains", r.Bargains, color.New(color.FgRed), summarize)
-	shoppingList += fmtShoppingList("Appearance Bargains", r.AppearanceBargains, color.New(color.FgBlue), summarize)
+	shoppingList += fmtShoppingList("Pets I Need", r.PetNeededBargains, output.FgMagenta, summarize)
+	shoppingList += fmtShoppingList("Pets to Resell", r.PetResellBargains, output.FgGreen, summarize)
+	shoppingList += fmtShoppingList("Useful Item Bargains", r.Bargains, output.FgRed, summarize)
+	shoppingList += fmtShoppingList("Appearance Bargains", r.AppearanceBargains, output.FgBlue, summarize)
 
 	if summarize {
 		if r.ArbitrageProfit >= ds.ShoppingConfig.ProfitToDisplayMin {
-			c := color.New(color.FgWhite)
-			shoppingList += c.Sprintf("Arbitrages: %s\n", common.Gold(r.ArbitrageProfit))
+			shoppingList += output.Colorize(fmt.Sprintf("Arbitrages: %s\n", common.Gold(r.ArbitrageProfit)), output.FgWhite)
 		}
 	} else {
-		shoppingList += fmtShoppingList("Arbitrages", r.Arbitrages, color.New(color.FgWhite), summarize)
+		shoppingList += fmtShoppingList("Arbitrages", r.Arbitrages, output.FgWhite, summarize)
 	}
 
 	if len(shoppingList) == 0 {
@@ -301,8 +300,7 @@ func (r *Recommendations) format(ds *DataStore, summarize bool) string {
 		realm = "_Commodities_"
 	}
 
-	col := color.New(color.FgCyan)
-	msg := col.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", realm, r.NumAuctions, shoppingList)
+	msg := output.Colorize(fmt.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", realm, r.NumAuctions, shoppingList), output.FgCyan)
 
 	return msg
 }
