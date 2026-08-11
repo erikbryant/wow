@@ -2,6 +2,10 @@ package credentials
 
 import "fmt"
 
+// queryResult stores all possible results from queries.
+type queryResult struct {
+}
+
 // kcAdd adds an Item to a Keychain
 func kcAdd(service, name, value string) error {
 	return fmt.Errorf("kcAdd not implemented")
