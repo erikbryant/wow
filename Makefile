@@ -12,7 +12,6 @@ test: vuln
 
 run: test
 	go run ./cmd/wow
-	go run ./cmd/items
 
 # Targets that do not represent actual files
-.PHONY: fmt test vet run
+.PHONY: fmt vet vuln test run
