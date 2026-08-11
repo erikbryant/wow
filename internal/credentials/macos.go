@@ -1,17 +1,16 @@
 package credentials
 
+// Forked from https://github.com/keybase/go-keychain
+
 import "C"
 import (
-	"errors"
 	"fmt"
-	"math"
 	"reflect"
 	"time"
 	"unsafe"
 )
 
 // See https://developer.apple.com/library/ios/documentation/Security/Reference/keychainservices/index.html for the APIs used below.
-
 // Also see https://developer.apple.com/library/ios/documentation/Security/Conceptual/keychainServConcepts/01introduction/introduction.html .
 
 /*
@@ -258,9 +257,6 @@ func release(ref C.CFTypeRef) {
 // bytesToCFData will return a CFDataRef and if non-nil, must be released with
 // release(ref).
 func bytesToCFData(b []byte) (C.CFDataRef, error) {
-	if uint64(len(b)) > math.MaxUint32 {
-		return 0, errors.New("data is too large")
-	}
 	var p *C.UInt8
 	if len(b) > 0 {
 		p = (*C.UInt8)(&b[0])
