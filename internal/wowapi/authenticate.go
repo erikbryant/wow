@@ -27,7 +27,7 @@ func wowProfileAccessToken(clientID, clientSecret string) (string, error) {
 	return wowoauth.GetPAT(clientID, clientSecret)
 }
 
-func Init() error {
+func Authenticate() error {
 	c := credentials.New()
 
 	clientID, err := c.Get("clientID")

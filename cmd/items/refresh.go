@@ -77,7 +77,7 @@ func runRefresh(args []string) {
 		os.Exit(2)
 	}
 
-	err := wowapi.Init()
+	err := wowapi.Authenticate()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)

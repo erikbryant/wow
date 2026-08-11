@@ -16,7 +16,7 @@ var (
 func main() {
 	flag.Parse()
 
-	err := wowapi.Init()
+	err := wowapi.Authenticate()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
