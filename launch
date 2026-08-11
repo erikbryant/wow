@@ -34,7 +34,7 @@ open -a "Google Chrome"
 vspace
 
 cd ~/dev/wow
-go run cmd/wow/wow.go -passphrase unlock
+go run cmd/wow/wow.go -passphrase burgermeister
 
 vspace
 
