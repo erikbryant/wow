@@ -54,7 +54,7 @@ When the credentials are created (or updated) you should run the 'keychain Acces
 This callback has been registered with Blizzard for this client ID:
 
 ```text
-redirect_uri = 'http://localhost:8000/auth/wow/callback'
+redirect_uri = 'http://localhost:8888/auth/blizzard/profile'
 ```
 
 ### Areas for improvement
