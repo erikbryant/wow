@@ -28,14 +28,12 @@ func wowProfileAccessToken(clientID, clientSecret string) (string, error) {
 }
 
 func Authenticate() error {
-	c := credentials.New()
-
-	clientID, err := c.Get("clientID")
+	clientID, err := credentials.Get("clientID")
 	if err != nil {
 		return fmt.Errorf("get clientID: %w", err)
 	}
 
-	clientSecret, err := c.Get("clientSecret")
+	clientSecret, err := credentials.Get("clientSecret")
 	if err != nil {
 		return fmt.Errorf("get clientSecret: %w", err)
 	}

@@ -10,7 +10,7 @@ func usage() {
   items <command>
 
 Commands:
-  credentials {delete|get|set}                       Manage credentials
+  credentials {add|delete|get}                       Manage credentials
   delete -id <id>                                    Delete persisted item
   json -id <id>                                      Show JSON for an item
   query [options]                                    Search for items
@@ -18,9 +18,9 @@ Commands:
   help                                               Display this help message
 
 Examples:
+  items credentials add <name> <value>
   items credentials delete <name>
   items credentials get <name>
-  items credentials set <name> <value>
   items delete -id 12345
   items json -id 12345
   items query
