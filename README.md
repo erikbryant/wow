@@ -39,6 +39,12 @@ The auction house downloadable data is updated once an hour. The precise time mi
 https://develop.battle.net/documentation
 https://develop.battle.net/documentation/world-of-warcraft/game-data-apis
 
+### WoW web API Credentials
+
+The WoW web API credentials are stored in the macOS keychain. Update them using the 'items' app.
+
+When the credentials are created (or updated) you should run the 'keychain Access' app and set the two credentials to be accessible by any application. Otherwise, there will be an extra pop-up requiring authorization to access the keys.
+
 ### OAuth 2.0
 
 [Reference implementation](https://github.com/douglasmakey/oauth2-example).
@@ -53,14 +59,4 @@ redirect_uri = 'http://localhost:8000/auth/wow/callback'
 
 ### Areas for improvement
 
-Convert battlepet.go to a singleton (like appearanceset.go)
-
-Convert persistence.go to a singleton (like appearanceset.go)
-
-In the wowapi package, return err instead of bool from request()
-
-Replace fmt.Fprint with error propagation to caller
-
 Add tests
-
-In shopping.go, why does outputVerbose have leading blank lines while outputBrief does not?
