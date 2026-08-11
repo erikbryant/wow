@@ -4,6 +4,7 @@ import "fmt"
 
 // queryResult stores all possible results from queries.
 type queryResult struct {
+	Data []byte
 }
 
 // kcAdd adds an Item to a Keychain
