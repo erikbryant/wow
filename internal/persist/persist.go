@@ -15,6 +15,7 @@ type Persistence[K comparable, V any] struct {
 	filename string
 	mu       sync.RWMutex
 	data     map[K]V
+	loaded   bool
 	dirty    bool
 }
 
@@ -25,11 +26,20 @@ func New[K comparable, V any](name string) *Persistence[K, V] {
 	return &Persistence[K, V]{
 		filename: filepath.Join(dataDirectory, name+".gob"),
 		data:     make(map[K]V),
+		loaded:   false,
 		dirty:    false,
 	}
 }
 
+func (c *Persistence[K, V]) Loaded() bool {
+	return c.loaded
+}
+
 func (c *Persistence[K, V]) Load() error {
+	if c.Loaded() {
+		return nil
+	}
+
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -47,6 +57,7 @@ func (c *Persistence[K, V]) Load() error {
 	}
 
 	c.data = data
+	c.loaded = true
 	c.dirty = false
 
 	return nil
