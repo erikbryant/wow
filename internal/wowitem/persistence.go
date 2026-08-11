@@ -9,28 +9,32 @@ import (
 	"github.com/erikbryant/wow/internal/wowapi"
 )
 
-// TODO: Convert this to a singleton package (like appearanceset.go)
+type WoWItem struct {
+	Items *persist.Persistence[int64, Item]
+}
 
 const (
 	persistName = "items"
 )
 
-type WoWItem struct {
-	Items *persist.Persistence[int64, Item]
-}
-
-func New() *WoWItem {
-	wi := &WoWItem{
+var (
+	wowItems = &WoWItem{
 		Items: persist.New[int64, Item](persistName),
 	}
+)
 
-	err := wi.Items.Load()
+func New() *WoWItem {
+	if wowItems.Items.Loaded() {
+		return wowItems
+	}
+
+	err := wowItems.Items.Load()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "*** error opening items persist, using an empty one: %s\n", err)
 	}
-	fmt.Printf("-- #Items persisted  : %d\n", wi.Items.Len())
+	fmt.Printf("-- #Items persisted  : %d\n", wowItems.Items.Len())
 
-	return wi
+	return wowItems
 }
 
 // Search returns the item with name 's' or an empty item if not found

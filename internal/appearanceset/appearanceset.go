@@ -3,7 +3,6 @@ package appearanceset
 import (
 	"fmt"
 	"os"
-	"sync"
 
 	"github.com/erikbryant/wow/internal/persist"
 	"github.com/erikbryant/wow/internal/wowapi"
@@ -18,8 +17,9 @@ const (
 )
 
 var (
-	once sync.Once
-	as   *AppearanceSets
+	as = &AppearanceSets{
+		IDs: persist.New[int64, bool](persistName),
+	}
 )
 
 // getAppearanceSetsAppearanceIDs loads all appearance IDs that are in any appearance set
@@ -60,9 +60,9 @@ func createFromWeb() error {
 	return nil
 }
 
-func load() error {
-	as = &AppearanceSets{
-		IDs: persist.New[int64, bool](persistName),
+func New() (*AppearanceSets, error) {
+	if as.IDs.Loaded() {
+		return as, nil
 	}
 
 	err := as.IDs.Load()
@@ -70,24 +70,11 @@ func load() error {
 		fmt.Fprintf(os.Stderr, "*** error opening appearances persist, creating new one: %s\n", err)
 		err = createFromWeb()
 		if err != nil {
-			return fmt.Errorf("failed to load or create appearances: %s", err)
+			return nil, fmt.Errorf("failed to load or create appearances: %s", err)
 		}
 	}
 
 	fmt.Printf("-- #Appearances known: %d\n", as.IDs.Len())
-
-	return nil
-}
-
-func New() (*AppearanceSets, error) {
-	var err error
-
-	once.Do(func() {
-		err = load()
-	})
-	if err != nil {
-		return nil, err
-	}
 
 	return as, nil
 }
