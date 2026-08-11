@@ -14,11 +14,6 @@ var (
 )
 
 func main() {
-	if len(os.Args) != 1 {
-		fmt.Fprintln(os.Stderr, "Usage: wow [-realms=realm1,realm2,...]")
-		os.Exit(1)
-	}
-
 	flag.Parse()
 
 	err := wowapi.Init()
