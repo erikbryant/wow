@@ -6,10 +6,10 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
+	"os/exec"
 	"strings"
 	"time"
-
-	"github.com/pkg/browser"
 )
 
 func GetToken(data url.Values, clientID, clientSecret string) (string, error) {
@@ -53,7 +53,10 @@ func GetPAT(clientID, clientSecret string) (string, error) {
 	go start(clientID, clientSecret)
 	defer shutdown()
 
-	err := browser.OpenURL("http://localhost:8888/auth/blizzard/login")
+	cmd := exec.Command("open", "http://localhost:8888/auth/blizzard/login")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
 	if err != nil {
 		return "", fmt.Errorf("unable to open browser: %s", err)
 	}
