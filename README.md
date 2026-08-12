@@ -41,9 +41,11 @@ https://develop.battle.net/documentation/world-of-warcraft/game-data-apis
 
 ### WoW web API Credentials
 
-The WoW web API credentials are stored in the macOS keychain. Update them using the 'items' app.
+The WoW web API credentials are stored in the macOS keychain. Update them using the 'secret' app.
 
-When the credentials are created (or updated) you should run the 'keychain Access' app and set the two credentials to be accessible by any application. Otherwise, there will be an extra pop-up requiring authorization to access the keys.
+When the credentials are created, run the 'keychain Access' app and set the two credentials to be accessible by any application. Otherwise, there will be an extra pop-up requiring authorization to access the keys.
+
+Currently the credentials are named `clientID` and `clientSecret`.
 
 ### OAuth 2.0
 
