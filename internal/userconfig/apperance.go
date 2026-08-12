@@ -76,6 +76,7 @@ var (
 		57226: {}, // Anthemic Cuirass
 		57227: {}, // Anthemic Links
 		57228: {}, // Anthemic Legguards
+		57229: {}, // Anthemic Greaves
 		57230: {}, // Anthemic Bracers
 		57231: {}, // Anthemic Gauntlets
 		78230: {}, // Scepter of Spectacle: Order
