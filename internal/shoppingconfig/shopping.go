@@ -103,7 +103,7 @@ func New(wi *wowitem.WoWItem, cr *cooking.CookingRecipe) *UserConfig {
 			153:  {}, // Wolpertinger
 
 			// We collect pets to sell to Stephen; limit how many of each we collect
-			2842: {}, // Anomalus
+			//2842: {}, // Anomalus
 			//191:  {}, // Clockwork Rocket Bot
 			//1961: {}, // G0-R41-0n Ultratonk
 			//67:   {}, // Hawk Owl

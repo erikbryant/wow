@@ -94,6 +94,7 @@ var (
 		33365: {}, // Sash of the Unredeemed
 		33423: {}, // Treads of Panicked Escape
 		33439: {}, // Treads of Panicked Escape
+		33440: {}, // Soul-Rattle Ribcage
 		33496: {}, // Cord of Pilfered Rosaries
 		34558: {}, // Cuffs of the Viridian Flameweavers
 		34622: {}, // Greaves of the Felblade Defenders
