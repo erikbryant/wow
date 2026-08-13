@@ -13,5 +13,11 @@ test: vuln
 run: test
 	go run ./cmd/wow
 
+./bin/items:
+	go build -o ./bin/ ./cmd/items/
+
+./bin/secret:
+	go build -o ./bin/ ./cmd/secret/
+
 # Targets that do not represent actual files
 .PHONY: fmt vet vuln test run

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/erikbryant/wow/internal/credentials"
 	"github.com/erikbryant/wow/internal/wowoauth"
 )
 
@@ -27,16 +26,8 @@ func wowProfileAccessToken(clientID, clientSecret string) (string, error) {
 	return wowoauth.GetPAT(clientID, clientSecret)
 }
 
-func Authenticate() error {
-	clientID, err := credentials.Get("clientID")
-	if err != nil {
-		return fmt.Errorf("get clientID: %w", err)
-	}
-
-	clientSecret, err := credentials.Get("clientSecret")
-	if err != nil {
-		return fmt.Errorf("get clientSecret: %w", err)
-	}
+func Authenticate(clientID, clientSecret string) error {
+	var err error
 
 	accessToken, err = wowAccessToken(clientID, clientSecret)
 	if err != nil {

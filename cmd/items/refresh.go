@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/erikbryant/wow/internal/credentials"
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
@@ -77,7 +78,19 @@ func runRefresh(args []string) {
 		os.Exit(2)
 	}
 
-	err := wowapi.Authenticate()
+	clientID, err := credentials.ReadFromKeychain("clientID")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	clientSecret, err := credentials.ReadFromKeychain("clientSecret")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	err = wowapi.Authenticate(clientID, clientSecret)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
