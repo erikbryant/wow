@@ -100,9 +100,15 @@ func runRefresh(args []string) error {
 	}
 
 	if *itemID == -1 {
-		refreshAll(*maxRefresh)
+		err = refreshAll(*maxRefresh)
+		if err != nil {
+			return err
+		}
 	} else {
-		refreshItem(*itemID)
+		err = refreshItem(*itemID)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
