@@ -19,10 +19,13 @@ type Persistence[K comparable, V any] struct {
 	dirty    bool
 }
 
-func New[K comparable, V any](name string) *Persistence[K, V] {
+func init() {
 	gob.Register(map[string]any{})
+	// TODO: I think we can get rid of this, but we might have to rebuild existing gobs
 	gob.Register([]any{})
+}
 
+func New[K comparable, V any](name string) *Persistence[K, V] {
 	return &Persistence[K, V]{
 		filename: filepath.Join(dataDirectory, name+".gob"),
 		data:     make(map[K]V),
