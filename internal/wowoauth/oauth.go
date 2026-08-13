@@ -50,6 +50,7 @@ func generateStateOAuthCookie(w http.ResponseWriter) (string, error) {
 		Expires:  expiration,
 		HttpOnly: true,
 		Name:     cookieName,
+		Path:     "/auth/blizzard",
 		SameSite: http.SameSiteLaxMode,
 		Secure:   false,
 		Value:    state,
