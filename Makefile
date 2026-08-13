@@ -1,21 +1,28 @@
+.PHONY: fmt
 fmt:
 	go fmt ./...
 
-vet: fmt
+.PHONY: vet
+vet:
 	go vet ./...
 
-vuln: vet
+.PHONY: vuln
+vuln:
 	govulncheck ./...
 
-test: vuln
+.PHONY: test
+test:
 	go test -race ./...
 
-run: test
-	go run ./cmd/wow
+.PHONY: verify
+verify:
+	go mod verify
 
-build:
-	go build -o ./bin/ ./cmd/items/
-	go build -o ./bin/ ./cmd/secret/
+.PHONY: check
+check: fmt vet vuln test verify
 
-# Targets that do not represent actual files
-.PHONY: fmt vet vuln test run
+.PHONY: build
+build: check
+	go build -o ./bin/ ./cmd/items
+	go build -o ./bin/ ./cmd/secret
+	go build -o ./bin/ ./cmd/wow
