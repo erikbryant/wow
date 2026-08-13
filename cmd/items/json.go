@@ -9,32 +9,36 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
-func json(itemID int64) {
+func json(itemID int64) error {
 	wowItems := wowitem.New()
 
 	i, err := wowItems.Get(itemID)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to get itemID %d: %s\n", itemID, err)
-		os.Exit(2)
+		return fmt.Errorf("failed to get itemID %d: %w", itemID, err)
 	}
 
 	output.JSON(os.Stdout, []wowitem.Item{i})
+
+	return nil
 }
 
-func runJSON(args []string) {
+func runJSON(args []string) error {
 	flags := flag.NewFlagSet("json", flag.ExitOnError)
 
 	itemID := flags.Int64("id", -1, "Item ID to look up")
 
 	if err := flags.Parse(args); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(2)
+		return err
 	}
 
 	if *itemID == -1 {
-		fmt.Fprintln(os.Stderr, "json requires -id")
-		os.Exit(2)
+		return fmt.Errorf("json requires -id")
 	}
 
-	json(*itemID)
+	err := json(*itemID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

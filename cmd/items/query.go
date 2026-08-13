@@ -10,7 +10,7 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
-func runQuery(args []string) {
+func runQuery(args []string) error {
 	flags := flag.NewFlagSet("query", flag.ExitOnError)
 
 	rare := flags.Bool(
@@ -68,8 +68,7 @@ func runQuery(args []string) {
 	)
 
 	if err := flags.Parse(args); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(2)
+		return err
 	}
 
 	var predicates []query.Predicate
@@ -117,9 +116,10 @@ func runQuery(args []string) {
 	case "name":
 		query.Sort(results, query.ByName)
 	default:
-		fmt.Fprintln(os.Stderr, "sort order must be one of {id, name} got ", *sortField)
-		os.Exit(2)
+		return fmt.Errorf("sort order must be one of {id, name} got %s", *sortField)
 	}
 
 	output.Table(os.Stdout, results)
+
+	return nil
 }

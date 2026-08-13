@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 
 	"github.com/erikbryant/wow/internal/wowitem"
 )
@@ -16,24 +15,23 @@ func deleteItem(itemID int64) error {
 	return err
 }
 
-func runDelete(args []string) {
+func runDelete(args []string) error {
 	flags := flag.NewFlagSet("delete", flag.ExitOnError)
 
 	itemID := flags.Int64("id", -1, "Item ID to look up")
 
 	if err := flags.Parse(args); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(2)
+		return err
 	}
 
 	if *itemID == -1 {
-		fmt.Fprintln(os.Stderr, "delete requires -id")
-		os.Exit(2)
+		return fmt.Errorf("delete requires -id")
 	}
 
 	err := deleteItem(*itemID)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(2)
+		return err
 	}
+
+	return nil
 }

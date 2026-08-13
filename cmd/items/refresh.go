@@ -13,7 +13,7 @@ import (
 )
 
 // refreshItem refreshes a single item
-func refreshItem(itemID int64) {
+func refreshItem(itemID int64) error {
 	wowItems := wowitem.New()
 
 	rows := []wowitem.Item{}
@@ -27,22 +27,22 @@ func refreshItem(itemID int64) {
 
 	iNew, err := wowItems.GetWeb(itemID)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not retrieve itemID %d: %s\n", itemID, err)
-		os.Exit(2)
+		return fmt.Errorf("could not retrieve itemID %d: %w", itemID, err)
 	}
 
 	err = wowItems.Items.Save()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Failed to save item persistence: ", err)
-		os.Exit(2)
+		return fmt.Errorf("failed to save item persistence: %w", err)
 	}
 
 	rows = append(rows, iNew)
 	output.Table(os.Stdout, rows)
+
+	return nil
 }
 
 // refreshAll refreshes persisted items older than a certain age
-func refreshAll(maxRefresh int) {
+func refreshAll(maxRefresh int) error {
 	wowItems := wowitem.New()
 	maxAge := 24 * time.Hour * 7 // 1 week
 	needsRefresh := 0
@@ -65,40 +65,37 @@ func refreshAll(maxRefresh int) {
 
 	err := wowItems.Items.Save()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Failed to save item persistence: ", err)
-		os.Exit(2)
+		return fmt.Errorf("failed to save item persistence: %w", err)
 	}
 
 	fmt.Printf("Refreshed %d of %d stale items\n", refreshCount, needsRefresh)
+
+	return nil
 }
 
-func runRefresh(args []string) {
+func runRefresh(args []string) error {
 	flags := flag.NewFlagSet("refresh", flag.ExitOnError)
 
 	maxRefresh := flags.Int("max-refresh", 1000, "Maximum number of items to refresh")
 	itemID := flags.Int64("id", -1, "Item ID to look up")
 
 	if err := flags.Parse(args); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(2)
+		return err
 	}
 
 	clientID, err := credentials.ReadFromKeychain("clientID")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		return err
 	}
 
 	clientSecret, err := credentials.ReadFromKeychain("clientSecret")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		return err
 	}
 
 	err = wowapi.Authenticate(clientID, clientSecret)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(2)
+		return err
 	}
 
 	if *itemID == -1 {
@@ -106,4 +103,6 @@ func runRefresh(args []string) {
 	} else {
 		refreshItem(*itemID)
 	}
+
+	return nil
 }

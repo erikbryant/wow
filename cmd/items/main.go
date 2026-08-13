@@ -34,25 +34,25 @@ func main() {
 	command := os.Args[1]
 	args := os.Args[2:]
 
+	var err error
+
 	switch command {
 	case "delete":
-		runDelete(args)
-
+		err = runDelete(args)
 	case "json":
-		runJSON(args)
-
+		err = runJSON(args)
 	case "query":
-		runQuery(args)
-
+		err = runQuery(args)
 	case "refresh":
-		runRefresh(args)
-
+		err = runRefresh(args)
 	case "help":
 		usage()
-
 	default:
-		fmt.Fprintf(os.Stderr, "unknown command: %s\n\n", command)
 		usage()
+		err = fmt.Errorf("unknown command: %s", command)
+	}
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
 }
