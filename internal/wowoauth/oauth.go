@@ -137,7 +137,7 @@ func start(clientID, clientSecret string) {
 	blizzardOAuthConfig.ClientSecret = clientSecret
 
 	server = &http.Server{
-		Addr:    ":8888",
+		Addr:    "127.0.0.1:8888",
 		Handler: handlers(),
 	}
 
