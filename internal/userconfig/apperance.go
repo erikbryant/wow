@@ -35,6 +35,7 @@ var (
 		22392: {}, // Shadowtome
 		22547: {}, // Shadowtome
 		22750: {}, // Truesteel Waistguard
+		22752: {}, // Truesteel Breastplate
 		22757: {}, // Truesteel Armguards
 		22902: {}, // Hexweave Cowl
 		22905: {}, // Hexweave Mantle
@@ -45,6 +46,7 @@ var (
 		22939: {}, // Steelforged Saber
 		22940: {}, // Steelforged Saber
 		23247: {}, // Truesteel Armguards
+		23252: {}, // Truesteel Breastplate
 		23254: {}, // Truesteel Waistguard
 		56701: {}, // Choral Hood
 		56702: {}, // Choral Amice
