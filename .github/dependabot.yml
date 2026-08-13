@@ -1,8 +1,49 @@
-version: 2
-updates:
-- package-ecosystem: gomod
-  directory: "/"
-  schedule:
-    interval: daily
-    time: "13:00"
-  open-pull-requests-limit: 10
+  version: 2
+
+  updates:
+    # Keep Go dependencies up to date.
+    - package-ecosystem: "gomod"
+      directory: "/"
+      schedule:
+        interval: "weekly"
+        day: "monday"
+
+      # Avoid a flood of individual dependency PRs.
+      open-pull-requests-limit: 10
+
+      # Give newly released dependencies a little time to settle.
+      # Security updates are not subject to this cooldown.
+      cooldown:
+        default-days: 3
+        semver-major-days: 30
+        semver-minor-days: 7
+        semver-patch-days: 3
+
+      # Group routine Go dependency updates together.
+      groups:
+        go-dependencies:
+          applies-to: version-updates
+          patterns:
+            - "*"
+
+    # Keep GitHub Actions themselves up to date.
+    - package-ecosystem: "github-actions"
+      directory: "/"
+      schedule:
+        interval: "weekly"
+        day: "monday"
+
+      open-pull-requests-limit: 10
+
+      cooldown:
+        default-days: 3
+        semver-major-days: 30
+        semver-minor-days: 7
+        semver-patch-days: 3
+
+      # Group routine GitHub Actions updates together.
+      groups:
+        github-actions:
+          applies-to: version-updates
+          patterns:
+            - "*"
