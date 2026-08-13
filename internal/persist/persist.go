@@ -87,7 +87,15 @@ func (c *Persistence[K, V]) Save() error {
 		return err
 	}
 
-	if err := f.Close(); err != nil {
+	err = f.Sync()
+	if err != nil {
+		f.Close()
+		os.Remove(tmp)
+		return err
+	}
+
+	err = f.Close()
+	if err != nil {
 		os.Remove(tmp)
 		return err
 	}
@@ -98,7 +106,7 @@ func (c *Persistence[K, V]) Save() error {
 		return err
 	}
 
-	// If we got here then we have a clean save
+	// If we got here then we have a clean save! :)
 	c.dirty = false
 
 	return nil
