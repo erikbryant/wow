@@ -3,7 +3,6 @@ package output
 import (
 	"fmt"
 	"io"
-	"os"
 	"strings"
 	"text/tabwriter"
 
@@ -36,8 +35,9 @@ var columns = []Column{
 		value: func(item wowitem.Item) string {
 			as, err := appearanceset.New()
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "*** unable to load appearance set: %s\n", err)
-				os.Exit(1)
+
+				msg := fmt.Sprintf("unable to load appearance set: %s", err)
+				panic(msg)
 			}
 			return fmt.Sprintf("%t", as.Contains(item.Appearances()))
 		},
