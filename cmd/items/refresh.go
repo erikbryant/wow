@@ -52,8 +52,13 @@ func refreshAll(maxRefresh int) {
 		if i.Stale(maxAge) {
 			needsRefresh++
 			if refreshCount < maxRefresh {
-				wowItems.GetWeb(i.ID())
-				refreshCount++
+				_, err := wowItems.GetWeb(i.ID())
+				if err == nil {
+					refreshCount++
+				} else {
+					fmt.Fprintf(os.Stderr, "could not retrieve itemID %d: %s\n", i.ID(), err)
+					continue
+				}
 			}
 		}
 	}
