@@ -2,22 +2,22 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/erikbryant/wow/internal/credentials"
 )
 
-func runDelete(args []string) {
+func runDelete(args []string) error {
 	if len(args) != 1 {
 		usage()
-		os.Exit(1)
+		return fmt.Errorf("delete requires exactly one argument")
 	}
 
 	name := args[0]
 
 	err := credentials.Delete(name)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "unable to delete %s: %s\n", name, err)
-		os.Exit(1)
+		return fmt.Errorf("unable to delete %s: %w", name, err)
 	}
+
+	return nil
 }

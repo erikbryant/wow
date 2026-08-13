@@ -2,15 +2,14 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/erikbryant/wow/internal/credentials"
 )
 
-func runAdd(args []string) {
+func runAdd(args []string) error {
 	if len(args) != 2 {
 		usage()
-		os.Exit(1)
+		return fmt.Errorf("add requires 2 arguments")
 	}
 
 	name := args[0]
@@ -18,7 +17,8 @@ func runAdd(args []string) {
 
 	err := credentials.Add(name, value)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "unable to add %s: %s\n", name, err)
-		os.Exit(1)
+		return fmt.Errorf("unable to add %s: %w", name, err)
 	}
+
+	return nil
 }
