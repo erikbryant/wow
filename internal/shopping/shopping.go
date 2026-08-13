@@ -75,7 +75,10 @@ func NewDataStore() (*DataStore, error) {
 		return nil, err
 	}
 
-	ds.CookingRecipes = cooking.New()
+	ds.CookingRecipes, err = cooking.New()
+	if err != nil {
+		return nil, err
+	}
 
 	ds.ShoppingConfig = shoppingconfig.New(ds.WowItem, ds.CookingRecipes)
 

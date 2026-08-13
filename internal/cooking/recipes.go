@@ -3,7 +3,6 @@ package cooking
 import (
 	"fmt"
 	"maps"
-	"os"
 	"slices"
 	"strings"
 
@@ -37,10 +36,10 @@ func makeRecipe(r any) Recipe {
 	return recipe
 }
 
-func knownRecipes(realm, alt, tierName string) map[int64]Recipe {
+func knownRecipes(realm, alt, tierName string) (map[int64]Recipe, error) {
 	result, err := wowapi.Professions(realm, alt)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "*** no professions found: %s, %s, %v\n", realm, alt, result)
+		return nil, fmt.Errorf("no professions found for %s, %s, %v", realm, alt, result)
 	}
 
 	s, _ := web.MsiValued(result, []string{"secondaries"}, nil)
@@ -65,29 +64,32 @@ func knownRecipes(realm, alt, tierName string) map[int64]Recipe {
 				}
 				recipes[recipe.id] = recipe
 			}
-			return recipes
+			return recipes, nil
 		}
 	}
 
-	return nil
+	return nil, fmt.Errorf("should not have gotten here")
 }
 
 func key(alt userconfig.Alt) string {
 	return alt.Realm + "-" + alt.Name
 }
 
-func scanAlts() (map[int64]Recipe, map[string]map[int64]Recipe) {
+func scanAlts() (map[int64]Recipe, map[string]map[int64]Recipe, error) {
 	allRecipes := map[int64]Recipe{}
 	recipesByAlt := map[string]map[int64]Recipe{}
 
 	// Find known recipes for each alt
 	for _, alt := range userconfig.Alts {
-		kr := knownRecipes(alt.Realm, alt.Name, "Classic Cooking")
+		kr, err := knownRecipes(alt.Realm, alt.Name, "Classic Cooking")
+		if err != nil {
+			return nil, nil, err
+		}
 		maps.Copy(allRecipes, kr)
 		recipesByAlt[key(alt)] = kr
 	}
 
-	return allRecipes, recipesByAlt
+	return allRecipes, recipesByAlt, nil
 }
 
 func logRecipes(recipesNeededByAlt map[string][]string, recipesNeededCount map[string]int) string {
@@ -112,8 +114,11 @@ func logRecipes(recipesNeededByAlt map[string][]string, recipesNeededCount map[s
 	return recipeOutputLog.String()
 }
 
-func New() *CookingRecipe {
-	allRecipes, recipesByAlt := scanAlts()
+func New() (*CookingRecipe, error) {
+	allRecipes, recipesByAlt, err := scanAlts()
+	if err != nil {
+		return nil, err
+	}
 	recipesNeededCount := map[string]int{}
 	recipesNeededByAlt := map[string][]string{}
 
@@ -137,7 +142,7 @@ func New() *CookingRecipe {
 
 	slices.Sort(cr.recipesThatWeNeed)
 
-	return &cr
+	return &cr, nil
 }
 
 func (cr *CookingRecipe) RecipesNeeded() []string {
