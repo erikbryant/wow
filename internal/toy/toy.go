@@ -25,7 +25,7 @@ func getNames() (map[int64]string, error) {
 
 	allToys, err := wowapi.Toys()
 	if err != nil {
-		return nil, fmt.Errorf("unable to obtain toy names: %s", err)
+		return nil, fmt.Errorf("unable to obtain toy names: %w", err)
 	}
 
 	for _, toyRaw := range allToys {
@@ -43,7 +43,7 @@ func getOwned() (map[int64]bool, error) {
 
 	toysOwned, err := wowapi.CollectionsToys()
 	if err != nil {
-		return nil, fmt.Errorf("unable to obtain toys owned: %s", err)
+		return nil, fmt.Errorf("unable to obtain toys owned: %w", err)
 	}
 
 	for _, toyRaw := range toysOwned {

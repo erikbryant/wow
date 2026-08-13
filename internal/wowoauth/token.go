@@ -58,7 +58,7 @@ func GetPAT(clientID, clientSecret string) (string, error) {
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
-		return "", fmt.Errorf("unable to open browser: %s", err)
+		return "", fmt.Errorf("unable to open browser: %w", err)
 	}
 
 	for paToken == "" {

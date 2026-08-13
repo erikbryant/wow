@@ -105,7 +105,7 @@ func request(url, token, caller string) (any, error) {
 
 	response, err := web.RequestJSON(url, headers)
 	if err != nil {
-		return nil, fmt.Errorf("%s: no data returned: %s", caller, err)
+		return nil, fmt.Errorf("%s: no data returned: %w", caller, err)
 	}
 
 	return response, nil
@@ -130,7 +130,7 @@ func ConnectedRealm(realmID string) (map[string]any, error) {
 
 	response := r.(map[string]any)
 	if response["code"] != nil {
-		return nil, fmt.Errorf("ConnectedRealm failed to get connected realm: %v", response)
+		return nil, fmt.Errorf("ConnectedRealm failed to get connected realm: %v", response["code"])
 	}
 
 	return response, nil
@@ -161,7 +161,7 @@ func ConnectedRealmID(realm string) (string, error) {
 
 	connectedRealms, err := ConnectedRealmSearch()
 	if err != nil {
-		return "", fmt.Errorf("no connected realm found: %s", err)
+		return "", fmt.Errorf("no connected realm found: %w", err)
 	}
 
 	slug := realmToSlug(realm)
@@ -194,7 +194,7 @@ func ConnectedRealmID(realm string) (string, error) {
 func Auctions(realm string) ([]any, error) {
 	connectedRealmID, err := ConnectedRealmID(realm)
 	if err != nil {
-		return nil, fmt.Errorf("auctions: no connected realm ID found: %s", err)
+		return nil, fmt.Errorf("auctions: no connected realm ID found: %w", err)
 	}
 
 	url := apiBase + "/data/wow/connected-realm/" + connectedRealmID + "/auctions?namespace=dynamic-us&locale=en_US"
@@ -205,7 +205,7 @@ func Auctions(realm string) ([]any, error) {
 
 	response := r.(map[string]any)
 	if response["code"] != nil {
-		return nil, fmt.Errorf("auctions: HTTP error: %v", response)
+		return nil, fmt.Errorf("auctions: HTTP error: %v", response["code"])
 	}
 
 	auctions := response["auctions"].([]any)

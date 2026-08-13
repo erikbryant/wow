@@ -12,7 +12,7 @@ const service = "github.com/erikbryant/WorldOfWarcraft"
 func ReadFromKeychain(key string) (string, error) {
 	out, err := exec.Command("./bin/secret", "get", key).Output()
 	if err != nil {
-		return "", fmt.Errorf("unable to get clientID: %s", err)
+		return "", fmt.Errorf("unable to get clientID: %w", err)
 	}
 
 	secret := string(out)

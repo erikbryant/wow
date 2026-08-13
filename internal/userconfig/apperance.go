@@ -129,7 +129,7 @@ var (
 func getAppearanceIDsOwned() error {
 	t, err := wowapi.CollectionsTransmogs()
 	if err != nil {
-		return fmt.Errorf("unable to obtain transmogs owned: %s", err)
+		return fmt.Errorf("unable to obtain transmogs owned: %w", err)
 	}
 
 	appearancesOwned = &AppearancesOwned{

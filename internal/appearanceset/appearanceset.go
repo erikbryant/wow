@@ -48,13 +48,13 @@ func getAppearanceSetsAppearanceIDs() error {
 func createFromWeb() error {
 	err := getAppearanceSetsAppearanceIDs()
 	if err != nil {
-		return fmt.Errorf("failed to get appearances: %s", err)
+		return fmt.Errorf("failed to get appearances: %w", err)
 	}
 
 	err = as.IDs.Save()
 	if err != nil {
 
-		return fmt.Errorf("failed to save appearances persist: %s", err)
+		return fmt.Errorf("failed to save appearances persist: %w", err)
 	}
 
 	return nil
@@ -70,7 +70,7 @@ func New() (*AppearanceSets, error) {
 		fmt.Fprintf(os.Stderr, "*** error opening appearances persist, creating new one: %s\n", err)
 		err = createFromWeb()
 		if err != nil {
-			return nil, fmt.Errorf("failed to load or create appearances: %s", err)
+			return nil, fmt.Errorf("failed to load or create appearances: %w", err)
 		}
 	}
 

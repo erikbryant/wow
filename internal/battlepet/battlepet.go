@@ -32,7 +32,7 @@ func getPetNames() error {
 
 	allPets, err := wowapi.Pets()
 	if err != nil {
-		return fmt.Errorf("unable to obtain battle pet names: %s", err)
+		return fmt.Errorf("unable to obtain battle pet names: %w", err)
 	}
 
 	for _, petRaw := range allPets {
@@ -54,7 +54,7 @@ func getPetsOwned() error {
 
 	pets, err := wowapi.CollectionsPets()
 	if err != nil {
-		return fmt.Errorf("unable to obtain battle pets owned: %s", err)
+		return fmt.Errorf("unable to obtain battle pets owned: %w", err)
 	}
 
 	for _, petRaw := range pets {

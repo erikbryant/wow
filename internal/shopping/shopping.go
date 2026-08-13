@@ -372,7 +372,7 @@ func Shop(realms string) error {
 
 	err = ds.WowItem.Items.Save()
 	if err != nil {
-		return fmt.Errorf("failed to save wow items persistence: %s", err)
+		return fmt.Errorf("failed to save wow items persistence: %w", err)
 	}
 
 	err = generateOutput(ds, recommendations)
