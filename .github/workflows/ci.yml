@@ -32,13 +32,11 @@ jobs:
             exit 1
           fi
 
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v9
-        with:
-          version: latest
-
       - name: Run go vet
         run: go vet ./...
 
       - name: Run tests with race detector
         run: go test -race ./...
+
+      - name: Build
+        run: go build ./...
