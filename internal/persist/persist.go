@@ -36,12 +36,12 @@ func (c *Persistence[K, V]) Loaded() bool {
 }
 
 func (c *Persistence[K, V]) Load() error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	if c.Loaded() {
 		return nil
 	}
-
-	c.mu.Lock()
-	defer c.mu.Unlock()
 
 	f, err := os.Open(c.filename)
 	if err != nil {
