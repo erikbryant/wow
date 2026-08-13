@@ -28,7 +28,7 @@ var (
 		ClientSecret: "", // Populated at runtime
 		Endpoint:     endpoints.Battlenet,
 		RedirectURL:  "http://localhost:8888/auth/blizzard/profile",
-		Scopes:       []string{"wow.profile", "sc2.profile"},
+		Scopes:       []string{"wow.profile"},
 	}
 	// server is a reference to the webserver
 	server = &http.Server{}
