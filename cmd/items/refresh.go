@@ -21,7 +21,8 @@ func refreshItem(itemID int64) error {
 	iOld, ok := wowItems.Items.Get(itemID)
 	if ok {
 		rows = append(rows, iOld)
-		// Remove the item from the persistence
+		// Remove the item from the persistence. Even if we later fail to retrieve
+		// new data, at least we got rid of stale data.
 		wowItems.Items.Delete(itemID)
 	}
 
