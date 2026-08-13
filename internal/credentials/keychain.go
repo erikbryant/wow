@@ -12,14 +12,15 @@ const service = "github.com/erikbryant/WorldOfWarcraft"
 func ReadFromKeychain(key string) (string, error) {
 	out, err := exec.Command("./bin/secret", "get", key).Output()
 	if err != nil {
-		return "", fmt.Errorf("unable to get clientID: %w", err)
+		return "", fmt.Errorf("unable to get %s: %w", key, err)
 	}
 
-	secret := string(out)
-	secret = strings.TrimSpace(secret)
-	parts := strings.Split(secret, " ")
+	parts := strings.SplitN(string(out), ":", 2)
+	if len(parts) != 2 {
+		return "", fmt.Errorf("invalid secret helper output")
+	}
 
-	return parts[1], nil
+	return strings.TrimSpace(parts[1]), nil
 }
 
 // Get returns a value from the keychain
