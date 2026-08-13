@@ -26,7 +26,7 @@ type Recommendations struct {
 	ArbitrageProfit    int64
 	Arbitrages         []string
 	Bargains           []string
-	NumAuctions        int
+	NumUniqueAuctions  int
 	PetNeededBargains  []string
 	PetResellBargains  []string
 	Realm              string
@@ -235,7 +235,7 @@ func scanRealm(realm string, c chan<- Recommendations, ds *DataStore) {
 		return
 	}
 
-	r.NumAuctions = len(auctions)
+	r.NumUniqueAuctions = len(auctions)
 	r.iterateAuctions(auctions, ds)
 
 	c <- r
@@ -303,7 +303,7 @@ func (r *Recommendations) format(ds *DataStore, summarize bool) string {
 		realm = "_Commodities_"
 	}
 
-	msg := output.Colorize(fmt.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", realm, r.NumAuctions, shoppingList), output.FgCyan)
+	msg := output.Colorize(fmt.Sprintf("\n===========>  %s (%d unique items)  <===========\n%s", realm, r.NumUniqueAuctions, shoppingList), output.FgCyan)
 
 	return msg
 }
