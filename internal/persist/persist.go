@@ -171,6 +171,7 @@ func (c *Persistence[K, V]) Values() []V {
 	return values
 }
 
+// Search returns the first match
 func (c *Persistence[K, V]) Search(searchFunc func(v V) bool) (K, V, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()

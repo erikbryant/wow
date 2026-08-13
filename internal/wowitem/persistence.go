@@ -37,7 +37,7 @@ func New() *WoWItem {
 	return wowItems
 }
 
-// Search returns the item with name 's' or an empty item if not found
+// Search returns the first item with name 's' (duplicates are very rare) or an empty item if not found
 func (wi *WoWItem) Search(s string) Item {
 	_, i, ok := wi.Items.Search(func(v Item) bool {
 		return v.Name() == s
