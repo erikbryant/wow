@@ -28,7 +28,7 @@ func getPetNames() error {
 		return nil
 	}
 
-	bp.names = map[int64]string{}
+	names := map[int64]string{}
 
 	allPets, err := wowapi.Pets()
 	if err != nil {
@@ -38,8 +38,10 @@ func getPetNames() error {
 	for _, petRaw := range allPets {
 		pet := petRaw.(map[string]any)
 		id := web.ToInt64(pet["id"])
-		bp.names[id] = pet["name"].(string)
+		names[id] = pet["name"].(string)
 	}
+
+	bp.names = names
 
 	return nil
 }
@@ -50,7 +52,7 @@ func getPetsOwned() error {
 		return nil
 	}
 
-	bp.owned = map[int64]int64{}
+	owned := map[int64]int64{}
 
 	pets, err := wowapi.CollectionsPets()
 	if err != nil {
@@ -66,8 +68,10 @@ func getPetsOwned() error {
 		}
 		speciesID := web.ToInt64(species["id"])
 
-		bp.owned[speciesID]++
+		owned[speciesID]++
 	}
+
+	bp.owned = owned
 
 	return nil
 }
