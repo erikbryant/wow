@@ -6,18 +6,18 @@ jobs:
   vet:
     runs-on: ubuntu-latest
     steps:
-    - name: Set up Golang
-      uses: actions/setup-go@v6
-      with:
-        go-version: 'stable'
-        check-latest: 'true'
-    - name: Install sound libraries
-      run: |
-        sudo apt-get update
-        sudo apt-get install libasound2-dev
-        sudo apt-get install libudev-dev
-    - name: Check out source code
-      uses: actions/checkout@v6
-    - name: Vet
-      run: |
-        go vet ./...
+      - name: Check out source code
+        uses: actions/checkout@v6
+      - name: Set up Golang
+        uses: actions/setup-go@v6
+        with:
+          go-version: 'stable'
+          check-latest: 'true'
+      - name: Install sound libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install libasound2-dev
+          sudo apt-get install libudev-dev
+      - name: Vet
+        run: |
+          go vet ./...
