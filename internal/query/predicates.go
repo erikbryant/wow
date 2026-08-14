@@ -1,20 +1,24 @@
 package query
 
 import (
-	"fmt"
-	"os"
 	"strings"
 
 	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
+var (
+	as *appearanceset.AppearanceSets
+)
+
 // AppearanceSet returns true for items that are in an appearance set.
 func AppearanceSet() Predicate {
-	as, err := appearanceset.New()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "*** unable to load appearance set: %s\n", err)
-		os.Exit(1)
+	if as == nil {
+		var err error
+		as, err = appearanceset.New()
+		if err != nil {
+			panic(err)
+		}
 	}
 	return func(item wowitem.Item) bool {
 		return as.Contains(item.Appearances())

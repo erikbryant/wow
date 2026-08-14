@@ -87,8 +87,7 @@ func runRefresh(args []string) error {
 
 	paths, err := path.New("")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		return err
 	}
 
 	clientID, err := credentials.ReadFromKeychain(paths.Secret, "clientID")

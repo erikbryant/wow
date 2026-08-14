@@ -17,6 +17,10 @@ type Column struct {
 	value  func(wowitem.Item) string
 }
 
+var (
+	as *appearanceset.AppearanceSets
+)
+
 var columns = []Column{
 	{
 		header: "ID",
@@ -33,12 +37,6 @@ var columns = []Column{
 	{
 		header: "App Set",
 		value: func(item wowitem.Item) string {
-			as, err := appearanceset.New()
-			if err != nil {
-
-				msg := fmt.Sprintf("unable to load appearance set: %s", err)
-				panic(msg)
-			}
 			return fmt.Sprintf("%t", as.Contains(item.Appearances()))
 		},
 	},
@@ -92,6 +90,15 @@ func row(item wowitem.Item) string {
 
 // Table writes items as a human-readable table.
 func Table(w io.Writer, items []wowitem.Item) {
+	var err error
+
+	if as == nil {
+		as, err = appearanceset.New()
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	writer := tabwriter.NewWriter(
 		w,
 		0,
