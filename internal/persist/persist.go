@@ -29,19 +29,22 @@ func New[K comparable, V any](persistencePath string) *Persistence[K, V] {
 	}
 }
 
-func (c *Persistence[K, V]) Loaded() bool {
-	return c.loaded
+func (p *Persistence[K, V]) Loaded() bool {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	return p.loaded
 }
 
-func (c *Persistence[K, V]) Load() error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
+func (p *Persistence[K, V]) Load() error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
-	if c.Loaded() {
+	// Cannot call p.Loaded(), as the locks would deadlock
+	if p.loaded {
 		return nil
 	}
 
-	f, err := os.Open(c.filename)
+	f, err := os.Open(p.filename)
 	if err != nil {
 		return err
 	}
@@ -54,23 +57,23 @@ func (c *Persistence[K, V]) Load() error {
 		return err
 	}
 
-	c.data = data
-	c.loaded = true
-	c.dirty = false
+	p.data = data
+	p.loaded = true
+	p.dirty = false
 
 	return nil
 }
 
-func (c *Persistence[K, V]) Save() error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
+func (p *Persistence[K, V]) Save() error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
-	if !c.dirty {
+	if !p.dirty {
 		// Nothing changed, no need to save
 		return nil
 	}
 
-	tmp := c.filename + ".tmp"
+	tmp := p.filename + ".tmp"
 
 	f, err := os.Create(tmp)
 	if err != nil {
@@ -79,7 +82,7 @@ func (c *Persistence[K, V]) Save() error {
 
 	encoder := gob.NewEncoder(f)
 
-	if err := encoder.Encode(c.data); err != nil {
+	if err := encoder.Encode(p.data); err != nil {
 		f.Close()
 		os.Remove(tmp)
 		return err
@@ -98,68 +101,68 @@ func (c *Persistence[K, V]) Save() error {
 		return err
 	}
 
-	err = os.Rename(tmp, c.filename)
+	err = os.Rename(tmp, p.filename)
 	if err != nil {
 		os.Remove(tmp)
 		return err
 	}
 
 	// If we got here then we have a clean save! :)
-	c.dirty = false
+	p.dirty = false
 
 	return nil
 }
 
-func (c *Persistence[K, V]) Len() int {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-	return len(c.data)
+func (p *Persistence[K, V]) Len() int {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	return len(p.data)
 }
 
-func (c *Persistence[K, V]) Get(key K) (V, bool) {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-	v, ok := c.data[key]
+func (p *Persistence[K, V]) Get(key K) (V, bool) {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	v, ok := p.data[key]
 
 	// Values returned by Persistence must be treated as immutable.
 	return v, ok
 }
 
-func (c *Persistence[K, V]) Set(key K, value V) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.data[key] = value
-	c.dirty = true
+func (p *Persistence[K, V]) Set(key K, value V) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.data[key] = value
+	p.dirty = true
 }
 
-func (c *Persistence[K, V]) Delete(key K) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	_, ok := c.data[key]
+func (p *Persistence[K, V]) Delete(key K) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	_, ok := p.data[key]
 	if ok {
-		delete(c.data, key)
-		c.dirty = true
+		delete(p.data, key)
+		p.dirty = true
 	}
 }
 
-func (c *Persistence[K, V]) Keys() []K {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
+func (p *Persistence[K, V]) Keys() []K {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
 
-	keys := make([]K, 0, len(c.data))
-	for k := range c.data {
+	keys := make([]K, 0, len(p.data))
+	for k := range p.data {
 		keys = append(keys, k)
 	}
 
 	return keys
 }
 
-func (c *Persistence[K, V]) Values() []V {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
+func (p *Persistence[K, V]) Values() []V {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
 
-	values := make([]V, 0, len(c.data))
-	for _, v := range c.data {
+	values := make([]V, 0, len(p.data))
+	for _, v := range p.data {
 		values = append(values, v)
 	}
 
@@ -167,11 +170,11 @@ func (c *Persistence[K, V]) Values() []V {
 }
 
 // Search returns the first match
-func (c *Persistence[K, V]) Search(searchFunc func(v V) bool) (K, V, bool) {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
+func (p *Persistence[K, V]) Search(searchFunc func(v V) bool) (K, V, bool) {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
 
-	for k, v := range c.data {
+	for k, v := range p.data {
 		if searchFunc(v) {
 			return k, v, true
 		}
