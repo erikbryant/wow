@@ -2,20 +2,38 @@ package main
 
 import (
 	"fmt"
+	"os"
+
+	"golang.org/x/term"
 
 	"github.com/erikbryant/wow/internal/credentials"
 )
 
+func readSecret() (string, error) {
+	fmt.Print("Secret: ")
+
+	b, err := term.ReadPassword(int(os.Stdin.Fd()))
+	fmt.Println() // ReadPassword doesn't echo the newline.
+	if err != nil {
+		return "", fmt.Errorf("reading secret: %w", err)
+	}
+
+	return string(b), nil
+}
+
 func runAdd(args []string) error {
-	if len(args) != 2 {
+	if len(args) != 1 {
 		usage()
-		return fmt.Errorf("add requires 2 arguments")
+		return fmt.Errorf("add requires exactly 1 argument")
 	}
 
 	name := args[0]
-	value := args[1]
+	value, err := readSecret()
+	if err != nil {
+		return err
+	}
 
-	err := credentials.Add(name, value)
+	err = credentials.Add(name, value)
 	if err != nil {
 		return fmt.Errorf("unable to add %s: %w", name, err)
 	}
