@@ -28,15 +28,15 @@ func refreshItem(itemID int64) error {
 	// Remove the item from the persistence. Even if we later fail to retrieve
 	// new data, at least we got rid of stale data.
 	wowItems.Delete(itemID)
-
-	iNew, err := wowItems.GetLive(itemID)
-	if err != nil {
-		return fmt.Errorf("could not retrieve itemID %d: %w", itemID, err)
-	}
-
+	iNew, errGetLive := wowItems.GetLive(itemID)
+	// We need to persist the deletion even if GetLive fails
 	err = wowItems.Save()
 	if err != nil {
 		return fmt.Errorf("failed to save item persistence: %w", err)
+	}
+
+	if errGetLive != nil {
+		return fmt.Errorf("could not retrieve itemID %d: %w", itemID, errGetLive)
 	}
 
 	output.Table(os.Stdout, []wowitem.Item{iNew})
