@@ -35,6 +35,8 @@ func New(wi *wowitem.WoWItem, cr *cooking.CookingRecipe) *UserConfig {
 		ToyPriceMax:              common.Coppers(400, 0, 0),
 
 		// UsefulGoods are useful items I want, if the price is right
+		// If the item name fails to match wi.Search will print a warning
+		// the user can then come in here and fix the name.
 		UsefulGoods: map[int64]int64{
 			// Bags
 			//wi.Search("Weavercloth Bag").ID():              bagPriceMax, // 34 slot
