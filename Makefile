@@ -23,6 +23,7 @@ check: fmt vet vuln test verify
 
 .PHONY: build
 build: check
-	go build -o ./bin/ ./cmd/items
-	go build -o ./bin/ ./cmd/secret
-	go build -o ./bin/ ./cmd/wow
+	mkdir ./bin
+	go build -o ./bin ./cmd/items
+	go build -o ./bin ./cmd/secret
+	go build -o ./bin ./cmd/wow

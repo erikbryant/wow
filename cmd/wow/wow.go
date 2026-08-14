@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/erikbryant/wow/internal/credentials"
+	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/shopping"
 	"github.com/erikbryant/wow/internal/wowapi"
 )
@@ -17,13 +18,19 @@ var (
 func main() {
 	flag.Parse()
 
-	clientID, err := credentials.ReadFromKeychain("clientID")
+	paths, err := path.New("")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	clientSecret, err := credentials.ReadFromKeychain("clientSecret")
+	clientID, err := credentials.ReadFromKeychain(paths.Secret, "clientID")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	clientSecret, err := credentials.ReadFromKeychain(paths.Secret, "clientSecret")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
@@ -35,7 +42,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = shopping.Shop(*realms)
+	err = shopping.Shop(*realms, paths)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

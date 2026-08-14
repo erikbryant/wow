@@ -8,6 +8,7 @@ import (
 
 	"github.com/erikbryant/wow/internal/credentials"
 	"github.com/erikbryant/wow/internal/output"
+	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
@@ -84,12 +85,18 @@ func runRefresh(args []string) error {
 		return err
 	}
 
-	clientID, err := credentials.ReadFromKeychain("clientID")
+	paths, err := path.New("")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	clientID, err := credentials.ReadFromKeychain(paths.Secret, "clientID")
 	if err != nil {
 		return err
 	}
 
-	clientSecret, err := credentials.ReadFromKeychain("clientSecret")
+	clientSecret, err := credentials.ReadFromKeychain(paths.Secret, "clientSecret")
 	if err != nil {
 		return err
 	}

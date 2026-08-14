@@ -13,6 +13,7 @@ import (
 	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/cooking"
 	"github.com/erikbryant/wow/internal/output"
+	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/shoppingconfig"
 	"github.com/erikbryant/wow/internal/toy"
 	"github.com/erikbryant/wow/internal/userconfig"
@@ -41,22 +42,17 @@ type DataStore struct {
 	AppearancesOwned *userconfig.AppearancesOwned
 	BattlePets       *battlepet.BattlePet
 	CookingRecipes   *cooking.CookingRecipe
+	Paths            *path.Paths
 	ShoppingConfig   *shoppingconfig.UserConfig
 	Toys             *toy.Toy
 }
 
-const (
-	arbitragePath       = "./exports/arbitrageLatest"
-	battlePetPath       = "./reports/battlePets"
-	priceCachePath      = "./exports/PriceCache.lua"
-	recipesNeededPath   = "./reports/recipesNeeded"
-	recommendationsPath = "./reports/shopping"
-)
-
 // NewDataStore initializes all singleton data stores
-func NewDataStore() (*DataStore, error) {
+func NewDataStore(paths *path.Paths) (*DataStore, error) {
 	var err error
-	ds := DataStore{}
+	ds := DataStore{
+		Paths: paths,
+	}
 
 	ds.WowItem = wowitem.New()
 
@@ -330,31 +326,31 @@ func generateOutput(ds *DataStore, recommendations []Recommendations) error {
 	fmt.Println(strings.Join(outputBrief, ""))
 
 	// Arbitrages file for the WoW 'wowMerchant' addon to consume
-	err := os.WriteFile(arbitragePath, []byte(strings.Join(arbitrageRecords, "\n")+"\n"), 0600)
+	err := os.WriteFile(ds.Paths.Arbitrage, []byte(strings.Join(arbitrageRecords, "\n")+"\n"), 0600)
 	if err != nil {
 		return err
 	}
 
 	// Battle pet IDs/names
-	err = os.WriteFile(battlePetPath, []byte(ds.BattlePets.Output()), 0600)
+	err = os.WriteFile(ds.Paths.BattlePets, []byte(ds.BattlePets.Output()), 0600)
 	if err != nil {
 		return err
 	}
 
 	// Prices file for the WoW 'wowMerchant' addon to consume
-	err = os.WriteFile(priceCachePath, []byte(ds.WowItem.Lua()), 0600)
+	err = os.WriteFile(ds.Paths.PriceCache, []byte(ds.WowItem.Lua()), 0600)
 	if err != nil {
 		return err
 	}
 
 	// Recipes needed
-	err = os.WriteFile(recipesNeededPath, []byte(ds.CookingRecipes.Output()), 0600)
+	err = os.WriteFile(ds.Paths.RecipesNeeded, []byte(ds.CookingRecipes.Output()), 0600)
 	if err != nil {
 		return err
 	}
 
 	// Verbose form of the shopping recommendations
-	err = os.WriteFile(recommendationsPath, []byte(strings.Join(outputVerbose, "")), 0600)
+	err = os.WriteFile(ds.Paths.Recommendations, []byte(strings.Join(outputVerbose, "")), 0600)
 	if err != nil {
 		return err
 	}
@@ -362,11 +358,11 @@ func generateOutput(ds *DataStore, recommendations []Recommendations) error {
 	return nil
 }
 
-// Shop looks for auction house values across all realms
-func Shop(realms string) error {
+// Shop looks for auction house values across the requeted realms
+func Shop(realms string, paths *path.Paths) error {
 	var err error
 
-	ds, err := NewDataStore()
+	ds, err := NewDataStore(paths)
 	if err != nil {
 		return err
 	}

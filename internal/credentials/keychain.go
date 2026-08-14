@@ -9,8 +9,8 @@ import (
 const service = "github.com/erikbryant/WorldOfWarcraft"
 
 // ReadFromKeychain reads from the keychain without triggering the "unknown app" dialogs
-func ReadFromKeychain(key string) (string, error) {
-	out, err := exec.Command("./bin/secret", "get", key).Output()
+func ReadFromKeychain(secret string, key string) (string, error) {
+	out, err := exec.Command(secret, "get", key).Output()
 	if err != nil {
 		return "", fmt.Errorf("unable to get %s: %w", key, err)
 	}
