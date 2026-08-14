@@ -3,22 +3,19 @@ package userconfig
 import (
 	"fmt"
 	"slices"
-	"sync"
 
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/wowapi"
 )
 
-type AppearancesOwned struct {
-	IDs map[int64]bool
+type Appearances struct {
 }
 
 var (
-	once             sync.Once
-	appearancesOwned *AppearancesOwned
+	owned map[int64]bool
 
-	// flakyAppearanceIDs WoW says I own them, but this app thinks I don't
-	flakyAppearanceIDs = map[int64]struct{}{
+	// flakyIDs WoW says I own them, but this app thinks I don't
+	flakyIDs = map[int64]struct{}{
 		// These are not real appearances; they generate false positives
 		573:   {}, // Various equippable profession items
 		577:   {}, // Various equippable profession items
@@ -127,16 +124,14 @@ var (
 	}
 )
 
-// getAppearanceIDsOwned returns the appearance IDs I own
-func getAppearanceIDsOwned() error {
+// getOwned returns the appearance IDs I own
+func getOwned() (map[int64]bool, error) {
 	t, err := wowapi.CollectionsTransmogs()
 	if err != nil {
-		return fmt.Errorf("unable to obtain transmogs owned: %w", err)
+		return nil, fmt.Errorf("unable to obtain transmogs owned: %w", err)
 	}
 
-	appearancesOwned = &AppearancesOwned{
-		IDs: map[int64]bool{},
-	}
+	ao := map[int64]bool{}
 
 	transmogs := t.(map[string]any)
 
@@ -145,41 +140,47 @@ func getAppearanceIDsOwned() error {
 		for _, appearance := range slot["appearances"].([]any) {
 			appearance := appearance.(map[string]any)
 			id := web.ToInt64(appearance["id"])
-			appearancesOwned.IDs[id] = true
+			ao[id] = true
 		}
 	}
 
-	return nil
+	return ao, nil
 }
 
-func NewAppearancesOwned() (*AppearancesOwned, error) {
+func NewAppearances() (*Appearances, error) {
 	var err error
 
-	once.Do(func() {
-		err = getAppearanceIDsOwned()
-	})
-	if err != nil {
-		return nil, err
+	if owned == nil {
+		owned, err = getOwned()
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("-- #Appearances owned: %d\n", len(owned))
 	}
 
-	fmt.Printf("-- #Appearances owned: %d\n", len(appearancesOwned.IDs))
+	// Make sure I don't already own any of the items in flakyAppearanceIDs.
+	for id, _ := range flakyIDs {
+		if owned[id] {
+			fmt.Printf("You already own this, remove it from flakyIDs: %d\n", id)
+		}
+	}
 
-	return appearancesOwned, nil
+	return &Appearances{}, nil
 }
 
-// needAppearanceID returns true if I need this appearance ID
-func (ao *AppearancesOwned) needAppearanceID(id int64) bool {
-	_, ok := flakyAppearanceIDs[id]
+// needID returns true if I need this appearance ID
+func (ao *Appearances) needID(id int64) bool {
+	_, ok := flakyIDs[id]
 	if ok {
 		return false
 	}
-	if !ao.IDs[id] {
+	if !owned[id] {
 		fmt.Println("NEED APPEARANCE ID: ", id)
 	}
-	return !ao.IDs[id]
+	return !owned[id]
 }
 
-// Need returns true if I need any of these appearance IDs
-func (ao *AppearancesOwned) Need(appearanceIDs []int64) bool {
-	return slices.ContainsFunc(appearanceIDs, ao.needAppearanceID)
+// Need returns true if I need any of these appearance ids
+func (ao *Appearances) Need(appearanceIDs []int64) bool {
+	return slices.ContainsFunc(appearanceIDs, ao.needID)
 }

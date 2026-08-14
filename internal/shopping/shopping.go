@@ -38,13 +38,13 @@ type DataStore struct {
 	// Initialize this first; some of the others depend on it
 	WowItem *wowitem.WoWItem
 
-	AppearanceSet    *appearanceset.AppearanceSets
-	AppearancesOwned *userconfig.AppearancesOwned
-	BattlePets       *battlepet.BattlePet
-	CookingRecipes   *cooking.CookingRecipe
-	Paths            *path.Paths
-	ShoppingConfig   *shoppingconfig.UserConfig
-	Toys             *toy.Toy
+	AppearanceSet  *appearanceset.AppearanceSets
+	Appearances    *userconfig.Appearances
+	BattlePets     *battlepet.BattlePet
+	CookingRecipes *cooking.CookingRecipe
+	Paths          *path.Paths
+	ShoppingConfig *shoppingconfig.UserConfig
+	Toys           *toy.Toy
 }
 
 // NewDataStore initializes all singleton data stores
@@ -61,7 +61,7 @@ func NewDataStore(paths *path.Paths) (*DataStore, error) {
 		return nil, err
 	}
 
-	ds.AppearancesOwned, err = userconfig.NewAppearancesOwned()
+	ds.Appearances, err = userconfig.NewAppearances()
 	if err != nil {
 		return nil, err
 	}
@@ -152,12 +152,12 @@ func usefulGoodsBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool
 
 // appearanceBargain returns true if the item for auction provides an appearance we need at a good price
 func appearanceBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
-	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceMax && ds.AppearancesOwned.Need(i.Appearances())
+	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceMax && ds.Appearances.Need(i.Appearances())
 }
 
 // appearanceSetBargain returns true if the item for auction provides an appearance (that is in a set) we need at a good price
 func appearanceSetBargain(i wowitem.Item, auc auction.Auction, ds *DataStore) bool {
-	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceInSetMax && ds.AppearanceSet.Contains(i.Appearances()) && ds.AppearancesOwned.Need(i.Appearances())
+	return auc.Buyout <= ds.ShoppingConfig.AppearancePriceInSetMax && ds.AppearanceSet.Contains(i.Appearances()) && ds.Appearances.Need(i.Appearances())
 }
 
 // iterateAuctions iterates over a single auction house, checking each auction for recommendation
