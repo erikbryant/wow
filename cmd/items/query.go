@@ -106,7 +106,7 @@ func runQuery(args []string) error {
 	}
 
 	wowItems := wowitem.New()
-	items := wowItems.Items.Values()
+	items := wowItems.Values()
 
 	results := query.Find(items, predicates...)
 

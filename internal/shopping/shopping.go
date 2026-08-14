@@ -373,7 +373,7 @@ func Shop(realms string, paths *path.Paths) error {
 
 	recommendations := scanRealms(realms, ds)
 
-	err = ds.WowItem.Items.Save()
+	err = ds.WowItem.Save()
 	if err != nil {
 		return fmt.Errorf("failed to save wow items persistence: %w", err)
 	}

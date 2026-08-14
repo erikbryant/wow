@@ -8,7 +8,7 @@ import (
 
 // itemIDs returns the sorted list of keys from the persistence file
 func (wi *WoWItem) itemIDs() []int64 {
-	keys := wi.Items.Keys()
+	keys := wi.Keys()
 	slices.Sort(keys)
 	return keys
 }
@@ -18,7 +18,7 @@ func (wi *WoWItem) luaVendorPrice() (string, []string) {
 
 	lua.WriteString(fmt.Sprintf("local VendorSellPriceCache = {\n"))
 	for _, id := range wi.itemIDs() {
-		i, _ := wi.Items.Get(id)
+		i, _ := wi.Get(id)
 		spr := i.SellPriceRealizable()
 		if spr <= 100 {
 			// To keep the lua table small, ignore anything that can't ever be a bargain
@@ -62,7 +62,7 @@ func (wi *WoWItem) luaCosmetic() (string, []string) {
 
 	lua.WriteString(fmt.Sprintf("local Cosmetics = {\n"))
 	for _, id := range wi.itemIDs() {
-		i, _ := wi.Items.Get(id)
+		i, _ := wi.Get(id)
 		cosmetic := i.Cosmetic()
 		if !cosmetic {
 			continue

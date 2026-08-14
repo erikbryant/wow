@@ -17,28 +17,21 @@ import (
 func refreshItem(itemID int64) error {
 	wowItems := wowitem.New()
 
-	rows := []wowitem.Item{}
+	// Remove the item from the persistence. Even if we later fail to retrieve
+	// new data, at least we got rid of stale data.
+	wowItems.Delete(itemID)
 
-	iOld, ok := wowItems.Items.Get(itemID)
-	if ok {
-		rows = append(rows, iOld)
-		// Remove the item from the persistence. Even if we later fail to retrieve
-		// new data, at least we got rid of stale data.
-		wowItems.Items.Delete(itemID)
-	}
-
-	iNew, err := wowItems.GetWeb(itemID)
+	iNew, err := wowItems.GetLive(itemID)
 	if err != nil {
 		return fmt.Errorf("could not retrieve itemID %d: %w", itemID, err)
 	}
 
-	err = wowItems.Items.Save()
+	err = wowItems.Save()
 	if err != nil {
 		return fmt.Errorf("failed to save item persistence: %w", err)
 	}
 
-	rows = append(rows, iNew)
-	output.Table(os.Stdout, rows)
+	output.Table(os.Stdout, []wowitem.Item{iNew})
 
 	return nil
 }
@@ -50,11 +43,11 @@ func refreshAll(maxRefresh int) error {
 	needsRefresh := 0
 	refreshCount := 0
 
-	for _, i := range wowItems.Items.Values() {
+	for _, i := range wowItems.Values() {
 		if i.Stale(maxAge) {
 			needsRefresh++
 			if refreshCount < maxRefresh {
-				_, err := wowItems.GetWeb(i.ID())
+				_, err := wowItems.GetLive(i.ID())
 				if err == nil {
 					refreshCount++
 				} else {
@@ -65,7 +58,7 @@ func refreshAll(maxRefresh int) error {
 		}
 	}
 
-	err := wowItems.Items.Save()
+	err := wowItems.Save()
 	if err != nil {
 		return fmt.Errorf("failed to save item persistence: %w", err)
 	}

@@ -10,7 +10,6 @@ import (
 )
 
 type WoWItem struct {
-	Items *persist.Persistence[int64, Item]
 }
 
 const (
@@ -18,28 +17,30 @@ const (
 )
 
 var (
-	wowItems = &WoWItem{
-		Items: persist.New[int64, Item](persistName),
-	}
+	itemPersistence *persist.Persistence[int64, Item]
 )
 
 func New() *WoWItem {
-	if wowItems.Items.Loaded() {
-		return wowItems
+	if itemPersistence == nil {
+		itemPersistence = persist.New[int64, Item](persistName)
 	}
 
-	err := wowItems.Items.Load()
+	if itemPersistence.Loaded() {
+		return &WoWItem{}
+	}
+
+	err := itemPersistence.Load()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "*** error opening items persist, using an empty one: %s\n", err)
 	}
-	fmt.Printf("-- #Items persisted  : %d\n", wowItems.Items.Len())
+	fmt.Printf("-- #Items persisted  : %d\n", itemPersistence.Len())
 
-	return wowItems
+	return &WoWItem{}
 }
 
 // Search returns the first item with name 's' (duplicates are very rare) or an empty item if not found
 func (wi *WoWItem) Search(s string) Item {
-	_, i, ok := wi.Items.Search(func(v Item) bool {
+	_, i, ok := itemPersistence.Search(func(v Item) bool {
 		return v.Name() == s
 	})
 	if !ok {
@@ -48,8 +49,8 @@ func (wi *WoWItem) Search(s string) Item {
 	return i
 }
 
-// GetWeb retrieves a single item from the web and persists it.
-func (wi *WoWItem) GetWeb(id int64) (Item, error) {
+// GetLive retrieves a single item from the WoW web API and persists it.
+func (wi *WoWItem) GetLive(id int64) (Item, error) {
 	fmt.Println("Downloading item:", id)
 	result, err := wowapi.Item(web.ToString(id))
 	if err != nil {
@@ -57,16 +58,32 @@ func (wi *WoWItem) GetWeb(id int64) (Item, error) {
 	}
 
 	i := NewItem(result)
-	wi.Items.Set(i.ID(), i)
+	itemPersistence.Set(i.ID(), i)
 
 	return i, nil
 }
 
 // Get retrieves a single item. From persistence if present, web if not.
 func (wi *WoWItem) Get(id int64) (Item, error) {
-	i, ok := wi.Items.Get(id)
+	i, ok := itemPersistence.Get(id)
 	if ok {
 		return i, nil
 	}
-	return wi.GetWeb(id)
+	return wi.GetLive(id)
+}
+
+func (wi *WoWItem) Delete(id int64) {
+	itemPersistence.Delete(id)
+}
+
+func (wi *WoWItem) Save() error {
+	return itemPersistence.Save()
+}
+
+func (wi *WoWItem) Values() []Item {
+	return itemPersistence.Values()
+}
+
+func (wi *WoWItem) Keys() []int64 {
+	return itemPersistence.Keys()
 }
