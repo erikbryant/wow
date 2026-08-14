@@ -268,8 +268,12 @@ func fmtShoppingList(label string, items []string, fgColor int, summarize bool) 
 	if !summarize {
 		header = fmt.Sprintf("--- %s ---\n", label)
 	}
-	slices.Sort(items)
-	return output.Colorize(fmt.Sprintf("%s%s\n", header, strings.Join(slices.Compact(items), "\n")), fgColor)
+
+	compact := slices.Clone(items)
+	slices.Sort(compact)
+	compact = slices.Compact(compact)
+
+	return output.Colorize(fmt.Sprintf("%s%s\n", header, strings.Join(compact, "\n")), fgColor)
 }
 
 // format converts a Recommendations to a string
