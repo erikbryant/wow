@@ -2,6 +2,7 @@ package persist
 
 import (
 	"encoding/gob"
+	"fmt"
 	"os"
 	"sync"
 )
@@ -57,6 +58,11 @@ func (p *Persistence[K, V]) Load() error {
 	var data map[K]V
 	if err := decoder.Decode(&data); err != nil {
 		return err
+	}
+
+	if data == nil {
+		data = make(map[K]V)
+		fmt.Fprintf(os.Stderr, "persistence data loaded, but is empty: %v", p.filename)
 	}
 
 	p.data = data
