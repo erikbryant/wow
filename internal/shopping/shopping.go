@@ -247,6 +247,7 @@ func scanRealms(r string, ds *DataStore) []Recommendations {
 	c := make(chan Recommendations)
 
 	for _, realm := range realms {
+		realm = strings.TrimSpace(realm)
 		go scanRealm(realm, c, ds)
 	}
 
