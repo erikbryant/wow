@@ -67,8 +67,8 @@ func (p *Persistence[K, V]) Load() error {
 }
 
 func (p *Persistence[K, V]) SetDirty() {
-	p.mu.RLock()
-	defer p.mu.RUnlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	p.dirty = true
 }
 
