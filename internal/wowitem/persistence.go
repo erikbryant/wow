@@ -3,8 +3,8 @@ package wowitem
 import (
 	"fmt"
 	"os"
+	"strconv"
 
-	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/persist"
 	"github.com/erikbryant/wow/internal/wowapi"
 )
@@ -52,7 +52,7 @@ func (wi *WoWItem) Search(s string) Item {
 // GetLive retrieves a single item from the WoW web API and persists it.
 func (wi *WoWItem) GetLive(id int64) (Item, error) {
 	fmt.Println("Downloading item:", id)
-	result, err := wowapi.Item(web.ToString(id))
+	result, err := wowapi.Item(strconv.FormatInt(id, 10))
 	if err != nil {
 		return Item{}, err
 	}
