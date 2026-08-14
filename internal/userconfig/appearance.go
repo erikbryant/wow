@@ -158,7 +158,7 @@ func NewAppearances() (*Appearances, error) {
 		fmt.Printf("-- #Appearances owned: %d\n", len(owned))
 	}
 
-	// Make sure I don't already own any of the items in flakyAppearanceIDs.
+	// Make sure I don't already own any of the items I am filtering.
 	for id, _ := range flakyIDs {
 		if owned[id] {
 			fmt.Printf("You already own this, remove it from flakyIDs: %d\n", id)

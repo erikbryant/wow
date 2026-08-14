@@ -89,7 +89,7 @@ var connectedRealmIDCache = map[string]string{
 	"Ragnaros":    "1427",
 }
 
-// realmToSlug returns the slug form of a given realm name
+// realmToSlug returns the slug form of a given realm name, based on WoW naming rules
 func realmToSlug(realm string) string {
 	slug := strings.ToLower(realm)
 	slug = strings.ReplaceAll(slug, "-", "")

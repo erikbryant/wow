@@ -366,7 +366,7 @@ func generateOutput(ds *DataStore, recommendations []Recommendations) error {
 	return nil
 }
 
-// Shop looks for auction house values across the requeted realms
+// Shop looks for auction house values across the requested realms
 func Shop(realms string, paths *path.Paths) error {
 	var err error
 
