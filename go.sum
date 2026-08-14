@@ -1,4 +1,6 @@
 github.com/erikbryant/web v0.11.0 h1:IVmAOZJVUc8X6//mTt1NQ0v/93g8KJOBZXB4qNa9FPU=
 github.com/erikbryant/web v0.11.0/go.mod h1:eD+MzF4VyIbza7EmrhLmhT2mYZL2q3QBwP997+rPEQQ=
+github.com/erikbryant/web v0.12.0 h1:SJPTji33XaFGQYXkT8v4kg98FNgQ7pgMlRV0FRSTWxU=
+github.com/erikbryant/web v0.12.0/go.mod h1:6APNiXmpORLls0FYUE547b+/1E4bvD35OO41nco0oEA=
 golang.org/x/oauth2 v0.36.0 h1:peZ/1z27fi9hUOFCAZaHyrpWG5lwe0RJEEEeH0ThlIs=
 golang.org/x/oauth2 v0.36.0/go.mod h1:YDBUJMTkDnJS+A4BP4eZBjCqtokkg1hODuPjwiGPO7Q=
