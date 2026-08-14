@@ -9,7 +9,6 @@ import (
 )
 
 type AppearanceSets struct {
-	IDs *persist.Persistence[int64, bool]
 }
 
 const (
@@ -17,13 +16,13 @@ const (
 )
 
 var (
-	as = &AppearanceSets{
-		IDs: persist.New[int64, bool](persistName),
-	}
+	asaIDs *persist.Persistence[int64, bool]
 )
 
-// getAppearanceSetsAppearanceIDs loads all appearance IDs that are in any appearance set
-func getAppearanceSetsAppearanceIDs() error {
+// getFromWeb loads all appearance IDs that are in any appearance set
+func getFromWeb() error {
+	// TODO: If this exits on error, asaIDs is partially set. Verify load is complete before assigning to asaIDs.
+
 	appearanceSetsIDs, err := wowapi.ItemAppearanceSetsIndexIDs()
 	if err != nil {
 		return err
@@ -38,20 +37,11 @@ func getAppearanceSetsAppearanceIDs() error {
 			return err
 		}
 		for _, appearanceID := range asIDs {
-			as.IDs.Set(appearanceID, true)
+			asaIDs.Set(appearanceID, true)
 		}
 	}
 
-	return nil
-}
-
-func createFromWeb() error {
-	err := getAppearanceSetsAppearanceIDs()
-	if err != nil {
-		return fmt.Errorf("failed to get appearances: %w", err)
-	}
-
-	err = as.IDs.Save()
+	err = asaIDs.Save()
 	if err != nil {
 
 		return fmt.Errorf("failed to save appearances persist: %w", err)
@@ -61,28 +51,32 @@ func createFromWeb() error {
 }
 
 func New() (*AppearanceSets, error) {
-	if as.IDs.Loaded() {
-		return as, nil
+	if asaIDs == nil {
+		asaIDs = persist.New[int64, bool](persistName)
 	}
 
-	err := as.IDs.Load()
+	if asaIDs.Loaded() {
+		return &AppearanceSets{}, nil
+	}
+
+	err := asaIDs.Load()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "*** error opening appearances persist, creating new one: %s\n", err)
-		err = createFromWeb()
+		err = getFromWeb()
 		if err != nil {
-			return nil, fmt.Errorf("failed to load or create appearances: %w", err)
+			return nil, err
 		}
 	}
 
-	fmt.Printf("-- #Appearances known: %d\n", as.IDs.Len())
+	fmt.Printf("-- #Appearances known: %d\n", asaIDs.Len())
 
-	return as, nil
+	return &AppearanceSets{}, nil
 }
 
 // Contains returns true if any of these appearance IDs are in an appearance set
 func (as *AppearanceSets) Contains(appearanceIDs []int64) bool {
 	for _, appearanceID := range appearanceIDs {
-		inSet, ok := as.IDs.Get(appearanceID)
+		inSet, ok := asaIDs.Get(appearanceID)
 		if !ok {
 			continue
 		}
