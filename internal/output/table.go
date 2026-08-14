@@ -8,6 +8,7 @@ import (
 
 	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/common"
+	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
@@ -90,10 +91,12 @@ func row(item wowitem.Item) string {
 
 // Table writes items as a human-readable table.
 func Table(w io.Writer, items []wowitem.Item) {
-	var err error
-
 	if as == nil {
-		as, err = appearanceset.New()
+		paths, err := path.New("")
+		if err != nil {
+			panic(err)
+		}
+		as, err = appearanceset.New(paths.Appearances)
 		if err != nil {
 			panic(err)
 		}

@@ -3,12 +3,7 @@ package persist
 import (
 	"encoding/gob"
 	"os"
-	"path/filepath"
 	"sync"
-)
-
-const (
-	dataDirectory = "./data"
 )
 
 type Persistence[K comparable, V any] struct {
@@ -25,9 +20,9 @@ func init() {
 	gob.Register([]any{})
 }
 
-func New[K comparable, V any](name string) *Persistence[K, V] {
+func New[K comparable, V any](persistencePath string) *Persistence[K, V] {
 	return &Persistence[K, V]{
-		filename: filepath.Join(dataDirectory, name+".gob"),
+		filename: persistencePath + ".gob",
 		data:     make(map[K]V),
 		loaded:   false,
 		dirty:    false,

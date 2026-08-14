@@ -14,7 +14,7 @@ func TestNew(t *testing.T) {
 		t.Fatal("New returned nil")
 	}
 
-	if got, want := p.filename, filepath.Join(dataDirectory, "cache.gob"); got != want {
+	if got, want := p.filename, "cache"+".gob"; got != want {
 		t.Fatalf("filename = %q, want %q", got, want)
 	}
 
@@ -178,11 +178,8 @@ func TestSearchNotFound(t *testing.T) {
 func TestSaveWithoutDirty(t *testing.T) {
 	dir := t.TempDir()
 
-	old := dataDirectory
-	_ = old // if dataDirectory becomes configurable
-
 	p := New[string, int]("cache")
-	p.filename = filepath.Join(dir, "cache.gob")
+	p.filename = filepath.Join(dir, "cache"+".gob")
 
 	if err := p.Save(); err != nil {
 		t.Fatalf("Save() returned %v", err)

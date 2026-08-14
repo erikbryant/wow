@@ -12,17 +12,13 @@ import (
 type WoWItem struct {
 }
 
-const (
-	persistName = "items"
-)
-
 var (
 	itemPersistence *persist.Persistence[int64, Item]
 )
 
-func New() *WoWItem {
+func New(persistencePath string) *WoWItem {
 	if itemPersistence == nil {
-		itemPersistence = persist.New[int64, Item](persistName)
+		itemPersistence = persist.New[int64, Item](persistencePath)
 	}
 
 	if itemPersistence.Loaded() {

@@ -6,11 +6,16 @@ import (
 	"os"
 
 	"github.com/erikbryant/wow/internal/output"
+	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 func json(itemID int64) error {
-	wowItems := wowitem.New()
+	paths, err := path.New("")
+	if err != nil {
+		return err
+	}
+	wowItems := wowitem.New(paths.Items)
 
 	i, err := wowItems.Get(itemID)
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/erikbryant/wow/internal/output"
+	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/query"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
@@ -105,7 +106,11 @@ func runQuery(args []string) error {
 		predicates = append(predicates, query.ItemID(*itemID))
 	}
 
-	wowItems := wowitem.New()
+	paths, err := path.New("")
+	if err != nil {
+		return err
+	}
+	wowItems := wowitem.New(paths.Items)
 	items := wowItems.Values()
 
 	results := query.Find(items, predicates...)

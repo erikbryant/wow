@@ -15,7 +15,11 @@ import (
 
 // refreshItem refreshes a single item
 func refreshItem(itemID int64) error {
-	wowItems := wowitem.New()
+	paths, err := path.New("")
+	if err != nil {
+		return err
+	}
+	wowItems := wowitem.New(paths.Items)
 
 	// Remove the item from the persistence. Even if we later fail to retrieve
 	// new data, at least we got rid of stale data.
@@ -38,10 +42,15 @@ func refreshItem(itemID int64) error {
 
 // refreshAll refreshes persisted items older than a certain age
 func refreshAll(maxRefresh int) error {
-	wowItems := wowitem.New()
 	maxAge := 24 * time.Hour * 7 // 1 week
 	needsRefresh := 0
 	refreshCount := 0
+
+	paths, err := path.New("")
+	if err != nil {
+		return err
+	}
+	wowItems := wowitem.New(paths.Items)
 
 	for _, i := range wowItems.Values() {
 		if i.Stale(maxAge) {
@@ -58,7 +67,7 @@ func refreshAll(maxRefresh int) error {
 		}
 	}
 
-	err := wowItems.Save()
+	err = wowItems.Save()
 	if err != nil {
 		return fmt.Errorf("failed to save item persistence: %w", err)
 	}

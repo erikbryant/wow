@@ -4,14 +4,21 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 func deleteItem(itemID int64) error {
-	wowItems := wowitem.New()
+	paths, err := path.New("")
+	if err != nil {
+		return err
+	}
+	wowItems := wowitem.New(paths.Items)
+
 	wowItems.Delete(itemID)
 	fmt.Println("Deleted itemID:", itemID)
-	err := wowItems.Save()
+	err = wowItems.Save()
+
 	return err
 }
 

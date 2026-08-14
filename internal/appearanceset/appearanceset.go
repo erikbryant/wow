@@ -11,10 +11,6 @@ import (
 type AppearanceSets struct {
 }
 
-const (
-	persistName = "appearances"
-)
-
 var (
 	asaIDs *persist.Persistence[int64, bool]
 )
@@ -50,9 +46,9 @@ func getFromWeb() error {
 	return nil
 }
 
-func New() (*AppearanceSets, error) {
+func New(persistencePath string) (*AppearanceSets, error) {
 	if asaIDs == nil {
-		asaIDs = persist.New[int64, bool](persistName)
+		asaIDs = persist.New[int64, bool](persistencePath)
 	}
 
 	if asaIDs.Loaded() {

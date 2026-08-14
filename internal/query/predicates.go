@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/erikbryant/wow/internal/appearanceset"
+	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
@@ -14,8 +15,11 @@ var (
 // AppearanceSet returns true for items that are in an appearance set.
 func AppearanceSet() Predicate {
 	if as == nil {
-		var err error
-		as, err = appearanceset.New()
+		paths, err := path.New("")
+		if err != nil {
+			panic(err)
+		}
+		as, err = appearanceset.New(paths.Appearances)
 		if err != nil {
 			panic(err)
 		}
