@@ -110,7 +110,12 @@ func runQuery(args []string) error {
 	if err != nil {
 		return err
 	}
-	wowItems := wowitem.New(paths.Items)
+
+	wowItems, err := wowitem.New(paths.Items)
+	if err != nil {
+		return err
+	}
+
 	items := wowItems.Values()
 
 	results := query.Find(items, predicates...)

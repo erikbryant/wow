@@ -16,22 +16,23 @@ var (
 	itemPersistence *persist.Persistence[int64, Item]
 )
 
-func New(persistencePath string) *WoWItem {
+func New(persistencePath string) (*WoWItem, error) {
 	if itemPersistence == nil {
 		itemPersistence = persist.New[int64, Item](persistencePath)
 	}
 
 	if itemPersistence.Loaded() {
-		return &WoWItem{}
+		return &WoWItem{}, nil
 	}
 
 	err := itemPersistence.Load()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "*** error opening items persist, using an empty one: %s\n", err)
+		return nil, fmt.Errorf("error opening items persist: %w", err)
 	}
+
 	fmt.Printf("-- #Items persisted  : %d\n", itemPersistence.Len())
 
-	return &WoWItem{}
+	return &WoWItem{}, nil
 }
 
 // Search returns the first item with name 's' (duplicates are very rare) or an empty item if not found

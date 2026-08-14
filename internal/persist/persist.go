@@ -16,8 +16,6 @@ type Persistence[K comparable, V any] struct {
 
 func init() {
 	gob.Register(map[string]any{})
-	// TODO: I think we can get rid of this, but we might have to rebuild existing gobs
-	gob.Register([]any{})
 }
 
 func New[K comparable, V any](persistencePath string) *Persistence[K, V] {
@@ -62,6 +60,12 @@ func (p *Persistence[K, V]) Load() error {
 	p.dirty = false
 
 	return nil
+}
+
+func (p *Persistence[K, V]) SetDirty() {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	p.dirty = true
 }
 
 func (p *Persistence[K, V]) Save() error {

@@ -54,7 +54,10 @@ func NewDataStore(paths *path.Paths) (*DataStore, error) {
 		Paths: paths,
 	}
 
-	ds.WowItem = wowitem.New(ds.Paths.Items)
+	ds.WowItem, err = wowitem.New(ds.Paths.Items)
+	if err != nil {
+		return nil, err
+	}
 
 	ds.AppearanceSet, err = appearanceset.New(ds.Paths.Appearances)
 	if err != nil {

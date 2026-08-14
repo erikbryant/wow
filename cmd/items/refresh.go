@@ -19,7 +19,11 @@ func refreshItem(itemID int64) error {
 	if err != nil {
 		return err
 	}
-	wowItems := wowitem.New(paths.Items)
+
+	wowItems, err := wowitem.New(paths.Items)
+	if err != nil {
+		return err
+	}
 
 	// Remove the item from the persistence. Even if we later fail to retrieve
 	// new data, at least we got rid of stale data.
@@ -50,7 +54,11 @@ func refreshAll(maxRefresh int) error {
 	if err != nil {
 		return err
 	}
-	wowItems := wowitem.New(paths.Items)
+
+	wowItems, err := wowitem.New(paths.Items)
+	if err != nil {
+		return err
+	}
 
 	for _, i := range wowItems.Values() {
 		if i.Stale(maxAge) {

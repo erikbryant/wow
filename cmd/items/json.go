@@ -15,7 +15,11 @@ func json(itemID int64) error {
 	if err != nil {
 		return err
 	}
-	wowItems := wowitem.New(paths.Items)
+
+	wowItems, err := wowitem.New(paths.Items)
+	if err != nil {
+		return err
+	}
 
 	i, err := wowItems.Get(itemID)
 	if err != nil {

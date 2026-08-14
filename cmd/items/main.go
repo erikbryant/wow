@@ -10,6 +10,7 @@ func usage() {
   items <command>
 
 Commands:
+  create {appearance|item}        Create a new persistence
   delete -id <id>                 Delete persisted item
   json -id <id>                   Show JSON for an item
   query [options]                 Search for items
@@ -17,12 +18,15 @@ Commands:
   help                            Display this help message
 
 Examples:
+  items create appearance
+  items create item
   items delete -id 12345
   items json -id 12345
   items query
   items query -rare -in-appearance-set
   items refresh -max-refresh=42
-  items refresh -id 12345`)
+  items refresh -id 12345
+  `)
 }
 
 func main() {
@@ -37,6 +41,8 @@ func main() {
 	var err error
 
 	switch command {
+	case "create":
+		err = runCreate(args)
 	case "delete":
 		err = runDelete(args)
 	case "json":
