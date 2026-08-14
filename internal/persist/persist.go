@@ -15,7 +15,11 @@ type Persistence[K comparable, V any] struct {
 }
 
 func init() {
+	// All stored data is in this format
 	gob.Register(map[string]any{})
+
+	// Some of the stored wowitems.Item data has lists
+	gob.Register([]any{})
 }
 
 func New[K comparable, V any](persistencePath string) *Persistence[K, V] {
