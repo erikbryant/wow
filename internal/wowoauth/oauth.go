@@ -37,15 +37,13 @@ var (
 )
 
 // generateStateOAuthCookie stores a unique identifier in a cookie and returns that same identifier
-func generateStateOAuthCookie(w http.ResponseWriter) (string, error) {
-	var expiration = time.Now().Add(20 * time.Minute)
+func generateStateOAuthCookie(w http.ResponseWriter) string {
+	var expiration = time.Now().Add(2 * time.Minute)
 
 	b := make([]byte, 16)
-	_, err := rand.Read(b)
-	if err != nil {
-		return "", err
-	}
+	rand.Read(b)
 	state := base64.URLEncoding.EncodeToString(b)
+
 	cookie := http.Cookie{
 		Expires:  expiration,
 		HttpOnly: true,
@@ -57,24 +55,23 @@ func generateStateOAuthCookie(w http.ResponseWriter) (string, error) {
 	}
 	http.SetCookie(w, &cookie)
 
-	return state, nil
+	return state
 }
 
 // oAuthBlizzardLogin creates the auth cookie and redirects to the Blizzard auth server
 func oAuthBlizzardLogin(w http.ResponseWriter, r *http.Request) {
 	// Create oAuthState cookie
-	oAuthState, err := generateStateOAuthCookie(w)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "*** unable to create OAuth cookie: %s\n", err)
-		os.Exit(1)
-	}
+	oAuthState := generateStateOAuthCookie(w)
 
 	// AuthCodeURL takes a unique, private state token to protect the user from CSRF attacks.
 	// You must always provide a non-empty string and validate it matches the state query
 	// parameter on your redirect callback.
 	u := blizzardOAuthConfig.AuthCodeURL(oAuthState)
-	// My account is homed in the US. battle.net resolves to whatever local country. Force it to use 'us'.
+
+	// My account is homed in the US. But, battle.net resolves to whatever local country
+	// I happen to be in at the moment. Force it to use 'us'.
 	u = strings.Replace(u, "/battle.net/", "/us.battle.net/", 1)
+
 	http.Redirect(w, r, u, http.StatusTemporaryRedirect)
 }
 
