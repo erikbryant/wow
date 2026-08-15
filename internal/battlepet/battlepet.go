@@ -74,8 +74,7 @@ func New() (*BattlePet, error) {
 		return nil, err
 	}
 
-	// Technically, this is _unique_ battle pets owned, but I don't keep dupes so it still works
-	fmt.Printf("-- #Battle pets owned: %d/%d\n", len(bp.owned), len(bp.names))
+	fmt.Printf("-- #Battle pet species owned: %d/%d\n", len(bp.owned), len(bp.names))
 
 	return &bp, nil
 }
