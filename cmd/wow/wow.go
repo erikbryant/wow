@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/erikbryant/wow/internal/credentials"
-	"github.com/erikbryant/wow/internal/path"
+	"github.com/erikbryant/wow/internal/application"
 	"github.com/erikbryant/wow/internal/shopping"
-	"github.com/erikbryant/wow/internal/wowapi"
 )
 
 var (
@@ -18,31 +16,13 @@ var (
 func main() {
 	flag.Parse()
 
-	paths, err := path.New("")
+	app, err := application.New("")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	clientID, err := credentials.ReadFromKeychain(paths.Secret, "clientID")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	clientSecret, err := credentials.ReadFromKeychain(paths.Secret, "clientSecret")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	err = wowapi.Authenticate(clientID, clientSecret)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	err = shopping.Shop(*realms, paths)
+	err = shopping.Shop(*realms, app)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
