@@ -14,10 +14,6 @@ type Toy struct {
 	owned map[int64]bool
 }
 
-var (
-	toys *Toy
-)
-
 // getNames returns a map of all toy names by toy ID
 func getNames() (map[string]int64, error) {
 	toyNames := map[string]int64{}
@@ -54,7 +50,7 @@ func getOwned() (map[int64]bool, error) {
 	return myToys, nil
 }
 
-func get() (*Toy, error) {
+func New() (*Toy, error) {
 	var t Toy
 	var err error
 
@@ -69,20 +65,6 @@ func get() (*Toy, error) {
 	}
 
 	return &t, nil
-}
-
-func New() (*Toy, error) {
-	if toys != nil {
-		return toys, nil
-	}
-
-	var err error
-	toys, err = get()
-	if err != nil {
-		return nil, err
-	}
-
-	return toys, err
 }
 
 // Owned returns true if the item name is a toy and we own it
