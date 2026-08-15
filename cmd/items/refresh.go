@@ -12,6 +12,13 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
+// deleteAndGetNew removes the item from the persistence. Even if we later fail to retrieve
+// new data, at least we got rid of stale data.
+func deleteAndGetNew(wowItems *wowitem.WoWItem, itemID int64) (wowitem.Item, error) {
+	wowItems.Delete(itemID)
+	return wowItems.GetLive(itemID)
+}
+
 // refreshItem refreshes a single item
 func refreshItem(itemID int64, paths *path.Paths) error {
 	wowItems, err := wowitem.New(paths.Items)
@@ -19,18 +26,16 @@ func refreshItem(itemID int64, paths *path.Paths) error {
 		return err
 	}
 
-	// Remove the item from the persistence. Even if we later fail to retrieve
-	// new data, at least we got rid of stale data.
-	wowItems.Delete(itemID)
-	iNew, errGetLive := wowItems.GetLive(itemID)
-	// We need to persist the deletion even if GetLive fails
+	iNew, errGetNew := deleteAndGetNew(wowItems, itemID)
+
+	// Persist the deletion even if getting the new data fails
 	err = wowItems.Save()
 	if err != nil {
 		return fmt.Errorf("failed to save item persistence: %w", err)
 	}
 
-	if errGetLive != nil {
-		return fmt.Errorf("could not retrieve itemID %d: %w", itemID, errGetLive)
+	if errGetNew != nil {
+		return fmt.Errorf("could not retrieve itemID %d: %w", itemID, errGetNew)
 	}
 
 	as, err := appearanceset.New(paths.Appearances)
@@ -58,7 +63,7 @@ func refreshAll(maxRefresh int, paths *path.Paths) error {
 		if i.Stale(maxAge) {
 			needsRefresh++
 			if refreshCount < maxRefresh {
-				_, err := wowItems.GetLive(i.ID())
+				_, err := deleteAndGetNew(wowItems, i.ID())
 				if err == nil {
 					refreshCount++
 				} else {
