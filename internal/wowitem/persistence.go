@@ -47,11 +47,12 @@ func (wi *WoWItem) Search(s string) Item {
 
 // GetLive retrieves a single item from the WoW web API and persists it.
 func (wi *WoWItem) GetLive(id int64) (Item, error) {
-	fmt.Println("Downloading item:", id)
 	result, err := wowapi.Item(strconv.FormatInt(id, 10))
 	if err != nil {
 		return Item{}, err
 	}
+
+	fmt.Println("Downloaded new item:", id)
 
 	i := NewItem(result)
 	wi.items.Set(i.ID(), i)
