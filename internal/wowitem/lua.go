@@ -16,7 +16,7 @@ func (wi *WoWItem) itemIDs() []int64 {
 func (wi *WoWItem) luaVendorPrice() (string, []string) {
 	var lua strings.Builder
 
-	lua.WriteString(fmt.Sprintf("local VendorSellPriceCache = {\n"))
+	lua.WriteString("local VendorSellPriceCache = {\n")
 	for _, id := range wi.itemIDs() {
 		i, _ := wi.Get(id)
 		spr := i.SellPriceRealizable()
@@ -28,9 +28,9 @@ func (wi *WoWItem) luaVendorPrice() (string, []string) {
 		}
 		lua.WriteString(fmt.Sprintf("  [\"%d\"] = %d,\n", id, spr))
 	}
-	lua.WriteString(fmt.Sprintf("}\n"))
+	lua.WriteString("}\n")
 
-	lua.WriteString(fmt.Sprintf(`
+	lua.WriteString(`
 -- VendorSellPrice returns the cached vendor sell price
 local function VendorSellPrice(itemID)
     return VendorSellPriceCache[tostring(itemID)] or 0
@@ -52,7 +52,7 @@ local function ValidatePriceCache()
         )
     end
 end
-`))
+`)
 
 	return lua.String(), []string{"VendorSellPrice", "ValidatePriceCache"}
 }
@@ -60,7 +60,7 @@ end
 func (wi *WoWItem) luaCosmetic() (string, []string) {
 	var lua strings.Builder
 
-	lua.WriteString(fmt.Sprintf("local Cosmetics = {\n"))
+	lua.WriteString("local Cosmetics = {\n")
 	for _, id := range wi.itemIDs() {
 		i, _ := wi.Get(id)
 		cosmetic := i.Cosmetic()
@@ -69,14 +69,14 @@ func (wi *WoWItem) luaCosmetic() (string, []string) {
 		}
 		lua.WriteString(fmt.Sprintf("  [\"%d\"] = true,\n", id))
 	}
-	lua.WriteString(fmt.Sprintf("}\n"))
+	lua.WriteString("}\n")
 
-	lua.WriteString(fmt.Sprintf(`
+	lua.WriteString(`
 -- Cosmetic returns true if the item is a Cosmetic
 local function Cosmetic(itemID)
     return Cosmetics[tostring(itemID)] or false
 end
-`))
+`)
 
 	return lua.String(), []string{"Cosmetic"}
 }
