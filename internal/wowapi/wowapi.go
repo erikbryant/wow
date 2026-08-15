@@ -333,7 +333,6 @@ func CollectionsTransmogs() (any, error) {
 
 // Professions returns the professions this alt knows
 func Professions(realm, alt string) (any, error) {
-	realm = strings.ToLower(realm)
 	realm = realmToSlug(realm)
 	alt = strings.ToLower(alt)
 	url := apiBase + "/profile/wow/character/" + realm + "/" + alt + "/professions?namespace=profile-us&locale=en_US"
