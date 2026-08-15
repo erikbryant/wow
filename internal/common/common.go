@@ -6,18 +6,6 @@ import (
 	"strings"
 )
 
-var (
-	qualities = map[int64]string{
-		0: "Poor",
-		1: "Common",
-		2: "Uncommon",
-		3: "Rare",
-		4: "Epic",
-		5: "Legendary",
-		6: "Artifact",
-	}
-)
-
 // Coppers returns the value in coppers of the given denominations
 func Coppers(g, s, c int64) int64 {
 	return g*100*100 + s*100 + c
@@ -35,11 +23,21 @@ func Gold(coppers int64) string {
 
 // QualityID return the integer id of the given quality name string
 func QualityID(qualityName string) int64 {
-	for qID, qName := range qualities {
-		if strings.ToLower(qName) == strings.ToLower(qualityName) {
-			return qID
-		}
+	qualities := map[string]int64{
+		"poor":      0,
+		"common":    1,
+		"uncommon":  2,
+		"rare":      3,
+		"epic":      4,
+		"legendary": 5,
+		"artifact":  6,
 	}
-	fmt.Fprintf(os.Stderr, "*** unknown quality: %s\n", qualityName)
-	return -1
+
+	qID, ok := qualities[strings.ToLower(qualityName)]
+	if !ok {
+		fmt.Fprintf(os.Stderr, "*** unknown quality: %s\n", qualityName)
+		return -1
+	}
+
+	return qID
 }
