@@ -15,13 +15,14 @@ type Persistence[K comparable, V any] struct {
 }
 
 func init() {
-	// All stored data is in this format
+	// All stored data is in this format.
 	gob.Register(map[string]any{})
 
-	// Some of the stored wowitems.Item data has lists
+	// Some stored data contains lists.
 	gob.Register([]any{})
 }
 
+// New creates a new Persistence backed by persistencePath + ".gob".
 func New[K comparable, V any](persistencePath string) *Persistence[K, V] {
 	return &Persistence[K, V]{
 		filename: persistencePath + ".gob",
@@ -30,6 +31,7 @@ func New[K comparable, V any](persistencePath string) *Persistence[K, V] {
 	}
 }
 
+// Load replaces the current data with the contents of the persistence file.
 func (p *Persistence[K, V]) Load() error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -58,12 +60,15 @@ func (p *Persistence[K, V]) Load() error {
 	return nil
 }
 
+// Dirty reports whether the persistence has been modified since the last
+// successful Load or Save.
 func (p *Persistence[K, V]) Dirty() bool {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	return p.dirty
 }
 
+// Save writes the current data to disk atomically.
 func (p *Persistence[K, V]) Save() error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -108,21 +113,25 @@ func (p *Persistence[K, V]) Save() error {
 	return nil
 }
 
+// Len returns the number of entries.
 func (p *Persistence[K, V]) Len() int {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
 	return len(p.data)
 }
 
+// Get returns the value associated with key.
+//
+// Values returned by Persistence must be treated as immutable.
 func (p *Persistence[K, V]) Get(key K) (V, bool) {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
 	v, ok := p.data[key]
 
-	// Values returned by Persistence must be treated as immutable.
 	return v, ok
 }
 
+// Set associates value with key and marks the persistence dirty.
 func (p *Persistence[K, V]) Set(key K, value V) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -130,6 +139,7 @@ func (p *Persistence[K, V]) Set(key K, value V) {
 	p.dirty = true
 }
 
+// Delete removes key, if present, and marks the persistence dirty.
 func (p *Persistence[K, V]) Delete(key K) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -140,6 +150,7 @@ func (p *Persistence[K, V]) Delete(key K) {
 	}
 }
 
+// Keys returns all keys.
 func (p *Persistence[K, V]) Keys() []K {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
@@ -152,6 +163,9 @@ func (p *Persistence[K, V]) Keys() []K {
 	return keys
 }
 
+// Values returns all values.
+//
+// Values returned by Persistence must be treated as immutable.
 func (p *Persistence[K, V]) Values() []V {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
@@ -164,7 +178,7 @@ func (p *Persistence[K, V]) Values() []V {
 	return values
 }
 
-// Search returns the first match
+// Search returns the first entry for which searchFunc returns true.
 func (p *Persistence[K, V]) Search(searchFunc func(v V) bool) (K, V, bool) {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
@@ -180,7 +194,7 @@ func (p *Persistence[K, V]) Search(searchFunc func(v V) bool) (K, V, bool) {
 	return zeroK, zeroV, false
 }
 
-// Path returns the path to the backing persistence file
+// Path returns the path to the backing persistence file.
 func (p *Persistence[K, V]) Path() string {
 	return p.filename
 }
