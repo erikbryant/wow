@@ -26,6 +26,7 @@ type App struct {
 	Toys           *toy.Toy
 }
 
+// authenticate authenticates this session against the WoW web APIs
 func (app *App) authenticate() error {
 	clientID, err := credentials.ReadFromKeychain(app.Paths.Secret, "clientID")
 	if err != nil {
