@@ -116,8 +116,24 @@ func requestKey(url, token, key, caller string) ([]any, error) {
 	if err != nil {
 		return nil, err
 	}
-	response := r.(map[string]any)
-	return response[key].([]any), nil
+
+	response, ok := r.(map[string]any)
+	if !ok {
+		panic(fmt.Sprintf("%s: expected object response, got %T", caller, r))
+	}
+
+	value, ok := response[key]
+	if !ok {
+		panic(fmt.Sprintf("%s: response is missing key %q", caller, key))
+	}
+
+	result, ok := value.([]any)
+	if !ok {
+		panic(fmt.Sprintf("%s: response key %q has type %T, want []any",
+			caller, key, value))
+	}
+
+	return result, nil
 }
 
 // ConnectedRealm returns all realms connected to the given realm ID
