@@ -13,8 +13,8 @@ type Appearances struct {
 }
 
 var (
-	// flakyIDs WoW says I own them, but this app thinks I don't
-	flakyIDs = map[int64]struct{}{
+	// excludedIDs are appearance IDs that are problematic in one way or another
+	excludedIDs = map[int64]struct{}{
 		// These are not real appearances; they generate false positives
 		573:   {}, // Various equippable profession items
 		577:   {}, // Various equippable profession items
@@ -158,7 +158,7 @@ func NewAppearances() (*Appearances, error) {
 	fmt.Printf("-- #Appearances owned: %d\n", len(ao.owned))
 
 	// Make sure I don't already own any of the items I am filtering.
-	for id, _ := range flakyIDs {
+	for id, _ := range excludedIDs {
 		if ao.owned[id] {
 			fmt.Printf("You already own this, remove it from flakyIDs: %d\n", id)
 		}
@@ -169,7 +169,7 @@ func NewAppearances() (*Appearances, error) {
 
 // needID returns true if I need this appearance ID
 func (ao *Appearances) needID(id int64) bool {
-	_, ok := flakyIDs[id]
+	_, ok := excludedIDs[id]
 	if ok {
 		return false
 	}
