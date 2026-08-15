@@ -20,7 +20,7 @@ func New(persistencePath string) (*WoWItem, error) {
 
 	err := wi.items.Load()
 	if err != nil {
-		return nil, fmt.Errorf("error opening items persist: %w", err)
+		return nil, fmt.Errorf("error loading items persist: %w", err)
 	}
 
 	fmt.Printf("-- #Items persisted  : %d\n", wi.items.Len())
@@ -64,6 +64,10 @@ func (wi *WoWItem) Get(id int64) (Item, error) {
 
 func (wi *WoWItem) Delete(id int64) {
 	wi.items.Delete(id)
+}
+
+func (wi *WoWItem) Dirty() bool {
+	return wi.items.Dirty()
 }
 
 func (wi *WoWItem) Save() error {

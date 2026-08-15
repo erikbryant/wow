@@ -175,21 +175,6 @@ func TestSearchNotFound(t *testing.T) {
 	}
 }
 
-func TestSaveWithoutDirty(t *testing.T) {
-	dir := t.TempDir()
-
-	p := New[string, int]("cache")
-	p.filename = filepath.Join(dir, "cache"+".gob")
-
-	if err := p.Save(); err != nil {
-		t.Fatalf("Save() returned %v", err)
-	}
-
-	if _, err := os.Stat(p.filename); !os.IsNotExist(err) {
-		t.Fatal("file should not have been written")
-	}
-}
-
 func TestLoadMissingFile(t *testing.T) {
 	p := New[string, int]("missing")
 	p.filename = filepath.Join(t.TempDir(), "missing.gob")

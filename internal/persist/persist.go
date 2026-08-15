@@ -11,7 +11,6 @@ type Persistence[K comparable, V any] struct {
 	filename string
 	mu       sync.RWMutex
 	data     map[K]V
-	loaded   bool
 	dirty    bool
 }
 
@@ -27,25 +26,13 @@ func New[K comparable, V any](persistencePath string) *Persistence[K, V] {
 	return &Persistence[K, V]{
 		filename: persistencePath + ".gob",
 		data:     make(map[K]V),
-		loaded:   false,
 		dirty:    false,
 	}
-}
-
-func (p *Persistence[K, V]) Loaded() bool {
-	p.mu.RLock()
-	defer p.mu.RUnlock()
-	return p.loaded
 }
 
 func (p *Persistence[K, V]) Load() error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-
-	// Cannot call p.Loaded(), as the locks would deadlock
-	if p.loaded {
-		return nil
-	}
 
 	f, err := os.Open(p.filename)
 	if err != nil {
@@ -66,26 +53,20 @@ func (p *Persistence[K, V]) Load() error {
 	}
 
 	p.data = data
-	p.loaded = true
 	p.dirty = false
 
 	return nil
 }
 
-func (p *Persistence[K, V]) SetDirty() {
+func (p *Persistence[K, V]) Dirty() bool {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	p.dirty = true
+	return p.dirty
 }
 
 func (p *Persistence[K, V]) Save() error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-
-	if !p.dirty {
-		// Nothing changed, no need to save
-		return nil
-	}
 
 	tmp := p.filename + ".tmp"
 

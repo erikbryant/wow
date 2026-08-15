@@ -13,7 +13,6 @@ import (
 
 func createItem(paths *path.Paths) error {
 	items := persist.New[int64, wowitem.Item](paths.Items + ".new")
-	items.SetDirty()
 
 	err := items.Save()
 	if err != nil {

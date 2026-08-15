@@ -312,14 +312,18 @@ func Shop(realms string, app *application.App) error {
 
 	recommendations := scanRealms(realms, app)
 
-	err = app.WowItem.Save()
-	if err != nil {
-		return fmt.Errorf("failed to save wow items persistence: %w", err)
-	}
-
 	err = generateOutput(app, recommendations)
 	if err != nil {
 		return err
+	}
+
+	// Most runs do not change the persistence; be frugal about whether to save
+	if app.WowItem.Dirty() {
+		err = app.WowItem.Save()
+		if err != nil {
+			// This is just a cache; failure to save is not fatal
+			fmt.Fprintf(os.Stderr, "WARNING: failed to save wow items persistence: %s\n", err)
+		}
 	}
 
 	return nil
