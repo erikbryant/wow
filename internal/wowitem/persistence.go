@@ -13,6 +13,12 @@ type WoWItem struct {
 	items persist.Persistence[int64, Item]
 }
 
+func NewEmpty(persistencePath string) *WoWItem {
+	return &WoWItem{
+		items: *persist.New[int64, Item](persistencePath + ".new"),
+	}
+}
+
 func New(persistencePath string) (*WoWItem, error) {
 	wi := WoWItem{
 		items: *persist.New[int64, Item](persistencePath),
@@ -80,4 +86,8 @@ func (wi *WoWItem) Values() []Item {
 
 func (wi *WoWItem) Keys() []int64 {
 	return wi.items.Keys()
+}
+
+func (wi *WoWItem) Path() string {
+	return wi.items.Path()
 }

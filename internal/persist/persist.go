@@ -179,3 +179,8 @@ func (p *Persistence[K, V]) Search(searchFunc func(v V) bool) (K, V, bool) {
 	var zeroK K
 	return zeroK, zeroV, false
 }
+
+// Path returns the path to the backing persistence file
+func (p *Persistence[K, V]) Path() string {
+	return p.filename
+}
