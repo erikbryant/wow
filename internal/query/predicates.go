@@ -7,10 +7,6 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
-var (
-	as *appearanceset.AppearanceSets
-)
-
 // AppearanceSet returns true for items that are in an appearance set.
 func AppearanceSet(as *appearanceset.AppearanceSets) Predicate {
 	return func(item wowitem.Item) bool {
