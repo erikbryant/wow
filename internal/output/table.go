@@ -78,7 +78,7 @@ func headers() (string, string) {
 
 	for _, column := range columns {
 		cols = append(cols, column.header)
-		seps = append(seps, "-----------------------"[0:len(column.header)])
+		seps = append(seps, strings.Repeat("-", len(column.header)))
 	}
 
 	return strings.Join(cols, "\t"), strings.Join(seps, "\t")
