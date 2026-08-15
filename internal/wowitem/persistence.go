@@ -10,34 +10,27 @@ import (
 )
 
 type WoWItem struct {
+	items persist.Persistence[int64, Item]
 }
 
-var (
-	itemPersistence *persist.Persistence[int64, Item]
-)
-
 func New(persistencePath string) (*WoWItem, error) {
-	if itemPersistence == nil {
-		itemPersistence = persist.New[int64, Item](persistencePath)
+	wi := WoWItem{
+		items: *persist.New[int64, Item](persistencePath),
 	}
 
-	if itemPersistence.Loaded() {
-		return &WoWItem{}, nil
-	}
-
-	err := itemPersistence.Load()
+	err := wi.items.Load()
 	if err != nil {
 		return nil, fmt.Errorf("error opening items persist: %w", err)
 	}
 
-	fmt.Printf("-- #Items persisted  : %d\n", itemPersistence.Len())
+	fmt.Printf("-- #Items persisted  : %d\n", wi.items.Len())
 
-	return &WoWItem{}, nil
+	return &wi, nil
 }
 
 // Search returns the first item with name 's' (duplicates are very rare) or an empty item if not found
 func (wi *WoWItem) Search(s string) Item {
-	_, i, ok := itemPersistence.Search(func(v Item) bool {
+	_, i, ok := wi.items.Search(func(v Item) bool {
 		return v.Name() == s
 	})
 	if !ok {
@@ -55,14 +48,14 @@ func (wi *WoWItem) GetLive(id int64) (Item, error) {
 	}
 
 	i := NewItem(result)
-	itemPersistence.Set(i.ID(), i)
+	wi.items.Set(i.ID(), i)
 
 	return i, nil
 }
 
 // Get retrieves a single item. From persistence if present, web if not.
 func (wi *WoWItem) Get(id int64) (Item, error) {
-	i, ok := itemPersistence.Get(id)
+	i, ok := wi.items.Get(id)
 	if ok {
 		return i, nil
 	}
@@ -70,17 +63,17 @@ func (wi *WoWItem) Get(id int64) (Item, error) {
 }
 
 func (wi *WoWItem) Delete(id int64) {
-	itemPersistence.Delete(id)
+	wi.items.Delete(id)
 }
 
 func (wi *WoWItem) Save() error {
-	return itemPersistence.Save()
+	return wi.items.Save()
 }
 
 func (wi *WoWItem) Values() []Item {
-	return itemPersistence.Values()
+	return wi.items.Values()
 }
 
 func (wi *WoWItem) Keys() []int64 {
-	return itemPersistence.Keys()
+	return wi.items.Keys()
 }
