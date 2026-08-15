@@ -27,7 +27,6 @@ func New[K comparable, V any](persistencePath string) *Persistence[K, V] {
 	return &Persistence[K, V]{
 		filename: persistencePath + ".gob",
 		data:     make(map[K]V),
-		dirty:    false,
 	}
 }
 
@@ -42,16 +41,15 @@ func (p *Persistence[K, V]) Load() error {
 	}
 	defer f.Close()
 
-	decoder := gob.NewDecoder(f)
-
 	var data map[K]V
-	if err := decoder.Decode(&data); err != nil {
+
+	if err := gob.NewDecoder(f).Decode(&data); err != nil {
 		return err
 	}
 
 	if data == nil {
 		data = make(map[K]V)
-		fmt.Fprintf(os.Stderr, "persistence data loaded, but is empty: %v", p.filename)
+		fmt.Fprintf(os.Stderr, "persistence data loaded, but is empty: %s\n", p.filename)
 	}
 
 	p.data = data
@@ -63,8 +61,9 @@ func (p *Persistence[K, V]) Load() error {
 // Dirty reports whether the persistence has been modified since the last
 // successful Load or Save.
 func (p *Persistence[K, V]) Dirty() bool {
-	p.mu.Lock()
-	defer p.mu.Unlock()
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+
 	return p.dirty
 }
 
@@ -80,34 +79,28 @@ func (p *Persistence[K, V]) Save() error {
 		return err
 	}
 
-	encoder := gob.NewEncoder(f)
-
-	if err := encoder.Encode(p.data); err != nil {
-		f.Close()
-		os.Remove(tmp)
+	if err := gob.NewEncoder(f).Encode(p.data); err != nil {
+		_ = f.Close()
+		_ = os.Remove(tmp)
 		return err
 	}
 
-	err = f.Sync()
-	if err != nil {
-		f.Close()
-		os.Remove(tmp)
+	if err := f.Sync(); err != nil {
+		_ = f.Close()
+		_ = os.Remove(tmp)
 		return err
 	}
 
-	err = f.Close()
-	if err != nil {
-		os.Remove(tmp)
+	if err := f.Close(); err != nil {
+		_ = os.Remove(tmp)
 		return err
 	}
 
-	err = os.Rename(tmp, p.filename)
-	if err != nil {
-		os.Remove(tmp)
+	if err := os.Rename(tmp, p.filename); err != nil {
+		_ = os.Remove(tmp)
 		return err
 	}
 
-	// If we got here then we have a clean save! :)
 	p.dirty = false
 
 	return nil
@@ -117,6 +110,7 @@ func (p *Persistence[K, V]) Save() error {
 func (p *Persistence[K, V]) Len() int {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
+
 	return len(p.data)
 }
 
@@ -126,15 +120,16 @@ func (p *Persistence[K, V]) Len() int {
 func (p *Persistence[K, V]) Get(key K) (V, bool) {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
-	v, ok := p.data[key]
 
-	return v, ok
+	value, ok := p.data[key]
+	return value, ok
 }
 
 // Set associates value with key and marks the persistence dirty.
 func (p *Persistence[K, V]) Set(key K, value V) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
+
 	p.data[key] = value
 	p.dirty = true
 }
@@ -143,11 +138,13 @@ func (p *Persistence[K, V]) Set(key K, value V) {
 func (p *Persistence[K, V]) Delete(key K) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	_, ok := p.data[key]
-	if ok {
-		delete(p.data, key)
-		p.dirty = true
+
+	if _, ok := p.data[key]; !ok {
+		return
 	}
+
+	delete(p.data, key)
+	p.dirty = true
 }
 
 // Keys returns all keys.
@@ -156,8 +153,9 @@ func (p *Persistence[K, V]) Keys() []K {
 	defer p.mu.RUnlock()
 
 	keys := make([]K, 0, len(p.data))
-	for k := range p.data {
-		keys = append(keys, k)
+
+	for key := range p.data {
+		keys = append(keys, key)
 	}
 
 	return keys
@@ -171,30 +169,35 @@ func (p *Persistence[K, V]) Values() []V {
 	defer p.mu.RUnlock()
 
 	values := make([]V, 0, len(p.data))
-	for _, v := range p.data {
-		values = append(values, v)
+
+	for _, value := range p.data {
+		values = append(values, value)
 	}
 
 	return values
 }
 
 // Search returns the first entry for which searchFunc returns true.
-func (p *Persistence[K, V]) Search(searchFunc func(v V) bool) (K, V, bool) {
+func (p *Persistence[K, V]) Search(searchFunc func(V) bool) (K, V, bool) {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
 
-	for k, v := range p.data {
-		if searchFunc(v) {
-			return k, v, true
+	for key, value := range p.data {
+		if searchFunc(value) {
+			return key, value, true
 		}
 	}
 
-	var zeroV V
 	var zeroK K
+	var zeroV V
+
 	return zeroK, zeroV, false
 }
 
 // Path returns the path to the backing persistence file.
 func (p *Persistence[K, V]) Path() string {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+
 	return p.filename
 }

@@ -14,7 +14,7 @@ import (
 
 // deleteAndGetNew removes the item from the persistence. Even if we later fail to retrieve
 // new data, at least we got rid of stale data.
-func deleteAndGetNew(wowItems *wowitem.WoWItem, itemID int64) (wowitem.Item, error) {
+func deleteAndGetNew(wowItems *wowitem.Persistence, itemID int64) (wowitem.Item, error) {
 	wowItems.Delete(itemID)
 	return wowItems.GetLive(itemID)
 }

@@ -9,44 +9,47 @@ import (
 	"github.com/erikbryant/wow/internal/wowapi"
 )
 
-type WoWItem struct {
-	items persist.Persistence[int64, Item]
+type Persistence struct {
+	*persist.Persistence[int64, Item]
 }
 
-func NewEmpty(persistencePath string) *WoWItem {
-	return &WoWItem{
-		items: *persist.New[int64, Item](persistencePath + ".new"),
+// NewEmpty creates a new Persistence with no items in it.
+func NewEmpty(persistencePath string) *Persistence {
+	return &Persistence{
+		Persistence: persist.New[int64, Item](persistencePath + ".new"),
 	}
 }
 
-func New(persistencePath string) (*WoWItem, error) {
-	wi := WoWItem{
-		items: *persist.New[int64, Item](persistencePath),
+// New creates a new Persistence, populated with data from its persistence store.
+func New(persistencePath string) (*Persistence, error) {
+	p := &Persistence{
+		Persistence: persist.New[int64, Item](persistencePath),
 	}
 
-	err := wi.items.Load()
-	if err != nil {
+	if err := p.Load(); err != nil {
 		return nil, fmt.Errorf("error loading items persist: %w", err)
 	}
 
-	fmt.Printf("-- #Items persisted  : %d\n", wi.items.Len())
+	fmt.Printf("-- #Items persisted  : %d\n", p.Len())
 
-	return &wi, nil
+	return p, nil
 }
 
-// Search returns the first item with name 's' (duplicates are very rare) or an empty item if not found
-func (wi *WoWItem) Search(s string) Item {
-	_, i, ok := wi.items.Search(func(v Item) bool {
+// Search returns the first item with name s.
+// Duplicates are very rare.
+func (p *Persistence) Search(s string) Item {
+	_, item, ok := p.Persistence.Search(func(v Item) bool {
 		return v.Name() == s
 	})
 	if !ok {
 		fmt.Fprintf(os.Stderr, "*** did not find item for search string: %s\n", s)
 	}
-	return i
+
+	return item
 }
 
 // GetLive retrieves a single item from the WoW web API and persists it.
-func (wi *WoWItem) GetLive(id int64) (Item, error) {
+func (p *Persistence) GetLive(id int64) (Item, error) {
 	result, err := wowapi.Item(strconv.FormatInt(id, 10))
 	if err != nil {
 		return Item{}, err
@@ -54,41 +57,18 @@ func (wi *WoWItem) GetLive(id int64) (Item, error) {
 
 	fmt.Println("Downloaded new item:", id)
 
-	i := NewItem(result)
-	wi.items.Set(i.ID(), i)
+	item := NewItem(result)
+	p.Set(item.ID(), item)
 
-	return i, nil
+	return item, nil
 }
 
 // Get retrieves a single item. From persistence if present, web if not.
-func (wi *WoWItem) Get(id int64) (Item, error) {
-	i, ok := wi.items.Get(id)
+func (p *Persistence) Get(id int64) (Item, error) {
+	item, ok := p.Persistence.Get(id)
 	if ok {
-		return i, nil
+		return item, nil
 	}
-	return wi.GetLive(id)
-}
 
-func (wi *WoWItem) Delete(id int64) {
-	wi.items.Delete(id)
-}
-
-func (wi *WoWItem) Dirty() bool {
-	return wi.items.Dirty()
-}
-
-func (wi *WoWItem) Save() error {
-	return wi.items.Save()
-}
-
-func (wi *WoWItem) Values() []Item {
-	return wi.items.Values()
-}
-
-func (wi *WoWItem) Keys() []int64 {
-	return wi.items.Keys()
-}
-
-func (wi *WoWItem) Path() string {
-	return wi.items.Path()
+	return p.GetLive(id)
 }

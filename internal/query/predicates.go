@@ -8,7 +8,7 @@ import (
 )
 
 // AppearanceSet returns true for items that are in an appearance set.
-func AppearanceSet(as *appearanceset.AppearanceSets) Predicate {
+func AppearanceSet(as *appearanceset.Persistence) Predicate {
 	return func(item wowitem.Item) bool {
 		return as.Contains(item.Appearances())
 	}

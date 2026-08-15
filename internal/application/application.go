@@ -15,9 +15,9 @@ import (
 
 type App struct {
 	// Initialize this first; some of the others depend on it
-	WowItem *wowitem.WoWItem
+	WowItem *wowitem.Persistence
 
-	AppearanceSet  *appearanceset.AppearanceSets
+	AppearanceSet  *appearanceset.Persistence
 	Appearances    *userconfig.Appearances
 	BattlePets     *battlepet.BattlePet
 	CookingRecipes *cooking.CookingRecipe

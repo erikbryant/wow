@@ -14,61 +14,61 @@ import (
 // Column contains information to retrieve each column of output
 type Column struct {
 	header string
-	value  func(wowitem.Item, *appearanceset.AppearanceSets) string
+	value  func(wowitem.Item, *appearanceset.Persistence) string
 }
 
 var columns = []Column{
 	{
 		header: "ID",
-		value:  func(item wowitem.Item, as *appearanceset.AppearanceSets) string { return fmt.Sprintf("%d", item.ID()) },
+		value:  func(item wowitem.Item, as *appearanceset.Persistence) string { return fmt.Sprintf("%d", item.ID()) },
 	},
 	{
 		header: "Equips",
-		value: func(item wowitem.Item, as *appearanceset.AppearanceSets) string {
+		value: func(item wowitem.Item, as *appearanceset.Persistence) string {
 			return fmt.Sprintf("%t", item.Equippable())
 		},
 	},
 	{
 		header: "Stacks",
-		value: func(item wowitem.Item, as *appearanceset.AppearanceSets) string {
+		value: func(item wowitem.Item, as *appearanceset.Persistence) string {
 			return fmt.Sprintf("%t", item.Stackable())
 		},
 	},
 	{
 		header: "App Set",
-		value: func(item wowitem.Item, as *appearanceset.AppearanceSets) string {
+		value: func(item wowitem.Item, as *appearanceset.Persistence) string {
 			return fmt.Sprintf("%t", as.Contains(item.Appearances()))
 		},
 	},
 	{
 		header: "Sell Price",
-		value: func(item wowitem.Item, as *appearanceset.AppearanceSets) string {
+		value: func(item wowitem.Item, as *appearanceset.Persistence) string {
 			return common.Gold(item.SellPriceAdvertised())
 		},
 	},
 	{
 		header: "iLvl",
-		value: func(item wowitem.Item, as *appearanceset.AppearanceSets) string {
+		value: func(item wowitem.Item, as *appearanceset.Persistence) string {
 			return fmt.Sprintf("%d", item.ItemLevel())
 		},
 	},
 	{
 		header: "Class",
-		value:  func(item wowitem.Item, as *appearanceset.AppearanceSets) string { return item.ItemClassName() },
+		value:  func(item wowitem.Item, as *appearanceset.Persistence) string { return item.ItemClassName() },
 	},
 	{
 		header: "Quality",
-		value:  func(item wowitem.Item, as *appearanceset.AppearanceSets) string { return item.Quality() },
+		value:  func(item wowitem.Item, as *appearanceset.Persistence) string { return item.Quality() },
 	},
 	{
 		header: "Updated",
-		value: func(item wowitem.Item, as *appearanceset.AppearanceSets) string {
+		value: func(item wowitem.Item, as *appearanceset.Persistence) string {
 			return item.Updated().Format("2006-01-02")
 		},
 	},
 	{
 		header: "Name",
-		value:  func(item wowitem.Item, as *appearanceset.AppearanceSets) string { return item.Name() },
+		value:  func(item wowitem.Item, as *appearanceset.Persistence) string { return item.Name() },
 	},
 }
 
@@ -84,7 +84,7 @@ func headers() (string, string) {
 	return strings.Join(cols, "\t"), strings.Join(seps, "\t")
 }
 
-func row(item wowitem.Item, as *appearanceset.AppearanceSets) string {
+func row(item wowitem.Item, as *appearanceset.Persistence) string {
 	fields := []string{}
 
 	for _, col := range columns {
@@ -95,7 +95,7 @@ func row(item wowitem.Item, as *appearanceset.AppearanceSets) string {
 }
 
 // Table writes items as a human-readable table.
-func Table(w io.Writer, items []wowitem.Item, as *appearanceset.AppearanceSets) {
+func Table(w io.Writer, items []wowitem.Item, as *appearanceset.Persistence) {
 	writer := tabwriter.NewWriter(
 		w,
 		0,

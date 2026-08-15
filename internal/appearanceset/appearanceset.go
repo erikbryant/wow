@@ -8,14 +8,14 @@ import (
 	"github.com/erikbryant/wow/internal/wowapi"
 )
 
-type AppearanceSets struct {
-	asaIDs *persist.Persistence[int64, bool]
+type Persistence struct {
+	*persist.Persistence[int64, bool]
 }
 
-// NewFromWeb returns an object populated from the web API
-func NewFromWeb(persistencePath string) (*AppearanceSets, error) {
-	as := AppearanceSets{
-		asaIDs: persist.New[int64, bool](persistencePath + ".new"),
+// NewFromWeb creates a new Persistence, populated with data from the WoW web API.
+func NewFromWeb(persistencePath string) (*Persistence, error) {
+	as := &Persistence{
+		Persistence: persist.New[int64, bool](persistencePath + ".new"),
 	}
 
 	appearanceSetsIDs, err := wowapi.ItemAppearanceSetsIndexIDs()
@@ -29,56 +29,43 @@ func NewFromWeb(persistencePath string) (*AppearanceSets, error) {
 	for setID, setName := range appearanceSetsIDs {
 		fmt.Fprintf(os.Stderr, "Loading appearance set %4d/%4d: %5d  %s\n", count, total, setID, setName)
 		count++
-		asIDs, err := wowapi.ItemAppearanceSetIDs(setID)
+
+		appearanceIDs, err := wowapi.ItemAppearanceSetIDs(setID)
 		if err != nil {
 			return nil, err
 		}
-		for _, appearanceID := range asIDs {
-			as.asaIDs.Set(appearanceID, true)
+
+		for _, appearanceID := range appearanceIDs {
+			as.Set(appearanceID, true)
 		}
 	}
 
-	return &as, nil
+	return as, nil
 }
 
-// New returns an object populated from the persistence
-func New(persistencePath string) (*AppearanceSets, error) {
-	as := AppearanceSets{
-		asaIDs: persist.New[int64, bool](persistencePath),
+// New creates a new Persistence, populated with data from its persistence store.
+func New(persistencePath string) (*Persistence, error) {
+	as := &Persistence{
+		Persistence: persist.New[int64, bool](persistencePath),
 	}
 
-	err := as.asaIDs.Load()
-	if err != nil {
+	if err := as.Load(); err != nil {
 		return nil, fmt.Errorf("failed to load appearance sets: %w", err)
 	}
 
-	fmt.Printf("-- #Appearances known: %d\n", as.asaIDs.Len())
+	fmt.Printf("-- #Appearances known: %d\n", as.Len())
 
-	return &as, nil
+	return as, nil
 }
 
-// Contains returns true if any of these appearance IDs are in an appearance set
-func (as *AppearanceSets) Contains(appearanceIDs []int64) bool {
+// Contains returns true if any of these appearance IDs are in an appearance set.
+func (as *Persistence) Contains(appearanceIDs []int64) bool {
 	for _, appearanceID := range appearanceIDs {
-		inSet, ok := as.asaIDs.Get(appearanceID)
-		if !ok {
-			continue
-		}
-		if inSet {
+		inSet, ok := as.Get(appearanceID)
+		if ok && inSet {
 			return true
 		}
 	}
+
 	return false
-}
-
-func (as *AppearanceSets) Len() int {
-	return as.asaIDs.Len()
-}
-
-func (as *AppearanceSets) Path() string {
-	return as.asaIDs.Path()
-}
-
-func (as *AppearanceSets) Save() error {
-	return as.asaIDs.Save()
 }

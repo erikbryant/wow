@@ -7,13 +7,13 @@ import (
 )
 
 // itemIDs returns the sorted list of keys from the persistence file
-func (wi *WoWItem) itemIDs() []int64 {
+func (wi *Persistence) itemIDs() []int64 {
 	keys := wi.Keys()
 	slices.Sort(keys)
 	return keys
 }
 
-func (wi *WoWItem) luaVendorPrice() (string, []string) {
+func (wi *Persistence) luaVendorPrice() (string, []string) {
 	var lua strings.Builder
 
 	lua.WriteString("local VendorSellPriceCache = {\n")
@@ -57,7 +57,7 @@ end
 	return lua.String(), []string{"VendorSellPrice", "ValidatePriceCache"}
 }
 
-func (wi *WoWItem) luaCosmetic() (string, []string) {
+func (wi *Persistence) luaCosmetic() (string, []string) {
 	var lua strings.Builder
 
 	lua.WriteString("local Cosmetics = {\n")
@@ -82,7 +82,7 @@ end
 }
 
 // Lua writes the cached vendor sell prices as a lua table and accessor
-func (wi *WoWItem) Lua() string {
+func (wi *Persistence) Lua() string {
 	lua := ""
 
 	lua, fcns := wi.luaVendorPrice()
