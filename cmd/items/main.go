@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"github.com/erikbryant/wow/internal/path"
 )
 
 func usage() {
@@ -40,17 +42,24 @@ func main() {
 
 	var err error
 
+	// Use consistent paths across all subcommands
+	paths, err := path.New("")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
 	switch command {
 	case "create":
-		err = runCreate(args)
+		err = runCreate(args, paths)
 	case "delete":
-		err = runDelete(args)
+		err = runDelete(args, paths)
 	case "json":
-		err = runJSON(args)
+		err = runJSON(args, paths)
 	case "query":
-		err = runQuery(args)
+		err = runQuery(args, paths)
 	case "refresh":
-		err = runRefresh(args)
+		err = runRefresh(args, paths)
 	case "help":
 		usage()
 	default:
@@ -58,7 +67,7 @@ func main() {
 		err = fmt.Errorf("unknown command: %s", command)
 	}
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }

@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/query"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
-func runQuery(args []string) error {
+func runQuery(args []string, paths *path.Paths) error {
 	flags := flag.NewFlagSet("query", flag.ExitOnError)
 
 	rare := flags.Bool(
@@ -83,7 +84,11 @@ func runQuery(args []string) error {
 	}
 
 	if *inAppearanceSet {
-		predicates = append(predicates, query.AppearanceSet())
+		as, err := appearanceset.New(paths.Appearances)
+		if err != nil {
+			return err
+		}
+		predicates = append(predicates, query.AppearanceSet(as))
 	}
 
 	if *class != "" {
@@ -104,11 +109,6 @@ func runQuery(args []string) error {
 
 	if *itemID != -1 {
 		predicates = append(predicates, query.ItemID(*itemID))
-	}
-
-	paths, err := path.New("")
-	if err != nil {
-		return err
 	}
 
 	wowItems, err := wowitem.New(paths.Items)

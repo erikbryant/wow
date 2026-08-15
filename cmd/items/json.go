@@ -10,12 +10,7 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
-func json(itemID int64) error {
-	paths, err := path.New("")
-	if err != nil {
-		return err
-	}
-
+func json(itemID int64, paths *path.Paths) error {
 	wowItems, err := wowitem.New(paths.Items)
 	if err != nil {
 		return err
@@ -31,7 +26,7 @@ func json(itemID int64) error {
 	return nil
 }
 
-func runJSON(args []string) error {
+func runJSON(args []string, paths *path.Paths) error {
 	flags := flag.NewFlagSet("json", flag.ExitOnError)
 
 	itemID := flags.Int64("id", -1, "Item ID to look up")
@@ -44,7 +39,7 @@ func runJSON(args []string) error {
 		return fmt.Errorf("json requires -id")
 	}
 
-	err := json(*itemID)
+	err := json(*itemID, paths)
 	if err != nil {
 		return err
 	}

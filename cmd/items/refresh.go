@@ -6,20 +6,13 @@ import (
 	"os"
 	"time"
 
-	"github.com/erikbryant/wow/internal/credentials"
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/path"
-	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 // refreshItem refreshes a single item
-func refreshItem(itemID int64) error {
-	paths, err := path.New("")
-	if err != nil {
-		return err
-	}
-
+func refreshItem(itemID int64, paths *path.Paths) error {
 	wowItems, err := wowitem.New(paths.Items)
 	if err != nil {
 		return err
@@ -45,15 +38,10 @@ func refreshItem(itemID int64) error {
 }
 
 // refreshAll refreshes persisted items older than a certain age
-func refreshAll(maxRefresh int) error {
+func refreshAll(maxRefresh int, paths *path.Paths) error {
 	maxAge := 24 * time.Hour * 7 // 1 week
 	needsRefresh := 0
 	refreshCount := 0
-
-	paths, err := path.New("")
-	if err != nil {
-		return err
-	}
 
 	wowItems, err := wowitem.New(paths.Items)
 	if err != nil {
@@ -85,7 +73,7 @@ func refreshAll(maxRefresh int) error {
 	return nil
 }
 
-func runRefresh(args []string) error {
+func runRefresh(args []string, paths *path.Paths) error {
 	flags := flag.NewFlagSet("refresh", flag.ExitOnError)
 
 	maxRefresh := flags.Int("max-refresh", 1000, "Maximum number of items to refresh")
@@ -95,33 +83,18 @@ func runRefresh(args []string) error {
 		return err
 	}
 
-	paths, err := path.New("")
-	if err != nil {
-		return err
-	}
-
-	clientID, err := credentials.ReadFromKeychain(paths.Secret, "clientID")
-	if err != nil {
-		return err
-	}
-
-	clientSecret, err := credentials.ReadFromKeychain(paths.Secret, "clientSecret")
-	if err != nil {
-		return err
-	}
-
-	err = wowapi.Authenticate(clientID, clientSecret)
+	err := authenticate(paths)
 	if err != nil {
 		return err
 	}
 
 	if *itemID == -1 {
-		err = refreshAll(*maxRefresh)
+		err = refreshAll(*maxRefresh, paths)
 		if err != nil {
 			return err
 		}
 	} else {
-		err = refreshItem(*itemID)
+		err = refreshItem(*itemID, paths)
 		if err != nil {
 			return err
 		}

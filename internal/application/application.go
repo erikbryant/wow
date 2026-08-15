@@ -26,6 +26,8 @@ type App struct {
 	Toys           *toy.Toy
 }
 
+// TODO: This is a duplicate of authenticate() in cmd/items/authenticate.go
+
 // authenticate authenticates this session against the WoW web APIs
 func (app *App) authenticate() error {
 	clientID, err := credentials.ReadFromKeychain(app.Paths.Secret, "clientID")

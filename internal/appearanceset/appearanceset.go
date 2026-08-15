@@ -7,35 +7,28 @@ import (
 )
 
 type AppearanceSets struct {
+	asaIDs *persist.Persistence[int64, bool]
 }
 
-var (
-	asaIDs *persist.Persistence[int64, bool]
-)
-
 func New(persistencePath string) (*AppearanceSets, error) {
-	if asaIDs == nil {
-		asaIDs = persist.New[int64, bool](persistencePath)
+	as := AppearanceSets{
+		asaIDs: persist.New[int64, bool](persistencePath),
 	}
 
-	if asaIDs.Loaded() {
-		return &AppearanceSets{}, nil
-	}
-
-	err := asaIDs.Load()
+	err := as.asaIDs.Load()
 	if err != nil {
 		return nil, fmt.Errorf("failed to load appearance sets: %w", err)
 	}
 
-	fmt.Printf("-- #Appearances known: %d\n", asaIDs.Len())
+	fmt.Printf("-- #Appearances known: %d\n", as.asaIDs.Len())
 
-	return &AppearanceSets{}, nil
+	return &as, nil
 }
 
 // Contains returns true if any of these appearance IDs are in an appearance set
 func (as *AppearanceSets) Contains(appearanceIDs []int64) bool {
 	for _, appearanceID := range appearanceIDs {
-		inSet, ok := asaIDs.Get(appearanceID)
+		inSet, ok := as.asaIDs.Get(appearanceID)
 		if !ok {
 			continue
 		}

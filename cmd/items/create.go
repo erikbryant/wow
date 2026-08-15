@@ -5,23 +5,17 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/erikbryant/wow/internal/credentials"
 	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/persist"
 	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
-func createItem() error {
-	paths, err := path.New("")
-	if err != nil {
-		return err
-	}
-
+func createItem(paths *path.Paths) error {
 	items := persist.New[int64, wowitem.Item](paths.Items + ".new")
 	items.SetDirty()
 
-	err = items.Save()
+	err := items.Save()
 	if err != nil {
 		return fmt.Errorf("failed to save items persist: %w", err)
 	}
@@ -32,8 +26,8 @@ func createItem() error {
 }
 
 // createAppearance creates a new appearance persistence and populates it
-func createAppearance() error {
-	paths, err := path.New("")
+func createAppearance(paths *path.Paths) error {
+	err := authenticate(paths)
 	if err != nil {
 		return err
 	}
@@ -71,7 +65,7 @@ func createAppearance() error {
 	return nil
 }
 
-func runCreate(args []string) error {
+func runCreate(args []string, paths *path.Paths) error {
 	flags := flag.NewFlagSet("create", flag.ExitOnError)
 
 	if err := flags.Parse(args); err != nil {
@@ -82,33 +76,14 @@ func runCreate(args []string) error {
 		usage()
 		return fmt.Errorf("must specify a persistence type")
 	}
+
 	persistence := args[0]
-
-	paths, err := path.New("")
-	if err != nil {
-		return err
-	}
-
-	clientID, err := credentials.ReadFromKeychain(paths.Secret, "clientID")
-	if err != nil {
-		return err
-	}
-
-	clientSecret, err := credentials.ReadFromKeychain(paths.Secret, "clientSecret")
-	if err != nil {
-		return err
-	}
-
-	err = wowapi.Authenticate(clientID, clientSecret)
-	if err != nil {
-		return err
-	}
 
 	switch persistence {
 	case "item":
-		return createItem()
+		return createItem(paths)
 	case "appearance":
-		return createAppearance()
+		return createAppearance(paths)
 	default:
 		usage()
 		return fmt.Errorf("unknown persistence type: %s", persistence)
