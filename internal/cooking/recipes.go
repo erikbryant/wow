@@ -36,39 +36,63 @@ func makeRecipe(r any) Recipe {
 	return recipe
 }
 
-func knownRecipes(realm, alt, tierName string) (map[int64]Recipe, error) {
+func getProfession(realm, alt, professionName string) (any, error) {
+	// Get all professions
 	result, err := wowapi.Professions(realm, alt)
 	if err != nil {
 		return nil, fmt.Errorf("no professions found for %s, %s, %v", realm, alt, result)
 	}
 
+	// Find the desired profession
 	s, _ := web.MsiValued(result, []string{"secondaries"}, nil)
 	for _, prof := range s.([]any) {
 		name, _ := web.MsiValued(prof, []string{"profession", "name"}, nil)
-		if name != "Cooking" {
-			continue
-		}
-		tiers, _ := web.MsiValued(prof, []string{"tiers"}, nil)
-		for _, tier := range tiers.([]any) {
-			t, _ := web.MsiValued(tier, []string{"tier", "name"}, nil)
-			if t != tierName {
-				continue
-			}
-			kr, _ := web.MsiValued(tier, []string{"known_recipes"}, nil)
-			recipes := map[int64]Recipe{}
-			for _, k := range kr.([]any) {
-				recipe := makeRecipe(k)
-				if recipe.name == "Captain Rumsey's Lager" {
-					// This is a quest reward or something; won't be found in the AH
-					continue
-				}
-				recipes[recipe.id] = recipe
-			}
-			return recipes, nil
+		if name == professionName {
+			return prof, nil
 		}
 	}
 
-	return nil, fmt.Errorf("should not have gotten here")
+	var zero any
+	return zero, fmt.Errorf("profession not found %s, %s, %s", realm, alt, professionName)
+}
+
+// getTier returns the desired tier (Classic, Outland, etc.)
+func getTier(prof any, tierName string) (any, error) {
+	tiers, _ := web.MsiValued(prof, []string{"tiers"}, nil)
+	for _, tier := range tiers.([]any) {
+		t, _ := web.MsiValued(tier, []string{"tier", "name"}, nil)
+		if t == tierName {
+			return tier, nil
+		}
+	}
+
+	var zero any
+	return zero, fmt.Errorf("tier not found: %s", tierName)
+}
+
+func knownClassicCookingRecipes(realm, alt string) (map[int64]Recipe, error) {
+	prof, err := getProfession(realm, alt, "Cooking")
+	if err != nil {
+		return nil, err
+	}
+
+	tier, err := getTier(prof, "Classic Cooking")
+	if err != nil {
+		return nil, err
+	}
+
+	kr, _ := web.MsiValued(tier, []string{"known_recipes"}, nil)
+	recipes := map[int64]Recipe{}
+	for _, k := range kr.([]any) {
+		recipe := makeRecipe(k)
+		if recipe.name == "Captain Rumsey's Lager" {
+			// This is a quest reward or something; won't be found in the AH
+			continue
+		}
+		recipes[recipe.id] = recipe
+	}
+
+	return recipes, nil
 }
 
 func key(alt userconfig.Alt) string {
@@ -81,7 +105,7 @@ func scanAlts() (map[int64]Recipe, map[string]map[int64]Recipe, error) {
 
 	// Find known recipes for each alt
 	for _, alt := range userconfig.Alts {
-		kr, err := knownRecipes(alt.Realm, alt.Name, "Classic Cooking")
+		kr, err := knownClassicCookingRecipes(alt.Realm, alt.Name)
 		if err != nil {
 			return nil, nil, err
 		}
