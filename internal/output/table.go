@@ -8,62 +8,67 @@ import (
 
 	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/common"
-	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 // Column contains information to retrieve each column of output
 type Column struct {
 	header string
-	value  func(wowitem.Item) string
+	value  func(wowitem.Item, *appearanceset.AppearanceSets) string
 }
-
-var (
-	as *appearanceset.AppearanceSets
-)
 
 var columns = []Column{
 	{
 		header: "ID",
-		value:  func(item wowitem.Item) string { return fmt.Sprintf("%d", item.ID()) },
+		value:  func(item wowitem.Item, as *appearanceset.AppearanceSets) string { return fmt.Sprintf("%d", item.ID()) },
 	},
 	{
 		header: "Equips",
-		value:  func(item wowitem.Item) string { return fmt.Sprintf("%t", item.Equippable()) },
+		value: func(item wowitem.Item, as *appearanceset.AppearanceSets) string {
+			return fmt.Sprintf("%t", item.Equippable())
+		},
 	},
 	{
 		header: "Stacks",
-		value:  func(item wowitem.Item) string { return fmt.Sprintf("%t", item.Stackable()) },
+		value: func(item wowitem.Item, as *appearanceset.AppearanceSets) string {
+			return fmt.Sprintf("%t", item.Stackable())
+		},
 	},
 	{
 		header: "App Set",
-		value: func(item wowitem.Item) string {
+		value: func(item wowitem.Item, as *appearanceset.AppearanceSets) string {
 			return fmt.Sprintf("%t", as.Contains(item.Appearances()))
 		},
 	},
 	{
 		header: "Sell Price",
-		value:  func(item wowitem.Item) string { return common.Gold(item.SellPriceAdvertised()) },
+		value: func(item wowitem.Item, as *appearanceset.AppearanceSets) string {
+			return common.Gold(item.SellPriceAdvertised())
+		},
 	},
 	{
 		header: "iLvl",
-		value:  func(item wowitem.Item) string { return fmt.Sprintf("%d", item.ItemLevel()) },
+		value: func(item wowitem.Item, as *appearanceset.AppearanceSets) string {
+			return fmt.Sprintf("%d", item.ItemLevel())
+		},
 	},
 	{
 		header: "Class",
-		value:  func(item wowitem.Item) string { return item.ItemClassName() },
+		value:  func(item wowitem.Item, as *appearanceset.AppearanceSets) string { return item.ItemClassName() },
 	},
 	{
 		header: "Quality",
-		value:  func(item wowitem.Item) string { return item.Quality() },
+		value:  func(item wowitem.Item, as *appearanceset.AppearanceSets) string { return item.Quality() },
 	},
 	{
 		header: "Updated",
-		value:  func(item wowitem.Item) string { return item.Updated().Format("2006-01-02") },
+		value: func(item wowitem.Item, as *appearanceset.AppearanceSets) string {
+			return item.Updated().Format("2006-01-02")
+		},
 	},
 	{
 		header: "Name",
-		value:  func(item wowitem.Item) string { return item.Name() },
+		value:  func(item wowitem.Item, as *appearanceset.AppearanceSets) string { return item.Name() },
 	},
 }
 
@@ -79,29 +84,18 @@ func headers() (string, string) {
 	return strings.Join(cols, "\t"), strings.Join(seps, "\t")
 }
 
-func row(item wowitem.Item) string {
+func row(item wowitem.Item, as *appearanceset.AppearanceSets) string {
 	fields := []string{}
 
 	for _, col := range columns {
-		fields = append(fields, col.value(item))
+		fields = append(fields, col.value(item, as))
 	}
 
 	return strings.Join(fields, "\t")
 }
 
 // Table writes items as a human-readable table.
-func Table(w io.Writer, items []wowitem.Item) {
-	if as == nil {
-		paths, err := path.New("")
-		if err != nil {
-			panic(err)
-		}
-		as, err = appearanceset.New(paths.Appearances)
-		if err != nil {
-			panic(err)
-		}
-	}
-
+func Table(w io.Writer, items []wowitem.Item, as *appearanceset.AppearanceSets) {
 	writer := tabwriter.NewWriter(
 		w,
 		0,
@@ -117,7 +111,7 @@ func Table(w io.Writer, items []wowitem.Item) {
 	fmt.Fprintln(writer, separator)
 
 	for _, item := range items {
-		fmt.Fprintf(writer, "%s\n", row(item))
+		fmt.Fprintf(writer, "%s\n", row(item, as))
 	}
 
 	writer.Flush()

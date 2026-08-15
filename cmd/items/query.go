@@ -73,6 +73,11 @@ func runQuery(args []string, paths *path.Paths) error {
 		return err
 	}
 
+	as, err := appearanceset.New(paths.Appearances)
+	if err != nil {
+		return err
+	}
+
 	var predicates []query.Predicate
 
 	if *rare {
@@ -84,10 +89,6 @@ func runQuery(args []string, paths *path.Paths) error {
 	}
 
 	if *inAppearanceSet {
-		as, err := appearanceset.New(paths.Appearances)
-		if err != nil {
-			return err
-		}
 		predicates = append(predicates, query.AppearanceSet(as))
 	}
 
@@ -129,7 +130,7 @@ func runQuery(args []string, paths *path.Paths) error {
 		return fmt.Errorf("sort order must be one of {id, name} got %s", *sortField)
 	}
 
-	output.Table(os.Stdout, results)
+	output.Table(os.Stdout, results, as)
 
 	return nil
 }

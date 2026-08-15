@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/wowitem"
@@ -32,7 +33,12 @@ func refreshItem(itemID int64, paths *path.Paths) error {
 		return fmt.Errorf("could not retrieve itemID %d: %w", itemID, errGetLive)
 	}
 
-	output.Table(os.Stdout, []wowitem.Item{iNew})
+	as, err := appearanceset.New(paths.Appearances)
+	if err != nil {
+		return err
+	}
+
+	output.Table(os.Stdout, []wowitem.Item{iNew}, as)
 
 	return nil
 }
