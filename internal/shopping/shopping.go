@@ -287,7 +287,7 @@ func generateOutput(app *application.App, recommendations []Recommendations) err
 	}
 
 	// Prices file for the WoW 'wowMerchant' addon to consume
-	err = os.WriteFile(app.Paths.PriceCache, []byte(app.WowItem.Lua()), 0600)
+	err = os.WriteFile(app.Paths.PriceCache, []byte(output.Lua(app.WowItem)), 0600)
 	if err != nil {
 		return err
 	}
