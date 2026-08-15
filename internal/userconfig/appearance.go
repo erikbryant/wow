@@ -9,11 +9,10 @@ import (
 )
 
 type Appearances struct {
+	owned map[int64]bool
 }
 
 var (
-	owned map[int64]bool
-
 	// flakyIDs WoW says I own them, but this app thinks I don't
 	flakyIDs = map[int64]struct{}{
 		// These are not real appearances; they generate false positives
@@ -148,24 +147,24 @@ func getOwned() (map[int64]bool, error) {
 }
 
 func NewAppearances() (*Appearances, error) {
+	ao := Appearances{}
 	var err error
 
-	if owned == nil {
-		owned, err = getOwned()
-		if err != nil {
-			return nil, err
-		}
-		fmt.Printf("-- #Appearances owned: %d\n", len(owned))
+	ao.owned, err = getOwned()
+	if err != nil {
+		return nil, err
 	}
+
+	fmt.Printf("-- #Appearances owned: %d\n", len(ao.owned))
 
 	// Make sure I don't already own any of the items I am filtering.
 	for id, _ := range flakyIDs {
-		if owned[id] {
+		if ao.owned[id] {
 			fmt.Printf("You already own this, remove it from flakyIDs: %d\n", id)
 		}
 	}
 
-	return &Appearances{}, nil
+	return &ao, nil
 }
 
 // needID returns true if I need this appearance ID
@@ -174,10 +173,12 @@ func (ao *Appearances) needID(id int64) bool {
 	if ok {
 		return false
 	}
-	if !owned[id] {
+
+	if !ao.owned[id] {
 		fmt.Println("NEED APPEARANCE ID: ", id)
 	}
-	return !owned[id]
+
+	return !ao.owned[id]
 }
 
 // Need returns true if I need any of these appearance ids
