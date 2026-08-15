@@ -18,21 +18,13 @@ const (
 	PetCageItemID = int64(82800)
 )
 
-var (
-	bp = &BattlePet{}
-)
-
 // getPetNames downloads all pet names from the WoW web API
-func getPetNames() error {
-	if bp.names != nil {
-		return nil
-	}
-
+func getPetNames() (map[int64]string, error) {
 	names := map[int64]string{}
 
 	allPets, err := wowapi.Pets()
 	if err != nil {
-		return fmt.Errorf("unable to obtain battle pet names: %w", err)
+		return nil, fmt.Errorf("unable to obtain battle pet names: %w", err)
 	}
 
 	for _, petRaw := range allPets {
@@ -41,22 +33,16 @@ func getPetNames() error {
 		names[id] = pet["name"].(string)
 	}
 
-	bp.names = names
-
-	return nil
+	return names, nil
 }
 
 // getPetsOwned downloads the list of pets I own from the WoW web API
-func getPetsOwned() error {
-	if bp.owned != nil {
-		return nil
-	}
-
+func getPetsOwned() (map[int64]int64, error) {
 	owned := map[int64]int64{}
 
 	pets, err := wowapi.CollectionsPets()
 	if err != nil {
-		return fmt.Errorf("unable to obtain battle pets owned: %w", err)
+		return nil, fmt.Errorf("unable to obtain battle pets owned: %w", err)
 	}
 
 	for _, petRaw := range pets {
@@ -64,27 +50,26 @@ func getPetsOwned() error {
 
 		species, ok := pet["species"].(map[string]any)
 		if !ok {
-			return fmt.Errorf("unable to obtain battle pet species")
+			return nil, fmt.Errorf("unable to obtain battle pet species")
 		}
 		speciesID := web.ToInt64(species["id"])
 
 		owned[speciesID]++
 	}
 
-	bp.owned = owned
-
-	return nil
+	return owned, nil
 }
 
 func New() (*BattlePet, error) {
 	var err error
+	bp := BattlePet{}
 
-	err = getPetNames()
+	bp.names, err = getPetNames()
 	if err != nil {
 		return nil, err
 	}
 
-	err = getPetsOwned()
+	bp.owned, err = getPetsOwned()
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +77,7 @@ func New() (*BattlePet, error) {
 	// Technically, this is _unique_ battle pets owned, but I don't keep dupes so it still works
 	fmt.Printf("-- #Battle pets owned: %d/%d\n", len(bp.owned), len(bp.names))
 
-	return bp, nil
+	return &bp, nil
 }
 
 // PetSpell returns true and the corresponding pet ID if the item is a pet summoning spell
