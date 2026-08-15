@@ -198,9 +198,6 @@ func (i Item) Quality() string {
 
 // Stale returns whether the item is older than a given number of days
 func (i Item) Stale(age time.Duration) bool {
-	if age == 0 {
-		return false
-	}
 	return time.Since(i.Updated()) > age
 }
 
