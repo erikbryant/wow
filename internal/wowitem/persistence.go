@@ -3,6 +3,7 @@ package wowitem
 import (
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 
 	"github.com/erikbryant/wow/internal/persist"
@@ -71,4 +72,10 @@ func (p *Persistence) Get(id int64) (Item, error) {
 	}
 
 	return p.GetLive(id)
+}
+
+func (p *Persistence) Keys() []int64 {
+	keys := p.Persistence.Keys()
+	slices.Sort(keys)
+	return keys
 }
