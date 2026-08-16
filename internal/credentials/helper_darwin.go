@@ -74,7 +74,8 @@ var (
 	ErrorUserCanceled = Error(C.errSecUserCanceled)
 )
 
-func (k Error) Error() (msg string) {
+func (k Error) Error() string {
+	var msg string
 	// SecCopyErrorMessageString is only available on OSX, so derive manually.
 	// Messages derived from `$ security error $errcode`.
 	switch k {
