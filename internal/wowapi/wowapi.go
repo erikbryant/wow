@@ -714,36 +714,6 @@ func jsonInt64(value any) (int64, error) {
 // client credentials and do not need to carry a *Client around.
 // -----------------------------------------------------------------------------
 
-// ConnectedRealm returns all realms connected to the given realm ID.
-func ConnectedRealm(realmID string) (map[string]any, error) {
-	client, err := NewClient()
-	if err != nil {
-		return nil, err
-	}
-
-	return client.ConnectedRealm(realmID)
-}
-
-// ConnectedRealmSearch returns the set of all connected realms.
-func ConnectedRealmSearch() (map[string]any, error) {
-	client, err := NewClient()
-	if err != nil {
-		return nil, err
-	}
-
-	return client.ConnectedRealmSearch()
-}
-
-// ConnectedRealmID returns the connected realm ID of the given realm.
-func ConnectedRealmID(realm string) (string, error) {
-	client, err := NewClient()
-	if err != nil {
-		return "", err
-	}
-
-	return client.ConnectedRealmID(realm)
-}
-
 // Auctions returns the current auctions from the auction house.
 func Auctions(realm string) ([]any, error) {
 	client, err := NewClient()
@@ -814,16 +784,6 @@ func CollectionsToys() ([]any, error) {
 	return client.CollectionsToys()
 }
 
-// ItemAppearanceSetsIndex returns IDs of each appearance set.
-func ItemAppearanceSetsIndex() ([]any, error) {
-	client, err := NewClient()
-	if err != nil {
-		return nil, err
-	}
-
-	return client.ItemAppearanceSetsIndex()
-}
-
 // ItemAppearanceSetsIndexIDs returns the ID and name of each appearance set.
 func ItemAppearanceSetsIndexIDs() (map[int64]string, error) {
 	client, err := NewClient()
@@ -832,16 +792,6 @@ func ItemAppearanceSetsIndexIDs() (map[int64]string, error) {
 	}
 
 	return client.ItemAppearanceSetsIndexIDs()
-}
-
-// ItemAppearanceSet returns the appearance IDs of the given appearance set.
-func ItemAppearanceSet(appearanceID int64) ([]any, error) {
-	client, err := NewClient()
-	if err != nil {
-		return nil, err
-	}
-
-	return client.ItemAppearanceSet(appearanceID)
 }
 
 // ItemAppearanceSetIDs returns the appearance IDs that comprise the given
