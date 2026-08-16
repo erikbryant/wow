@@ -2,6 +2,7 @@ package persist
 
 import (
 	"encoding/gob"
+	"encoding/json"
 	"fmt"
 	"os"
 	"sync"
@@ -20,6 +21,7 @@ func init() {
 
 	// Some stored data contains lists.
 	gob.Register([]any{})
+	gob.Register(json.Number(""))
 }
 
 // New creates a new Persistence backed by persistencePath + ".gob".

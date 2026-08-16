@@ -1,8 +1,10 @@
 package common
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -40,4 +42,40 @@ func QualityID(qualityName string) int64 {
 	}
 
 	return qID
+}
+
+// JSONString converts a JSON-decoded value to a string.
+func JSONString(value any) string {
+	switch value := value.(type) {
+	case string:
+		return value
+	case json.Number:
+		return value.String()
+	case bool:
+		return strconv.FormatBool(value)
+	case nil:
+		return ""
+	default:
+		return fmt.Sprint(value)
+	}
+}
+
+// JSONInt64 converts a JSON-decoded value to int64 or returns an error.
+func JSONInt64(value any) (int64, error) {
+	n, ok := value.(json.Number)
+	if !ok {
+		return 0, fmt.Errorf("expected JSON number, got %T", value)
+	}
+
+	return n.Int64()
+}
+
+// JSONInt64Panic converts a JSON-decoded value to int64 or pannics.
+func JSONInt64Panic(value any) int64 {
+	n, err := JSONInt64(value)
+	if err != nil {
+		panic(err)
+	}
+
+	return n
 }

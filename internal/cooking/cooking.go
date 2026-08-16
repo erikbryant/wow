@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/userconfig"
 	"github.com/erikbryant/wow/internal/wowapi"
 )
@@ -32,7 +33,7 @@ func makeRecipe(r any) Recipe {
 	name, _ := web.MsiValued(r, []string{"name"}, nil)
 	recipe.name = name.(string)
 	id, _ := web.MsiValued(r, []string{"id"}, nil)
-	recipe.id = int64(id.(float64))
+	recipe.id = common.JSONInt64Panic(id)
 
 	return recipe
 }

@@ -1,13 +1,20 @@
 package auction
 
 import (
+	"encoding/json"
+	"strconv"
 	"testing"
 
 	"github.com/erikbryant/wow/internal/battlepet"
 )
 
+func jsonNumber(n int64) json.Number {
+	s := strconv.FormatInt(n, 10)
+	return json.Number(s)
+}
+
 func auction(id, item, buyout, qty int64) map[string]any {
-	return map[string]any{"id": float64(id), "item": map[string]any{"id": float64(item)}, "buyout": float64(buyout), "quantity": float64(qty)}
+	return map[string]any{"id": jsonNumber(id), "item": map[string]any{"id": jsonNumber(item)}, "buyout": jsonNumber(buyout), "quantity": jsonNumber(qty)}
 }
 
 func TestNewAuction(t *testing.T) {
@@ -19,7 +26,7 @@ func TestNewAuction(t *testing.T) {
 }
 
 func TestNewAuctionCommodity(t *testing.T) {
-	a := map[string]any{"id": float64(1), "item": map[string]any{"id": float64(2)}, "unit_price": float64(99), "quantity": float64(7)}
+	a := map[string]any{"id": jsonNumber(1), "item": map[string]any{"id": jsonNumber(2)}, "unit_price": jsonNumber(99), "quantity": jsonNumber(7)}
 	got := newAuction(a)
 	if got.Buyout != 99 || got.Quantity != 7 {
 		t.Fatalf("%+v", got)
@@ -28,9 +35,9 @@ func TestNewAuctionCommodity(t *testing.T) {
 
 func TestNewAuctionPet(t *testing.T) {
 	a := auction(1, battlepet.PetCageItemID, 1000, 1)
-	a["item"].(map[string]any)["pet_level"] = float64(25)
-	a["item"].(map[string]any)["pet_quality_id"] = float64(3)
-	a["item"].(map[string]any)["pet_species_id"] = float64(1446)
+	a["item"].(map[string]any)["pet_level"] = jsonNumber(25)
+	a["item"].(map[string]any)["pet_quality_id"] = jsonNumber(3)
+	a["item"].(map[string]any)["pet_species_id"] = jsonNumber(1446)
 	got := newAuction(a)
 	if got.Pet.Level != 25 || got.Pet.QualityID != 3 || got.Pet.SpeciesID != 1446 {
 		t.Fatalf("%+v", got.Pet)
@@ -39,9 +46,9 @@ func TestNewAuctionPet(t *testing.T) {
 
 func TestBuyoutMissing(t *testing.T) {
 	for _, data := range []map[string]any{
-		{"id": float64(1), "item": map[string]any{"id": float64(2)}, "quantity": float64(1)},
-		{"id": float64(1), "item": map[string]any{"id": float64(2)}, "quantity": float64(1), "buyout": nil},
-		{"id": float64(1), "item": map[string]any{"id": float64(2)}, "quantity": float64(1), "buyout": float64(0), "unit_price": float64(17)},
+		{"id": jsonNumber(1), "item": map[string]any{"id": jsonNumber(2)}, "quantity": jsonNumber(1)},
+		{"id": jsonNumber(1), "item": map[string]any{"id": jsonNumber(2)}, "quantity": jsonNumber(1), "buyout": nil},
+		{"id": jsonNumber(1), "item": map[string]any{"id": jsonNumber(2)}, "quantity": jsonNumber(1), "buyout": jsonNumber(0), "unit_price": jsonNumber(17)},
 	} {
 		if got := newAuction(data).Buyout; got != 0 && got != 17 {
 			t.Errorf("buyout=%d", got)

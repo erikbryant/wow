@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
@@ -25,7 +26,7 @@ func getNames() (map[string]int64, error) {
 
 	for _, toyRaw := range allToys {
 		toy := toyRaw.(map[string]any)
-		id := web.ToInt64(toy["id"])
+		id := common.JSONInt64Panic(toy["id"])
 		toyNames[toy["name"].(string)] = id
 	}
 
@@ -44,7 +45,7 @@ func getOwned() (map[int64]bool, error) {
 	for _, toyRaw := range toysOwned {
 		toy := toyRaw.(map[string]any)
 		id, _ := web.MsiValued(toy, []string{"toy", "id"}, 0)
-		myToys[web.ToInt64(id)] = true
+		myToys[common.JSONInt64Panic(id)] = true
 	}
 
 	return myToys, nil

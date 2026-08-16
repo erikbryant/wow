@@ -1,12 +1,20 @@
 package query
 
 import (
-	"github.com/erikbryant/wow/internal/wowitem"
+	"encoding/json"
+	"strconv"
 	"testing"
+
+	"github.com/erikbryant/wow/internal/wowitem"
 )
 
+func jsonNumber(n int64) json.Number {
+	s := strconv.FormatInt(n, 10)
+	return json.Number(s)
+}
+
 func qi(id int64, name, quality, class string, level int64) wowitem.Item {
-	return wowitem.Item{XID: id, XItem: map[string]any{"id": float64(id), "name": name, "level": float64(level), "is_stackable": false, "item_class": map[string]any{"name": class}, "preview_item": map[string]any{"quality": map[string]any{"name": quality}}}}
+	return wowitem.Item{XID: id, XItem: map[string]any{"id": jsonNumber(id), "name": name, "level": jsonNumber(level), "is_stackable": false, "item_class": map[string]any{"name": class}, "preview_item": map[string]any{"quality": map[string]any{"name": quality}}}}
 }
 
 func TestFind(t *testing.T) {

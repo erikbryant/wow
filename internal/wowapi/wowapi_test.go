@@ -196,8 +196,13 @@ func TestConnectedRealm(t *testing.T) {
 		t.Fatalf("ConnectedRealm() error = %v", err)
 	}
 
-	if result["id"].(float64) != 123 {
-		t.Errorf("id = %v, want 123", result["id"])
+	id, err := result["id"].(json.Number).Int64()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if id != 123 {
+		t.Errorf("id = %v, want 123", id)
 	}
 }
 
@@ -703,90 +708,6 @@ func TestRealmToSlug(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("realmToSlug(%q) = %q, want %q",
 					tt.realm, got, tt.want)
-			}
-		})
-	}
-}
-
-func TestJSONString(t *testing.T) {
-	tests := []struct {
-		name  string
-		value any
-		want  string
-	}{
-		{
-			name:  "string",
-			value: "123",
-			want:  "123",
-		},
-		{
-			name:  "float",
-			value: float64(123),
-			want:  "123",
-		},
-		{
-			name:  "json number",
-			value: json.Number("456"),
-			want:  "456",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := jsonString(tt.value)
-			if err != nil {
-				t.Fatalf("jsonString() error = %v", err)
-			}
-
-			if got != tt.want {
-				t.Errorf("jsonString() = %q, want %q", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestJSONInt64(t *testing.T) {
-	tests := []struct {
-		name  string
-		value any
-		want  int64
-	}{
-		{
-			name:  "float",
-			value: float64(123),
-			want:  123,
-		},
-		{
-			name:  "int",
-			value: int(456),
-			want:  456,
-		},
-		{
-			name:  "int64",
-			value: int64(789),
-			want:  789,
-		},
-		{
-			name:  "json number",
-			value: json.Number("123456789"),
-			want:  123456789,
-		},
-		{
-			name:  "string",
-			value: "987654321",
-			want:  987654321,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := jsonInt64(tt.value)
-			if err != nil {
-				t.Fatalf("jsonInt64() error = %v", err)
-			}
-
-			if got != tt.want {
-				t.Errorf("jsonInt64() = %d, want %d", got, tt.want)
 			}
 		})
 	}

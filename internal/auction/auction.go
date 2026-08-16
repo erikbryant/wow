@@ -1,11 +1,13 @@
 package auction
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/battlepet"
+	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/wowapi"
 )
 
@@ -40,7 +42,7 @@ func auctionID(msi any) int64 {
 	if err != nil {
 		panic(fmt.Errorf("auction id missing from %v: %w", msi, err))
 	}
-	return web.ToInt64(value)
+	return common.JSONInt64Panic(value)
 }
 
 func itemID(msi any) int64 {
@@ -48,19 +50,19 @@ func itemID(msi any) int64 {
 	if err != nil {
 		panic(fmt.Errorf("item missing from %v: %w", msi, err))
 	}
-	return web.ToInt64(value)
+	return common.JSONInt64Panic(value)
 }
 
 func buyout(msi any) int64 {
 	value, err := web.MsiValue(msi, []string{"buyout"})
 	if value == nil || err != nil {
-		value, err = web.MsiValued(msi, []string{"unit_price"}, 0)
+		value, err = web.MsiValued(msi, []string{"unit_price"}, json.Number("0"))
 		if err != nil {
 			// Some auctions have neither 'buyout' nor 'unit_price'. Strange, but true.
 			return 0
 		}
 	}
-	return web.ToInt64(value)
+	return common.JSONInt64Panic(value)
 }
 
 func quantity(msi any) int64 {
@@ -68,7 +70,7 @@ func quantity(msi any) int64 {
 	if err != nil {
 		panic(fmt.Errorf("quantity missing from %v: %w", msi, err))
 	}
-	return web.ToInt64(value)
+	return common.JSONInt64Panic(value)
 }
 
 func petLevel(msi any) int64 {
@@ -76,7 +78,7 @@ func petLevel(msi any) int64 {
 	if err != nil {
 		panic(fmt.Errorf("pet_level missing from %v: %w", msi, err))
 	}
-	return web.ToInt64(value)
+	return common.JSONInt64Panic(value)
 }
 
 func petQualityID(msi any) int64 {
@@ -84,7 +86,7 @@ func petQualityID(msi any) int64 {
 	if err != nil {
 		panic(fmt.Errorf("pet_quality_id missing from %v: %w", msi, err))
 	}
-	return web.ToInt64(value)
+	return common.JSONInt64Panic(value)
 }
 
 func petSpeciesID(msi any) int64 {
@@ -92,7 +94,7 @@ func petSpeciesID(msi any) int64 {
 	if err != nil {
 		panic(fmt.Errorf("pet_species_id missing from %v: %w", msi, err))
 	}
-	return web.ToInt64(value)
+	return common.JSONInt64Panic(value)
 }
 
 // newAuction converts a single auction JSON string into a struct that is much easier to work with

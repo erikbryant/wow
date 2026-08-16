@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/internal/common"
 )
 
 // Item holds values about a WoW item
@@ -43,7 +44,7 @@ var equipSlotTypes = map[string]struct{}{
 // NewItem returns an Item populated with wowData
 func NewItem(wowData map[string]any) Item {
 	return Item{
-		XID:      web.ToInt64(wowData["id"]),
+		XID:      common.JSONInt64Panic(wowData["id"]),
 		XItem:    wowData,
 		XUpdated: time.Now(),
 	}
@@ -88,7 +89,7 @@ func (i Item) ItemLevel() int64 {
 	if err != nil {
 		panic(fmt.Errorf("level missing from %v: %w", i.XItem, err))
 	}
-	return web.ToInt64(v)
+	return common.JSONInt64Panic(v)
 }
 
 // VariableItemLevel returns true if the item can be enhanced, changing its ilevel
@@ -159,7 +160,7 @@ func (i Item) previewPrice() (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return web.ToInt64(v), nil
+	return common.JSONInt64Panic(v), nil
 }
 
 // SellPriceAdvertised returns the vendor sell price listed in the JSON
@@ -188,12 +189,12 @@ func (i Item) Updated() time.Time {
 
 func (i Item) Requirements() string {
 	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "requirements", "skill", "display_string"}, "")
-	return web.ToString(v)
+	return common.JSONString(v)
 }
 
 func (i Item) Quality() string {
 	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "quality", "name"}, "")
-	return web.ToString(v)
+	return common.JSONString(v)
 }
 
 // Stale returns whether the item is older than a given number of days
@@ -204,7 +205,7 @@ func (i Item) Stale(age time.Duration) bool {
 // Toy returns true if this item is a toy
 func (i Item) Toy() bool {
 	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "toy"}, "")
-	return web.ToString(v) == "Toy"
+	return common.JSONString(v) == "Toy"
 }
 
 // Appearances returns the appearance IDs this item provides
@@ -220,7 +221,7 @@ func (i Item) Appearances() []int64 {
 	appearances := v.([]any)
 	for _, appearance := range appearances {
 		id := appearance.(map[string]any)["id"]
-		appearanceIDs = append(appearanceIDs, web.ToInt64(id))
+		appearanceIDs = append(appearanceIDs, common.JSONInt64Panic(id))
 	}
 
 	return appearanceIDs

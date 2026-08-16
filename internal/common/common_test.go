@@ -1,6 +1,8 @@
 package common
 
 import (
+	"encoding/json"
+	"math"
 	"testing"
 )
 
@@ -122,5 +124,134 @@ func TestQualityIDCaseInsensitive(t *testing.T) {
 func TestQualityIDUnknown(t *testing.T) {
 	if got := QualityID("Banana"); got != -1 {
 		t.Fatalf("QualityID returned %d, want -1", got)
+	}
+}
+
+func TestJSONString(t *testing.T) {
+	tests := []struct {
+		name  string
+		value any
+		want  string
+	}{
+		{
+			name:  "string",
+			value: "123",
+			want:  "123",
+		},
+		{
+			name:  "float",
+			value: float64(123),
+			want:  "123",
+		},
+		{
+			name:  "json number",
+			value: json.Number("456"),
+			want:  "456",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := JSONString(tt.value)
+			if got != tt.want {
+				t.Errorf("jsonString() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestJSONInt64(t *testing.T) {
+	tests := []struct {
+		name    string
+		value   any
+		want    int64
+		wantErr bool
+	}{
+		{
+			name:  "positive integer",
+			value: json.Number("123"),
+			want:  123,
+		},
+		{
+			name:  "negative integer",
+			value: json.Number("-123"),
+			want:  -123,
+		},
+		{
+			name:  "zero",
+			value: json.Number("0"),
+			want:  0,
+		},
+		{
+			name:  "max int64",
+			value: json.Number("9223372036854775807"),
+			want:  math.MaxInt64,
+		},
+		{
+			name:    "above max int64",
+			value:   json.Number("9223372036854775808"),
+			wantErr: true,
+		},
+		{
+			name:    "below min int64",
+			value:   json.Number("-9223372036854775809"),
+			wantErr: true,
+		},
+		{
+			name:    "fractional number",
+			value:   json.Number("123.45"),
+			wantErr: true,
+		},
+		{
+			name:    "string",
+			value:   "123",
+			wantErr: true,
+		},
+		{
+			name:    "float64",
+			value:   float64(123),
+			wantErr: true,
+		},
+		{
+			name:    "bool",
+			value:   true,
+			wantErr: true,
+		},
+		{
+			name:    "nil",
+			value:   nil,
+			wantErr: true,
+		},
+		{
+			name:    "object",
+			value:   map[string]any{"id": json.Number("123")},
+			wantErr: true,
+		},
+		{
+			name:    "array",
+			value:   []any{json.Number("123")},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := JSONInt64(tt.value)
+
+			if tt.wantErr {
+				if err == nil {
+					t.Fatalf("jsonInt64(%v) returned %d, want error", tt.value, got)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("jsonInt64(%v) returned unexpected error: %v", tt.value, err)
+			}
+
+			if got != tt.want {
+				t.Errorf("jsonInt64(%v) = %d, want %d", tt.value, got, tt.want)
+			}
+		})
 	}
 }

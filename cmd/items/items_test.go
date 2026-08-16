@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"os"
 	"strings"
@@ -126,9 +127,9 @@ func TestRunCreateRequiresType(t *testing.T) {
 func TestDeleteItem(t *testing.T) {
 	paths := testPaths(t)
 	item := wowitem.NewItem(map[string]any{
-		"id":           int64(123),
+		"id":           json.Number("123"),
 		"name":         "Test Item",
-		"level":        int64(10),
+		"level":        json.Number("10"),
 		"is_stackable": false,
 		"item_class":   map[string]any{"name": "Armor"},
 	})
@@ -164,16 +165,16 @@ func TestRunDeleteRequiresID(t *testing.T) {
 func TestJSON(t *testing.T) {
 	paths := testPaths(t)
 	item := wowitem.NewItem(map[string]any{
-		"id":           int64(123),
+		"id":           json.Number("123"),
 		"name":         "Test Item",
-		"level":        int64(10),
+		"level":        json.Number("10"),
 		"is_stackable": false,
 		"item_class":   map[string]any{"name": "Armor"},
 	})
 	saveItems(t, paths.Items, item)
 
 	output := captureStdout(t, func() {
-		if err := json(item.ID(), paths); err != nil {
+		if err := asJSON(item.ID(), paths); err != nil {
 			t.Fatalf("json() error = %v", err)
 		}
 	})
@@ -199,17 +200,17 @@ func TestRunQueryByNameAndSort(t *testing.T) {
 
 	items := []wowitem.Item{
 		wowitem.NewItem(map[string]any{
-			"id":           int64(200),
+			"id":           json.Number("200"),
 			"name":         "Alpha Sword",
-			"level":        int64(10),
+			"level":        json.Number("10"),
 			"is_stackable": false,
 			"item_class":   map[string]any{"name": "Weapon"},
 			"preview_item": map[string]any{"quality": map[string]any{"name": "Rare"}},
 		}),
 		wowitem.NewItem(map[string]any{
-			"id":           int64(300),
+			"id":           json.Number("300"),
 			"name":         "Beta Sword",
-			"level":        int64(20),
+			"level":        json.Number("20"),
 			"is_stackable": false,
 			"item_class":   map[string]any{"name": "Weapon"},
 			"preview_item": map[string]any{"quality": map[string]any{"name": "Epic"}},

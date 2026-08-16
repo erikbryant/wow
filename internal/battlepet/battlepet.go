@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
@@ -29,7 +29,7 @@ func getPetNames() (map[int64]string, error) {
 
 	for _, petRaw := range allPets {
 		pet := petRaw.(map[string]any)
-		id := web.ToInt64(pet["id"])
+		id := common.JSONInt64Panic(pet["id"])
 		names[id] = pet["name"].(string)
 	}
 
@@ -52,7 +52,7 @@ func getPetsOwned() (map[int64]int64, error) {
 		if !ok {
 			return nil, fmt.Errorf("unable to obtain battle pet species")
 		}
-		speciesID := web.ToInt64(species["id"])
+		speciesID := common.JSONInt64Panic(species["id"])
 
 		owned[speciesID]++
 	}

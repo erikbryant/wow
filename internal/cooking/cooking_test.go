@@ -1,13 +1,15 @@
 package cooking
 
 import (
-	"github.com/erikbryant/wow/internal/userconfig"
+	"encoding/json"
 	"strings"
 	"testing"
+
+	"github.com/erikbryant/wow/internal/userconfig"
 )
 
 func TestMakeRecipe(t *testing.T) {
-	r := makeRecipe(map[string]any{"key": map[string]any{"href": "/recipe/1"}, "name": "Recipe One", "id": float64(42)})
+	r := makeRecipe(map[string]any{"key": map[string]any{"href": "/recipe/1"}, "name": "Recipe One", "id": json.Number("42")})
 	if r.href != "/recipe/1" || r.name != "Recipe One" || r.id != 42 {
 		t.Fatalf("%+v", r)
 	}

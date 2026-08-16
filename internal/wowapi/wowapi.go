@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/erikbryant/wow/internal/common"
 )
 
 const defaultAPIBase = "https://us.api.blizzard.com"
@@ -87,6 +88,7 @@ func (c *Client) request(rawURL, token, caller string) (any, error) {
 	var result any
 
 	decoder := json.NewDecoder(response.Body)
+	decoder.UseNumber()
 	if err := decoder.Decode(&result); err != nil {
 		return nil, fmt.Errorf(
 			"%s: unable to decode response: %w",
@@ -327,14 +329,7 @@ func (c *Client) ConnectedRealmID(realm string) (string, error) {
 			)
 		}
 
-		cRealmID, err := jsonString(data["id"])
-		if err != nil {
-			return "", fmt.Errorf(
-				"ConnectedRealmID: invalid realm ID: %w",
-				err,
-			)
-		}
-
+		cRealmID := common.JSONString(data["id"])
 		cr, err := c.ConnectedRealm(cRealmID)
 		if err != nil {
 			return "", err
@@ -560,7 +555,7 @@ func (c *Client) ItemAppearanceSetsIndexIDs() (map[int64]string, error) {
 			)
 		}
 
-		id, err := jsonInt64(item["id"])
+		id, err := common.JSONInt64(item["id"])
 		if err != nil {
 			return nil, fmt.Errorf(
 				"ItemAppearanceSetsIndexIDs: invalid ID: %w",
@@ -568,15 +563,7 @@ func (c *Client) ItemAppearanceSetsIndexIDs() (map[int64]string, error) {
 			)
 		}
 
-		name, err := jsonString(item["name"])
-		if err != nil {
-			return nil, fmt.Errorf(
-				"ItemAppearanceSetsIndexIDs: invalid name: %w",
-				err,
-			)
-		}
-
-		indexMap[id] = name
+		indexMap[id] = common.JSONString(item["name"])
 	}
 
 	return indexMap, nil
@@ -617,7 +604,7 @@ func (c *Client) ItemAppearanceSetIDs(appearanceID int64) ([]int64, error) {
 			)
 		}
 
-		id, err := jsonInt64(item["id"])
+		id, err := common.JSONInt64(item["id"])
 		if err != nil {
 			return nil, fmt.Errorf(
 				"ItemAppearanceSetIDs: invalid ID: %w",
@@ -660,50 +647,6 @@ func (c *Client) Professions(realm, alt string) (any, error) {
 		c.profileAccessToken,
 		"Professions",
 	)
-}
-
-// jsonString converts a JSON-decoded value to a string.
-func jsonString(value any) (string, error) {
-	switch value := value.(type) {
-	case string:
-		return value, nil
-	case json.Number:
-		return value.String(), nil
-	case float64:
-		return strconv.FormatFloat(value, 'f', -1, 64), nil
-	case float32:
-		return strconv.FormatFloat(float64(value), 'f', -1, 32), nil
-	case int:
-		return strconv.Itoa(value), nil
-	case int64:
-		return strconv.FormatInt(value, 10), nil
-	case int32:
-		return strconv.FormatInt(int64(value), 10), nil
-	default:
-		return "", fmt.Errorf("cannot convert %T to string", value)
-	}
-}
-
-// jsonInt64 converts a JSON-decoded value to int64.
-func jsonInt64(value any) (int64, error) {
-	switch value := value.(type) {
-	case int:
-		return int64(value), nil
-	case int64:
-		return value, nil
-	case int32:
-		return int64(value), nil
-	case float64:
-		return int64(value), nil
-	case float32:
-		return int64(value), nil
-	case json.Number:
-		return value.Int64()
-	case string:
-		return strconv.ParseInt(value, 10, 64)
-	default:
-		return 0, fmt.Errorf("cannot convert %T to int64", value)
-	}
 }
 
 // -----------------------------------------------------------------------------

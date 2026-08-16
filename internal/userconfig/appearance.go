@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/erikbryant/web"
+	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/wowapi"
 )
 
@@ -138,7 +138,7 @@ func getOwned() (map[int64]bool, error) {
 		slot := slot.(map[string]any)
 		for _, appearance := range slot["appearances"].([]any) {
 			appearance := appearance.(map[string]any)
-			id := web.ToInt64(appearance["id"])
+			id := common.JSONInt64Panic(appearance["id"])
 			ao[id] = true
 		}
 	}

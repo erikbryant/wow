@@ -1,6 +1,7 @@
 package wowitem
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 )
@@ -11,9 +12,9 @@ func testItem(data map[string]any) Item {
 
 func baseItem() map[string]any {
 	return map[string]any{
-		"id":             123,
+		"id":             json.Number("123"),
 		"name":           "Test Item",
-		"level":          float64(100),
+		"level":          json.Number("100"),
 		"is_stackable":   false,
 		"is_equippable":  true,
 		"item_class":     map[string]any{"name": "Armor"},
@@ -22,7 +23,7 @@ func baseItem() map[string]any {
 		"preview_item": map[string]any{
 			"binding":      map[string]any{"type": "Binds on Equip"},
 			"quality":      map[string]any{"name": "Epic"},
-			"sell_price":   map[string]any{"value": float64(123456)},
+			"sell_price":   map[string]any{"value": json.Number("123456")},
 			"requirements": map[string]any{"skill": map[string]any{"display_string": "Level 80"}},
 		},
 	}
@@ -117,15 +118,15 @@ func TestCosmetic(t *testing.T) {
 	cases := []struct {
 		name    string
 		class   string
-		level   float64
+		level   json.Number
 		quality string
 		want    bool
 	}{
-		{"explicit", "Armor", 100, "Common", true},
-		{"rare level one", "Armor", 1, "Rare", true},
-		{"epic level one", "Weapon", 1, "Epic", true},
-		{"rare higher", "Armor", 2, "Rare", false},
-		{"other class", "Consumable", 1, "Rare", false},
+		{"explicit", "Armor", json.Number("100"), "Common", true},
+		{"rare level one", "Armor", json.Number("1"), "Rare", true},
+		{"epic level one", "Weapon", json.Number("1"), "Epic", true},
+		{"rare higher", "Armor", json.Number("2"), "Rare", false},
+		{"other class", "Consumable", json.Number("1"), "Rare", false},
 	}
 	for _, tc := range cases {
 		data := baseItem()
@@ -143,7 +144,7 @@ func TestCosmetic(t *testing.T) {
 
 func TestAppearances(t *testing.T) {
 	data := baseItem()
-	data["appearances"] = []any{map[string]any{"id": float64(10)}, map[string]any{"id": float64(20)}}
+	data["appearances"] = []any{map[string]any{"id": json.Number("10")}, map[string]any{"id": json.Number("20")}}
 	got := testItem(data).Appearances()
 	if len(got) != 2 || got[0] != 10 || got[1] != 20 {
 		t.Fatalf("appearances=%v", got)
@@ -156,7 +157,7 @@ func TestAppearances(t *testing.T) {
 
 func TestSellPriceRealizableVariableLevel(t *testing.T) {
 	data := baseItem()
-	data["level"] = float64(1)
+	data["level"] = json.Number("1")
 	if testItem(data).SellPriceRealizable() != 0 {
 		t.Error("variable-level armor should have no realizable price")
 	}

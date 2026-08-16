@@ -10,7 +10,7 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
-func json(itemID int64, paths *path.Paths) error {
+func asJSON(itemID int64, paths *path.Paths) error {
 	wowItems, err := wowitem.New(paths.Items)
 	if err != nil {
 		return err
@@ -39,7 +39,7 @@ func runJSON(args []string, paths *path.Paths) error {
 		return fmt.Errorf("json requires -id")
 	}
 
-	err := json(*itemID, paths)
+	err := asJSON(*itemID, paths)
 	if err != nil {
 		return err
 	}
