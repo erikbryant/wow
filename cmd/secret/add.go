@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/term"
 
-	"github.com/erikbryant/wow/internal/credentials"
+	"github.com/erikbryant/wow/internal/keychain"
 )
 
 func readSecret() (string, error) {
@@ -33,7 +33,7 @@ func runAdd(args []string) error {
 		return err
 	}
 
-	err = credentials.Add(name, value)
+	err = keychain.Add(name, value)
 	if err != nil {
 		return fmt.Errorf("unable to add %s: %w", name, err)
 	}

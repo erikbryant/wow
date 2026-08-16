@@ -9,6 +9,7 @@ import (
 	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/path"
+	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
@@ -94,7 +95,7 @@ func runRefresh(args []string, paths *path.Paths) error {
 		return err
 	}
 
-	err := authenticate(paths)
+	err := wowapi.AuthenticateFromKeychain(paths.Secret)
 	if err != nil {
 		return err
 	}

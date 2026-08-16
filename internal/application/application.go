@@ -6,7 +6,6 @@ import (
 	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/cooking"
-	"github.com/erikbryant/wow/internal/credentials"
 	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/shoppingconfig"
 	"github.com/erikbryant/wow/internal/toy"
@@ -28,28 +27,6 @@ type App struct {
 	Toys           *toy.Toy
 }
 
-// TODO: This is a duplicate of authenticate() in cmd/items/authenticate.go
-
-// authenticate authenticates this session against the WoW web APIs
-func (app *App) authenticate() error {
-	clientID, err := credentials.ReadFromKeychain(app.Paths.Secret, "clientID")
-	if err != nil {
-		return err
-	}
-
-	clientSecret, err := credentials.ReadFromKeychain(app.Paths.Secret, "clientSecret")
-	if err != nil {
-		return err
-	}
-
-	err = wowapi.Authenticate(clientID, clientSecret)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // New initializes all singleton data stores
 func New(rootPath string) (*App, error) {
 	var err error
@@ -60,7 +37,7 @@ func New(rootPath string) (*App, error) {
 		return nil, err
 	}
 
-	err = app.authenticate()
+	err = wowapi.AuthenticateFromKeychain(app.Paths.Secret)
 	if err != nil {
 		return nil, err
 	}

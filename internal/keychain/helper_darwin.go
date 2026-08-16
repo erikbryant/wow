@@ -1,4 +1,4 @@
-package credentials
+package keychain
 
 // Forked from https://github.com/keybase/go-keychain
 

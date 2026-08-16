@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/erikbryant/wow/internal/credentials"
+	"github.com/erikbryant/wow/internal/keychain"
 )
 
 func runGet(args []string) error {
@@ -13,7 +13,7 @@ func runGet(args []string) error {
 	}
 
 	for _, name := range args {
-		s, err := credentials.Get(name)
+		s, err := keychain.Get(name)
 		if err != nil {
 			return fmt.Errorf("unable to get %s: %w", name, err)
 		}

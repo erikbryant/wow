@@ -6,6 +6,7 @@ import (
 
 	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/path"
+	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
@@ -25,7 +26,7 @@ func createItemPersist(paths *path.Paths) error {
 
 // createAppearancePersist creates a new, populated appearance persistence and saves it
 func createAppearancePersist(paths *path.Paths) error {
-	err := authenticate(paths)
+	err := wowapi.AuthenticateFromKeychain(paths.Secret)
 	if err != nil {
 		return err
 	}

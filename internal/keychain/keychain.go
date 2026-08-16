@@ -1,4 +1,4 @@
-package credentials
+package keychain
 
 import (
 	"fmt"
@@ -8,8 +8,8 @@ import (
 
 const service = "github.com/erikbryant/WorldOfWarcraft"
 
-// ReadFromKeychain reads from the keychain without triggering the "unknown app" dialogs
-func ReadFromKeychain(secret string, key string) (string, error) {
+// GetSigned uses a signed external app to read from the keychain without triggering the "unknown app" dialogs
+func GetSigned(secret string, key string) (string, error) {
 	out, err := exec.Command(secret, "get", key).Output()
 	if err != nil {
 		return "", fmt.Errorf("unable to get %s: %w", key, err)

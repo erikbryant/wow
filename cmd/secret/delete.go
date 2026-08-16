@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/erikbryant/wow/internal/credentials"
+	"github.com/erikbryant/wow/internal/keychain"
 )
 
 func runDelete(args []string) error {
@@ -14,7 +14,7 @@ func runDelete(args []string) error {
 
 	name := args[0]
 
-	err := credentials.Delete(name)
+	err := keychain.Delete(name)
 	if err != nil {
 		return fmt.Errorf("unable to delete %s: %w", name, err)
 	}

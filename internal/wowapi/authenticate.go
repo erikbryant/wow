@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/erikbryant/wow/internal/keychain"
 	"github.com/erikbryant/wow/internal/wowoauth"
 )
 
@@ -40,4 +41,18 @@ func Authenticate(clientID, clientSecret string) error {
 	}
 
 	return nil
+}
+
+func AuthenticateFromKeychain(authAppPath string) error {
+	clientID, err := keychain.GetSigned(authAppPath, "clientID")
+	if err != nil {
+		return err
+	}
+
+	clientSecret, err := keychain.GetSigned(authAppPath, "clientSecret")
+	if err != nil {
+		return err
+	}
+
+	return Authenticate(clientID, clientSecret)
 }
