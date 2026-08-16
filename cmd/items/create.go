@@ -30,9 +30,11 @@ func createAppearancePersist(paths *path.Paths) error {
 		return err
 	}
 
-	as, err := appearanceset.NewFromWeb(paths.Appearances)
+	as := appearanceset.NewEmpty(paths.Appearances)
+
+	err = as.LoadFromWeb()
 	if err != nil {
-		return fmt.Errorf("failed to create appearance set: %w", err)
+		return fmt.Errorf("failed to load appearance set from web: %w", err)
 	}
 
 	err = as.Save()
