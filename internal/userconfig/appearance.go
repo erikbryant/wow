@@ -155,8 +155,6 @@ func NewAppearances() (*Appearances, error) {
 		return nil, err
 	}
 
-	fmt.Printf("-- #Appearances owned: %d\n", len(ao.owned))
-
 	// Make sure I don't already own any of the items I am filtering.
 	for id, _ := range excludedIDs {
 		if ao.owned[id] {
@@ -184,4 +182,9 @@ func (ao *Appearances) needID(id int64) bool {
 // Need returns true if I need any of these appearance ids
 func (ao *Appearances) Need(appearanceIDs []int64) bool {
 	return slices.ContainsFunc(appearanceIDs, ao.needID)
+}
+
+// Len returns the number of entries.
+func (ao *Appearances) Len() int {
+	return len(ao.owned)
 }

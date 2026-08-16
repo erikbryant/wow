@@ -74,8 +74,6 @@ func New() (*BattlePet, error) {
 		return nil, err
 	}
 
-	fmt.Printf("-- #Battle pet species owned: %d/%d\n", len(bp.owned), len(bp.names))
-
 	return &bp, nil
 }
 
@@ -114,4 +112,14 @@ func (bp *BattlePet) Output() string {
 	}
 
 	return output.String()
+}
+
+// LenNames returns the number of entries.
+func (bp *BattlePet) LenNames() int {
+	return len(bp.names)
+}
+
+// LenOwned returns the number of entries.
+func (bp *BattlePet) LenOwned() int {
+	return len(bp.owned)
 }

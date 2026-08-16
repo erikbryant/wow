@@ -1,6 +1,8 @@
 package application
 
 import (
+	"fmt"
+
 	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/cooking"
@@ -94,6 +96,10 @@ func New(rootPath string) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Printf("-- #Items persisted         : %d\n", app.WowItem.Len())
+	fmt.Printf("-- #Appearances owned       : %d/%d\n", app.AppearanceSet.Len(), app.Appearances.Len())
+	fmt.Printf("-- #Battle pet species owned: %d/%d\n", app.BattlePets.LenOwned(), app.BattlePets.LenNames())
 
 	return &app, nil
 }

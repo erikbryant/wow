@@ -31,8 +31,6 @@ func New(persistencePath string) (*Persistence, error) {
 		return nil, fmt.Errorf("error loading items persist: %w", err)
 	}
 
-	fmt.Printf("-- #Items persisted  : %d\n", p.Len())
-
 	return p, nil
 }
 
