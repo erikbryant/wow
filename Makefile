@@ -12,7 +12,7 @@ vuln:
 
 .PHONY: test
 test:
-	go test -race ./...
+	go test -race -cover ./...
 
 .PHONY: verify
 verify:
