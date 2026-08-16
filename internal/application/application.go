@@ -25,6 +25,7 @@ type App struct {
 	Paths          *path.Paths
 	ShoppingConfig *shoppingconfig.UserConfig
 	Toys           *toy.Toy
+	WowAPI         *wowapi.Client
 }
 
 // New initializes all singleton data stores
@@ -37,7 +38,11 @@ func New(rootPath string) (*App, error) {
 		return nil, err
 	}
 
-	err = wowapi.AuthenticateFromKeychain(app.Paths.Secret)
+	err = wowapi.Init(app.Paths.Secret)
+	if err != nil {
+		return nil, err
+	}
+	app.WowAPI, err = wowapi.NewClient()
 	if err != nil {
 		return nil, err
 	}

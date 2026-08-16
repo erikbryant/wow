@@ -1,58 +1,76 @@
 package wowapi
 
 import (
-	"fmt"
+	"net/http"
 	"net/url"
 
 	"github.com/erikbryant/wow/internal/keychain"
 	"github.com/erikbryant/wow/internal/wowoauth"
 )
 
-var (
-	accessToken        string
-	profileAccessToken string
-)
+// authenticate authenticates the package-level WoW API client.
+//
+// Applications should normally call this once during startup. The resulting
+// authenticated client is then used by the package-level API functions.
+func (c *Client) authenticate() error {
+	var err error
 
-// wowAccessToken retrieves an access token (to authenticate API calls)
-func wowAccessToken(clientID, clientSecret string) (string, error) {
 	data := url.Values{
 		"grant_type": {"client_credentials"},
 	}
 
-	return wowoauth.GetToken(data, clientID, clientSecret)
-}
-
-// wowProfileAccessToken returns a profile access token (to authenticate user profile API calls)
-func wowProfileAccessToken(clientID, clientSecret string) (string, error) {
-	return wowoauth.GetPAT(clientID, clientSecret)
-}
-
-func Authenticate(clientID, clientSecret string) error {
-	var err error
-
-	accessToken, err = wowAccessToken(clientID, clientSecret)
+	c.accessToken, err = wowoauth.GetToken(data, c.clientID, c.clientSecret)
 	if err != nil {
-		return fmt.Errorf("unable to get access token: %w", err)
+		return err
 	}
 
-	profileAccessToken, err = wowProfileAccessToken(clientID, clientSecret)
+	c.profileAccessToken, err = wowoauth.GetPAT(c.clientID, c.clientSecret)
 	if err != nil {
-		return fmt.Errorf("unable to get profile access token: %w", err)
+		return err
 	}
 
 	return nil
 }
 
-func AuthenticateFromKeychain(authAppPath string) error {
-	clientID, err := keychain.GetSigned(authAppPath, "clientID")
+// getSecretsFromKeychain authenticates the package-level WoW API client
+// using credentials stored in the keychain.
+func (c *Client) getSecretsFromKeychain(secretPath string) error {
+	var err error
+
+	c.clientID, err = keychain.GetSigned(secretPath, "clientID")
 	if err != nil {
 		return err
 	}
 
-	clientSecret, err := keychain.GetSigned(authAppPath, "clientSecret")
+	c.clientSecret, err = keychain.GetSigned(secretPath, "clientSecret")
 	if err != nil {
 		return err
 	}
 
-	return Authenticate(clientID, clientSecret)
+	return nil
+}
+
+func Init(secretPath string) error {
+	var err error
+
+	c := Client{
+		apiBase:    defaultAPIBase,
+		httpClient: http.DefaultClient,
+	}
+
+	err = c.getSecretsFromKeychain(secretPath)
+	if err != nil {
+		return err
+	}
+
+	err = c.authenticate()
+	if err != nil {
+		return err
+	}
+
+	defaultClientMu.Lock()
+	defaultClient = &c
+	defaultClientMu.Unlock()
+
+	return err
 }

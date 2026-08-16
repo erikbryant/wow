@@ -26,7 +26,7 @@ func createItemPersist(paths *path.Paths) error {
 
 // createAppearancePersist creates a new, populated appearance persistence and saves it
 func createAppearancePersist(paths *path.Paths) error {
-	err := wowapi.AuthenticateFromKeychain(paths.Secret)
+	err := wowapi.Init(paths.Secret)
 	if err != nil {
 		return err
 	}

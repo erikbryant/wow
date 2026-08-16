@@ -95,7 +95,7 @@ func runRefresh(args []string, paths *path.Paths) error {
 		return err
 	}
 
-	err := wowapi.AuthenticateFromKeychain(paths.Secret)
+	err := wowapi.Init(paths.Secret)
 	if err != nil {
 		return err
 	}
