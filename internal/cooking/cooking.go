@@ -18,9 +18,10 @@ type Recipe struct {
 	id     int64
 }
 
-type CookingRecipe struct {
-	recipesThatWeNeed []string
-	recipeOutputLog   string
+type CookingRecipes struct {
+	needed      []string
+	neededByAlt map[string][]string
+	neededCount map[string]int
 }
 
 func makeRecipe(r any) Recipe {
@@ -116,7 +117,7 @@ func scanAlts() (map[int64]Recipe, map[string]map[int64]Recipe, error) {
 	return allRecipes, recipesByAlt, nil
 }
 
-func logRecipes(recipesNeededByAlt map[string][]string, recipesNeededCount map[string]int) string {
+func generateReport(recipesNeededByAlt map[string][]string, recipesNeededCount map[string]int) string {
 	var recipeOutputLog strings.Builder
 
 	recipeOutputLog.WriteString("Cooking recipes needed by alt:\n")
@@ -130,21 +131,24 @@ func logRecipes(recipesNeededByAlt map[string][]string, recipesNeededCount map[s
 
 	recipeOutputLog.WriteString("\nCooking recipes needed by count:\n")
 	recipes := slices.Collect(maps.Keys(recipesNeededCount))
+	slices.Sort(recipes)
 	for _, recipe := range recipes {
 		recipeOutputLog.WriteString(fmt.Sprintf("%-40s  %2d\n", recipe, recipesNeededCount[recipe]))
-
 	}
 
 	return recipeOutputLog.String()
 }
 
-func New() (*CookingRecipe, error) {
+func New() (*CookingRecipes, error) {
+	c := CookingRecipes{
+		neededCount: map[string]int{},
+		neededByAlt: map[string][]string{},
+	}
+
 	allRecipes, recipesByAlt, err := scanAlts()
 	if err != nil {
 		return nil, err
 	}
-	recipesNeededCount := map[string]int{}
-	recipesNeededByAlt := map[string][]string{}
 
 	// For each alt...
 	for alt, altRecipes := range recipesByAlt {
@@ -153,26 +157,22 @@ func New() (*CookingRecipe, error) {
 			_, ok := altRecipes[recipe.id]
 			if !ok {
 				recipeName := "Recipe: " + recipe.name
-				recipesNeededCount[recipeName]++
-				recipesNeededByAlt[alt] = append(recipesNeededByAlt[alt], recipeName)
+				c.neededCount[recipeName]++
+				c.neededByAlt[alt] = append(c.neededByAlt[alt], recipeName)
 			}
 		}
 	}
 
-	cr := CookingRecipe{
-		recipesThatWeNeed: slices.Collect(maps.Keys(recipesNeededCount)),
-		recipeOutputLog:   logRecipes(recipesNeededByAlt, recipesNeededCount),
-	}
+	c.needed = slices.Collect(maps.Keys(c.neededCount))
+	slices.Sort(c.needed)
 
-	slices.Sort(cr.recipesThatWeNeed)
-
-	return &cr, nil
+	return &c, nil
 }
 
-func (cr *CookingRecipe) RecipesNeeded() []string {
-	return cr.recipesThatWeNeed
+func (cr *CookingRecipes) RecipesNeeded() []string {
+	return cr.needed
 }
 
-func (cr *CookingRecipe) Output() string {
-	return cr.recipeOutputLog
+func (cr *CookingRecipes) Output() string {
+	return generateReport(cr.neededByAlt, cr.neededCount)
 }

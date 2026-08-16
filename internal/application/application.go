@@ -22,7 +22,7 @@ type App struct {
 	AppearanceSet  *appearanceset.Persistence
 	Appearances    *userconfig.Appearances
 	BattlePets     *battlepet.BattlePet
-	CookingRecipes *cooking.CookingRecipe
+	Cooking        *cooking.CookingRecipes
 	Paths          *path.Paths
 	ShoppingConfig *shoppingconfig.UserConfig
 	Toys           *toy.Toy
@@ -85,12 +85,12 @@ func New(rootPath string) (*App, error) {
 		return nil, err
 	}
 
-	app.CookingRecipes, err = cooking.New()
+	app.Cooking, err = cooking.New()
 	if err != nil {
 		return nil, err
 	}
 
-	app.ShoppingConfig = shoppingconfig.New(app.WowItem, app.CookingRecipes)
+	app.ShoppingConfig = shoppingconfig.New(app.WowItem, app.Cooking)
 
 	app.Toys, err = toy.New()
 	if err != nil {

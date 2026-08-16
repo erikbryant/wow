@@ -20,7 +20,7 @@ type UserConfig struct {
 	SkipPets    map[int64]struct{}
 }
 
-func New(wi *wowitem.Persistence, cr *cooking.CookingRecipe) *UserConfig {
+func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 	//bagPriceMax := common.Coppers(100, 0, 0)
 	//reagentBagPriceMax := common.Coppers(100, 0, 0)
 

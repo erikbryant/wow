@@ -293,7 +293,7 @@ func generateOutput(app *application.App, recommendations []Recommendations) err
 	}
 
 	// Recipes needed
-	err = os.WriteFile(app.Paths.RecipesNeeded, []byte(app.CookingRecipes.Output()), 0600)
+	err = os.WriteFile(app.Paths.RecipesNeeded, []byte(app.Cooking.Output()), 0600)
 	if err != nil {
 		return err
 	}
