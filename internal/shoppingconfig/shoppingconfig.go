@@ -104,8 +104,8 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 			153:  {}, // Wolpertinger
 
 			// We collect pets to sell to Stephen; limit how many of each we collect
-			//2842: {}, // Anomalus
-			//191:  {}, // Clockwork Rocket Bot
+			2842: {}, // Anomalus
+			191:  {}, // Clockwork Rocket Bot
 			//1961: {}, // G0-R41-0n Ultratonk
 			//67:   {}, // Hawk Owl
 			//68:   {}, // Great Horned Owl
@@ -116,7 +116,7 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 			//44:   {}, // Siamese Cat
 			//1721: {}, // Stormborne Whelpling
 			//1151: {}, // Untamed Hatchling
-			//1394: {}, // Weebomination
+			1394: {}, // Weebomination
 		},
 	}
 
