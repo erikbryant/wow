@@ -17,11 +17,10 @@ Commands:
   json -id <id>                   Show JSON for an item
   query [options]                 Search for items
   refresh [-max-refresh=1000]     Refresh stale items
+  synthetic {list|populate}       Manage synthetic items
   help                            Display this help message
 
 Examples:
-  wowctl create appearance
-  wowctl create item
   wowctl delete -id 12345
   wowctl json -id 12345
   wowctl query
@@ -60,6 +59,8 @@ func main() {
 		err = runQuery(args, paths)
 	case "refresh":
 		err = runRefresh(args, paths)
+	case "synthetic":
+		err = runSynthetic(args, paths)
 	case "help":
 		usage()
 	default:
