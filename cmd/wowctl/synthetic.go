@@ -12,21 +12,23 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
+// synthetics returns the synthetic items we have created.
 func synthetics() []wowitem.Item {
 	var item *syntheticitem.Item
 	items := []wowitem.Item{}
 
 	item = syntheticitem.New(226002)
 	item.SetName("Expensive-Looking Find")
-	item.SetSellPrice(common.Coppers(1000000, 0, 0))
+	item.SetPreviewPrice(common.Coppers(200, 0, 0))
 	item.SetStackable(false)
-	item.SetLevel(0)
-	item.SetItemClass("foobar")
+	item.SetLevel(23)
+	item.SetItemClassName("Miscellaneous")
 	items = append(items, wowitem.NewItem(item.Map()))
 
 	return items
 }
 
+// syntheticList displays the synthetic items in a table.
 func syntheticList(paths *path.Paths) error {
 	as, err := appearanceset.New(paths.Appearances)
 	if err != nil {
@@ -38,6 +40,7 @@ func syntheticList(paths *path.Paths) error {
 	return nil
 }
 
+// syntheticPopulate adds each of the synthetic items to the items persist
 func syntheticPopulate(paths *path.Paths) error {
 	wowItems, err := wowitem.New(paths.Items)
 	if err != nil {

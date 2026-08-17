@@ -37,11 +37,11 @@ func (i *Item) SetLevel(level int64) {
 	i.set([]string{"level"}, json.Number(strconv.FormatInt(level, 10)))
 }
 
-func (i *Item) SetItemSubclass(name string) {
+func (i *Item) SetItemSubclassName(name string) {
 	i.set([]string{"item_subclass", "name"}, name)
 }
 
-func (i *Item) SetItemClass(name string) {
+func (i *Item) SetItemClassName(name string) {
 	i.set([]string{"item_class", "name"}, name)
 }
 
@@ -53,7 +53,7 @@ func (i *Item) SetRelicType(relicType string) {
 	i.set([]string{"preview_item", "gem_properties", "relic_type"}, relicType)
 }
 
-func (i *Item) SetSellPrice(value int64) {
+func (i *Item) SetPreviewPrice(value int64) {
 	i.set([]string{"preview_item", "sell_price", "value"}, json.Number(strconv.FormatInt(value, 10)))
 }
 
