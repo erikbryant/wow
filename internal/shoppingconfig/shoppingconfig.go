@@ -61,7 +61,6 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 
 			// Appearance set appearances
 			wi.Search("Tyrhold Visage").ID():            common.Coppers(2000, 0, 0),
-			wi.Search("Tyrhold Slippers").ID():          common.Coppers(2000, 0, 0),
 			wi.Search("Boots of the Black Flame").ID():  common.Coppers(2000, 0, 0),
 			wi.Search("Helm of the Tranquil Path").ID(): common.Coppers(2000, 0, 0),
 		},
