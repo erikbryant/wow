@@ -9,7 +9,7 @@ import (
 
 func usage() {
 	fmt.Println(`Usage:
-  items <command>
+  wowctl <command>
 
 Commands:
   create {appearance|item}        Create a new persistence
@@ -20,14 +20,14 @@ Commands:
   help                            Display this help message
 
 Examples:
-  items create appearance
-  items create item
-  items delete -id 12345
-  items json -id 12345
-  items query
-  items query -rare -in-appearance-set
-  items refresh -max-refresh=42
-  items refresh -id 12345
+  wowctl create appearance
+  wowctl create item
+  wowctl delete -id 12345
+  wowctl json -id 12345
+  wowctl query
+  wowctl query -rare -in-appearance-set
+  wowctl refresh -max-refresh=42
+  wowctl refresh -id 12345
   `)
 }
 

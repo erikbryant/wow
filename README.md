@@ -26,7 +26,7 @@ The wowMerchant AddOn depends on certain data from the wow application. Scrape t
 
 This includes a cache of all current vendor prices. It also includes arbitrage items (selling at a discount to vendor prices).
 
-# items
+# wowctl
 
 A command line tool for searching and modifying the WoW item persistence gob file.
 
