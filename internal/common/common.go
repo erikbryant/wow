@@ -70,7 +70,7 @@ func JSONInt64(value any) (int64, error) {
 	return n.Int64()
 }
 
-// JSONInt64Panic converts a JSON-decoded value to int64 or pannics.
+// JSONInt64Panic converts a JSON-decoded value to int64 or panics.
 func JSONInt64Panic(value any) int64 {
 	n, err := JSONInt64(value)
 	if err != nil {

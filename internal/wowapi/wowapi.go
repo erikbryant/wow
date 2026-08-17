@@ -550,7 +550,7 @@ func (c *Client) ItemAppearanceSetsIndexIDs() (map[int64]string, error) {
 		item, ok := item.(map[string]any)
 		if !ok {
 			return nil, fmt.Errorf(
-				"ItemAppearanceSetsIndexIDs: item has type %T, want object",
+				"ItemAppearanceSetsIndexIDs need map[string]any, got: %v",
 				item,
 			)
 		}
@@ -558,7 +558,8 @@ func (c *Client) ItemAppearanceSetsIndexIDs() (map[int64]string, error) {
 		id, err := common.JSONInt64(item["id"])
 		if err != nil {
 			return nil, fmt.Errorf(
-				"ItemAppearanceSetsIndexIDs: invalid ID: %w",
+				"ItemAppearanceSetsIndexIDs: invalid ID: %v, %w",
+				item["id"],
 				err,
 			)
 		}
