@@ -13,11 +13,12 @@ import (
 )
 
 func synthetics() []wowitem.Item {
+	var item *syntheticitem.Item
 	items := []wowitem.Item{}
 
-	item := syntheticitem.New(226002)
+	item = syntheticitem.New(226002)
 	item.SetName("Expensive-Looking Find")
-	item.SetSellPrice(common.Coppers(10000, 0, 0))
+	item.SetSellPrice(common.Coppers(1000000, 0, 0))
 	item.SetStackable(false)
 	item.SetLevel(0)
 	item.SetItemClass("foobar")
