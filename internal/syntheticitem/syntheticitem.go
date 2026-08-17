@@ -9,10 +9,10 @@ type Item struct {
 	data map[string]any
 }
 
-func New(id int) *Item {
+func New(id int64) *Item {
 	return &Item{
 		data: map[string]any{
-			"id": json.Number(strconv.Itoa(id)),
+			"id": json.Number(strconv.FormatInt(id, 10)),
 		},
 	}
 }
@@ -33,8 +33,8 @@ func (i *Item) SetInventoryType(inventoryType string) {
 	i.set([]string{"inventory_type", "type"}, inventoryType)
 }
 
-func (i *Item) SetLevel(level int) {
-	i.set([]string{"level"}, json.Number(strconv.Itoa(level)))
+func (i *Item) SetLevel(level int64) {
+	i.set([]string{"level"}, json.Number(strconv.FormatInt(level, 10)))
 }
 
 func (i *Item) SetItemSubclass(name string) {
