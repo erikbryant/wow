@@ -12,7 +12,6 @@ import (
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/output"
-	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
@@ -107,10 +106,6 @@ func appearanceSetBargain(i wowitem.Item, auc auction.Auction, app *application.
 // iterateAuctions iterates over a single auction house, checking each auction for recommendation
 func (r *Recommendations) iterateAuctions(auctions map[int64][]auction.Auction, commodities bool, app *application.App) {
 	for itemID, itemAuctions := range auctions {
-		if commodities && wowapi.BadItemID(itemID) {
-			// There are some item IDs for which WoW has no data. Ignore those.
-			continue
-		}
 		i, err := app.WowItem.Get(itemID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error getting itemID %d, commodities=%t: %v\n", itemID, commodities, err)
