@@ -36,7 +36,7 @@ func TestFindRoot(t *testing.T) {
 		t.Fatalf("findRoot=%q,%v", got, err)
 	}
 	file := filepath.Join(nested, "x")
-	os.WriteFile(file, []byte{}, 0600)
+	_ = os.WriteFile(file, []byte{}, 0600)
 	got, err = findRoot(file)
 	if err != nil || got != root {
 		t.Fatalf("file findRoot=%q,%v", got, err)

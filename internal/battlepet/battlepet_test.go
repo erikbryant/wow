@@ -1,9 +1,10 @@
 package battlepet
 
 import (
-	"github.com/erikbryant/wow/internal/wowitem"
 	"strings"
 	"testing"
+
+	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 func bpItem(name, subclass string) wowitem.Item {

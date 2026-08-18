@@ -1,9 +1,10 @@
 package shoppingconfig
 
 import (
+	"testing"
+
 	"github.com/erikbryant/wow/internal/cooking"
 	"github.com/erikbryant/wow/internal/wowitem"
-	"testing"
 )
 
 func TestNewDefaults(t *testing.T) {
