@@ -46,6 +46,8 @@ Profession tools have iLevels. Looking up a given profession tool (by itemID) in
 
 Blizzard provides a web API to retrieve item data. Not all item IDs are available through this API. Some valid item IDs will return a 404. If this happens the app will emit a message that the item ID was not found. Add a synthetic item using the wowctl tool. You can figure out what values to enter for the synthetic item by Googling for 'wow item id nnnnn'.
 
+If you create new synthetic items (or change existing ones) be sure to run '/merch validate' in the WoW client. This will ensure that the price you entered for the item is the same as the price the client knows.
+
 ### Stale item data
 
 When you use the '/merch scan' command in the wowMerchant addon (or the '/merch validate' command) the addon will validate that the price cache reflects values seen in the live system. Sometimes the item persistence is stale. In those cases, use wowctl to refresh those item IDs.
