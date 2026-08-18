@@ -34,6 +34,22 @@ A command line tool for searching and modifying the WoW item persistence gob fil
 
 A command line tool for managing the WoW web API credentials.
 
+# Maintenance Items
+
+From time to time there will be maintenance tasks to complete.
+
+### iLevels
+
+Profession tools have iLevels. Looking up a given profession tool (by itemID) in the auction house is not sufficient. You also have to include the iLevel you are looking for. We maintain a list of known profession tools and the known iLevels they can express. If an unknown profession tool is encountered that is not in this table a message will be emitted with the entry to add and which source file to add it. This will just be an empty entry. You will need to scan several auction houses to find items listed for sale that enumerate possible iLevels.
+
+### Blizzard Items API endpoint 404
+
+Blizzard provides a web API to retrieve item data. Not all item IDs are available through this API. Some valid item IDs will return a 404. If this happens the app will emit a message that the item ID was not found. Add a synthetic item using the wowctl tool. You can figure out what values to enter for the synthetic item by Googling for 'wow item id nnnnn'.
+
+### Stale item data
+
+When you use the '/merch scan' command in the wowMerchant addon (or the '/merch validate' command) the addon will validate that the price cache reflects values seen in the live system. Sometimes the item persistence is stale. In those cases, use wowctl to refresh those item IDs.
+
 # Development notes
 
 The auction house downloadable data is updated once an hour. The precise time might depend upon when the service was last started up after a maintenance. Sampling multiple times during a one-hour window will result in identical downloads. There are other people playing this same arbitrage game, so you have to be *very* quick to get in on the bargains before they are gone.
