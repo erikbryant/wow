@@ -36,7 +36,7 @@ A command line tool for managing the WoW web API credentials.
 
 # Maintenance Items
 
-From time to time there will be maintenance tasks to complete.
+From time to time there will be maintenance tasks to complete. These generally result from Blizzard adding new items. The code is written with that in mind. Fail early, fail loudly. WoW's underlying data is not static. When Blizzard changes an API response or introduces new data that the application does not understand, we prefer an obvious failure or maintenance diagnostic over silently producing an incorrect result.
 
 ### iLevels
 
