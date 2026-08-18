@@ -50,7 +50,22 @@ func (c *Client) getSecretsFromKeychain(secretPath string) error {
 	return nil
 }
 
+// isInitialized returns true if the default client has already been initialized
+func isInitialized() bool {
+	initialized := false
+
+	defaultClientMu.RLock()
+	initialized = defaultClient != nil
+	defaultClientMu.RUnlock()
+
+	return initialized
+}
+
 func Init(secretPath string) error {
+	if isInitialized() {
+		return nil
+	}
+
 	var err error
 
 	c := Client{
