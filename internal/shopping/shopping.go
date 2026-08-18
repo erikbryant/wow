@@ -105,15 +105,15 @@ func appearanceSetBargain(i wowitem.Item, auc auction.Auction, app *application.
 }
 
 // iterateAuctions iterates over a single auction house, checking each auction for recommendation
-func (r *Recommendations) iterateAuctions(auctions map[int64][]auction.Auction, app *application.App) {
+func (r *Recommendations) iterateAuctions(auctions map[int64][]auction.Auction, commodities bool, app *application.App) {
 	for itemID, itemAuctions := range auctions {
+		if commodities && wowapi.BadItemID(itemID) {
+			// There are some item IDs for which WoW has no data. Ignore those.
+			continue
+		}
 		i, err := app.WowItem.Get(itemID)
 		if err != nil {
-			if wowapi.BadItemID(itemID) {
-				// There are some item IDs for which WoW has no data. Ignore those.
-				continue
-			}
-			fmt.Fprintf(os.Stderr, "Error getting item %d: %v\n", itemID, err)
+			fmt.Fprintf(os.Stderr, "Error getting itemID %d, commodities=%t: %v\n", itemID, commodities, err)
 			continue
 		}
 
@@ -123,6 +123,33 @@ func (r *Recommendations) iterateAuctions(auctions map[int64][]auction.Auction, 
 		}
 
 		for _, auc := range itemAuctions {
+
+			// ----- Business logic applicable to commodities and regular auctions -----
+
+			profit, ok := isArbitrage(i, auc, app)
+			if ok {
+				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(profit))
+				r.Arbitrages = append(r.Arbitrages, str)
+				r.ArbitrageProfit += profit
+				if !commodities {
+					for _, iLevel := range wowitem.ILevels(i.ID()) {
+						record := fmt.Sprintf("    {%d, %d}, -- %s", i.ID(), iLevel, i.Name())
+						r.ArbitrageLogs = append(r.ArbitrageLogs, record)
+					}
+				}
+			}
+
+			if toyBargain(i, auc, app) || usefulGoodsBargain(i, auc, app) {
+				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
+				r.Bargains = append(r.Bargains, str)
+			}
+
+			if commodities {
+				continue
+			}
+
+			// ----- Business logic applicable only to regular auctions -----
+
 			if i.ID() == battlepet.PetCageItemID {
 				if petResellBargain(auc, app) {
 					r.PetResellBargains = append(r.PetResellBargains, app.BattlePets.Name(auc.Pet.SpeciesID))
@@ -139,7 +166,7 @@ func (r *Recommendations) iterateAuctions(auctions map[int64][]auction.Auction, 
 				r.PetNeededBargains = append(r.PetNeededBargains, pet)
 			}
 
-			if toyBargain(i, auc, app) || usefulGoodsBargain(i, auc, app) {
+			if toyBargain(i, auc, app) {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 				r.Bargains = append(r.Bargains, str)
 			}
@@ -150,17 +177,6 @@ func (r *Recommendations) iterateAuctions(auctions map[int64][]auction.Auction, 
 				// The item is already a bargain, no need to check again
 				if appearanceBargain(i, auc, app) {
 					r.AppearanceBargains = append(r.AppearanceBargains, i.Name())
-				}
-			}
-
-			profit, ok := isArbitrage(i, auc, app)
-			if ok {
-				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(profit))
-				r.Arbitrages = append(r.Arbitrages, str)
-				r.ArbitrageProfit += profit
-				for _, iLevel := range wowitem.ILevels(i.ID()) {
-					record := fmt.Sprintf("    {%d, %d}, -- %s", i.ID(), iLevel, i.Name())
-					r.ArbitrageLogs = append(r.ArbitrageLogs, record)
 				}
 			}
 		}
@@ -181,7 +197,7 @@ func scanRealm(realm string, c chan<- Recommendations, app *application.App) {
 	}
 
 	r.NumUniqueItems = len(auctions)
-	r.iterateAuctions(auctions, app)
+	r.iterateAuctions(auctions, realm == "Commodities", app)
 
 	c <- r
 }
@@ -265,11 +281,8 @@ func generateOutput(app *application.App, recommendations []Recommendations) err
 	arbitrageRecords := []string{}
 
 	for _, r := range recommendations {
-		if r.Realm != "Commodities" {
-			// The arbitrage logs are realm-specific. Commodities are not a realm.
-			for _, record := range r.ArbitrageLogs {
-				arbitrageRecords = append(arbitrageRecords, record)
-			}
+		for _, record := range r.ArbitrageLogs {
+			arbitrageRecords = append(arbitrageRecords, record)
 		}
 		outputBrief = append(outputBrief, r.format(app, true))
 		outputVerbose = append(outputVerbose, r.format(app, false))
