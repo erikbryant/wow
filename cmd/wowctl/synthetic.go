@@ -29,7 +29,6 @@ func synthetics() []wowitem.Item {
 	// Items that DO NOT have vendor prices. Just create a lightweight entry.
 
 	items = append(items, newWidget(123865, "Relic of Ursol"))
-	items = append(items, newWidget(123865, "Relic of Ursol"))
 	items = append(items, newWidget(123868, "Relic of Shakama"))
 	items = append(items, newWidget(123869, "Relic of Elune"))
 	items = append(items, newWidget(147455, "Water Stone"))

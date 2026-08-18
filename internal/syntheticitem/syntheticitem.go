@@ -39,7 +39,7 @@ func (i *Item) SetBinding(binding string) *Item {
 }
 
 func (i *Item) SetInventoryType(inventoryType string) *Item {
-	i.set([]string{"inventory_type", "type"}, inventoryType)
+	i.set([]string{"inventory_type"}, inventoryType)
 	return i
 }
 
@@ -94,7 +94,11 @@ func (i *Item) SetName(name string) *Item {
 }
 
 func (i *Item) SetToy(toy bool) *Item {
-	i.set([]string{"preview_item", "toy"}, toy)
+	if toy {
+		i.set([]string{"preview_item", "toy"}, "Toy")
+	} else {
+		i.set([]string{"preview_item", "toy"}, "")
+	}
 	return i
 }
 
