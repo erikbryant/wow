@@ -266,6 +266,7 @@ func generateOutput(app *application.App, recommendations []Recommendations) err
 
 	for _, r := range recommendations {
 		if r.Realm != "Commodities" {
+			// The arbitrage logs are realm-specific. Commodities are not a realm.
 			for _, record := range r.ArbitrageLogs {
 				arbitrageRecords = append(arbitrageRecords, record)
 			}
