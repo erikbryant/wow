@@ -3,15 +3,18 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/syntheticitem"
+	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
+// newWidget returns a populated Item. Useful for creating Items with no sell price.
 func newWidget(id int64, name string) wowitem.Item {
 	item := syntheticitem.New(id).
 		SetName(name).
@@ -26,7 +29,7 @@ func synthetics() []wowitem.Item {
 	var item *syntheticitem.Item
 	items := []wowitem.Item{}
 
-	// Items that DO NOT have vendor prices. Just create a lightweight entry.
+	// Items that DO NOT have vendor prices. Just create the most basic placeholder item.
 
 	items = append(items, newWidget(123865, "Relic of Ursol"))
 	items = append(items, newWidget(123868, "Relic of Shakama"))
@@ -73,6 +76,22 @@ func synthetics() []wowitem.Item {
 	return items
 }
 
+func syntheticValidate(s []wowitem.Item, paths *path.Paths) error {
+	err := wowapi.Init(paths.Secret)
+	if err != nil {
+		return err
+	}
+
+	for _, item := range s {
+		_, err := wowapi.Item(strconv.FormatInt(item.ID(), 10))
+		if err == nil {
+			return fmt.Errorf("synthetic item with id %d shadows web API", item.ID())
+		}
+	}
+
+	return nil
+}
+
 // syntheticList displays the synthetic items in a table.
 func syntheticList(paths *path.Paths) error {
 	as, err := appearanceset.New(paths.Appearances)
@@ -80,19 +99,32 @@ func syntheticList(paths *path.Paths) error {
 		return err
 	}
 
-	output.Table(os.Stdout, synthetics(), as)
+	s := synthetics()
+
+	output.Table(os.Stdout, s, as)
+
+	err = syntheticValidate(s, paths)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
 // syntheticPopulate adds each of the synthetic items to the items persist
 func syntheticPopulate(paths *path.Paths) error {
+	s := synthetics()
+
+	err := syntheticValidate(s, paths)
+	if err != nil {
+		return err
+	}
+
 	wowItems, err := wowitem.New(paths.Items)
 	if err != nil {
 		return err
 	}
 
-	s := synthetics()
 	for _, item := range s {
 		wowItems.Set(item.ID(), item)
 	}
