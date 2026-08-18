@@ -123,10 +123,6 @@ func bin(auctions []any) map[int64][]Auction {
 
 	for _, auc := range auctions {
 		aucStruct := newAuction(auc.(map[string]any))
-		if wowapi.BadItemID(aucStruct.ItemID) {
-			// There are some item IDs for which WoW has no data. Ignore those.
-			continue
-		}
 		if aucStruct.Buyout <= 0 {
 			// These accept bids, but not purchases. Ignore these.
 			continue

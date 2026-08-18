@@ -59,8 +59,7 @@ func TestBuyoutMissing(t *testing.T) {
 func TestBin(t *testing.T) {
 	valid := auction(1, 100, 10, 1)
 	badPrice := auction(2, 100, 0, 1)
-	badID := auction(3, 23704, 10, 1)
-	got := bin([]any{valid, badPrice, badID})
+	got := bin([]any{valid, badPrice})
 	if len(got) != 1 || len(got[100]) != 1 || got[100][0].ID != 1 {
 		t.Fatalf("%+v", got)
 	}

@@ -12,6 +12,7 @@ import (
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/output"
+	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
@@ -108,6 +109,10 @@ func (r *Recommendations) iterateAuctions(auctions map[int64][]auction.Auction, 
 	for itemID, itemAuctions := range auctions {
 		i, err := app.WowItem.Get(itemID)
 		if err != nil {
+			if wowapi.BadItemID(itemID) {
+				// There are some item IDs for which WoW has no data. Ignore those.
+				continue
+			}
 			fmt.Fprintf(os.Stderr, "Error getting item %d: %v\n", itemID, err)
 			continue
 		}
