@@ -15,14 +15,14 @@ import (
 )
 
 type App struct {
-	// Initialize this first; some of the others depend on it
+	// Initialize these first; some of the others depend on them
+	Paths   *path.Paths
 	WowItem *wowitem.Persistence
 
 	AppearanceSet  *appearanceset.Persistence
 	Appearances    *userconfig.Appearances
 	BattlePets     *battlepet.BattlePet
 	Cooking        *cooking.CookingRecipes
-	Paths          *path.Paths
 	ShoppingConfig *shoppingconfig.UserConfig
 	Toys           *toy.Toy
 	WowAPI         *wowapi.Client
@@ -79,9 +79,9 @@ func New(rootPath string) (*App, error) {
 		return nil, err
 	}
 
-	fmt.Printf("-- #Items persisted         : %d\n", app.WowItem.Len())
-	fmt.Printf("-- #Appearances owned       : %d/%d\n", app.AppearanceSet.Len(), app.Appearances.Len())
-	fmt.Printf("-- #Battle pet species owned: %d/%d\n", app.BattlePets.LenOwned(), app.BattlePets.LenNames())
+	fmt.Printf("-- #Items persisted        : %d\n", app.WowItem.Len())
+	fmt.Printf("-- #Appearances owned      : %d/%d\n", app.AppearanceSet.Len(), app.Appearances.Len())
+	fmt.Printf("-- #Battlepet species owned: %d/%d\n", app.BattlePets.LenOwned(), app.BattlePets.LenNames())
 
 	return &app, nil
 }
