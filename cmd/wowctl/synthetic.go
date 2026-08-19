@@ -87,8 +87,10 @@ func synthetics() []wowitem.Item {
 		// They might actually become arbitrage plays.
 
 		newItem(217958, "Used Socks", 1, common.Coppers(0, 0, 1), "Miscellaneous"),
+		newItem(226001, "Pure Gold Stein", 23, common.Coppers(200, 0, 0), "Miscellaneous"),
 		newItem(226002, "Expensive-Looking Find", 23, common.Coppers(200, 0, 0), "Miscellaneous"),
 		newItem(226004, "Olden Text", 23, common.Coppers(200, 0, 0), "Miscellaneous"),
+		newItem(226005, "Ancient Tool", 23, common.Coppers(200, 0, 0), "Miscellaneous"),
 
 		// Commodities that DO NOT have vendor prices.
 
@@ -98,6 +100,7 @@ func synthetics() []wowitem.Item {
 		// Commodities that DO have vendor prices.
 
 		newCommodity(23704, "Eversong Port", 1, common.Coppers(0, 0, 75), "Consumable"),
+		newCommodity(43557, "Poisonous Ivy Berries", 20, common.Coppers(0, 20, 25), "Miscellaneous"),
 		newCommodity(54629, "Prickly Thorn", 1, common.Coppers(0, 0, 43), "Miscellaneous"),
 		newCommodity(60390, "Reticulated Tissue", 1, common.Coppers(0, 19, 73), "Miscellaneous"),
 		newCommodity(60405, "Stubby Bear Tail", 1, common.Coppers(0, 22, 22), "Miscellaneous"),
