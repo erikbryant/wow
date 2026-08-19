@@ -61,7 +61,7 @@ var itemLevels = map[int64][]int64{
 	240959: {206, 212, 218, 225, 232}, // Sin'dorei Jeweler's Loupes
 	240960: {206, 212, 218, 225, 232}, // Sin'dorei Enchanter's Crystal
 	244176: {225, 232},                // Runed Brilliant Silver Rod
-	244621: {232},                     // Sin'dorei Herbalist's Backpack
+	244621: {212, 232},                // Sin'dorei Herbalist's Backpack
 	244622: {225, 232},                // Sin'dorei Hunter's Pack
 	244623: {218, 225, 232},           // Eversong Hunter's Headcover
 	244624: {212, 218, 225, 232},      // Sin'dorei Engineer's Gloves
@@ -69,9 +69,9 @@ var itemLevels = map[int64][]int64{
 	244628: {206, 212, 218, 225, 232}, // Sin'dorei Forgemaster's Cover
 	244630: {212, 218, 232},           // Sin'dorei Jeweler's Cover
 	244714: {212, 225, 232},           // Sin'dorei Clampers
-	244718: {206, 212, 218, 225, 232}, // Turbo-Junker's Multitool v1
+	244718: {206, 212, 218, 225, 232}, // Turbo-Junker's Multitool
 	245776: {206, 212, 218, 225, 232}, // Sin'dorei Quill
-	245778: {218, 232},                // Sin'dorei Alchemist's Mixing Rod
+	245778: {212, 218, 225, 232},      // Sin'dorei Alchemist's Mixing Rod
 	245780: {212, 218, 225, 232},      // Sin'dorei Rolling Pin
 
 	// iLvl 106 oddities
