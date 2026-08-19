@@ -100,7 +100,7 @@ func synthetics() []wowitem.Item {
 		// Commodities that DO have vendor prices.
 
 		newCommodity(23704, "Eversong Port", 1, common.Coppers(0, 0, 75), "Consumable"),
-		newCommodity(43557, "Poisonous Ivy Berries", 20, common.Coppers(0, 20, 25), "Miscellaneous"),
+		newCommodity(43557, "Poisonous Ivy Berries", 20, common.Coppers(0, 0, 25), "Miscellaneous"),
 		newCommodity(54629, "Prickly Thorn", 1, common.Coppers(0, 0, 43), "Miscellaneous"),
 		newCommodity(60390, "Reticulated Tissue", 1, common.Coppers(0, 19, 73), "Miscellaneous"),
 		newCommodity(60405, "Stubby Bear Tail", 1, common.Coppers(0, 22, 22), "Miscellaneous"),
