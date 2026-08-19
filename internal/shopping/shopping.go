@@ -108,7 +108,7 @@ func (r *Recommendations) iterateAuctions(auctions map[int64][]auction.Auction, 
 	for itemID, itemAuctions := range auctions {
 		i, err := app.WowItem.Get(itemID)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error getting itemID %d, commodities=%t: %v\n", itemID, commodities, err)
+			fmt.Fprintf(os.Stderr, "error getting itemID %6d, commodities=%5t: %v  https://www.wowhead.com/item=%d\n", itemID, commodities, err, itemID)
 			continue
 		}
 
