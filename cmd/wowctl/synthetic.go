@@ -61,81 +61,80 @@ func newCommodityNoPrice(id int64, name string) wowitem.Item {
 
 // synthetics returns the synthetic items we have created.
 func synthetics() []wowitem.Item {
-	items := []wowitem.Item{}
+	return []wowitem.Item{
 
-	// Items that DO NOT have vendor prices. Just create the most basic placeholder item.
+		// Items that DO NOT have vendor prices. Just create the most basic placeholder item.
 
-	items = append(items, newItemNoPrice(123865, "Relic of Ursol"))
-	items = append(items, newItemNoPrice(123868, "Relic of Shakama"))
-	items = append(items, newItemNoPrice(123869, "Relic of Elune"))
-	items = append(items, newItemNoPrice(147455, "Water Stone"))
-	items = append(items, newItemNoPrice(203932, "Sentient Book"))
-	items = append(items, newItemNoPrice(217959, "Incomplete Painting"))
-	items = append(items, newItemNoPrice(225218, "Echoing Fragment: Hallowfall"))
-	items = append(items, newItemNoPrice(225219, "Echoing Fragment: The Ringing Deeps"))
-	items = append(items, newItemNoPrice(225236, "Echoing Fragment: Isle of Dorn"))
-	items = append(items, newItemNoPrice(225237, "Echoing Fragment: Azj-Kahet"))
-	items = append(items, newItemNoPrice(268944, "Souvenir Halazzi Idol"))
-	items = append(items, newItemNoPrice(268945, "Souvenir Nalorakk Mask"))
-	items = append(items, newItemNoPrice(268946, "Souvenir Jan'alai Key Chain"))
-	items = append(items, newItemNoPrice(268947, "Souvenir Akil'zon Shine Paper Weight"))
-	items = append(items, newItemNoPrice(268948, "Fine Antique Silvermoon Drapes"))
-	items = append(items, newItemNoPrice(268949, "Single Earthen Salt Shaker"))
-	items = append(items, newItemNoPrice(275670, "Bill of Lading"))
+		newItemNoPrice(123865, "Relic of Ursol"),
+		newItemNoPrice(123868, "Relic of Shakama"),
+		newItemNoPrice(123869, "Relic of Elune"),
+		newItemNoPrice(147455, "Water Stone"),
+		newItemNoPrice(203932, "Sentient Book"),
+		newItemNoPrice(217959, "Incomplete Painting"),
+		newItemNoPrice(225218, "Echoing Fragment: Hallowfall"),
+		newItemNoPrice(225219, "Echoing Fragment: The Ringing Deeps"),
+		newItemNoPrice(225236, "Echoing Fragment: Isle of Dorn"),
+		newItemNoPrice(225237, "Echoing Fragment: Azj-Kahet"),
+		newItemNoPrice(268944, "Souvenir Halazzi Idol"),
+		newItemNoPrice(268945, "Souvenir Nalorakk Mask"),
+		newItemNoPrice(268946, "Souvenir Jan'alai Key Chain"),
+		newItemNoPrice(268947, "Souvenir Akil'zon Shine Paper Weight"),
+		newItemNoPrice(268948, "Fine Antique Silvermoon Drapes"),
+		newItemNoPrice(268949, "Single Earthen Salt Shaker"),
+		newItemNoPrice(275670, "Bill of Lading"),
 
-	// Items that DO have vendor prices. These are more interesting.
-	// They might actually become arbitrage plays.
+		// Items that DO have vendor prices. These are more interesting.
+		// They might actually become arbitrage plays.
 
-	items = append(items, newItem(217958, "Used Socks", 1, common.Coppers(0, 0, 1), "Miscellaneous"))
-	items = append(items, newItem(226002, "Expensive-Looking Find", 23, common.Coppers(200, 0, 0), "Miscellaneous"))
-	items = append(items, newItem(226004, "Olden Text", 23, common.Coppers(200, 0, 0), "Miscellaneous"))
+		newItem(217958, "Used Socks", 1, common.Coppers(0, 0, 1), "Miscellaneous"),
+		newItem(226002, "Expensive-Looking Find", 23, common.Coppers(200, 0, 0), "Miscellaneous"),
+		newItem(226004, "Olden Text", 23, common.Coppers(200, 0, 0), "Miscellaneous"),
 
-	// Commodities that DO NOT have vendor prices.
+		// Commodities that DO NOT have vendor prices.
 
-	items = append(items, newCommodityNoPrice(178149, "Centurion Anima Core"))
-	items = append(items, newCommodityNoPrice(225784, "Potion of Polymorphic Translation: Nerubian"))
+		newCommodityNoPrice(178149, "Centurion Anima Core"),
+		newCommodityNoPrice(225784, "Potion of Polymorphic Translation: Nerubian"),
 
-	// Commodities that DO have vendor prices.
+		// Commodities that DO have vendor prices.
 
-	items = append(items, newCommodity(23704, "Eversong Port", 1, common.Coppers(0, 0, 75), "Consumable"))
-	items = append(items, newCommodity(54629, "Prickly Thorn", 1, common.Coppers(0, 0, 43), "Miscellaneous"))
-	items = append(items, newCommodity(60390, "Reticulated Tissue", 1, common.Coppers(0, 19, 73), "Miscellaneous"))
-	items = append(items, newCommodity(60405, "Stubby Bear Tail", 1, common.Coppers(0, 22, 22), "Miscellaneous"))
-	items = append(items, newCommodity(60406, "Blood-Caked Incisors", 1, common.Coppers(0, 37, 27), "Miscellaneous"))
-	items = append(items, newCommodity(62770, "Infested Feather", 1, common.Coppers(0, 0, 3), "Miscellaneous"))
-	items = append(items, newCommodity(201420, "Gnolan's House Special", 21, common.Coppers(0, 18, 75), "Consumable"))
-	items = append(items, newCommodity(201421, "Tuskarr Jerky", 1, common.Coppers(0, 12, 50), "Consumable"))
-	items = append(items, newCommodity(204836, "Insect Treasure", 21, common.Coppers(0, 0, 50), "Miscellaneous"))
-	items = append(items, newCommodity(204837, "Rotting Fruit", 21, common.Coppers(0, 0, 50), "Miscellaneous"))
-	items = append(items, newCommodity(204838, "Discarded Toy", 21, common.Coppers(0, 0, 50), "Miscellaneous"))
-	items = append(items, newCommodity(204840, "Bottled Pheromones", 21, common.Coppers(0, 0, 50), "Miscellaneous"))
-	items = append(items, newCommodity(204842, "Red Sparklepretty", 21, common.Coppers(0, 0, 50), "Miscellaneous"))
-	items = append(items, newCommodity(212531, "Ruined Candle", 1, common.Coppers(50, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(212533, "Ear Worm", 1, common.Coppers(50, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(212534, "Wax Carving of a Candle", 1, common.Coppers(50, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213235, "Summoning Circle Chalk", 23, common.Coppers(10, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213238, "Broken Shadow Beast Binding", 23, common.Coppers(10, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213240, "Decorated Truffle", 23, common.Coppers(30, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213242, "Adventures of Libarbie and Lichen", 23, common.Coppers(30, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213245, "Gnawed Binding", 23, common.Coppers(30, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213247, "Razor-Sharp Bones", 23, common.Coppers(10, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213250, "Cracked Gem", 23, common.Coppers(10, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213251, "Cinderbee Wax Jar", 23, common.Coppers(20, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213252, "Stolen Earthen Contraption", 23, common.Coppers(10, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213253, "Gilded Candle", 23, common.Coppers(20, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213254, "Big Gold Nugget", 23, common.Coppers(10, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213255, "Wax Canary", 23, common.Coppers(20, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213258, "Odorant Oddity", 23, common.Coppers(10, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213259, "Silk Doll", 23, common.Coppers(20, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213261, "Niffen Smell Pouch", 23, common.Coppers(30, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213262, "Stained Glass Fragment", 23, common.Coppers(10, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213263, "Poison Needle", 23, common.Coppers(30, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(213266, "Twitching Snack", 23, common.Coppers(10, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(224153, "Nibbled Shroomcap", 23, common.Coppers(10, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(224154, "Mushrock", 23, common.Coppers(20, 0, 0), "Miscellaneous"))
-	items = append(items, newCommodity(224155, "Peeled Fungal Scale", 23, common.Coppers(20, 0, 0), "Miscellaneous"))
-
-	return items
+		newCommodity(23704, "Eversong Port", 1, common.Coppers(0, 0, 75), "Consumable"),
+		newCommodity(54629, "Prickly Thorn", 1, common.Coppers(0, 0, 43), "Miscellaneous"),
+		newCommodity(60390, "Reticulated Tissue", 1, common.Coppers(0, 19, 73), "Miscellaneous"),
+		newCommodity(60405, "Stubby Bear Tail", 1, common.Coppers(0, 22, 22), "Miscellaneous"),
+		newCommodity(60406, "Blood-Caked Incisors", 1, common.Coppers(0, 37, 27), "Miscellaneous"),
+		newCommodity(62770, "Infested Feather", 1, common.Coppers(0, 0, 3), "Miscellaneous"),
+		newCommodity(201420, "Gnolan's House Special", 21, common.Coppers(0, 18, 75), "Consumable"),
+		newCommodity(201421, "Tuskarr Jerky", 1, common.Coppers(0, 12, 50), "Consumable"),
+		newCommodity(204836, "Insect Treasure", 21, common.Coppers(0, 0, 50), "Miscellaneous"),
+		newCommodity(204837, "Rotting Fruit", 21, common.Coppers(0, 0, 50), "Miscellaneous"),
+		newCommodity(204838, "Discarded Toy", 21, common.Coppers(0, 0, 50), "Miscellaneous"),
+		newCommodity(204840, "Bottled Pheromones", 21, common.Coppers(0, 0, 50), "Miscellaneous"),
+		newCommodity(204842, "Red Sparklepretty", 21, common.Coppers(0, 0, 50), "Miscellaneous"),
+		newCommodity(212531, "Ruined Candle", 1, common.Coppers(50, 0, 0), "Miscellaneous"),
+		newCommodity(212533, "Ear Worm", 1, common.Coppers(50, 0, 0), "Miscellaneous"),
+		newCommodity(212534, "Wax Carving of a Candle", 1, common.Coppers(50, 0, 0), "Miscellaneous"),
+		newCommodity(213235, "Summoning Circle Chalk", 23, common.Coppers(10, 0, 0), "Miscellaneous"),
+		newCommodity(213238, "Broken Shadow Beast Binding", 23, common.Coppers(10, 0, 0), "Miscellaneous"),
+		newCommodity(213240, "Decorated Truffle", 23, common.Coppers(30, 0, 0), "Miscellaneous"),
+		newCommodity(213242, "Adventures of Libarbie and Lichen", 23, common.Coppers(30, 0, 0), "Miscellaneous"),
+		newCommodity(213245, "Gnawed Binding", 23, common.Coppers(30, 0, 0), "Miscellaneous"),
+		newCommodity(213247, "Razor-Sharp Bones", 23, common.Coppers(10, 0, 0), "Miscellaneous"),
+		newCommodity(213250, "Cracked Gem", 23, common.Coppers(10, 0, 0), "Miscellaneous"),
+		newCommodity(213251, "Cinderbee Wax Jar", 23, common.Coppers(20, 0, 0), "Miscellaneous"),
+		newCommodity(213252, "Stolen Earthen Contraption", 23, common.Coppers(10, 0, 0), "Miscellaneous"),
+		newCommodity(213253, "Gilded Candle", 23, common.Coppers(20, 0, 0), "Miscellaneous"),
+		newCommodity(213254, "Big Gold Nugget", 23, common.Coppers(10, 0, 0), "Miscellaneous"),
+		newCommodity(213255, "Wax Canary", 23, common.Coppers(20, 0, 0), "Miscellaneous"),
+		newCommodity(213258, "Odorant Oddity", 23, common.Coppers(10, 0, 0), "Miscellaneous"),
+		newCommodity(213259, "Silk Doll", 23, common.Coppers(20, 0, 0), "Miscellaneous"),
+		newCommodity(213261, "Niffen Smell Pouch", 23, common.Coppers(30, 0, 0), "Miscellaneous"),
+		newCommodity(213262, "Stained Glass Fragment", 23, common.Coppers(10, 0, 0), "Miscellaneous"),
+		newCommodity(213263, "Poison Needle", 23, common.Coppers(30, 0, 0), "Miscellaneous"),
+		newCommodity(213266, "Twitching Snack", 23, common.Coppers(10, 0, 0), "Miscellaneous"),
+		newCommodity(224153, "Nibbled Shroomcap", 23, common.Coppers(10, 0, 0), "Miscellaneous"),
+		newCommodity(224154, "Mushrock", 23, common.Coppers(20, 0, 0), "Miscellaneous"),
+		newCommodity(224155, "Peeled Fungal Scale", 23, common.Coppers(20, 0, 0), "Miscellaneous"),
+	}
 }
 
 func syntheticValidate(s []wowitem.Item, paths *path.Paths) error {
