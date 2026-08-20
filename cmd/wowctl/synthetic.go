@@ -116,6 +116,7 @@ func synthetics() []wowitem.Item {
 		newCommodity(212531, "Ruined Candle", 1, common.Coppers(50, 0, 0)),
 		newCommodity(212533, "Ear Worm", 1, common.Coppers(50, 0, 0)),
 		newCommodity(212534, "Wax Carving of a Candle", 1, common.Coppers(50, 0, 0)),
+		newCommodity(213234, "Rusty Ritual Knife", 23, common.Coppers(20, 0, 0)),
 		newCommodity(213235, "Summoning Circle Chalk", 23, common.Coppers(10, 0, 0)),
 		newCommodity(213238, "Broken Shadow Beast Binding", 23, common.Coppers(10, 0, 0)),
 		newCommodity(213240, "Decorated Truffle", 23, common.Coppers(30, 0, 0)),
@@ -134,9 +135,11 @@ func synthetics() []wowitem.Item {
 		newCommodity(213262, "Stained Glass Fragment", 23, common.Coppers(10, 0, 0)),
 		newCommodity(213263, "Poison Needle", 23, common.Coppers(30, 0, 0)),
 		newCommodity(213266, "Twitching Snack", 23, common.Coppers(10, 0, 0)),
+		newCommodity(213267, "Idol of Ansurek", 23, common.Coppers(30, 0, 0)),
 		newCommodity(224153, "Nibbled Shroomcap", 23, common.Coppers(10, 0, 0)),
 		newCommodity(224154, "Mushrock", 23, common.Coppers(20, 0, 0)),
 		newCommodity(224155, "Peeled Fungal Scale", 23, common.Coppers(20, 0, 0)),
+		newCommodity(226003, "Snake Oil", 23, common.Coppers(200, 0, 0)),
 	}
 }
 
