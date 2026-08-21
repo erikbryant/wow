@@ -139,6 +139,7 @@ func synthetics() []wowitem.Item {
 		newCommodity(213263, "Poison Needle", 23, common.Coppers(30, 0, 0)),
 		newCommodity(213266, "Twitching Snack", 23, common.Coppers(10, 0, 0)),
 		newCommodity(213267, "Idol of Ansurek", 23, common.Coppers(30, 0, 0)),
+		newCommodity(222906, "Plump Snapcrab", 1, common.Coppers(0, 0, 1)),
 		newCommodity(224153, "Nibbled Shroomcap", 23, common.Coppers(10, 0, 0)),
 		newCommodity(224154, "Mushrock", 23, common.Coppers(20, 0, 0)),
 		newCommodity(224155, "Peeled Fungal Scale", 23, common.Coppers(20, 0, 0)),
