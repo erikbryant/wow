@@ -21,7 +21,6 @@ var (
 		1884:  {}, // Various fish held in offhand
 		2016:  {}, // Various fish held in offhand
 		2019:  {}, // Various fish held in offhand
-		70361: {}, // Elegant Artisan's Cooking Hat
 		78217: {}, // Elegant Artisan's Fishing Hat
 
 		// NOT part of an appearance set (so less interesting)
@@ -158,7 +157,7 @@ func NewAppearances() (*Appearances, error) {
 	// Make sure I don't already own any of the items I am filtering.
 	for id, _ := range excludedIDs {
 		if ao.owned[id] {
-			fmt.Printf("You already own this, remove it from flakyIDs: %d\n", id)
+			fmt.Printf("You already own this, remove it from excludedIDs: %d\n", id)
 		}
 	}
 
