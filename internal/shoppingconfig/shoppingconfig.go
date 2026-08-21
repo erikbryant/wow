@@ -105,18 +105,17 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 
 			// We collect pets to sell to Stephen; limit how many of each we collect
 			2842: {}, // Anomalus
+			1965: {}, // Blightbreath
 			191:  {}, // Clockwork Rocket Bot
-			//1961: {}, // G0-R41-0n Ultratonk
-			//67:   {}, // Hawk Owl
-			//68:   {}, // Great Horned Owl
-			//50:   {}, // Green Wing Macaw
-			//2468: {}, // Laughing Stonekin
-			//1727: {}, // Nursery Spider
-			//175:  {}, // Phoenix Hatchling
-			//44:   {}, // Siamese Cat
-			//1721: {}, // Stormborne Whelpling
-			//1151: {}, // Untamed Hatchling
+			1802: {}, // Fetid Waveling
+			1961: {}, // G0-R41-0N Ultratonk
+			1233: {}, // Pocket Reaver
+			3348: {}, // Primal Stormling
+			3006: {}, // Stoneskin Dredwing Pup
+			1151: {}, // Untamed Hatchling
+			4506: {}, // Violet Sporbit
 			1394: {}, // Weebomination
+			4496: {}, // Wriggle
 		},
 	}
 
