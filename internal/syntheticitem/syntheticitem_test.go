@@ -1,15 +1,16 @@
 package syntheticitem
 
 import (
-	"bytes"
 	"encoding/json"
 	"reflect"
 	"strconv"
 	"testing"
+
+	"github.com/erikbryant/wow/internal/wowitem"
 )
 
 func TestNew(t *testing.T) {
-	item := New(123456)
+	item := New(123456, "test name")
 
 	if item == nil {
 		t.Fatal("New returned nil")
@@ -41,7 +42,7 @@ func TestNewIDBoundaries(t *testing.T) {
 
 	for _, want := range tests {
 		t.Run(strconv.FormatInt(want, 10), func(t *testing.T) {
-			item := New(want)
+			item := New(want, "test name")
 
 			if got := item.Map()["id"]; got != json.Number(strconv.FormatInt(want, 10)) {
 				t.Errorf("id = %#v, want %q", got, strconv.FormatInt(want, 10))
@@ -51,54 +52,23 @@ func TestNewIDBoundaries(t *testing.T) {
 }
 
 func TestSetID(t *testing.T) {
-	item := New(1).SetID(987654321)
+	item := New(1, "test name").SetID(987654321)
 
 	if got := item.Map()["id"]; got != json.Number("987654321") {
 		t.Errorf("id = %#v, want json.Number(\"987654321\")", got)
 	}
 }
 
-func TestSetBinding(t *testing.T) {
-	item := New(1).SetBinding("Binds on Equip")
-
-	assertNestedValue(t, item.Map(),
-		[]string{"preview_item", "binding", "type"},
-		"Binds on Equip",
-	)
-}
-
-func TestSetInventoryType(t *testing.T) {
-	item := New(1).SetInventoryType("HEAD")
-
-	got, ok := item.Map()["inventory_type"].(string)
-	if !ok {
-		t.Fatalf("inventory_type has type %T, want string", item.Map()["inventory_type"])
-	}
-
-	if got != "HEAD" {
-		t.Errorf("inventory_type = %q, want %q", got, "HEAD")
-	}
-}
-
 func TestSetLevel(t *testing.T) {
-	item := New(1).SetLevel(123)
+	item := New(1, "test name").SetItemLevel(123)
 
 	if got := item.Map()["level"]; got != json.Number("123") {
 		t.Errorf("level = %#v, want json.Number(\"123\")", got)
 	}
 }
 
-func TestSetItemSubclassName(t *testing.T) {
-	item := New(1).SetItemSubclassName("Plate")
-
-	assertNestedValue(t, item.Map(),
-		[]string{"item_subclass", "name"},
-		"Plate",
-	)
-}
-
 func TestSetItemClassName(t *testing.T) {
-	item := New(1).SetItemClassName("Armor")
+	item := New(1, "test name").SetItemClassName("Armor")
 
 	assertNestedValue(t, item.Map(),
 		[]string{"item_class", "name"},
@@ -107,7 +77,7 @@ func TestSetItemClassName(t *testing.T) {
 }
 
 func TestSetStackable(t *testing.T) {
-	item := New(1)
+	item := New(1, "test name")
 
 	if got := item.Map()["is_stackable"]; got != false {
 		t.Errorf("initial is_stackable = %#v, want false", got)
@@ -126,17 +96,8 @@ func TestSetStackable(t *testing.T) {
 	}
 }
 
-func TestSetRelicType(t *testing.T) {
-	item := New(1).SetRelicType("Fire")
-
-	assertNestedValue(t, item.Map(),
-		[]string{"preview_item", "gem_properties", "relic_type"},
-		"Fire",
-	)
-}
-
 func TestSetPreviewPrice(t *testing.T) {
-	item := New(1).SetPreviewPrice(123456)
+	item := New(1, "test name").SetPreviewPrice(123456)
 
 	assertNestedValue(t, item.Map(),
 		[]string{"preview_item", "sell_price", "value"},
@@ -144,83 +105,21 @@ func TestSetPreviewPrice(t *testing.T) {
 	)
 }
 
-func TestSetRequiredSkill(t *testing.T) {
-	item := New(1).SetRequiredSkill("Level 80")
-
-	assertNestedValue(t, item.Map(),
-		[]string{"preview_item", "requirements", "skill", "display_string"},
-		"Level 80",
-	)
-}
-
-func TestSetQuality(t *testing.T) {
-	item := New(1).SetQuality("Epic")
-
-	assertNestedValue(t, item.Map(),
-		[]string{"preview_item", "quality", "name"},
-		"Epic",
-	)
-}
-
 func TestSetName(t *testing.T) {
-	item := New(1).SetName("Test Item")
+	item := New(1, "test name").SetName("Test Item")
 
 	if got := item.Map()["name"]; got != "Test Item" {
 		t.Errorf("name = %#v, want %q", got, "Test Item")
 	}
 }
 
-func TestSetToy(t *testing.T) {
-	item := New(1).SetToy(true)
-
-	assertNestedValue(t, item.Map(),
-		[]string{"preview_item", "toy"},
-		"Toy",
-	)
-
-	item.SetToy(false)
-
-	// SetToy(false) should retain the key but represent a non-toy value.
-	if got := item.Map()["preview_item"].(map[string]any)["toy"]; got != "" {
-		t.Errorf("toy after SetToy(false) = %#v, want \"\"", got)
-	}
-}
-
-func TestSetAppearances(t *testing.T) {
-	appearances := []any{
-		map[string]any{"id": json.Number("100")},
-		map[string]any{"id": json.Number("200")},
-	}
-
-	item := New(1).SetAppearances(appearances)
-
-	got, ok := item.Map()["appearances"].([]any)
-	if !ok {
-		t.Fatalf("appearances has type %T, want []any", item.Map()["appearances"])
-	}
-
-	if !reflect.DeepEqual(got, appearances) {
-		t.Errorf("appearances = %#v, want %#v", got, appearances)
-	}
-}
-
 func TestMutatorsAreChainable(t *testing.T) {
-	item := New(123).
+	item := New(123, "test name").
 		SetName("Test Item").
-		SetLevel(80).
-		SetInventoryType("HEAD").
+		SetItemLevel(80).
 		SetItemClassName("Armor").
-		SetItemSubclassName("Plate").
 		SetStackable(false).
-		SetBinding("Binds on Equip").
-		SetPreviewPrice(123456).
-		SetRequiredSkill("Level 80").
-		SetQuality("Epic").
-		SetRelicType("Fire").
-		SetToy(true).
-		SetAppearances([]any{
-			map[string]any{"id": json.Number("100")},
-		})
+		SetPreviewPrice(123456)
 
 	if item == nil {
 		t.Fatal("chained mutators returned nil")
@@ -239,55 +138,25 @@ func TestMutatorsAreChainable(t *testing.T) {
 		json.Number("80"),
 	)
 	assertNestedValue(t, item.Map(),
-		[]string{"inventory_type"},
-		"HEAD",
-	)
-	assertNestedValue(t, item.Map(),
 		[]string{"item_class", "name"},
 		"Armor",
-	)
-	assertNestedValue(t, item.Map(),
-		[]string{"item_subclass", "name"},
-		"Plate",
 	)
 	assertNestedValue(t, item.Map(),
 		[]string{"is_stackable"},
 		false,
 	)
 	assertNestedValue(t, item.Map(),
-		[]string{"preview_item", "binding", "type"},
-		"Binds on Equip",
-	)
-	assertNestedValue(t, item.Map(),
 		[]string{"preview_item", "sell_price", "value"},
 		json.Number("123456"),
-	)
-	assertNestedValue(t, item.Map(),
-		[]string{"preview_item", "requirements", "skill", "display_string"},
-		"Level 80",
-	)
-	assertNestedValue(t, item.Map(),
-		[]string{"preview_item", "quality", "name"},
-		"Epic",
-	)
-	assertNestedValue(t, item.Map(),
-		[]string{"preview_item", "gem_properties", "relic_type"},
-		"Fire",
-	)
-	assertNestedValue(t, item.Map(),
-		[]string{"preview_item", "toy"},
-		"Toy",
 	)
 }
 
 func TestMutatorOverwritesExistingValue(t *testing.T) {
-	item := New(1).
-		SetName("First").
+	item := New(1, "First").
 		SetName("Second").
-		SetLevel(10).
-		SetLevel(20).
-		SetQuality("Common").
-		SetQuality("Epic")
+		SetItemLevel(10).
+		SetItemLevel(20).
+		SetItemClassName("Armor")
 
 	if got := item.Map()["name"]; got != "Second" {
 		t.Errorf("name = %#v, want %q", got, "Second")
@@ -298,28 +167,22 @@ func TestMutatorOverwritesExistingValue(t *testing.T) {
 	}
 
 	assertNestedValue(t, item.Map(),
-		[]string{"preview_item", "quality", "name"},
-		"Epic",
+		[]string{"item_class", "name"},
+		"Armor",
 	)
 }
 
 func TestMutatorOverwritesNestedValue(t *testing.T) {
-	item := New(1).
-		SetBinding("Binds on Equip").
-		SetQuality("Rare").
+	item := New(1, "test name").
+		SetItemClassName("Armor").
 		SetPreviewPrice(100)
 
-	item.SetBinding("Soulbound")
-	item.SetQuality("Epic")
+	item.SetItemClassName("Profession")
 	item.SetPreviewPrice(200)
 
 	assertNestedValue(t, item.Map(),
-		[]string{"preview_item", "binding", "type"},
-		"Soulbound",
-	)
-	assertNestedValue(t, item.Map(),
-		[]string{"preview_item", "quality", "name"},
-		"Epic",
+		[]string{"item_class", "name"},
+		"Profession",
 	)
 	assertNestedValue(t, item.Map(),
 		[]string{"preview_item", "sell_price", "value"},
@@ -328,96 +191,22 @@ func TestMutatorOverwritesNestedValue(t *testing.T) {
 }
 
 func TestSetReplacesNonMapIntermediateValue(t *testing.T) {
-	item := New(1)
+	item := New(1, "test name")
 
 	// Deliberately corrupt the intermediate structure. The setter should
 	// replace it with a map rather than panic.
 	item.Map()["preview_item"] = "not a map"
 
-	item.SetBinding("Binds on Equip")
+	item.SetItemClassName("Profession")
 
 	assertNestedValue(t, item.Map(),
-		[]string{"preview_item", "binding", "type"},
-		"Binds on Equip",
+		[]string{"item_class", "name"},
+		"Profession",
 	)
 }
 
-func TestJSON(t *testing.T) {
-	item := New(123).
-		SetName("Test Item").
-		SetLevel(80).
-		SetInventoryType("HEAD").
-		SetItemClassName("Armor").
-		SetItemSubclassName("Plate").
-		SetStackable(false).
-		SetBinding("Binds on Equip").
-		SetPreviewPrice(123456).
-		SetRequiredSkill("Level 80").
-		SetQuality("Epic").
-		SetRelicType("Fire").
-		SetToy(true).
-		SetAppearances([]any{
-			map[string]any{"id": json.Number("100")},
-			map[string]any{"id": json.Number("200")},
-		})
-
-	data, err := item.JSON()
-	if err != nil {
-		t.Fatalf("JSON returned error: %v", err)
-	}
-
-	var decoded map[string]any
-	if err := json.Unmarshal(data, &decoded); err != nil {
-		t.Fatalf("JSON produced invalid JSON: %v", err)
-	}
-
-	if got := decoded["id"]; got != float64(123) {
-		t.Errorf("decoded id = %#v, want 123", got)
-	}
-
-	if got := decoded["name"]; got != "Test Item" {
-		t.Errorf("decoded name = %#v, want %q", got, "Test Item")
-	}
-
-	if got := decoded["inventory_type"]; got != "HEAD" {
-		t.Errorf("decoded inventory_type = %#v, want %q", got, "HEAD")
-	}
-
-	preview, ok := decoded["preview_item"].(map[string]any)
-	if !ok {
-		t.Fatalf("preview_item has type %T, want map[string]any", decoded["preview_item"])
-	}
-
-	if got := preview["toy"]; got != "Toy" {
-		t.Errorf("decoded toy = %#v, want %q", got, "Toy")
-	}
-}
-
-func TestJSONPreservesLargeIntegers(t *testing.T) {
-	const id int64 = 9223372036854775807
-
-	item := New(id)
-
-	data, err := item.JSON()
-	if err != nil {
-		t.Fatalf("JSON returned error: %v", err)
-	}
-
-	var decoded map[string]any
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.UseNumber()
-
-	if err := decoder.Decode(&decoded); err != nil {
-		t.Fatalf("JSON produced invalid JSON: %v", err)
-	}
-
-	if got := decoded["id"]; got != json.Number("9223372036854775807") {
-		t.Errorf("decoded id = %#v, want json.Number(\"9223372036854775807\")", got)
-	}
-}
-
 func TestMapReturnsUnderlyingMap(t *testing.T) {
-	item := New(1)
+	item := New(1, "test name")
 
 	data := item.Map()
 	data["name"] = "Externally Added"
@@ -427,22 +216,40 @@ func TestMapReturnsUnderlyingMap(t *testing.T) {
 	}
 }
 
-func TestEmptyJSON(t *testing.T) {
-	item := &Item{data: map[string]any{}}
+func TestSyntheticIsItem(t *testing.T) {
+	item := New(16, "test name").
+		SetItemLevel(10).
+		SetItemClassName("Armor").
+		SetStackable(true).
+		SetPreviewPrice(123456).
+		SetName("test")
 
-	data, err := item.JSON()
-	if err != nil {
-		t.Fatalf("JSON returned error: %v", err)
+	wi := wowitem.NewItem(item.Map())
+
+	if got := wi.ID(); got != 16 {
+		t.Errorf("level = %#v, want %d", 16, got)
 	}
 
-	var decoded map[string]any
-	if err := json.Unmarshal(data, &decoded); err != nil {
-		t.Fatalf("JSON produced invalid JSON: %v", err)
+	if got := wi.ItemLevel(); got != 10 {
+		t.Errorf("level = %#v, want %d", 10, got)
 	}
 
-	if len(decoded) != 0 {
-		t.Errorf("decoded map has %d entries, want 0", len(decoded))
+	if got := wi.ItemClassName(); got != "Armor" {
+		t.Errorf("level = %#v, want %s", "Armor", got)
 	}
+
+	if got := wi.Stackable(); got != true {
+		t.Errorf("level = %#v, want %t", true, got)
+	}
+
+	if got := wi.SellPriceAdvertised(); got != 123456 {
+		t.Errorf("level = %#v, want %d", 123456, got)
+	}
+
+	if got := wi.Name(); got != "test" {
+		t.Errorf("level = %#v, want %s", "test", got)
+	}
+
 }
 
 func assertNestedValue(t *testing.T, data map[string]any, keys []string, want any) {
@@ -465,15 +272,4 @@ func assertNestedValue(t *testing.T, data map[string]any, keys []string, want an
 	if !reflect.DeepEqual(current, want) {
 		t.Errorf("%v = %#v, want %#v", keys, current, want)
 	}
-}
-
-func mergeBase(got map[string]any, want map[string]any) map[string]any {
-	// This helper exists only to make TestSetBinding focus on the structure
-	// introduced by SetBinding without requiring the test to know every
-	// default field created by New.
-	result := make(map[string]any, len(got))
-	for key, value := range got {
-		result[key] = value
-	}
-	return result
 }
