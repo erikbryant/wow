@@ -24,12 +24,12 @@ func testPaths(t *testing.T) *path.Paths {
 	return paths
 }
 
-func saveItems(t *testing.T, filename string, items ...wowitem.Item) {
+func saveItems(t *testing.T, filename string, items ...*wowitem.Item) {
 	t.Helper()
 
 	p := persist.New[int64, wowitem.Item](filename)
 	for _, item := range items {
-		p.Set(item.ID(), item)
+		p.Set(item.ID(), *item)
 	}
 	if err := p.Save(); err != nil {
 		t.Fatalf("save items: %v", err)
@@ -198,7 +198,7 @@ func TestRunJSONRequiresID(t *testing.T) {
 func TestRunQueryByNameAndSort(t *testing.T) {
 	paths := testPaths(t)
 
-	items := []wowitem.Item{
+	items := []*wowitem.Item{
 		wowitem.NewItem(map[string]any{
 			"id":           json.Number("200"),
 			"name":         "Alpha Sword",

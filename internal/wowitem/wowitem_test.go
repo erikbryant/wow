@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func testItem(data map[string]any) Item {
+func testItem(data map[string]any) *Item {
 	return NewItem(data)
 }
 

@@ -7,8 +7,8 @@ import (
 
 func TestPersistenceSearchAndSortedKeys(t *testing.T) {
 	p := NewEmpty(t.TempDir() + "/items")
-	p.Set(20, NewItem(map[string]any{"id": json.Number("20"), "name": "Beta"}))
-	p.Set(10, NewItem(map[string]any{"id": json.Number("10"), "name": "Alpha"}))
+	p.Set(20, *NewItem(map[string]any{"id": json.Number("20"), "name": "Beta"}))
+	p.Set(10, *NewItem(map[string]any{"id": json.Number("10"), "name": "Alpha"}))
 	if got := p.Keys(); len(got) != 2 || got[0] != 10 || got[1] != 20 {
 		t.Fatalf("keys=%v", got)
 	}

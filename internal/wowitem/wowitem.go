@@ -42,8 +42,8 @@ var equipSlotTypes = map[string]struct{}{
 }
 
 // NewItem returns an Item populated with wowData
-func NewItem(wowData map[string]any) Item {
-	return Item{
+func NewItem(wowData map[string]any) *Item {
+	return &Item{
 		XID:      common.JSONInt64Panic(wowData["id"]),
 		XItem:    wowData,
 		XUpdated: time.Now(),
@@ -51,26 +51,26 @@ func NewItem(wowData map[string]any) Item {
 }
 
 // ID returns the item ID
-func (i Item) ID() int64 {
+func (i *Item) ID() int64 {
 	return i.XID
 }
 
 // Binding returns whether and when the item binds
-func (i Item) Binding() string {
+func (i *Item) Binding() string {
 	// The key is only sometimes there; do not error if it is missing
 	value, _ := web.MsiValued(i.XItem, []string{"preview_item", "binding", "type"}, "")
 	return value.(string)
 }
 
 // InventoryType returns the slot this item equips to, or UNKNOWN
-func (i Item) InventoryType() string {
+func (i *Item) InventoryType() string {
 	// The key is only sometimes there; do not error if it is missing
 	value, _ := web.MsiValued(i.XItem, []string{"inventory_type"}, "UNKNOWN")
 	return value.(string)
 }
 
 // Equippable returns true if the item is equippable
-func (i Item) Equippable() bool {
+func (i *Item) Equippable() bool {
 	// Preferred authoritative field
 	if v, ok := i.XItem["is_equippable"]; ok {
 		if b, ok := v.(bool); ok {
@@ -84,7 +84,7 @@ func (i Item) Equippable() bool {
 }
 
 // ItemLevel returns the item level
-func (i Item) ItemLevel() int64 {
+func (i *Item) ItemLevel() int64 {
 	v, err := web.MsiValue(i.XItem, []string{"level"})
 	if err != nil {
 		panic(fmt.Errorf("level missing from %v: %w", i.XItem, err))
@@ -93,7 +93,7 @@ func (i Item) ItemLevel() int64 {
 }
 
 // VariableItemLevel returns true if the item can be enhanced, changing its ilevel
-func (i Item) VariableItemLevel() bool {
+func (i *Item) VariableItemLevel() bool {
 	if i.Stackable() {
 		return false
 	}
@@ -102,13 +102,13 @@ func (i Item) VariableItemLevel() bool {
 }
 
 // ItemSubclassName returns the item subclass name
-func (i Item) ItemSubclassName() string {
+func (i *Item) ItemSubclassName() string {
 	v, _ := web.MsiValued(i.XItem, []string{"item_subclass", "name"}, "")
 	return v.(string)
 }
 
 // Cosmetic returns true if this item is a cosmetic
-func (i Item) Cosmetic() bool {
+func (i *Item) Cosmetic() bool {
 	// Definitely cosmetic
 	if i.ItemSubclassName() == "Cosmetic" {
 		return true
@@ -126,7 +126,7 @@ func (i Item) Cosmetic() bool {
 }
 
 // ItemClassName returns the item class name
-func (i Item) ItemClassName() string {
+func (i *Item) ItemClassName() string {
 	v, err := web.MsiValue(i.XItem, []string{"item_class", "name"})
 	if err != nil {
 		panic(fmt.Errorf("item_class missing from %v: %w", i.XItem, err))
@@ -135,7 +135,7 @@ func (i Item) ItemClassName() string {
 }
 
 // Stackable returns true if the item can be stacked in the inventory
-func (i Item) Stackable() bool {
+func (i *Item) Stackable() bool {
 	v, err := web.MsiValue(i.XItem, []string{"is_stackable"})
 	if err != nil {
 		panic(fmt.Errorf("is_stackable missing from %v: %w", i.XItem, err))
@@ -144,18 +144,18 @@ func (i Item) Stackable() bool {
 }
 
 // RelicType returns the relic type
-func (i Item) RelicType() string {
+func (i *Item) RelicType() string {
 	// The key is only sometimes there; do not error if it is missing
 	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "gem_properties", "relic_type"}, "")
 	return v.(string)
 }
 
 // Name returns the item name
-func (i Item) Name() string {
+func (i *Item) Name() string {
 	return i.XItem["name"].(string)
 }
 
-func (i Item) previewPrice() (int64, error) {
+func (i *Item) previewPrice() (int64, error) {
 	v, err := web.MsiValue(i.XItem, []string{"preview_item", "sell_price", "value"})
 	if err != nil {
 		return 0, err
@@ -164,7 +164,7 @@ func (i Item) previewPrice() (int64, error) {
 }
 
 // SellPriceAdvertised returns the vendor sell price listed in the JSON
-func (i Item) SellPriceAdvertised() int64 {
+func (i *Item) SellPriceAdvertised() int64 {
 	pp, err := i.previewPrice()
 	if err != nil {
 		// Items with no preview price don't sell
@@ -174,7 +174,7 @@ func (i Item) SellPriceAdvertised() int64 {
 }
 
 // SellPriceRealizable returns the actual price the vendor will offer for this specific item
-func (i Item) SellPriceRealizable() int64 {
+func (i *Item) SellPriceRealizable() int64 {
 	if i.VariableItemLevel() {
 		// I don't know how to price these
 		return 0
@@ -183,33 +183,33 @@ func (i Item) SellPriceRealizable() int64 {
 }
 
 // Updated returns the last time this item was updated in the persistence
-func (i Item) Updated() time.Time {
+func (i *Item) Updated() time.Time {
 	return i.XUpdated
 }
 
-func (i Item) Requirements() string {
+func (i *Item) Requirements() string {
 	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "requirements", "skill", "display_string"}, "")
 	return common.JSONString(v)
 }
 
-func (i Item) Quality() string {
+func (i *Item) Quality() string {
 	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "quality", "name"}, "")
 	return common.JSONString(v)
 }
 
 // Stale returns whether the item is older than a given number of days
-func (i Item) Stale(age time.Duration) bool {
+func (i *Item) Stale(age time.Duration) bool {
 	return time.Since(i.Updated()) > age
 }
 
 // Toy returns true if this item is a toy
-func (i Item) Toy() bool {
+func (i *Item) Toy() bool {
 	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "toy"}, "")
 	return common.JSONString(v) == "Toy"
 }
 
 // Appearances returns the appearance IDs this item provides
-func (i Item) Appearances() []int64 {
+func (i *Item) Appearances() []int64 {
 	appearanceIDs := []int64{}
 
 	v, _ := web.MsiValued(i.XItem, []string{"appearances"}, nil)

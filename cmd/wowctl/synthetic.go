@@ -47,7 +47,7 @@ func newItem(id int64, name string, options ...syntheticOption) wowitem.Item {
 		option(item)
 	}
 
-	return wowitem.NewItem(item.Map())
+	return *wowitem.NewItem(item.Map())
 }
 
 // synthetics returns the synthetic items we have created.

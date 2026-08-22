@@ -36,7 +36,7 @@ func New(persistencePath string) (*Persistence, error) {
 
 // Search returns the first item with name s.
 // Duplicates are very rare.
-func (p *Persistence) Search(s string) Item {
+func (p *Persistence) Search(s string) *Item {
 	_, item, ok := p.Persistence.Search(func(v Item) bool {
 		return v.Name() == s
 	})
@@ -44,7 +44,7 @@ func (p *Persistence) Search(s string) Item {
 		fmt.Fprintf(os.Stderr, "*** did not find item for search string: %s\n", s)
 	}
 
-	return item
+	return &item
 }
 
 // GetLive retrieves a single item from the WoW web API and persists it.
@@ -57,9 +57,9 @@ func (p *Persistence) GetLive(id int64) (Item, error) {
 	fmt.Println("Downloaded new item:", id)
 
 	item := NewItem(result)
-	p.Set(item.ID(), item)
+	p.Set(item.ID(), *item)
 
-	return item, nil
+	return *item, nil
 }
 
 // Get retrieves a single item. From persistence if present, web if not.
