@@ -85,8 +85,4 @@ ChatGPT: Cleaned up the code, made it idiomatic, wrote tests, suggested addition
 
 ### Areas for improvement
 
-The existing tests are old. The code has changed a lot since they were written. Evaluate them for usefulness, correctness, and coverage.
-
-Test coverage is low. Add more tests
-
-Measure test coverage?
+`shopping.go:generateOutput` handles all file output. Perhaps move that up into application.go?
