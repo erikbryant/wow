@@ -1,6 +1,7 @@
 package shopping
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"slices"
@@ -12,6 +13,7 @@ import (
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/output"
+	"github.com/erikbryant/wow/internal/query"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
@@ -290,6 +292,17 @@ func generateOutput(app *application.App, recommendations []Recommendations) err
 
 	// Arbitrages file for the WoW 'wowMerchant' addon to consume
 	err := os.WriteFile(app.Paths.Arbitrage, []byte(strings.Join(arbitrageRecords, "\n")+"\n"), 0600)
+	if err != nil {
+		return err
+	}
+
+	// Persisted items. In text form as a backup in case we lose the persistence.
+	// We can use the item IDs to know what was in the persistence.
+	var buf bytes.Buffer
+	items := app.WowItem.Values()
+	query.Sort(items, query.ByID)
+	output.Table(&buf, items, app.AppearanceSet)
+	err = os.WriteFile(app.Paths.ItemsReport, buf.Bytes(), 0600)
 	if err != nil {
 		return err
 	}
