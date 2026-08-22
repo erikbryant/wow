@@ -133,6 +133,7 @@ func synthetics() []wowitem.Item {
 		newItem(224153, "Nibbled Shroomcap", level(23), price(10, 0, 0), commodity),
 		newItem(224154, "Mushrock", level(23), price(20, 0, 0), commodity),
 		newItem(224155, "Peeled Fungal Scale", level(23), price(20, 0, 0), commodity),
+		newItem(225787, "Pheromone-Covered Missive", level(23), price(1, 87, 69), commodity),
 		newItem(226003, "Snake Oil", level(23), price(200, 0, 0), commodity),
 	}
 }
