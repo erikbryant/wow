@@ -345,7 +345,7 @@ func Shop(realms string, app *application.App) error {
 		return err
 	}
 
-	// Most runs do not change the persistence; be frugal about whether to save
+	// Most runs do not change the persistence; only save if necessary
 	if app.WowItem.Dirty() {
 		err = app.WowItem.Save()
 		if err != nil {
