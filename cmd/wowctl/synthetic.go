@@ -113,6 +113,7 @@ func synthetics() []wowitem.Item {
 		newItem(213240, "Decorated Truffle", level(23), price(30, 0, 0), commodity),
 		newItem(213242, "Adventures of Libarbie and Lichen", level(23), price(30, 0, 0), commodity),
 		newItem(213245, "Gnawed Binding", level(23), price(30, 0, 0), commodity),
+		newItem(213246, "Tiny Glowing Rock", level(23), price(30, 0, 0), commodity),
 		newItem(213247, "Razor-Sharp Bones", level(23), price(10, 0, 0), commodity),
 		newItem(213250, "Cracked Gem", level(23), price(10, 0, 0), commodity),
 		newItem(213251, "Cinderbee Wax Jar", level(23), price(20, 0, 0), commodity),
