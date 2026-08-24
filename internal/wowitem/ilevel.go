@@ -67,8 +67,8 @@ var itemLevels = map[int64]Levels{
 	237950: {iLvl106, []int64{218, 225, 232}},      // Sun-Blessed Needle Set
 	237951: {iLvl106, []int64{218, 225, 232}},      // Sun-Blessed Leatherworker's Toolset
 	237952: {iLvl106, iLvl106},                     // Sun-Blessed Blacksmith's Toolbox
-	238014: {iLvl106, []int64{218, 225, 232}},      // Sun-Blessed Sickle
-	238015: {iLvl106, []int64{218, 225, 232}},      // Sun-Blessed Pickaxe
+	238014: {iLvl106, []int64{212, 218, 225, 232}}, // Sun-Blessed Sickle
+	238015: {iLvl106, []int64{212, 218, 225, 232}}, // Sun-Blessed Pickaxe
 	238016: {iLvl106, []int64{212, 218, 225, 232}}, // Sun-Blessed Skinning Knife
 	238017: {iLvl106, []int64{212, 218, 225, 232}}, // Sun-Blessed Leatherworker's Knife
 	238018: {iLvl106, iLvl106},                     // Sun-Blessed Blacksmith's Hammer
@@ -88,7 +88,7 @@ var itemLevels = map[int64]Levels{
 	244624: {iLvl106, []int64{212, 218, 225, 232}}, // Sin'dorei Engineer's Gloves
 	244625: {iLvl106, iLvl106},                     // Sin'dorei Leathershaper's Smock
 	244628: {iLvl106, iLvl106},                     // Sin'dorei Forgemaster's Cover
-	244630: {iLvl106, []int64{212, 218, 232}},      // Sin'dorei Jeweler's Cover
+	244630: {iLvl106, iLvl106},                     // Sin'dorei Jeweler's Cover
 	244714: {iLvl106, []int64{212, 225, 232}},      // Sin'dorei Clampers
 	244718: {iLvl106, iLvl106},                     // Turbo-Junker's Multitool
 	245776: {iLvl106, iLvl106},                     // Sin'dorei Quill
@@ -115,19 +115,19 @@ var itemLevels = map[int64]Levels{
 	193479: {iLvl317, []int64{71, 72, 73, 74}}, // Floral Basket
 	193480: {iLvl317, []int64{71, 72, 73, 74}}, // Durable Pack
 	193482: {iLvl317, []int64{71, 74}},         // Skinner's Cap (sell price 2.00.00)
-	193485: {iLvl317, []int64{72, 73, 74}},     // Protective Gloves
+	193485: {iLvl317, []int64{71, 72, 73, 74}}, // Protective Gloves
 	193486: {iLvl317, iLvl317},                 // Resilient Smock
 	193487: {iLvl317, []int64{71, 72, 73, 74}}, // Alchemist's Hat
 	193528: {iLvl317, []int64{71, 72, 73, 74}}, // Wildercloth Alchemist's Robe
-	193534: {iLvl317, []int64{71, 72, 74}},     // Wildercloth Chef's Hat
+	193534: {iLvl317, []int64{71, 72, 73, 74}}, // Wildercloth Chef's Hat
 	193538: {iLvl317, []int64{71, 72, 74}},     // Wildercloth Gardening Hat
-	193539: {iLvl317, []int64{73, 74}},         // Wildercloth Enchanter's Hat
+	193539: {iLvl317, []int64{72, 73, 74}},     // Wildercloth Enchanter's Hat
 	193541: {iLvl317, iLvl317},                 // Wildercloth Tailor's Coat
 	193612: {iLvl317, []int64{71, 72, 73, 74}}, // Smithing Apron
 	193615: {iLvl317, []int64{71, 72, 73, 74}}, // Jeweler's Cover
-	194125: {iLvl317, []int64{72, 74}},         // Spring-Loaded Draconium Fabric Cutters
+	194125: {iLvl317, []int64{72, 73, 74}},     // Spring-Loaded Draconium Fabric Cutters
 	194874: {iLvl317, []int64{71, 72, 74}},     // Scribe's Fastened Quill
-	198204: {iLvl317, []int64{72, 73}},         // Draconium Brainwave Amplifier
+	198204: {iLvl317, []int64{72, 73, 74}},     // Draconium Brainwave Amplifier
 	198225: {iLvl317, []int64{72, 74}},         // Draconium Fisherfriend
 	198234: {iLvl317, []int64{71, 72, 74}},     // Lapidary's Draconium Clamps
 	198243: {iLvl317, []int64{72, 74}},         // Draconium Delver's Helmet
@@ -142,13 +142,13 @@ var itemLevels = map[int64]Levels{
 	215117: {iLvl486, []int64{85, 91, 98, 105}}, // Storyteller's Glasses
 	215119: {iLvl486, iLvl486},                  // Right-Handed Magnifying Glass
 	215120: {iLvl486, iLvl486},                  // Radiant Loupes
-	215121: {iLvl486, []int64{79, 85, 105}},     // Incanter's Shard
-	219861: {iLvl486, []int64{85, 91, 105}},     // Gardener's Basket
-	219862: {iLvl486, []int64{79, 85, 91, 105}}, // Hideseeker's Pack
+	215121: {iLvl486, []int64{79, 85, 98, 105}}, // Incanter's Shard
+	219861: {iLvl486, []int64{85, 91, 98, 105}}, // Gardener's Basket
+	219862: {iLvl486, iLvl486},                  // Hideseeker's Pack
 	219863: {iLvl486, []int64{85, 91, 98, 105}}, // Hideseeker's Hat
-	219864: {iLvl486, []int64{91, 98, 105}},     // Scrapsmith's Gloves
-	219865: {iLvl486, []int64{85, 91, 105}},     // Hideshaper's Cover
-	219866: {iLvl486, []int64{85, 105}},         // Apothecary's Cap
+	219864: {iLvl486, []int64{85, 91, 98, 105}}, // Scrapsmith's Gloves
+	219865: {iLvl486, []int64{85, 91, 98, 105}}, // Hideshaper's Cover
+	219866: {iLvl486, []int64{85, 91, 105}},     // Apothecary's Cap
 	219873: {iLvl486, []int64{85, 91, 98, 105}}, // Steelsmith's Apron
 	219875: {iLvl486, []int64{85, 91, 98, 105}}, // Gemcutter's Apron
 	221786: {iLvl486, []int64{91, 98, 105}},     // Spring-Loaded Bismuth Fabric Cutters
@@ -191,7 +191,7 @@ var itemLevels = map[int64]Levels{
 	244710: {iLvl535, []int64{212, 218, 225, 232}}, // Sin'dorei Headlamp
 	244712: {iLvl535, []int64{212, 218, 225, 232}}, // Sin'dorei Angler's Rod
 	244716: {iLvl535, []int64{212, 218, 225, 232}}, // Sin'dorei Gilded Hardhat
-	244720: {iLvl535, []int64{225, 232}},           // Junker's Big Ol' Bag
+	244720: {iLvl535, []int64{218, 225, 232}},      // Junker's Big Ol' Bag
 }
 
 // Known returns true if we have item level data for this itemID
