@@ -142,25 +142,25 @@ var itemLevels = map[int64]Levels{
 	215117: {iLvl486, []int64{85, 91, 98, 105}}, // Storyteller's Glasses
 	215119: {iLvl486, iLvl486},                  // Right-Handed Magnifying Glass
 	215120: {iLvl486, iLvl486},                  // Radiant Loupes
-	215121: {iLvl486, []int64{79, 85, 98, 105}}, // Incanter's Shard
+	215121: {iLvl486, iLvl486},                  // Incanter's Shard
 	219861: {iLvl486, []int64{85, 91, 98, 105}}, // Gardener's Basket
 	219862: {iLvl486, iLvl486},                  // Hideseeker's Pack
 	219863: {iLvl486, iLvl486},                  // Hideseeker's Hat
 	219864: {iLvl486, []int64{85, 91, 98, 105}}, // Scrapsmith's Gloves
 	219865: {iLvl486, []int64{85, 91, 98, 105}}, // Hideshaper's Cover
 	219866: {iLvl486, []int64{85, 91, 105}},     // Apothecary's Cap
-	219873: {iLvl486, []int64{85, 91, 98, 105}}, // Steelsmith's Apron
+	219873: {iLvl486, iLvl486},                  // Steelsmith's Apron
 	219875: {iLvl486, []int64{85, 91, 98, 105}}, // Gemcutter's Apron
 	221786: {iLvl486, []int64{91, 98, 105}},     // Spring-Loaded Bismuth Fabric Cutters
 	221788: {iLvl486, []int64{85, 91, 98, 105}}, // Bismuth Brainwave Projector
 	221790: {iLvl486, []int64{85, 91, 98, 105}}, // Bismuth Fisherfriend
 	221792: {iLvl486, []int64{98, 105}},         // Lapidary's Bismuth Clamps
-	221795: {iLvl486, []int64{91, 98, 105}},     // Bismuth Miner's Headgear
+	221795: {iLvl486, []int64{85, 91, 98, 105}}, // Bismuth Miner's Headgear
 	221797: {iLvl486, iLvl486},                  // Bismuth-Fueled Samophlange
 	221799: {iLvl486, []int64{91, 105}},         // Miner's Bismuth Hoard
 	222480: {iLvl486, iLvl486},                  // Proficient Sickle
 	222481: {iLvl486, iLvl486},                  // Proficient Pickaxe
-	222482: {iLvl486, []int64{91, 98, 105}},     // Proficient Skinning Knife
+	222482: {iLvl486, []int64{79, 91, 98, 105}}, // Proficient Skinning Knife
 	222483: {iLvl486, iLvl486},                  // Proficient Needle Set
 	222484: {iLvl486, []int64{79, 91, 98, 105}}, // Proficient Leatherworker's Knife
 	222485: {iLvl486, []int64{85, 91, 98, 105}}, // Proficient Leatherworker's Toolset
@@ -172,7 +172,7 @@ var itemLevels = map[int64]Levels{
 	244711: {iLvl486, []int64{}},                // Farstrider Hobbyist Rod
 
 	// iLvl 486 oddities #1
-	222841: {iLvl486odd1, []int64{80, 81, 82, 83}}, // Weavercloth Gardening Hat
+	222841: {iLvl486odd1, iLvl486odd1},             // Weavercloth Gardening Hat
 	222843: {iLvl486odd1, iLvl486odd1},             // Weavercloth Enchanter's Hat
 	222844: {iLvl486odd1, []int64{80, 81, 82, 83}}, // Weavercloth Tailor's Coat
 	222845: {iLvl486odd1, []int64{80, 81, 82, 83}}, // Weavercloth Alchemist's Robe
