@@ -102,7 +102,7 @@ var itemLevels = map[int64]Levels{
 	201601: {iLvl270, iLvl270}, // Runed Serevite Rod
 
 	// iLvl 317
-	191233: {iLvl317, []int64{72}},             // Chef's Smooth Rolling Pin
+	191233: {iLvl317, []int64{72, 74}},         // Chef's Smooth Rolling Pin
 	191234: {iLvl317, []int64{71, 72, 74}},     // Alchemist's Sturdy Mixing Rod
 	191235: {iLvl317, iLvl317},                 // Draconium Blacksmith's Toolbox
 	191236: {iLvl317, []int64{71, 72, 73, 74}}, // Draconium Leatherworker's Toolset
@@ -149,21 +149,21 @@ var itemLevels = map[int64]Levels{
 	219864: {iLvl486, []int64{91, 98, 105}},     // Scrapsmith's Gloves
 	219865: {iLvl486, []int64{85, 91, 105}},     // Hideshaper's Cover
 	219866: {iLvl486, []int64{85, 105}},         // Apothecary's Cap
-	219873: {iLvl486, []int64{105}},             // Steelsmith's Apron
-	219875: {iLvl486, []int64{105}},             // Gemcutter's Apron
-	221786: {iLvl486, []int64{105}},             // Spring-Loaded Bismuth Fabric Cutters
-	221788: {iLvl486, []int64{105}},             // Bismuth Brainwave Projector
+	219873: {iLvl486, []int64{91, 98, 105}},     // Steelsmith's Apron
+	219875: {iLvl486, []int64{85, 91, 98, 105}}, // Gemcutter's Apron
+	221786: {iLvl486, []int64{98, 105}},         // Spring-Loaded Bismuth Fabric Cutters
+	221788: {iLvl486, []int64{85, 98, 105}},     // Bismuth Brainwave Projector
 	221790: {iLvl486, []int64{85, 91, 98, 105}}, // Bismuth Fisherfriend
-	221792: {iLvl486, []int64{105}},             // Lapidary's Bismuth Clamps
-	221795: {iLvl486, []int64{105}},             // Bismuth Miner's Headgear
+	221792: {iLvl486, []int64{98, 105}},         // Lapidary's Bismuth Clamps
+	221795: {iLvl486, []int64{91, 98, 105}},     // Bismuth Miner's Headgear
 	221797: {iLvl486, iLvl486},                  // Bismuth-Fueled Samophlange
-	221799: {iLvl486, []int64{105}},             // Miner's Bismuth Hoard
+	221799: {iLvl486, []int64{91, 105}},         // Miner's Bismuth Hoard
 	222480: {iLvl486, iLvl486},                  // Proficient Sickle
-	222481: {iLvl486, []int64{105}},             // Proficient Pickaxe
-	222482: {iLvl486, []int64{105}},             // Proficient Skinning Knife
+	222481: {iLvl486, []int64{79, 85, 98, 105}}, // Proficient Pickaxe
+	222482: {iLvl486, []int64{91, 98, 105}},     // Proficient Skinning Knife
 	222483: {iLvl486, iLvl486},                  // Proficient Needle Set
-	222484: {iLvl486, []int64{105}},             // Proficient Leatherworker's Knife
-	222485: {iLvl486, []int64{105}},             // Proficient Leatherworker's Toolset
+	222484: {iLvl486, []int64{79, 91, 98, 105}}, // Proficient Leatherworker's Knife
+	222485: {iLvl486, []int64{85, 91, 98, 105}}, // Proficient Leatherworker's Toolset
 	222486: {iLvl486, []int64{85, 98, 105}},     // Proficient Blacksmith's Hammer
 	222487: {iLvl486, []int64{105}},             // Proficient Blacksmith's Toolbox
 	222573: {iLvl486, iLvl486},                  // Lightweight Scribe's Quill

@@ -332,7 +332,7 @@ func generateOutput(app *application.App, recommendations []Recommendations) err
 	}
 
 	// Item levels we think we need, but have not encountered yet
-	err = os.WriteFile(app.Paths.ILevels, []byte(strings.Join(wowitem.ILevelsNeeded(), "\n")), 0600)
+	err = os.WriteFile(app.Paths.ILevels, []byte(strings.Join(wowitem.ILevelsNeeded(), "\n")+"\n"), 0600)
 	if err != nil {
 		return err
 	}
