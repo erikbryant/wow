@@ -35,7 +35,7 @@ var itemLevels = map[int64]Levels{
 	237947: {iLvl80, iLvl80},                      // Thalassian Leatherworker's Toolset
 	237948: {iLvl80, iLvl80},                      // Thalassian Blacksmith's Toolbox
 	238009: {iLvl80, iLvl80},                      // Thalassian Sickle
-	238010: {iLvl80, []int64{180, 186, 199, 206}}, // Thalassian Pickaxe
+	238010: {iLvl80, iLvl80},                      // Thalassian Pickaxe
 	238011: {iLvl80, iLvl80},                      // Thalassian Skinning Knife
 	238012: {iLvl80, iLvl80},                      // Thalassian Leatherworker's Knife
 	238013: {iLvl80, iLvl80},                      // Thalassian Blacksmith's Hammer
@@ -65,25 +65,25 @@ var itemLevels = map[int64]Levels{
 
 	// iLvl 106
 	237950: {iLvl106, []int64{218, 225, 232}},      // Sun-Blessed Needle Set
-	237951: {iLvl106, []int64{225, 232}},           // Sun-Blessed Leatherworker's Toolset
+	237951: {iLvl106, []int64{218, 225, 232}},      // Sun-Blessed Leatherworker's Toolset
 	237952: {iLvl106, iLvl106},                     // Sun-Blessed Blacksmith's Toolbox
 	238014: {iLvl106, []int64{218, 225, 232}},      // Sun-Blessed Sickle
 	238015: {iLvl106, []int64{218, 225, 232}},      // Sun-Blessed Pickaxe
-	238016: {iLvl106, []int64{218, 225, 232}},      // Sun-Blessed Skinning Knife
+	238016: {iLvl106, []int64{212, 218, 225, 232}}, // Sun-Blessed Skinning Knife
 	238017: {iLvl106, []int64{212, 218, 225, 232}}, // Sun-Blessed Leatherworker's Knife
 	238018: {iLvl106, iLvl106},                     // Sun-Blessed Blacksmith's Hammer
 	239635: {iLvl106, []int64{212, 218, 225, 232}}, // Elegant Artisan's Alchemy Coveralls
 	239636: {iLvl106, []int64{212, 218, 225, 232}}, // Elegant Artisan's Cooking Hat
 	239637: {iLvl106, iLvl106},                     // Elegant Artisan's Enchanting Hat
 	239639: {iLvl106, []int64{212, 218, 225, 232}}, // Elegant Artisan's Herbalism Hat
-	239640: {iLvl106, []int64{218, 225, 232}},      // Elegant Artisan's Tailoring Robe
+	239640: {iLvl106, []int64{212, 218, 225, 232}}, // Elegant Artisan's Tailoring Robe
 	240957: {iLvl106, iLvl106},                     // Sin'dorei Scribe's Spectacles
 	240958: {iLvl106, iLvl106},                     // Improved Right-Handed Magnifying Glass
 	240959: {iLvl106, iLvl106},                     // Sin'dorei Jeweler's Loupes
 	240960: {iLvl106, iLvl106},                     // Sin'dorei Enchanter's Crystal
-	244176: {iLvl106, []int64{218, 225, 232}},      // Runed Brilliant Silver Rod
+	244176: {iLvl106, []int64{212, 218, 225, 232}}, // Runed Brilliant Silver Rod
 	244621: {iLvl106, []int64{212, 225, 232}},      // Sin'dorei Herbalist's Backpack
-	244622: {iLvl106, []int64{212, 218, 225, 232}}, // Sin'dorei Hunter's Pack
+	244622: {iLvl106, iLvl106},                     // Sin'dorei Hunter's Pack
 	244623: {iLvl106, []int64{218, 225, 232}},      // Eversong Hunter's Headcover
 	244624: {iLvl106, []int64{212, 218, 225, 232}}, // Sin'dorei Engineer's Gloves
 	244625: {iLvl106, iLvl106},                     // Sin'dorei Leathershaper's Smock
@@ -151,8 +151,8 @@ var itemLevels = map[int64]Levels{
 	219866: {iLvl486, []int64{85, 105}},         // Apothecary's Cap
 	219873: {iLvl486, []int64{85, 91, 98, 105}}, // Steelsmith's Apron
 	219875: {iLvl486, []int64{85, 91, 98, 105}}, // Gemcutter's Apron
-	221786: {iLvl486, []int64{98, 105}},         // Spring-Loaded Bismuth Fabric Cutters
-	221788: {iLvl486, []int64{85, 98, 105}},     // Bismuth Brainwave Projector
+	221786: {iLvl486, []int64{91, 98, 105}},     // Spring-Loaded Bismuth Fabric Cutters
+	221788: {iLvl486, []int64{85, 91, 98, 105}}, // Bismuth Brainwave Projector
 	221790: {iLvl486, []int64{85, 91, 98, 105}}, // Bismuth Fisherfriend
 	221792: {iLvl486, []int64{98, 105}},         // Lapidary's Bismuth Clamps
 	221795: {iLvl486, []int64{91, 98, 105}},     // Bismuth Miner's Headgear
@@ -172,25 +172,25 @@ var itemLevels = map[int64]Levels{
 	244711: {iLvl486, []int64{}},                // Farstrider Hobbyist Rod
 
 	// iLvl 486 oddities #1
-	222841: {iLvl486odd1, []int64{81, 82, 83}},     // Weavercloth Gardening Hat
-	222843: {iLvl486odd1, []int64{81, 82, 83}},     // Weavercloth Enchanter's Hat
+	222841: {iLvl486odd1, []int64{80, 81, 82, 83}}, // Weavercloth Gardening Hat
+	222843: {iLvl486odd1, iLvl486odd1},             // Weavercloth Enchanter's Hat
 	222844: {iLvl486odd1, []int64{80, 81, 82, 83}}, // Weavercloth Tailor's Coat
 	222845: {iLvl486odd1, []int64{80, 81, 82, 83}}, // Weavercloth Alchemist's Robe
 	222846: {iLvl486odd1, iLvl486odd1},             // Weavercloth Chef's Hat
 
 	// iLvl 486 oddities #2
-	244620: {iLvl486odd2, iLvl486odd2},                 // Chemist's Cap
-	244707: {iLvl486odd2, iLvl486odd2},                 // Farstrider Fabric Cutters
-	244709: {iLvl486odd2, iLvl486odd2},                 // Junker's Junk Visor
-	244715: {iLvl486odd2, []int64{186, 192, 199, 206}}, // Farstrider Hardhat
-	244719: {iLvl486odd2, iLvl486odd2},                 // Farstrider Rock Satchel
+	244620: {iLvl486odd2, iLvl486odd2}, // Chemist's Cap
+	244707: {iLvl486odd2, iLvl486odd2}, // Farstrider Fabric Cutters
+	244709: {iLvl486odd2, iLvl486odd2}, // Junker's Junk Visor
+	244715: {iLvl486odd2, iLvl486odd2}, // Farstrider Hardhat
+	244719: {iLvl486odd2, iLvl486odd2}, // Farstrider Rock Satchel
 
 	// iLvl 535
 	244626: {iLvl535, iLvl535},                     // Sin'dorei Alchemist's Hat
 	244708: {iLvl535, iLvl535},                     // Sin'dorei Snippers
 	244710: {iLvl535, []int64{212, 218, 225, 232}}, // Sin'dorei Headlamp
-	244712: {iLvl535, []int64{212, 225, 232}},      // Sin'dorei Angler's Rod
-	244716: {iLvl535, []int64{212, 225, 232}},      // Sin'dorei Gilded Hardhat
+	244712: {iLvl535, []int64{212, 218, 225, 232}}, // Sin'dorei Angler's Rod
+	244716: {iLvl535, []int64{212, 218, 225, 232}}, // Sin'dorei Gilded Hardhat
 	244720: {iLvl535, []int64{225, 232}},           // Junker's Big Ol' Bag
 }
 
