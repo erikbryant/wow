@@ -28,7 +28,7 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 		AppearancePriceMax:       common.Coppers(50, 0, 0),
 		AppearancePriceInSetMax:  common.Coppers(600, 0, 0),
 		ArbitrageProfitMin:       common.Coppers(0, 50, 0),
-		BattlePetPriceResellMax:  common.Coppers(180, 0, 0),
+		BattlePetPriceResellMax:  common.Coppers(80, 0, 0),
 		BattlePetPriceUnownedMax: common.Coppers(500, 0, 0),
 		ProfitToDisplayMin:       common.Coppers(15, 0, 0),
 		RecipePriceMax:           common.Coppers(19, 0, 0),
