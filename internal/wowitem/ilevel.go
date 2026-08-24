@@ -57,7 +57,7 @@ var itemLevels = map[int64]Levels{
 	244717: {iLvl80, iLvl80},                      // Junker's Multitool
 	245775: {iLvl80, iLvl80},                      // Hobbyist Scribe's Quill
 	245777: {iLvl80, iLvl80},                      // Hobbyist Alchemist's Mixing Rod
-	245779: {iLvl80, []int64{186, 192, 206}},      // Hobbyist Rolling Pin
+	245779: {iLvl80, []int64{180, 186, 192, 206}}, // Hobbyist Rolling Pin
 
 	// iLvl 80 oddities
 	240955: {iLvl80odd, iLvl80odd}, // Silvermoon Loupes
@@ -75,18 +75,18 @@ var itemLevels = map[int64]Levels{
 	239635: {iLvl106, []int64{212, 218, 225, 232}}, // Elegant Artisan's Alchemy Coveralls
 	239636: {iLvl106, []int64{212, 218, 225, 232}}, // Elegant Artisan's Cooking Hat
 	239637: {iLvl106, iLvl106},                     // Elegant Artisan's Enchanting Hat
-	239639: {iLvl106, []int64{225, 232}},           // Elegant Artisan's Herbalism Hat
+	239639: {iLvl106, []int64{212, 218, 225, 232}}, // Elegant Artisan's Herbalism Hat
 	239640: {iLvl106, []int64{218, 225, 232}},      // Elegant Artisan's Tailoring Robe
-	240957: {iLvl106, []int64{212, 218, 225, 232}}, // Sin'dorei Scribe's Spectacles
+	240957: {iLvl106, iLvl106},                     // Sin'dorei Scribe's Spectacles
 	240958: {iLvl106, iLvl106},                     // Improved Right-Handed Magnifying Glass
 	240959: {iLvl106, iLvl106},                     // Sin'dorei Jeweler's Loupes
 	240960: {iLvl106, iLvl106},                     // Sin'dorei Enchanter's Crystal
-	244176: {iLvl106, []int64{225, 232}},           // Runed Brilliant Silver Rod
-	244621: {iLvl106, []int64{212, 232}},           // Sin'dorei Herbalist's Backpack
-	244622: {iLvl106, []int64{225, 232}},           // Sin'dorei Hunter's Pack
+	244176: {iLvl106, []int64{218, 225, 232}},      // Runed Brilliant Silver Rod
+	244621: {iLvl106, []int64{212, 225, 232}},      // Sin'dorei Herbalist's Backpack
+	244622: {iLvl106, []int64{212, 218, 225, 232}}, // Sin'dorei Hunter's Pack
 	244623: {iLvl106, []int64{218, 225, 232}},      // Eversong Hunter's Headcover
 	244624: {iLvl106, []int64{212, 218, 225, 232}}, // Sin'dorei Engineer's Gloves
-	244625: {iLvl106, []int64{212, 225, 232}},      // Sin'dorei Leathershaper's Smock
+	244625: {iLvl106, iLvl106},                     // Sin'dorei Leathershaper's Smock
 	244628: {iLvl106, iLvl106},                     // Sin'dorei Forgemaster's Cover
 	244630: {iLvl106, []int64{212, 218, 232}},      // Sin'dorei Jeweler's Cover
 	244714: {iLvl106, []int64{212, 225, 232}},      // Sin'dorei Clampers
@@ -179,19 +179,19 @@ var itemLevels = map[int64]Levels{
 	222846: {iLvl486odd1, iLvl486odd1},             // Weavercloth Chef's Hat
 
 	// iLvl 486 oddities #2
-	244620: {iLvl486odd2, iLvl486odd2},            // Chemist's Cap
-	244707: {iLvl486odd2, iLvl486odd2},            // Farstrider Fabric Cutters
-	244709: {iLvl486odd2, iLvl486odd2},            // Junker's Junk Visor
-	244715: {iLvl486odd2, []int64{186, 206}},      // Farstrider Hardhat
-	244719: {iLvl486odd2, []int64{186, 199, 206}}, // Farstrider Rock Satchel
+	244620: {iLvl486odd2, iLvl486odd2},                 // Chemist's Cap
+	244707: {iLvl486odd2, iLvl486odd2},                 // Farstrider Fabric Cutters
+	244709: {iLvl486odd2, iLvl486odd2},                 // Junker's Junk Visor
+	244715: {iLvl486odd2, []int64{186, 192, 199, 206}}, // Farstrider Hardhat
+	244719: {iLvl486odd2, iLvl486odd2},                 // Farstrider Rock Satchel
 
 	// iLvl 535
-	244626: {iLvl535, iLvl535},                // Sin'dorei Alchemist's Hat
-	244708: {iLvl535, iLvl535},                // Sin'dorei Snippers
-	244710: {iLvl535, []int64{218, 225, 232}}, // Sin'dorei Headlamp
-	244712: {iLvl535, []int64{212, 225, 232}}, // Sin'dorei Angler's Rod
-	244716: {iLvl535, []int64{225, 232}},      // Sin'dorei Gilded Hardhat
-	244720: {iLvl535, []int64{225, 232}},      // Junker's Big Ol' Bag
+	244626: {iLvl535, iLvl535},                     // Sin'dorei Alchemist's Hat
+	244708: {iLvl535, iLvl535},                     // Sin'dorei Snippers
+	244710: {iLvl535, []int64{212, 218, 225, 232}}, // Sin'dorei Headlamp
+	244712: {iLvl535, []int64{212, 225, 232}},      // Sin'dorei Angler's Rod
+	244716: {iLvl535, []int64{212, 225, 232}},      // Sin'dorei Gilded Hardhat
+	244720: {iLvl535, []int64{225, 232}},           // Junker's Big Ol' Bag
 }
 
 // Known returns true if we have item level data for this itemID
