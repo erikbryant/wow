@@ -48,7 +48,7 @@ var itemLevels = map[int64]Levels{
 	240954: {iLvl80, iLvl80},                      // Fantastic Font Focuser
 	244175: {iLvl80, iLvl80},                      // Runed Refulgent Copper Rod
 	244615: {iLvl80, []int64{180, 186, 192, 206}}, // Eversong Botanist's Satchel
-	244617: {iLvl80, iLvl80},                      // Skinner's Cap (sell price: 2.50.00)
+	244617: {iLvl80, iLvl80},                      // Skinner's Cap (sell price 2.50.00)
 	244618: {iLvl80, iLvl80},                      // Tinker's Handguard
 	244619: {iLvl80, iLvl80},                      // Hideworker's Cover
 	244627: {iLvl80, iLvl80},                      // Apprentice Smith's Apron
@@ -112,9 +112,9 @@ var itemLevels = map[int64]Levels{
 	191240: {iLvl317, iLvl317},                 // Draconium Skinning Knife
 	191241: {iLvl317, iLvl317},                 // Draconium Sickle
 	191242: {iLvl317, iLvl317},                 // Draconium Pickaxe
-	193479: {iLvl317, []int64{72, 73, 74}},     // Floral Basket
+	193479: {iLvl317, []int64{71, 72, 73, 74}}, // Floral Basket
 	193480: {iLvl317, []int64{71, 72, 73, 74}}, // Durable Pack
-	193482: {iLvl317, []int64{71, 74}},         // Skinner's Cap (sell price: {iLvl317, []int642.00.00)
+	193482: {iLvl317, []int64{71, 74}},         // Skinner's Cap (sell price 2.00.00)
 	193485: {iLvl317, []int64{72, 74}},         // Protective Gloves
 	193486: {iLvl317, iLvl317},                 // Resilient Smock
 	193487: {iLvl317, []int64{71, 72, 73, 74}}, // Alchemist's Hat
