@@ -35,7 +35,7 @@ var itemLevels = map[int64]Levels{
 	237947: {iLvl80, iLvl80},                      // Thalassian Leatherworker's Toolset
 	237948: {iLvl80, iLvl80},                      // Thalassian Blacksmith's Toolbox
 	238009: {iLvl80, iLvl80},                      // Thalassian Sickle
-	238010: {iLvl80, []int64{180, 186, 206}},      // Thalassian Pickaxe
+	238010: {iLvl80, []int64{180, 186, 199, 206}}, // Thalassian Pickaxe
 	238011: {iLvl80, iLvl80},                      // Thalassian Skinning Knife
 	238012: {iLvl80, iLvl80},                      // Thalassian Leatherworker's Knife
 	238013: {iLvl80, iLvl80},                      // Thalassian Blacksmith's Hammer
@@ -164,19 +164,19 @@ var itemLevels = map[int64]Levels{
 	222483: {iLvl486, iLvl486},                  // Proficient Needle Set
 	222484: {iLvl486, []int64{79, 91, 98, 105}}, // Proficient Leatherworker's Knife
 	222485: {iLvl486, []int64{85, 91, 98, 105}}, // Proficient Leatherworker's Toolset
-	222486: {iLvl486, []int64{85, 98, 105}},     // Proficient Blacksmith's Hammer
-	222487: {iLvl486, []int64{105}},             // Proficient Blacksmith's Toolbox
+	222486: {iLvl486, iLvl486},                  // Proficient Blacksmith's Hammer
+	222487: {iLvl486, []int64{79, 85, 105}},     // Proficient Blacksmith's Toolbox
 	222573: {iLvl486, iLvl486},                  // Lightweight Scribe's Quill
 	222575: {iLvl486, iLvl486},                  // Hasty Alchemist's Mixing Rod
 	222577: {iLvl486, iLvl486},                  // Burnt Rolling Pin
 	244711: {iLvl486, []int64{}},                // Farstrider Hobbyist Rod
 
 	// iLvl 486 oddities #1
-	222841: {iLvl486odd1, []int64{83}},     // Weavercloth Gardening Hat
-	222843: {iLvl486odd1, []int64{82, 83}}, // Weavercloth Enchanter's Hat
-	222844: {iLvl486odd1, []int64{81, 83}}, // Weavercloth Tailor's Coat
-	222845: {iLvl486odd1, []int64{81, 83}}, // Weavercloth Alchemist's Robe
-	222846: {iLvl486odd1, iLvl486odd1},     // Weavercloth Chef's Hat
+	222841: {iLvl486odd1, []int64{81, 82, 83}},     // Weavercloth Gardening Hat
+	222843: {iLvl486odd1, []int64{81, 82, 83}},     // Weavercloth Enchanter's Hat
+	222844: {iLvl486odd1, []int64{80, 81, 82, 83}}, // Weavercloth Tailor's Coat
+	222845: {iLvl486odd1, []int64{80, 81, 82, 83}}, // Weavercloth Alchemist's Robe
+	222846: {iLvl486odd1, iLvl486odd1},             // Weavercloth Chef's Hat
 
 	// iLvl 486 oddities #2
 	244620: {iLvl486odd2, iLvl486odd2},            // Chemist's Cap
