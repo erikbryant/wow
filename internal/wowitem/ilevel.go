@@ -31,33 +31,33 @@ var itemLevels = map[int64]Levels{
 	223969: {iLvl70, iLvl70}, // Secret Sauce -- This does not appear to have distinct item levels
 
 	// iLvl 80
-	237946: {iLvl80, iLvl80},                      // Thalassian Needle Set
-	237947: {iLvl80, iLvl80},                      // Thalassian Leatherworker's Toolset
-	237948: {iLvl80, iLvl80},                      // Thalassian Blacksmith's Toolbox
-	238009: {iLvl80, iLvl80},                      // Thalassian Sickle
-	238010: {iLvl80, iLvl80},                      // Thalassian Pickaxe
-	238011: {iLvl80, iLvl80},                      // Thalassian Skinning Knife
-	238012: {iLvl80, iLvl80},                      // Thalassian Leatherworker's Knife
-	238013: {iLvl80, iLvl80},                      // Thalassian Blacksmith's Hammer
-	239641: {iLvl80, iLvl80},                      // Bright Linen Alchemy Apron
-	239642: {iLvl80, iLvl80},                      // Chef's Bright Linen Cooking Chapeau
-	239643: {iLvl80, iLvl80},                      // Bright Linen Enchanting Hat
-	239645: {iLvl80, iLvl80},                      // Bright Linen Herbalism Hat
-	239646: {iLvl80, iLvl80},                      // Bright Linen Tailoring Robe
-	240953: {iLvl80, iLvl80},                      // Bold Biographer's Bifocals
-	240954: {iLvl80, iLvl80},                      // Fantastic Font Focuser
-	244175: {iLvl80, iLvl80},                      // Runed Refulgent Copper Rod
-	244615: {iLvl80, []int64{180, 186, 192, 206}}, // Eversong Botanist's Satchel
-	244617: {iLvl80, iLvl80},                      // Skinner's Cap (sell price 2.50.00)
-	244618: {iLvl80, iLvl80},                      // Tinker's Handguard
-	244619: {iLvl80, iLvl80},                      // Hideworker's Cover
-	244627: {iLvl80, iLvl80},                      // Apprentice Smith's Apron
-	244629: {iLvl80, iLvl80},                      // Apprentice Jeweler's Apron
-	244713: {iLvl80, iLvl80},                      // Farstrider Clampers
-	244717: {iLvl80, iLvl80},                      // Junker's Multitool
-	245775: {iLvl80, iLvl80},                      // Hobbyist Scribe's Quill
-	245777: {iLvl80, iLvl80},                      // Hobbyist Alchemist's Mixing Rod
-	245779: {iLvl80, []int64{180, 186, 192, 206}}, // Hobbyist Rolling Pin
+	237946: {iLvl80, iLvl80}, // Thalassian Needle Set
+	237947: {iLvl80, iLvl80}, // Thalassian Leatherworker's Toolset
+	237948: {iLvl80, iLvl80}, // Thalassian Blacksmith's Toolbox
+	238009: {iLvl80, iLvl80}, // Thalassian Sickle
+	238010: {iLvl80, iLvl80}, // Thalassian Pickaxe
+	238011: {iLvl80, iLvl80}, // Thalassian Skinning Knife
+	238012: {iLvl80, iLvl80}, // Thalassian Leatherworker's Knife
+	238013: {iLvl80, iLvl80}, // Thalassian Blacksmith's Hammer
+	239641: {iLvl80, iLvl80}, // Bright Linen Alchemy Apron
+	239642: {iLvl80, iLvl80}, // Chef's Bright Linen Cooking Chapeau
+	239643: {iLvl80, iLvl80}, // Bright Linen Enchanting Hat
+	239645: {iLvl80, iLvl80}, // Bright Linen Herbalism Hat
+	239646: {iLvl80, iLvl80}, // Bright Linen Tailoring Robe
+	240953: {iLvl80, iLvl80}, // Bold Biographer's Bifocals
+	240954: {iLvl80, iLvl80}, // Fantastic Font Focuser
+	244175: {iLvl80, iLvl80}, // Runed Refulgent Copper Rod
+	244615: {iLvl80, iLvl80}, // Eversong Botanist's Satchel
+	244617: {iLvl80, iLvl80}, // Skinner's Cap (sell price 2.50.00)
+	244618: {iLvl80, iLvl80}, // Tinker's Handguard
+	244619: {iLvl80, iLvl80}, // Hideworker's Cover
+	244627: {iLvl80, iLvl80}, // Apprentice Smith's Apron
+	244629: {iLvl80, iLvl80}, // Apprentice Jeweler's Apron
+	244713: {iLvl80, iLvl80}, // Farstrider Clampers
+	244717: {iLvl80, iLvl80}, // Junker's Multitool
+	245775: {iLvl80, iLvl80}, // Hobbyist Scribe's Quill
+	245777: {iLvl80, iLvl80}, // Hobbyist Alchemist's Mixing Rod
+	245779: {iLvl80, iLvl80}, // Hobbyist Rolling Pin
 
 	// iLvl 80 oddities
 	240955: {iLvl80odd, iLvl80odd}, // Silvermoon Loupes
@@ -84,12 +84,12 @@ var itemLevels = map[int64]Levels{
 	244176: {iLvl106, []int64{212, 218, 225, 232}}, // Runed Brilliant Silver Rod
 	244621: {iLvl106, []int64{212, 225, 232}},      // Sin'dorei Herbalist's Backpack
 	244622: {iLvl106, iLvl106},                     // Sin'dorei Hunter's Pack
-	244623: {iLvl106, []int64{218, 225, 232}},      // Eversong Hunter's Headcover
+	244623: {iLvl106, iLvl106},                     // Eversong Hunter's Headcover
 	244624: {iLvl106, []int64{212, 218, 225, 232}}, // Sin'dorei Engineer's Gloves
 	244625: {iLvl106, iLvl106},                     // Sin'dorei Leathershaper's Smock
 	244628: {iLvl106, iLvl106},                     // Sin'dorei Forgemaster's Cover
 	244630: {iLvl106, iLvl106},                     // Sin'dorei Jeweler's Cover
-	244714: {iLvl106, []int64{212, 225, 232}},      // Sin'dorei Clampers
+	244714: {iLvl106, []int64{212, 218, 225, 232}}, // Sin'dorei Clampers
 	244718: {iLvl106, iLvl106},                     // Turbo-Junker's Multitool
 	245776: {iLvl106, iLvl106},                     // Sin'dorei Quill
 	245778: {iLvl106, []int64{212, 218, 225, 232}}, // Sin'dorei Alchemist's Mixing Rod
@@ -112,7 +112,7 @@ var itemLevels = map[int64]Levels{
 	191240: {iLvl317, iLvl317},                 // Draconium Skinning Knife
 	191241: {iLvl317, iLvl317},                 // Draconium Sickle
 	191242: {iLvl317, iLvl317},                 // Draconium Pickaxe
-	193479: {iLvl317, []int64{71, 72, 73, 74}}, // Floral Basket
+	193479: {iLvl317, iLvl317},                 // Floral Basket
 	193480: {iLvl317, []int64{71, 72, 73, 74}}, // Durable Pack
 	193482: {iLvl317, []int64{71, 74}},         // Skinner's Cap (sell price 2.00.00)
 	193485: {iLvl317, []int64{71, 72, 73, 74}}, // Protective Gloves
@@ -120,7 +120,7 @@ var itemLevels = map[int64]Levels{
 	193487: {iLvl317, []int64{71, 72, 73, 74}}, // Alchemist's Hat
 	193528: {iLvl317, []int64{71, 72, 73, 74}}, // Wildercloth Alchemist's Robe
 	193534: {iLvl317, []int64{71, 72, 73, 74}}, // Wildercloth Chef's Hat
-	193538: {iLvl317, []int64{71, 72, 74}},     // Wildercloth Gardening Hat
+	193538: {iLvl317, []int64{71, 72, 73, 74}}, // Wildercloth Gardening Hat
 	193539: {iLvl317, []int64{72, 73, 74}},     // Wildercloth Enchanter's Hat
 	193541: {iLvl317, iLvl317},                 // Wildercloth Tailor's Coat
 	193612: {iLvl317, []int64{71, 72, 73, 74}}, // Smithing Apron
@@ -129,7 +129,7 @@ var itemLevels = map[int64]Levels{
 	194874: {iLvl317, []int64{71, 72, 74}},     // Scribe's Fastened Quill
 	198204: {iLvl317, []int64{72, 73, 74}},     // Draconium Brainwave Amplifier
 	198225: {iLvl317, []int64{72, 74}},         // Draconium Fisherfriend
-	198234: {iLvl317, []int64{71, 72, 74}},     // Lapidary's Draconium Clamps
+	198234: {iLvl317, []int64{71, 72, 73, 74}}, // Lapidary's Draconium Clamps
 	198243: {iLvl317, []int64{72, 74}},         // Draconium Delver's Helmet
 	198245: {iLvl317, []int64{71, 72, 74}},     // Draconium Encased Samophlange
 	198262: {iLvl317, []int64{71, 72, 73, 74}}, // Bottomless Stonecrust Ore Satchel
@@ -145,7 +145,7 @@ var itemLevels = map[int64]Levels{
 	215121: {iLvl486, []int64{79, 85, 98, 105}}, // Incanter's Shard
 	219861: {iLvl486, []int64{85, 91, 98, 105}}, // Gardener's Basket
 	219862: {iLvl486, iLvl486},                  // Hideseeker's Pack
-	219863: {iLvl486, []int64{85, 91, 98, 105}}, // Hideseeker's Hat
+	219863: {iLvl486, iLvl486},                  // Hideseeker's Hat
 	219864: {iLvl486, []int64{85, 91, 98, 105}}, // Scrapsmith's Gloves
 	219865: {iLvl486, []int64{85, 91, 98, 105}}, // Hideshaper's Cover
 	219866: {iLvl486, []int64{85, 91, 105}},     // Apothecary's Cap
@@ -159,13 +159,13 @@ var itemLevels = map[int64]Levels{
 	221797: {iLvl486, iLvl486},                  // Bismuth-Fueled Samophlange
 	221799: {iLvl486, []int64{91, 105}},         // Miner's Bismuth Hoard
 	222480: {iLvl486, iLvl486},                  // Proficient Sickle
-	222481: {iLvl486, []int64{79, 85, 98, 105}}, // Proficient Pickaxe
+	222481: {iLvl486, iLvl486},                  // Proficient Pickaxe
 	222482: {iLvl486, []int64{91, 98, 105}},     // Proficient Skinning Knife
 	222483: {iLvl486, iLvl486},                  // Proficient Needle Set
 	222484: {iLvl486, []int64{79, 91, 98, 105}}, // Proficient Leatherworker's Knife
 	222485: {iLvl486, []int64{85, 91, 98, 105}}, // Proficient Leatherworker's Toolset
 	222486: {iLvl486, iLvl486},                  // Proficient Blacksmith's Hammer
-	222487: {iLvl486, []int64{79, 85, 105}},     // Proficient Blacksmith's Toolbox
+	222487: {iLvl486, []int64{79, 85, 91, 105}}, // Proficient Blacksmith's Toolbox
 	222573: {iLvl486, iLvl486},                  // Lightweight Scribe's Quill
 	222575: {iLvl486, iLvl486},                  // Hasty Alchemist's Mixing Rod
 	222577: {iLvl486, iLvl486},                  // Burnt Rolling Pin
