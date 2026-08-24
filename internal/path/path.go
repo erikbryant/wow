@@ -11,6 +11,7 @@ type Paths struct {
 	Appearances     string
 	Arbitrage       string
 	BattlePets      string
+	ILevels         string
 	Items           string
 	ItemsReport     string
 	PriceCache      string
@@ -129,6 +130,7 @@ func New(rootPath string) (*Paths, error) {
 		Appearances:     filepath.Join(rootPath, dataDir, "appearances"),
 		Arbitrage:       filepath.Join(rootPath, exportsDir, "arbitrageLatest"),
 		BattlePets:      filepath.Join(rootPath, reportsDir, "battlePets"),
+		ILevels:         filepath.Join(rootPath, exportsDir, "iLevels"),
 		Items:           filepath.Join(rootPath, dataDir, "items"),
 		ItemsReport:     filepath.Join(rootPath, reportsDir, "items"),
 		PriceCache:      filepath.Join(rootPath, exportsDir, "PriceCache.lua"),
