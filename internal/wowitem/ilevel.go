@@ -103,7 +103,7 @@ var itemLevels = map[int64]Levels{
 
 	// iLvl 317
 	191233: {iLvl317, []int64{72}},             // Chef's Smooth Rolling Pin
-	191234: {iLvl317, []int64{71, 72}},         // Alchemist's Sturdy Mixing Rod
+	191234: {iLvl317, []int64{71, 72, 74}},     // Alchemist's Sturdy Mixing Rod
 	191235: {iLvl317, iLvl317},                 // Draconium Blacksmith's Toolbox
 	191236: {iLvl317, []int64{71, 72, 73, 74}}, // Draconium Leatherworker's Toolset
 	191237: {iLvl317, iLvl317},                 // Draconium Blacksmith's Hammer
@@ -112,43 +112,43 @@ var itemLevels = map[int64]Levels{
 	191240: {iLvl317, iLvl317},                 // Draconium Skinning Knife
 	191241: {iLvl317, iLvl317},                 // Draconium Sickle
 	191242: {iLvl317, iLvl317},                 // Draconium Pickaxe
-	193479: {iLvl317, []int64{74}},             // Floral Basket
+	193479: {iLvl317, []int64{72, 73, 74}},     // Floral Basket
 	193480: {iLvl317, []int64{71, 72, 73, 74}}, // Durable Pack
-	193482: {iLvl317, []int64{74}},             // Skinner's Cap (sell price: {iLvl317, []int642.00.00)
+	193482: {iLvl317, []int64{71, 74}},         // Skinner's Cap (sell price: {iLvl317, []int642.00.00)
 	193485: {iLvl317, []int64{72, 74}},         // Protective Gloves
 	193486: {iLvl317, iLvl317},                 // Resilient Smock
 	193487: {iLvl317, []int64{71, 72, 73, 74}}, // Alchemist's Hat
-	193528: {iLvl317, []int64{72, 73, 74}},     // Wildercloth Alchemist's Robe
-	193534: {iLvl317, []int64{74}},             // Wildercloth Chef's Hat
-	193538: {iLvl317, []int64{74}},             // Wildercloth Gardening Hat
+	193528: {iLvl317, []int64{71, 72, 73, 74}}, // Wildercloth Alchemist's Robe
+	193534: {iLvl317, []int64{72, 74}},         // Wildercloth Chef's Hat
+	193538: {iLvl317, []int64{71, 72, 74}},     // Wildercloth Gardening Hat
 	193539: {iLvl317, []int64{74}},             // Wildercloth Enchanter's Hat
 	193541: {iLvl317, iLvl317},                 // Wildercloth Tailor's Coat
 	193612: {iLvl317, []int64{71, 72, 73, 74}}, // Smithing Apron
 	193615: {iLvl317, []int64{71, 72, 73, 74}}, // Jeweler's Cover
-	194125: {iLvl317, []int64{72}},             // Spring-Loaded Draconium Fabric Cutters
+	194125: {iLvl317, []int64{72, 74}},         // Spring-Loaded Draconium Fabric Cutters
 	194874: {iLvl317, []int64{71, 72, 74}},     // Scribe's Fastened Quill
-	198204: {iLvl317, []int64{72}},             // Draconium Brainwave Amplifier
-	198225: {iLvl317, []int64{74}},             // Draconium Fisherfriend
-	198234: {iLvl317, []int64{72, 74}},         // Lapidary's Draconium Clamps
-	198243: {iLvl317, []int64{74}},             // Draconium Delver's Helmet
-	198245: {iLvl317, []int64{74}},             // Draconium Encased Samophlange
-	198262: {iLvl317, []int64{72, 74}},         // Bottomless Stonecrust Ore Satchel
+	198204: {iLvl317, []int64{72, 73}},         // Draconium Brainwave Amplifier
+	198225: {iLvl317, []int64{72, 74}},         // Draconium Fisherfriend
+	198234: {iLvl317, []int64{71, 72, 74}},     // Lapidary's Draconium Clamps
+	198243: {iLvl317, []int64{72, 74}},         // Draconium Delver's Helmet
+	198245: {iLvl317, []int64{71, 72, 74}},     // Draconium Encased Samophlange
+	198262: {iLvl317, []int64{71, 72, 73, 74}}, // Bottomless Stonecrust Ore Satchel
 	198715: {iLvl317, iLvl317},                 // Runed Draconium Rod
 
 	// iLvl 317 oddities
 	224114: {iLvl317odd, iLvl317odd}, // Runed Bismuth Rod
 
 	// iLvl 486
-	215117: {iLvl486, []int64{85, 105}},         // Storyteller's Glasses
+	215117: {iLvl486, []int64{85, 91, 98, 105}}, // Storyteller's Glasses
 	215119: {iLvl486, iLvl486},                  // Right-Handed Magnifying Glass
 	215120: {iLvl486, iLvl486},                  // Radiant Loupes
 	215121: {iLvl486, []int64{85, 105}},         // Incanter's Shard
-	219861: {iLvl486, []int64{105}},             // Gardener's Basket
-	219862: {iLvl486, []int64{105}},             // Hideseeker's Pack
-	219863: {iLvl486, []int64{105}},             // Hideseeker's Hat
-	219864: {iLvl486, []int64{105}},             // Scrapsmith's Gloves
-	219865: {iLvl486, []int64{105}},             // Hideshaper's Cover
-	219866: {iLvl486, []int64{105}},             // Apothecary's Cap
+	219861: {iLvl486, []int64{85, 91, 105}},     // Gardener's Basket
+	219862: {iLvl486, []int64{79, 85, 91, 105}}, // Hideseeker's Pack
+	219863: {iLvl486, []int64{85, 91, 98, 105}}, // Hideseeker's Hat
+	219864: {iLvl486, []int64{91, 98, 105}},     // Scrapsmith's Gloves
+	219865: {iLvl486, []int64{85, 91, 105}},     // Hideshaper's Cover
+	219866: {iLvl486, []int64{85, 105}},         // Apothecary's Cap
 	219873: {iLvl486, []int64{105}},             // Steelsmith's Apron
 	219875: {iLvl486, []int64{105}},             // Gemcutter's Apron
 	221786: {iLvl486, []int64{105}},             // Spring-Loaded Bismuth Fabric Cutters
