@@ -120,6 +120,8 @@ func synthetics() []wowitem.Item {
 		newItem(213245, "Gnawed Binding", price(30, 0, 0), commodity, l23),
 		newItem(213246, "Tiny Glowing Rock", price(30, 0, 0), commodity, l23),
 		newItem(213247, "Razor-Sharp Bones", price(10, 0, 0), commodity, l23),
+		newItem(213248, "Shredded Fish", price(10, 0, 0), commodity, l23),
+		newItem(213249, "Empty Battered Shell", price(20, 0, 0), commodity, l23),
 		newItem(213250, "Cracked Gem", price(10, 0, 0), commodity, l23),
 		newItem(213251, "Cinderbee Wax Jar", price(20, 0, 0), commodity, l23),
 		newItem(213252, "Stolen Earthen Contraption", price(10, 0, 0), commodity, l23),
@@ -133,14 +135,15 @@ func synthetics() []wowitem.Item {
 		newItem(213261, "Niffen Smell Pouch", price(30, 0, 0), commodity, l23),
 		newItem(213262, "Stained Glass Fragment", price(10, 0, 0), commodity, l23),
 		newItem(213263, "Poison Needle", price(30, 0, 0), commodity, l23),
+		newItem(213265, "Empty Antidote Vial", price(20, 0, 0), commodity, l23),
 		newItem(213266, "Twitching Snack", price(10, 0, 0), commodity, l23),
 		newItem(213267, "Idol of Ansurek", price(30, 0, 0), commodity, l23),
+		newItem(213268, "Roughly Acquired Treat", price(20, 0, 0), commodity, l23),
 		newItem(222906, "Plump Snapcrab", price(0, 0, 1), commodity),
 		newItem(224153, "Nibbled Shroomcap", price(10, 0, 0), commodity, l23),
 		newItem(224154, "Mushrock", price(20, 0, 0), commodity, l23),
 		newItem(224155, "Peeled Fungal Scale", price(20, 0, 0), commodity, l23),
 		newItem(225787, "Pheromone-Covered Missive", price(1, 87, 69), commodity, l23),
-		newItem(226003, "Snake Oil", price(200, 0, 0), commodity, l23),
 	}
 }
 
