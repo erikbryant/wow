@@ -82,7 +82,7 @@ var itemLevels = map[int64]Levels{
 	240959: {iLvl106, iLvl106},                     // Sin'dorei Jeweler's Loupes
 	240960: {iLvl106, iLvl106},                     // Sin'dorei Enchanter's Crystal
 	244176: {iLvl106, []int64{212, 218, 225, 232}}, // Runed Brilliant Silver Rod
-	244621: {iLvl106, []int64{212, 225, 232}},      // Sin'dorei Herbalist's Backpack
+	244621: {iLvl106, []int64{212, 218, 225, 232}}, // Sin'dorei Herbalist's Backpack
 	244622: {iLvl106, iLvl106},                     // Sin'dorei Hunter's Pack
 	244623: {iLvl106, iLvl106},                     // Eversong Hunter's Headcover
 	244624: {iLvl106, []int64{212, 218, 225, 232}}, // Sin'dorei Engineer's Gloves
@@ -162,7 +162,7 @@ var itemLevels = map[int64]Levels{
 	222481: {iLvl486, iLvl486},                  // Proficient Pickaxe
 	222482: {iLvl486, []int64{79, 91, 98, 105}}, // Proficient Skinning Knife
 	222483: {iLvl486, iLvl486},                  // Proficient Needle Set
-	222484: {iLvl486, []int64{79, 91, 98, 105}}, // Proficient Leatherworker's Knife
+	222484: {iLvl486, iLvl486},                  // Proficient Leatherworker's Knife
 	222485: {iLvl486, []int64{85, 91, 98, 105}}, // Proficient Leatherworker's Toolset
 	222486: {iLvl486, iLvl486},                  // Proficient Blacksmith's Hammer
 	222487: {iLvl486, []int64{79, 85, 91, 105}}, // Proficient Blacksmith's Toolbox
@@ -188,8 +188,8 @@ var itemLevels = map[int64]Levels{
 	// iLvl 535
 	244626: {iLvl535, iLvl535},                     // Sin'dorei Alchemist's Hat
 	244708: {iLvl535, iLvl535},                     // Sin'dorei Snippers
-	244710: {iLvl535, []int64{212, 218, 225, 232}}, // Sin'dorei Headlamp
-	244712: {iLvl535, []int64{212, 218, 225, 232}}, // Sin'dorei Angler's Rod
+	244710: {iLvl535, iLvl535},                     // Sin'dorei Headlamp
+	244712: {iLvl535, iLvl535},                     // Sin'dorei Angler's Rod
 	244716: {iLvl535, []int64{212, 218, 225, 232}}, // Sin'dorei Gilded Hardhat
 	244720: {iLvl535, []int64{218, 225, 232}},      // Junker's Big Ol' Bag
 }
