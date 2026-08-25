@@ -102,7 +102,7 @@ var itemLevels = map[int64]Levels{
 	201601: {iLvl270, iLvl270}, // Runed Serevite Rod
 
 	// iLvl 317
-	191233: {iLvl317, []int64{71, 72, 74}},     // Chef's Smooth Rolling Pin
+	191233: {iLvl317, []int64{71, 72, 73, 74}}, // Chef's Smooth Rolling Pin
 	191234: {iLvl317, []int64{71, 72, 74}},     // Alchemist's Sturdy Mixing Rod
 	191235: {iLvl317, iLvl317},                 // Draconium Blacksmith's Toolbox
 	191236: {iLvl317, []int64{71, 72, 73, 74}}, // Draconium Leatherworker's Toolset
