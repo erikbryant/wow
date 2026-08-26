@@ -132,6 +132,7 @@ func synthetics() []wowitem.Item {
 		newItem(213257, "Wax Shovel", price(30, 0, 0), commodity, l23),
 		newItem(213258, "Odorant Oddity", price(10, 0, 0), commodity, l23),
 		newItem(213259, "Silk Doll", price(20, 0, 0), commodity, l23),
+		newItem(213260, "Ripped Shawl", price(20, 0, 0), commodity, l23),
 		newItem(213261, "Niffen Smell Pouch", price(30, 0, 0), commodity, l23),
 		newItem(213262, "Stained Glass Fragment", price(10, 0, 0), commodity, l23),
 		newItem(213263, "Poison Needle", price(30, 0, 0), commodity, l23),
