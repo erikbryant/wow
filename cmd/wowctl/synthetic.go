@@ -81,6 +81,7 @@ func synthetics() []wowitem.Item {
 		// Items WITH vendor prices.
 
 		newItem(217958, "Used Socks", price(0, 0, 1)),
+		newItem(217962, "Dud Bomb", price(0, 0, 1)),
 		newItem(226001, "Pure Gold Stein", price(200, 0, 0), l23),
 		newItem(226002, "Expensive-Looking Find", price(200, 0, 0), l23),
 		newItem(226004, "Olden Text", price(200, 0, 0), l23),
