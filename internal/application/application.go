@@ -80,7 +80,7 @@ func New(rootPath string) (*App, error) {
 	}
 
 	fmt.Printf("-- #Items persisted        : %d\n", app.WowItem.Len())
-	fmt.Printf("-- #Appearances owned      : %d/%d\n", app.AppearanceSet.Len(), app.Appearances.Len())
+	fmt.Printf("-- #Appearances owned      : %d/%d\n", app.Appearances.Len(), app.AppearanceSet.Len())
 	fmt.Printf("-- #Battlepet species owned: %d/%d\n", app.BattlePets.LenOwned(), app.BattlePets.LenNames())
 
 	return &app, nil
