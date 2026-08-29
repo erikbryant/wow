@@ -20,8 +20,8 @@ func deleteAndGetNew(wowItems *wowitem.Persistence, itemID int64) (wowitem.Item,
 	return wowItems.GetLive(itemID)
 }
 
-// refreshItem refreshes a single item
-func refreshItem(itemID int64, paths *path.Paths) error {
+// invalidateAndRefresh refreshes a single item
+func invalidateAndRefresh(itemID int64, paths *path.Paths) error {
 	wowItems, err := wowitem.New(paths.Items)
 	if err != nil {
 		return err
@@ -106,7 +106,7 @@ func runRefresh(args []string, paths *path.Paths) error {
 			return err
 		}
 	} else {
-		err = refreshItem(*itemID, paths)
+		err = invalidateAndRefresh(*itemID, paths)
 		if err != nil {
 			return err
 		}
