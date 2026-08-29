@@ -6,149 +6,270 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
-
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/endpoints"
 )
 
 const (
-	// cookieName is the name of the OAuth cookie
-	cookieName = "oauthState"
+	cookieName  = "oauthState"
+	redirectURL = "http://localhost:8888/auth/blizzard/profile"
+
+	// Blizzard's Battle.net OAuth endpoints.
+	authorizeURL = "https://oauth.battle.net/authorize"
+	tokenURL     = "https://oauth.battle.net/token"
+
+	// OAuth should never wait indefinitely for the user.
+	oauthTimeout = 5 * time.Minute
 )
 
-var (
-	// blizzardOAuthConfig stores the OAuth user config for authenticating with Blizzard
-	blizzardOAuthConfig = &oauth2.Config{
-		ClientID:     "", // Populated at runtime
-		ClientSecret: "", // Populated at runtime
-		Endpoint:     endpoints.Battlenet,
-		RedirectURL:  "http://localhost:8888/auth/blizzard/profile",
-		Scopes:       []string{"wow.profile"},
+var openBrowser = defaultOpenBrowser
+
+func defaultOpenBrowser(url string) error {
+	cmd := exec.Command("open", url)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
+}
+
+// oauthFlow contains everything associated with one OAuth attempt.
+//
+// Nothing related to an individual authentication attempt is stored in
+// package-global state.
+type oauthFlow struct {
+	clientID     string
+	clientSecret string
+
+	result chan oauthResult
+}
+
+type oauthResult struct {
+	token string
+	err   error
+}
+
+// generateStateOAuthCookie generates a cryptographically random OAuth state
+// value, stores it in a cookie, and returns it.
+func generateStateOAuthCookie(w http.ResponseWriter) (string, error) {
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return "", fmt.Errorf("generate OAuth state: %w", err)
 	}
-	// server is a reference to the webserver
-	server = &http.Server{}
-	// paToken stores the last-known profile access token
-	paToken = ""
-)
 
-// generateStateOAuthCookie stores a unique identifier in a cookie and returns that same identifier
-func generateStateOAuthCookie(w http.ResponseWriter) string {
-	var expiration = time.Now().Add(2 * time.Minute)
+	state := base64.RawURLEncoding.EncodeToString(b)
 
-	b := make([]byte, 16)
-	_, _ = rand.Read(b)
-	state := base64.URLEncoding.EncodeToString(b)
-
-	cookie := http.Cookie{
-		Expires:  expiration,
-		HttpOnly: true,
+	cookie := &http.Cookie{
 		Name:     cookieName,
+		Value:    state,
 		Path:     "/auth/blizzard",
+		Expires:  time.Now().Add(2 * time.Minute),
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   false, // localhost callback uses HTTP
+	}
+
+	http.SetCookie(w, cookie)
+
+	return state, nil
+}
+
+// login redirects the browser to Blizzard's OAuth authorization endpoint.
+func (f *oauthFlow) login(w http.ResponseWriter, r *http.Request) {
+	state, err := generateStateOAuthCookie(w)
+	if err != nil {
+		http.Error(w, "Unable to start authentication.", http.StatusInternalServerError)
+		return
+	}
+
+	u, err := url.Parse(authorizeURL)
+	if err != nil {
+		http.Error(w, "Unable to construct authentication URL.", http.StatusInternalServerError)
+		return
+	}
+
+	q := u.Query()
+	q.Set("client_id", f.clientID)
+	q.Set("redirect_uri", redirectURL)
+	q.Set("response_type", "code")
+	q.Set("scope", "wow.profile")
+	q.Set("state", state)
+	u.RawQuery = q.Encode()
+
+	// My account is homed in the US. Battle.net can resolve to a different
+	// regional endpoint depending on where I happen to be.
+	u.Path = strings.Replace(u.Path, "/battle.net/", "/us.battle.net/", 1)
+
+	http.Redirect(w, r, u.String(), http.StatusTemporaryRedirect)
+}
+
+// callback receives Blizzard's authorization response.
+func (f *oauthFlow) callback(w http.ResponseWriter, r *http.Request) {
+	if r == nil {
+		f.fail(fmt.Errorf("OAuth callback received nil request"))
+		return
+	}
+
+	stateCookie, err := r.Cookie(cookieName)
+	if err != nil {
+		f.writeFailure(w, fmt.Errorf("OAuth callback missing state cookie: %w", err))
+		return
+	}
+
+	state := r.URL.Query().Get("state")
+	if state == "" || state != stateCookie.Value {
+		f.writeFailure(w, fmt.Errorf("OAuth callback has invalid state"))
+		return
+	}
+
+	// Blizzard can return an OAuth error instead of an authorization code.
+	if oauthError := r.URL.Query().Get("error"); oauthError != "" {
+		description := r.URL.Query().Get("error_description")
+		if description != "" {
+			f.writeFailure(w, fmt.Errorf("blizzard OAuth error: %s: %s", oauthError, description))
+		} else {
+			f.writeFailure(w, fmt.Errorf("blizzard OAuth error: %s", oauthError))
+		}
+		return
+	}
+
+	code := r.URL.Query().Get("code")
+	if code == "" {
+		f.writeFailure(w, fmt.Errorf("OAuth callback missing authorization code"))
+		return
+	}
+
+	token, err := tokenToPAT(code, f.clientID, f.clientSecret)
+	if err != nil {
+		f.writeFailure(w, fmt.Errorf("get profile access token: %w", err))
+		return
+	}
+
+	// Clear the OAuth state cookie now that it has been consumed.
+	http.SetCookie(w, &http.Cookie{
+		Name:     cookieName,
+		Value:    "",
+		Path:     "/auth/blizzard",
+		MaxAge:   -1,
+		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
 		Secure:   false,
-		Value:    state,
-	}
-	http.SetCookie(w, &cookie)
+	})
 
-	return state
+	f.succeed(token)
+
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("Success! You can close this window."))
 }
 
-// oAuthBlizzardLogin creates the auth cookie and redirects to the Blizzard auth server
-func oAuthBlizzardLogin(w http.ResponseWriter, r *http.Request) {
-	// Create oAuthState cookie
-	oAuthState := generateStateOAuthCookie(w)
-
-	// AuthCodeURL takes a unique, private state token to protect the user from CSRF attacks.
-	// You must always provide a non-empty string and validate it matches the state query
-	// parameter on your redirect callback.
-	u := blizzardOAuthConfig.AuthCodeURL(oAuthState)
-
-	// My account is homed in the US. But, battle.net resolves to whatever local country
-	// I happen to be in at the moment. Force it to use 'us'.
-	u = strings.Replace(u, "/battle.net/", "/us.battle.net/", 1)
-
-	http.Redirect(w, r, u, http.StatusTemporaryRedirect)
+func (f *oauthFlow) succeed(token string) {
+	select {
+	case f.result <- oauthResult{token: token}:
+	default:
+	}
 }
 
-func tokenToPAT(code string) (string, error) {
-	data := url.Values{
-		"redirect_uri": {blizzardOAuthConfig.RedirectURL},
-		"grant_type":   {"authorization_code"},
-		"code":         {code},
+func (f *oauthFlow) fail(err error) {
+	select {
+	case f.result <- oauthResult{err: err}:
+	default:
 	}
-
-	return GetToken(data, blizzardOAuthConfig.ClientID, blizzardOAuthConfig.ClientSecret)
 }
 
-// oAuthBlizzardCallback receives the token, converts it to a PAT, and passes that to the webpage requester
-func oAuthBlizzardCallback(w http.ResponseWriter, r *http.Request) {
-	if r == nil {
-		fmt.Fprintf(os.Stderr, "*** oAuthBlizzardCallback empty request\n")
-		return
-	}
+func (f *oauthFlow) writeFailure(w http.ResponseWriter, err error) {
+	f.fail(err)
 
-	// Read OAuth state from Cookie
-	oAuthState, err := r.Cookie(cookieName)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "*** oAuthBlizzardCallback cookie error: %s\n", err)
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return
-	}
-
-	if r.FormValue("state") != oAuthState.Value {
-		fmt.Fprintf(os.Stderr, "*** oAuthBlizzardCallback invalid OAuth state\n")
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return
-	}
-
-	// Exchange the token we got for an actual profile access token
-	msg := "Success!"
-	paToken, err = tokenToPAT(r.FormValue("code"))
-	if err != nil {
-		msg = fmt.Sprintf("Could not get a profile access token: %s", err)
-	}
-	msg += " You can close this window."
-	w.Write([]byte(msg))
+	http.Error(
+		w,
+		fmt.Sprintf("Authentication failed: %s. You can close this window.", err),
+		http.StatusBadRequest,
+	)
 }
 
-// handlers registers the OAuth endpoints
-func handlers() http.Handler {
+func (f *oauthFlow) handlers() http.Handler {
 	mux := http.NewServeMux()
-	// Root
-	mux.Handle("/", http.FileServer(http.Dir("templates/")))
 
-	// OAuth endpoints
-	mux.HandleFunc("/auth/blizzard/login", oAuthBlizzardLogin)
-	mux.HandleFunc("/auth/blizzard/profile", oAuthBlizzardCallback)
+	mux.HandleFunc("/auth/blizzard/login", f.login)
+	mux.HandleFunc("/auth/blizzard/profile", f.callback)
+
+	// Preserve the existing behavior for the root page.
+	mux.Handle("/", http.FileServer(http.Dir("templates/")))
 
 	return mux
 }
 
-// start starts the webserver
-func start(clientID, clientSecret string) {
-	blizzardOAuthConfig.ClientID = clientID
-	blizzardOAuthConfig.ClientSecret = clientSecret
+// GetPAT runs a complete Blizzard OAuth authorization-code flow.
+//
+// The local server exists only for the duration of this call. All state
+// belonging to this authentication attempt is local to the call.
+func GetPAT(clientID, clientSecret string) (string, error) {
+	flow := &oauthFlow{
+		clientID:     clientID,
+		clientSecret: clientSecret,
+		result:       make(chan oauthResult, 1),
+	}
 
-	server = &http.Server{
+	server := &http.Server{
 		Addr:    "localhost:8888",
-		Handler: handlers(),
+		Handler: flow.handlers(),
 	}
 
-	err := server.ListenAndServe()
-	if !errors.Is(err, http.ErrServerClosed) {
-		fmt.Fprintf(os.Stderr, "*** failed to listen and serve: %s\n", err)
+	listener, err := net.Listen("tcp", server.Addr)
+	if err != nil {
+		return "", fmt.Errorf("listen on %s: %w", server.Addr, err)
 	}
+
+	serveErr := make(chan error, 1)
+
+	go func() {
+		err := server.Serve(listener)
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			serveErr <- err
+		}
+		close(serveErr)
+	}()
+
+	if err := openBrowser("http://localhost:8888/auth/blizzard/login"); err != nil {
+		_ = shutdownServer(server)
+		return "", fmt.Errorf("unable to open browser: %w", err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), oauthTimeout)
+	defer cancel()
+
+	var result oauthResult
+
+	select {
+	case result = <-flow.result:
+		// OAuth completed.
+
+	case err := <-serveErr:
+		if err != nil {
+			return "", fmt.Errorf("OAuth server failed: %w", err)
+		}
+		return "", fmt.Errorf("OAuth server stopped unexpectedly")
+
+	case <-ctx.Done():
+		return "", fmt.Errorf("OAuth authentication timed out after %s", oauthTimeout)
+	}
+
+	if err := shutdownServer(server); err != nil {
+		return "", fmt.Errorf("shutdown OAuth server: %w", err)
+	}
+
+	if result.err != nil {
+		return "", result.err
+	}
+
+	return result.token, nil
 }
 
-// shutdown terminates the webserver
-func shutdown() {
-	err := server.Shutdown(context.Background())
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "*** server shutdown failed: %v\n", err)
-	}
+func shutdownServer(server *http.Server) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	return server.Shutdown(ctx)
 }

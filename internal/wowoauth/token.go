@@ -1,70 +1,112 @@
 package wowoauth
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
-	"os"
-	"os/exec"
 	"strings"
 	"time"
 )
 
+const tokenHTTPTimeout = 30 * time.Second
+
+type tokenResponse struct {
+	AccessToken string `json:"access_token"`
+	TokenType   string `json:"token_type"`
+	ExpiresIn   int64  `json:"expires_in"`
+}
+
+type tokenErrorResponse struct {
+	Error            string `json:"error"`
+	ErrorDescription string `json:"error_description"`
+}
+
 func GetToken(data url.Values, clientID, clientSecret string) (string, error) {
-	request, err := http.NewRequest("POST", "https://oauth.battle.net/token", strings.NewReader(data.Encode()))
+	ctx, cancel := context.WithTimeout(context.Background(), tokenHTTPTimeout)
+	defer cancel()
+
+	return getToken(ctx, http.DefaultClient, tokenURL, data, clientID, clientSecret)
+}
+
+func getToken(
+	ctx context.Context,
+	client *http.Client,
+	endpoint string,
+	data url.Values,
+	clientID string,
+	clientSecret string,
+) (string, error) {
+	if client == nil {
+		client = http.DefaultClient
+	}
+
+	request, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		endpoint,
+		strings.NewReader(data.Encode()),
+	)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("create token request: %w", err)
 	}
 
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	request.SetBasicAuth(clientID, clientSecret)
 
-	client := &http.Client{}
 	response, err := client.Do(request)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("send token request: %w", err)
 	}
-
 	defer response.Body.Close()
 
 	contents, err := io.ReadAll(response.Body)
 	if err != nil {
-		return "", err
-	}
-
-	var jsonObject map[string]any
-
-	err = json.Unmarshal(contents, &jsonObject)
-	if err != nil {
-		return "", err
+		return "", fmt.Errorf("read token response: %w", err)
 	}
 
 	if response.StatusCode < 200 || response.StatusCode >= 300 {
-		return "", fmt.Errorf("unexpected status code: %d", response.StatusCode)
+		var tokenError tokenErrorResponse
+
+		if err := json.Unmarshal(contents, &tokenError); err == nil &&
+			tokenError.Error != "" {
+			if tokenError.ErrorDescription != "" {
+				return "", fmt.Errorf(
+					"token request failed: %s: %s",
+					tokenError.Error,
+					tokenError.ErrorDescription,
+				)
+			}
+
+			return "", fmt.Errorf("token request failed: %s", tokenError.Error)
+		}
+
+		return "", fmt.Errorf(
+			"token request failed with HTTP status %s",
+			response.Status,
+		)
 	}
 
-	return jsonObject["access_token"].(string), nil
+	var token tokenResponse
+	if err := json.Unmarshal(contents, &token); err != nil {
+		return "", fmt.Errorf("decode token response: %w", err)
+	}
+
+	if token.AccessToken == "" {
+		return "", fmt.Errorf("token response did not contain access_token")
+	}
+
+	return token.AccessToken, nil
 }
 
-// GetPAT returns a profile access token (to authenticate user profile API calls)
-func GetPAT(clientID, clientSecret string) (string, error) {
-	go start(clientID, clientSecret)
-	defer shutdown()
-
-	cmd := exec.Command("open", "http://localhost:8888/auth/blizzard/login")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	if err != nil {
-		return "", fmt.Errorf("unable to open browser: %w", err)
+func tokenToPAT(code, clientID, clientSecret string) (string, error) {
+	data := url.Values{
+		"redirect_uri": {redirectURL},
+		"grant_type":   {"authorization_code"},
+		"code":         {code},
 	}
 
-	for paToken == "" {
-		// Wait for OAuth to complete
-		time.Sleep(time.Second)
-	}
-
-	return paToken, nil
+	return GetToken(data, clientID, clientSecret)
 }
