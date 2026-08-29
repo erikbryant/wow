@@ -76,7 +76,7 @@ func (p *Persistence[K, V]) Save() error {
 
 	tmp := p.filename + ".tmp"
 
-	f, err := os.Create(tmp)
+	f, err := os.OpenFile(tmp, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		return err
 	}
