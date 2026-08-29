@@ -136,7 +136,7 @@ func (r *Recommendations) iterateAuctions(auctions map[int64][]auction.Auction, 
 				}
 			}
 
-			if toyBargain(i, auc, app) || usefulGoodsBargain(i, auc, app) {
+			if usefulGoodsBargain(i, auc, app) {
 				str := fmt.Sprintf("%s   %s", i.Name(), common.Gold(auc.Buyout))
 				r.Bargains = append(r.Bargains, str)
 			}
@@ -194,7 +194,7 @@ func scanRealm(realm string, c chan<- Recommendations, app *application.App) {
 	}
 
 	r.NumUniqueItems = len(auctions)
-	r.iterateAuctions(auctions, realm == "Commodities", app)
+	r.iterateAuctions(auctions, strings.ToLower(realm) == "commodities", app)
 
 	c <- r
 }
@@ -262,7 +262,7 @@ func (r *Recommendations) format(app *application.App, summarize bool) string {
 
 	// Hack to get Commodities to sort to end of output
 	realm := r.Realm
-	if realm == "Commodities" {
+	if strings.ToLower(realm) == "commodities" {
 		realm = "_Commodities_"
 	}
 
