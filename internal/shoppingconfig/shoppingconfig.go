@@ -111,6 +111,7 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 			1961: {}, // G0-R41-0N Ultratonk
 			1233: {}, // Pocket Reaver
 			3348: {}, // Primal Stormling
+			1966: {}, // Soulbroken Whelpling
 			3006: {}, // Stoneskin Dredwing Pup
 			1151: {}, // Untamed Hatchling
 			4506: {}, // Violet Sporbit
