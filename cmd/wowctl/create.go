@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 
 	"github.com/erikbryant/wow/internal/appearanceset"
@@ -50,12 +49,6 @@ func createAppearancePersist(paths *path.Paths) error {
 }
 
 func runCreate(args []string, paths *path.Paths) error {
-	flags := flag.NewFlagSet("create", flag.ExitOnError)
-
-	if err := flags.Parse(args); err != nil {
-		return err
-	}
-
 	if len(args) != 1 {
 		usage()
 		return fmt.Errorf("must specify a persistence type")
