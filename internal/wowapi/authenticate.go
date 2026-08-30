@@ -62,6 +62,8 @@ func isInitialized() bool {
 }
 
 func Init(secretPath string) error {
+	defaultClientMu.RLock()
+	defer defaultClientMu.RUnlock()
 	if isInitialized() {
 		return nil
 	}
