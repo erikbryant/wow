@@ -85,9 +85,7 @@ func Init(secretPath string) error {
 		return err
 	}
 
-	defaultClientMu.Lock()
 	defaultClient = &c
-	defaultClientMu.Unlock()
 
 	return err
 }
