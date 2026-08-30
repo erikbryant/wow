@@ -49,8 +49,8 @@ func invalidateAndRefresh(itemID int64, paths *path.Paths) error {
 	return nil
 }
 
-// refreshAll refreshes persisted items older than a certain age
-func refreshAll(maxRefresh int, paths *path.Paths) error {
+// invalidateAndRefreshStale deletes items older than a certain age and attempts to refresh them
+func invalidateAndRefreshStale(maxRefresh int, paths *path.Paths) error {
 	maxAge := 24 * time.Hour * 7 // 1 week
 	needsRefresh := 0
 	refreshCount := 0
@@ -101,7 +101,7 @@ func runRefresh(args []string, paths *path.Paths) error {
 	}
 
 	if *itemID == -1 {
-		err = refreshAll(*maxRefresh, paths)
+		err = invalidateAndRefreshStale(*maxRefresh, paths)
 		if err != nil {
 			return err
 		}
