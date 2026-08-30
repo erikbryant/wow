@@ -3,7 +3,6 @@ package toy
 import (
 	"fmt"
 
-	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
@@ -44,7 +43,7 @@ func getOwned() (map[int64]bool, error) {
 
 	for _, toyRaw := range toysOwned {
 		toy := toyRaw.(map[string]any)
-		id, _ := web.MsiValued(toy, []string{"toy", "id"}, 0)
+		id, _ := common.MsaValued(toy, []string{"toy", "id"}, 0)
 		myToys[common.JSONInt64Panic(id)] = true
 	}
 

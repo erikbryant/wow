@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/common"
 )
 
@@ -58,14 +57,20 @@ func (i *Item) ID() int64 {
 // Binding returns whether and when the item binds
 func (i *Item) Binding() string {
 	// The key is only sometimes there; do not error if it is missing
-	value, _ := web.MsiValued(i.XItem, []string{"preview_item", "binding", "type"}, "")
+	value, err := common.MsaValued(i.XItem, []string{"preview_item", "binding", "type"}, "")
+	if err != nil {
+		return ""
+	}
 	return value.(string)
 }
 
 // InventoryType returns the slot this item equips to, or UNKNOWN
 func (i *Item) InventoryType() string {
 	// The key is only sometimes there; do not error if it is missing
-	value, _ := web.MsiValued(i.XItem, []string{"inventory_type"}, "UNKNOWN")
+	value, err := common.MsaValued(i.XItem, []string{"inventory_type"}, "UNKNOWN")
+	if err != nil {
+		return "UNKNOWN"
+	}
 	return value.(string)
 }
 
@@ -85,7 +90,7 @@ func (i *Item) Equippable() bool {
 
 // ItemLevel returns the item level
 func (i *Item) ItemLevel() int64 {
-	v, err := web.MsiValue(i.XItem, []string{"level"})
+	v, err := common.MsaValue(i.XItem, []string{"level"})
 	if err != nil {
 		panic(fmt.Errorf("level missing from %v: %w", i.XItem, err))
 	}
@@ -103,7 +108,11 @@ func (i *Item) VariableItemLevel() bool {
 
 // ItemSubclassName returns the item subclass name
 func (i *Item) ItemSubclassName() string {
-	v, _ := web.MsiValued(i.XItem, []string{"item_subclass", "name"}, "")
+	// The key is only sometimes there; do not error if it is missing
+	v, err := common.MsaValued(i.XItem, []string{"item_subclass", "name"}, "")
+	if err != nil {
+		return ""
+	}
 	return v.(string)
 }
 
@@ -127,7 +136,7 @@ func (i *Item) Cosmetic() bool {
 
 // ItemClassName returns the item class name
 func (i *Item) ItemClassName() string {
-	v, err := web.MsiValue(i.XItem, []string{"item_class", "name"})
+	v, err := common.MsaValue(i.XItem, []string{"item_class", "name"})
 	if err != nil {
 		panic(fmt.Errorf("item_class missing from %v: %w", i.XItem, err))
 	}
@@ -136,7 +145,7 @@ func (i *Item) ItemClassName() string {
 
 // Stackable returns true if the item can be stacked in the inventory
 func (i *Item) Stackable() bool {
-	v, err := web.MsiValue(i.XItem, []string{"is_stackable"})
+	v, err := common.MsaValue(i.XItem, []string{"is_stackable"})
 	if err != nil {
 		panic(fmt.Errorf("is_stackable missing from %v: %w", i.XItem, err))
 	}
@@ -146,7 +155,10 @@ func (i *Item) Stackable() bool {
 // RelicType returns the relic type
 func (i *Item) RelicType() string {
 	// The key is only sometimes there; do not error if it is missing
-	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "gem_properties", "relic_type"}, "")
+	v, err := common.MsaValued(i.XItem, []string{"preview_item", "gem_properties", "relic_type"}, "")
+	if err != nil {
+		return ""
+	}
 	return v.(string)
 }
 
@@ -156,7 +168,7 @@ func (i *Item) Name() string {
 }
 
 func (i *Item) previewPrice() (int64, error) {
-	v, err := web.MsiValue(i.XItem, []string{"preview_item", "sell_price", "value"})
+	v, err := common.MsaValue(i.XItem, []string{"preview_item", "sell_price", "value"})
 	if err != nil {
 		return 0, err
 	}
@@ -188,12 +200,12 @@ func (i *Item) Updated() time.Time {
 }
 
 func (i *Item) Requirements() string {
-	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "requirements", "skill", "display_string"}, "")
+	v, _ := common.MsaValued(i.XItem, []string{"preview_item", "requirements", "skill", "display_string"}, "")
 	return common.JSONString(v)
 }
 
 func (i *Item) Quality() string {
-	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "quality", "name"}, "")
+	v, _ := common.MsaValued(i.XItem, []string{"preview_item", "quality", "name"}, "")
 	return common.JSONString(v)
 }
 
@@ -204,7 +216,7 @@ func (i *Item) Stale(age time.Duration) bool {
 
 // Toy returns true if this item is a toy
 func (i *Item) Toy() bool {
-	v, _ := web.MsiValued(i.XItem, []string{"preview_item", "toy"}, "")
+	v, _ := common.MsaValued(i.XItem, []string{"preview_item", "toy"}, "")
 	return common.JSONString(v) == "Toy"
 }
 
@@ -212,7 +224,7 @@ func (i *Item) Toy() bool {
 func (i *Item) Appearances() []int64 {
 	appearanceIDs := []int64{}
 
-	v, _ := web.MsiValued(i.XItem, []string{"appearances"}, nil)
+	v, _ := common.MsaValued(i.XItem, []string{"appearances"}, nil)
 	if v == nil {
 		// Most items do not have appearances
 		return nil

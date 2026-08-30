@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/wowapi"
@@ -38,7 +37,7 @@ type Auction struct {
 }
 
 func auctionID(msi any) int64 {
-	value, err := web.MsiValue(msi, []string{"id"})
+	value, err := common.MsaValue(msi, []string{"id"})
 	if err != nil {
 		panic(fmt.Errorf("auction id missing from %v: %w", msi, err))
 	}
@@ -46,7 +45,7 @@ func auctionID(msi any) int64 {
 }
 
 func itemID(msi any) int64 {
-	value, err := web.MsiValue(msi, []string{"item", "id"})
+	value, err := common.MsaValue(msi, []string{"item", "id"})
 	if err != nil {
 		panic(fmt.Errorf("item missing from %v: %w", msi, err))
 	}
@@ -54,9 +53,9 @@ func itemID(msi any) int64 {
 }
 
 func buyout(msi any) int64 {
-	value, err := web.MsiValue(msi, []string{"buyout"})
+	value, err := common.MsaValue(msi, []string{"buyout"})
 	if value == nil || err != nil {
-		value, err = web.MsiValued(msi, []string{"unit_price"}, json.Number("0"))
+		value, err = common.MsaValued(msi, []string{"unit_price"}, json.Number("0"))
 		if err != nil {
 			// Some auctions have neither 'buyout' nor 'unit_price'. Strange, but true.
 			return 0
@@ -66,7 +65,7 @@ func buyout(msi any) int64 {
 }
 
 func quantity(msi any) int64 {
-	value, err := web.MsiValued(msi, []string{"quantity"}, 0)
+	value, err := common.MsaValued(msi, []string{"quantity"}, 0)
 	if err != nil {
 		panic(fmt.Errorf("quantity missing from %v: %w", msi, err))
 	}
@@ -74,7 +73,7 @@ func quantity(msi any) int64 {
 }
 
 func petLevel(msi any) int64 {
-	value, err := web.MsiValue(msi, []string{"item", "pet_level"})
+	value, err := common.MsaValue(msi, []string{"item", "pet_level"})
 	if err != nil {
 		panic(fmt.Errorf("pet_level missing from %v: %w", msi, err))
 	}
@@ -82,7 +81,7 @@ func petLevel(msi any) int64 {
 }
 
 func petQualityID(msi any) int64 {
-	value, err := web.MsiValue(msi, []string{"item", "pet_quality_id"})
+	value, err := common.MsaValue(msi, []string{"item", "pet_quality_id"})
 	if err != nil {
 		panic(fmt.Errorf("pet_quality_id missing from %v: %w", msi, err))
 	}
@@ -90,7 +89,7 @@ func petQualityID(msi any) int64 {
 }
 
 func petSpeciesID(msi any) int64 {
-	value, err := web.MsiValue(msi, []string{"item", "pet_species_id"})
+	value, err := common.MsaValue(msi, []string{"item", "pet_species_id"})
 	if err != nil {
 		panic(fmt.Errorf("pet_species_id missing from %v: %w", msi, err))
 	}

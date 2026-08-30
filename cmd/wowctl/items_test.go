@@ -200,20 +200,22 @@ func TestRunQueryByNameAndSort(t *testing.T) {
 
 	items := []*wowitem.Item{
 		wowitem.NewItem(map[string]any{
-			"id":           json.Number("200"),
-			"name":         "Alpha Sword",
-			"level":        json.Number("10"),
-			"is_stackable": false,
-			"item_class":   map[string]any{"name": "Weapon"},
-			"preview_item": map[string]any{"quality": map[string]any{"name": "Rare"}},
+			"id":             json.Number("200"),
+			"name":           "Alpha Sword",
+			"level":          json.Number("10"),
+			"inventory_type": "ONE_HANDED",
+			"is_stackable":   false,
+			"item_class":     map[string]any{"name": "Weapon"},
+			"preview_item":   map[string]any{"quality": map[string]any{"name": "Rare"}},
 		}),
 		wowitem.NewItem(map[string]any{
-			"id":           json.Number("300"),
-			"name":         "Beta Sword",
-			"level":        json.Number("20"),
-			"is_stackable": false,
-			"item_class":   map[string]any{"name": "Weapon"},
-			"preview_item": map[string]any{"quality": map[string]any{"name": "Epic"}},
+			"id":             json.Number("300"),
+			"name":           "Beta Sword",
+			"level":          json.Number("20"),
+			"inventory_type": "ONE_HANDED",
+			"is_stackable":   false,
+			"item_class":     map[string]any{"name": "Weapon"},
+			"preview_item":   map[string]any{"quality": map[string]any{"name": "Epic"}},
 		}),
 	}
 	saveItems(t, paths.Items, items...)

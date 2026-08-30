@@ -109,6 +109,7 @@ func TestMissingOptionalFields(t *testing.T) {
 	delete(data, "preview_item")
 	delete(data, "inventory_type")
 	i := testItem(data)
+
 	if i.Binding() != "" || i.InventoryType() != "UNKNOWN" || i.RelicType() != "" || i.Quality() != "" || i.Requirements() != "" || i.SellPriceAdvertised() != 0 || i.Toy() {
 		t.Error("missing optional fields not handled")
 	}

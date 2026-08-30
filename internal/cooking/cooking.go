@@ -6,7 +6,6 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/erikbryant/web"
 	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/userconfig"
 	"github.com/erikbryant/wow/internal/wowapi"
@@ -28,11 +27,11 @@ type CookingRecipes struct {
 func makeRecipe(r any) Recipe {
 	recipe := Recipe{}
 
-	href, _ := web.MsiValued(r, []string{"key", "href"}, nil)
+	href, _ := common.MsaValued(r, []string{"key", "href"}, nil)
 	recipe.href = href.(string)
-	name, _ := web.MsiValued(r, []string{"name"}, nil)
+	name, _ := common.MsaValued(r, []string{"name"}, nil)
 	recipe.name = name.(string)
-	id, _ := web.MsiValued(r, []string{"id"}, nil)
+	id, _ := common.MsaValued(r, []string{"id"}, nil)
 	recipe.id = common.JSONInt64Panic(id)
 
 	return recipe
@@ -46,9 +45,9 @@ func getProfession(realm, alt, professionName string) (any, error) {
 	}
 
 	// Find the desired profession
-	s, _ := web.MsiValued(result, []string{"secondaries"}, nil)
+	s, _ := common.MsaValued(result, []string{"secondaries"}, nil)
 	for _, prof := range s.([]any) {
-		name, _ := web.MsiValued(prof, []string{"profession", "name"}, nil)
+		name, _ := common.MsaValued(prof, []string{"profession", "name"}, nil)
 		if name == professionName {
 			return prof, nil
 		}
@@ -60,9 +59,9 @@ func getProfession(realm, alt, professionName string) (any, error) {
 
 // getTier returns the desired tier (Classic, Outland, etc.)
 func getTier(prof any, tierName string) (any, error) {
-	tiers, _ := web.MsiValued(prof, []string{"tiers"}, nil)
+	tiers, _ := common.MsaValued(prof, []string{"tiers"}, nil)
 	for _, tier := range tiers.([]any) {
-		t, _ := web.MsiValued(tier, []string{"tier", "name"}, nil)
+		t, _ := common.MsaValued(tier, []string{"tier", "name"}, nil)
 		if t == tierName {
 			return tier, nil
 		}
@@ -83,7 +82,7 @@ func knownClassicCookingRecipes(realm, alt string) (map[int64]Recipe, error) {
 		return nil, err
 	}
 
-	kr, _ := web.MsiValued(tier, []string{"known_recipes"}, nil)
+	kr, _ := common.MsaValued(tier, []string{"known_recipes"}, nil)
 	recipes := map[int64]Recipe{}
 	for _, k := range kr.([]any) {
 		recipe := makeRecipe(k)
