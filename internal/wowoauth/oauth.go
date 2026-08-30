@@ -99,8 +99,9 @@ func (f *oauthFlow) login(w http.ResponseWriter, r *http.Request) {
 	q.Set("state", state)
 	u.RawQuery = q.Encode()
 
-	// My account is homed in the US. Battle.net can resolve to a different
-	// regional endpoint depending on where I happen to be.
+	// Battle.net may regionalize the OAuth hostname based on the user's
+	// current location. This application uses a US-homed Battle.net account,
+	// so force the OAuth endpoint to the US region.
 	u.Path = strings.Replace(u.Path, "/battle.net/", "/us.battle.net/", 1)
 
 	http.Redirect(w, r, u.String(), http.StatusTemporaryRedirect)
