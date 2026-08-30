@@ -56,21 +56,13 @@ func (i *Item) ID() int64 {
 
 // Binding returns whether and when the item binds
 func (i *Item) Binding() string {
-	// The key is only sometimes there; do not error if it is missing
-	value, err := common.MsaValued(i.XItem, []string{"preview_item", "binding", "type"}, "")
-	if err != nil {
-		return ""
-	}
+	value := common.MsaValued(i.XItem, []string{"preview_item", "binding", "type"}, "")
 	return value.(string)
 }
 
 // InventoryType returns the slot this item equips to, or UNKNOWN
 func (i *Item) InventoryType() string {
-	// The key is only sometimes there; do not error if it is missing
-	value, err := common.MsaValued(i.XItem, []string{"inventory_type"}, "UNKNOWN")
-	if err != nil {
-		return "UNKNOWN"
-	}
+	value := common.MsaValued(i.XItem, []string{"inventory_type"}, "UNKNOWN")
 	return value.(string)
 }
 
@@ -108,11 +100,7 @@ func (i *Item) VariableItemLevel() bool {
 
 // ItemSubclassName returns the item subclass name
 func (i *Item) ItemSubclassName() string {
-	// The key is only sometimes there; do not error if it is missing
-	v, err := common.MsaValued(i.XItem, []string{"item_subclass", "name"}, "")
-	if err != nil {
-		return ""
-	}
+	v := common.MsaValued(i.XItem, []string{"item_subclass", "name"}, "")
 	return v.(string)
 }
 
@@ -154,11 +142,7 @@ func (i *Item) Stackable() bool {
 
 // RelicType returns the relic type
 func (i *Item) RelicType() string {
-	// The key is only sometimes there; do not error if it is missing
-	v, err := common.MsaValued(i.XItem, []string{"preview_item", "gem_properties", "relic_type"}, "")
-	if err != nil {
-		return ""
-	}
+	v := common.MsaValued(i.XItem, []string{"preview_item", "gem_properties", "relic_type"}, "")
 	return v.(string)
 }
 
@@ -200,12 +184,12 @@ func (i *Item) Updated() time.Time {
 }
 
 func (i *Item) Requirements() string {
-	v, _ := common.MsaValued(i.XItem, []string{"preview_item", "requirements", "skill", "display_string"}, "")
+	v := common.MsaValued(i.XItem, []string{"preview_item", "requirements", "skill", "display_string"}, "")
 	return common.JSONString(v)
 }
 
 func (i *Item) Quality() string {
-	v, _ := common.MsaValued(i.XItem, []string{"preview_item", "quality", "name"}, "")
+	v := common.MsaValued(i.XItem, []string{"preview_item", "quality", "name"}, "")
 	return common.JSONString(v)
 }
 
@@ -216,7 +200,7 @@ func (i *Item) Stale(age time.Duration) bool {
 
 // Toy returns true if this item is a toy
 func (i *Item) Toy() bool {
-	v, _ := common.MsaValued(i.XItem, []string{"preview_item", "toy"}, "")
+	v := common.MsaValued(i.XItem, []string{"preview_item", "toy"}, "")
 	return common.JSONString(v) == "Toy"
 }
 
@@ -224,7 +208,7 @@ func (i *Item) Toy() bool {
 func (i *Item) Appearances() []int64 {
 	appearanceIDs := []int64{}
 
-	v, _ := common.MsaValued(i.XItem, []string{"appearances"}, nil)
+	v := common.MsaValued(i.XItem, []string{"appearances"}, nil)
 	if v == nil {
 		// Most items do not have appearances
 		return nil

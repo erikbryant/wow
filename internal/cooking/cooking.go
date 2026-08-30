@@ -27,11 +27,11 @@ type CookingRecipes struct {
 func makeRecipe(r any) Recipe {
 	recipe := Recipe{}
 
-	href, _ := common.MsaValued(r, []string{"key", "href"}, nil)
+	href := common.MsaValued(r, []string{"key", "href"}, nil)
 	recipe.href = href.(string)
-	name, _ := common.MsaValued(r, []string{"name"}, nil)
+	name := common.MsaValued(r, []string{"name"}, nil)
 	recipe.name = name.(string)
-	id, _ := common.MsaValued(r, []string{"id"}, nil)
+	id := common.MsaValued(r, []string{"id"}, nil)
 	recipe.id = common.JSONInt64Panic(id)
 
 	return recipe
@@ -45,9 +45,9 @@ func getProfession(realm, alt, professionName string) (any, error) {
 	}
 
 	// Find the desired profession
-	s, _ := common.MsaValued(result, []string{"secondaries"}, nil)
+	s := common.MsaValued(result, []string{"secondaries"}, nil)
 	for _, prof := range s.([]any) {
-		name, _ := common.MsaValued(prof, []string{"profession", "name"}, nil)
+		name := common.MsaValued(prof, []string{"profession", "name"}, nil)
 		if name == professionName {
 			return prof, nil
 		}
@@ -59,9 +59,9 @@ func getProfession(realm, alt, professionName string) (any, error) {
 
 // getTier returns the desired tier (Classic, Outland, etc.)
 func getTier(prof any, tierName string) (any, error) {
-	tiers, _ := common.MsaValued(prof, []string{"tiers"}, nil)
+	tiers := common.MsaValued(prof, []string{"tiers"}, nil)
 	for _, tier := range tiers.([]any) {
-		t, _ := common.MsaValued(tier, []string{"tier", "name"}, nil)
+		t := common.MsaValued(tier, []string{"tier", "name"}, nil)
 		if t == tierName {
 			return tier, nil
 		}
@@ -82,7 +82,7 @@ func knownClassicCookingRecipes(realm, alt string) (map[int64]Recipe, error) {
 		return nil, err
 	}
 
-	kr, _ := common.MsaValued(tier, []string{"known_recipes"}, nil)
+	kr := common.MsaValued(tier, []string{"known_recipes"}, nil)
 	recipes := map[int64]Recipe{}
 	for _, k := range kr.([]any) {
 		recipe := makeRecipe(k)

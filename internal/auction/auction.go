@@ -55,17 +55,14 @@ func itemID(msi any) int64 {
 func buyout(msi any) int64 {
 	value, err := common.MsaValue(msi, []string{"buyout"})
 	if value == nil || err != nil {
-		value, err = common.MsaValued(msi, []string{"unit_price"}, json.Number("0"))
-		if err != nil {
-			// Some auctions have neither 'buyout' nor 'unit_price'. Strange, but true.
-			return 0
-		}
+		// Some auctions have neither 'buyout' nor 'unit_price'. Strange, but true.
+		value = common.MsaValued(msi, []string{"unit_price"}, json.Number("0"))
 	}
 	return common.JSONInt64Panic(value)
 }
 
 func quantity(msi any) int64 {
-	value, err := common.MsaValued(msi, []string{"quantity"}, 0)
+	value, err := common.MsaValue(msi, []string{"quantity"})
 	if err != nil {
 		panic(fmt.Errorf("quantity missing from %v: %w", msi, err))
 	}

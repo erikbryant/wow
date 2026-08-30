@@ -42,15 +42,15 @@ func MsaValue(msi any, keys []string) (any, error) {
 //
 // If the path does not exist, or traversal cannot continue because an
 // intermediate value is not a map[string]any, d is returned.
-func MsaValued(msi any, keys []string, d any) (any, error) {
+func MsaValued(msi any, keys []string, d any) any {
 	value, err := MsaValue(msi, keys)
 	if err != nil {
-		return nil, err
+		return d
 	}
 
 	if value == nil {
-		return d, nil
+		return d
 	}
 
-	return value, nil
+	return value
 }

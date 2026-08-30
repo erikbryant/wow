@@ -214,39 +214,39 @@ func TestMsaValued(t *testing.T) {
 			want: "Default",
 		},
 		{
-			name:    "missing key returns error",
-			msi:     data,
-			keys:    []string{"missing"},
-			d:       "Default",
-			wantErr: `key "missing" not found`,
+			name: "missing key returns default",
+			msi:  data,
+			keys: []string{"missing"},
+			d:    "Default",
+			want: "Default",
 		},
 		{
-			name:    "missing nested key returns error",
-			msi:     data,
-			keys:    []string{"nested", "missing"},
-			d:       "Default",
-			wantErr: `key "missing" not found`,
+			name: "missing nested key returns default",
+			msi:  data,
+			keys: []string{"nested", "missing"},
+			d:    "Default",
+			want: "Default",
 		},
 		{
-			name:    "cannot traverse string",
-			msi:     data,
-			keys:    []string{"name", "missing"},
-			d:       "Default",
-			wantErr: `cannot access key "missing": value has type string`,
+			name: "cannot traverse string returns default",
+			msi:  data,
+			keys: []string{"name", "missing"},
+			d:    "Default",
+			want: "Default",
 		},
 		{
-			name:    "cannot traverse nil",
-			msi:     data,
-			keys:    []string{"nil", "missing"},
-			d:       "Default",
-			wantErr: `cannot access key "missing": value has type <nil>`,
+			name: "cannot traverse nil returns default",
+			msi:  data,
+			keys: []string{"nil", "missing"},
+			d:    "Default",
+			want: "Default",
 		},
 		{
-			name:    "nil input",
-			msi:     nil,
-			keys:    []string{"anything"},
-			d:       "Default",
-			wantErr: `cannot access key "anything": value has type <nil>`,
+			name: "nil input returns default",
+			msi:  nil,
+			keys: []string{"anything"},
+			d:    "Default",
+			want: "Default",
 		},
 		{
 			name: "empty path",
@@ -263,37 +263,16 @@ func TestMsaValued(t *testing.T) {
 			want: "Default",
 		},
 		{
-			name:    "default can be nil",
-			msi:     data,
-			keys:    []string{"missing"},
-			d:       nil,
-			wantErr: `key "missing" not found`,
+			name: "default can be nil",
+			msi:  data,
+			keys: []string{"missing"},
+			d:    nil,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := MsaValued(tt.msi, tt.keys, tt.d)
-
-			if tt.wantErr != "" {
-				if err == nil {
-					t.Fatalf("MsaValued() error = nil, want %q", tt.wantErr)
-				}
-
-				if err.Error() != tt.wantErr {
-					t.Fatalf(
-						"MsaValued() error = %q, want %q",
-						err,
-						tt.wantErr,
-					)
-				}
-
-				return
-			}
-
-			if err != nil {
-				t.Fatalf("MsaValued() unexpected error: %v", err)
-			}
+			got := MsaValued(tt.msi, tt.keys, tt.d)
 
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Fatalf(
