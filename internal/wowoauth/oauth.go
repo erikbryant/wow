@@ -66,7 +66,7 @@ func generateStateOAuthCookie(w http.ResponseWriter) (string, error) {
 		Name:     cookieName,
 		Value:    state,
 		Path:     "/auth/blizzard",
-		Expires:  time.Now().Add(2 * time.Minute),
+		Expires:  time.Now().Add(oauthTimeout),
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
 		Secure:   false, // localhost callback uses HTTP
@@ -231,9 +231,9 @@ func GetPAT(clientID, clientSecret string) (string, error) {
 		}
 		close(serveErr)
 	}()
+	defer shutdownServer(server)
 
 	if err := openBrowser("http://localhost:8888/auth/blizzard/login"); err != nil {
-		_ = shutdownServer(server)
 		return "", fmt.Errorf("unable to open browser: %w", err)
 	}
 
@@ -254,10 +254,6 @@ func GetPAT(clientID, clientSecret string) (string, error) {
 
 	case <-ctx.Done():
 		return "", fmt.Errorf("OAuth authentication timed out after %s", oauthTimeout)
-	}
-
-	if err := shutdownServer(server); err != nil {
-		return "", fmt.Errorf("shutdown OAuth server: %w", err)
 	}
 
 	if result.err != nil {
