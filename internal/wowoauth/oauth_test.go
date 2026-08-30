@@ -3,7 +3,6 @@ package wowoauth
 import (
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"strings"
 	"testing"
 )
@@ -165,53 +164,4 @@ func TestOAuthCallbackBlizzardError(t *testing.T) {
 	if !strings.Contains(result.err.Error(), "access_denied") {
 		t.Fatalf("error=%q, want access_denied", result.err)
 	}
-}
-
-func TestGetTokenSuccess(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			t.Errorf("method=%s, want POST", r.Method)
-		}
-
-		if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
-			t.Errorf("Content-Type=%q", r.Header.Get("Content-Type"))
-		}
-
-		username, password, ok := r.BasicAuth()
-		if !ok {
-			t.Error("missing basic authentication")
-		}
-
-		if username != "client-id" {
-			t.Errorf("username=%q", username)
-		}
-
-		if password != "client-secret" {
-			t.Errorf("password=%q", password)
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"access_token":"abc123","token_type":"bearer","expires_in":3600}`))
-	}))
-	defer server.Close()
-
-	client := server.Client()
-
-	// This test needs getToken to be able to target the test server.
-	// In the actual test file, I'd extract the token endpoint into an
-	// injectable parameter rather than make the production URL mutable.
-	_ = client
-	_ = url.Values{}
-}
-
-func TestGetTokenRejectsMissingAccessToken(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"token_type":"bearer"}`))
-	}))
-	defer server.Close()
-
-	// See note in TestGetTokenSuccess: the endpoint should be injected
-	// rather than made global solely for testing.
-	_ = server
 }
