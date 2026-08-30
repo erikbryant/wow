@@ -53,7 +53,6 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 			//wi.Search("Arcanoweave Reagent Rucksack").ID(): reagentBagPriceMax, // 40 slot
 
 			// Fun weapon appearances
-			wi.Search("Blackfury").ID():                   common.Coppers(3000, 0, 0),
 			wi.Search("Tyrhold Broadsword").ID():          common.Coppers(3000, 0, 0),
 			wi.Search("Ameelton's Shot-Thrower").ID():     common.Coppers(3000, 0, 0),
 			wi.Search("Kickback 5000").ID():               common.Coppers(3000, 0, 0),
