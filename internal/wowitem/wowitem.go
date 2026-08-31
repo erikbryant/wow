@@ -68,16 +68,8 @@ func (i *Item) InventoryType() string {
 
 // Equippable returns true if the item is equippable
 func (i *Item) Equippable() bool {
-	// Preferred authoritative field
-	if v, ok := i.XItem["is_equippable"]; ok {
-		if b, ok := v.(bool); ok {
-			return b
-		}
-	}
-
-	// Fallback: inventory_type
-	_, isEquipSlot := equipSlotTypes[i.InventoryType()]
-	return isEquipSlot
+	v := common.MsaValued(i.XItem, []string{"is_equippable"}, false)
+	return v.(bool)
 }
 
 // ItemLevel returns the item level

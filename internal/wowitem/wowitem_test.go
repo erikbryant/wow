@@ -78,23 +78,6 @@ func TestItemAccessors(t *testing.T) {
 	}
 }
 
-func TestEquippableFallback(t *testing.T) {
-	for _, typ := range []string{"HEAD", "ONE_HANDED", "SHIELD"} {
-		data := baseItem()
-		delete(data, "is_equippable")
-		data["inventory_type"] = typ
-		if !testItem(data).Equippable() {
-			t.Errorf("%s should be equippable", typ)
-		}
-	}
-	data := baseItem()
-	delete(data, "is_equippable")
-	data["inventory_type"] = "BAG"
-	if testItem(data).Equippable() {
-		t.Error("BAG should not be equippable")
-	}
-}
-
 func TestEquippableAuthoritativeField(t *testing.T) {
 	data := baseItem()
 	data["is_equippable"] = false
