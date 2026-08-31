@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"sync"
 
 	"github.com/erikbryant/wow/internal/common"
 )
@@ -22,23 +21,27 @@ type Client struct {
 	httpClient *http.Client
 }
 
-var (
-	defaultClientMu sync.RWMutex
-	defaultClient   *Client
-)
-
 // NewClient returns a WoW API client. Since there is only one WoW web API,
 // we always return the default client.
-func NewClient() (*Client, error) {
-	defaultClientMu.RLock()
-	client := defaultClient
-	defaultClientMu.RUnlock()
+func NewClient(secretPath string) (*Client, error) {
+	var err error
 
-	if client == nil {
-		return nil, fmt.Errorf("wow API is not authenticated, did you call wowapi.Init()")
+	c := Client{
+		apiBase:    defaultAPIBase,
+		httpClient: http.DefaultClient,
 	}
 
-	return client, nil
+	err = c.getSecretsFromKeychain(secretPath)
+	if err != nil {
+		return nil, err
+	}
+
+	err = c.authenticate()
+	if err != nil {
+		return nil, err
+	}
+
+	return &c, nil
 }
 
 // NewClientWithHTTP creates a WoW API client using the supplied API base URL

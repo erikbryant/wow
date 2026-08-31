@@ -1,7 +1,6 @@
 package wowapi
 
 import (
-	"net/http"
 	"net/url"
 
 	"github.com/erikbryant/wow/internal/keychain"
@@ -48,34 +47,4 @@ func (c *Client) getSecretsFromKeychain(secretPath string) error {
 	}
 
 	return nil
-}
-
-func Init(secretPath string) error {
-	defaultClientMu.Lock()
-	defer defaultClientMu.Unlock()
-
-	if defaultClient != nil {
-		return nil
-	}
-
-	var err error
-
-	c := Client{
-		apiBase:    defaultAPIBase,
-		httpClient: http.DefaultClient,
-	}
-
-	err = c.getSecretsFromKeychain(secretPath)
-	if err != nil {
-		return err
-	}
-
-	err = c.authenticate()
-	if err != nil {
-		return err
-	}
-
-	defaultClient = &c
-
-	return err
 }

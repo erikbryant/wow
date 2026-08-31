@@ -51,11 +51,7 @@ func New(rootPath string) (*App, error) {
 		return nil, err
 	}
 
-	err = wowapi.Init(app.Paths.Secret)
-	if err != nil {
-		return nil, err
-	}
-	app.WowAPI, err = wowapi.NewClient()
+	app.WowAPI, err = wowapi.NewClient(app.Paths.Secret)
 	if err != nil {
 		return nil, err
 	}

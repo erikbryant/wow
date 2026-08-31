@@ -153,12 +153,7 @@ func synthetics() []wowitem.Item {
 }
 
 func syntheticValidate(s []wowitem.Item, paths *path.Paths) error {
-	err := wowapi.Init(paths.Secret)
-	if err != nil {
-		return err
-	}
-
-	client, err := wowapi.NewClient()
+	client, err := wowapi.NewClient(paths.Secret)
 	if err != nil {
 		return err
 	}

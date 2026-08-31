@@ -17,7 +17,7 @@ func asJSON(itemID int64, paths *path.Paths) error {
 		return err
 	}
 
-	client, err := wowapi.NewClient()
+	client, err := wowapi.NewClient(paths.Secret)
 	if err != nil {
 		return err
 	}
