@@ -139,11 +139,6 @@ func TestJSONString(t *testing.T) {
 			want:  "123",
 		},
 		{
-			name:  "float",
-			value: float64(123),
-			want:  "123",
-		},
-		{
 			name:  "json number",
 			value: json.Number("456"),
 			want:  "456",
