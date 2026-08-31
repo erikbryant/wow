@@ -170,3 +170,9 @@ func (i *Item) Appearances() []int64 {
 
 	return appearanceIDs
 }
+
+// Source returns the source of the item data (e.g., API or synthetic)
+func (i *Item) Source() string {
+	v := common.MsaValued(i.XItem, []string{"item_source"}, "API")
+	return v.(string)
+}

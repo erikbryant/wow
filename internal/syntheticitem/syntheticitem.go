@@ -14,6 +14,7 @@ func New(id int64, name string) *Item {
 		data: map[string]any{},
 	}
 
+	i.SetSynthetic()
 	i.SetID(id)
 	i.SetName(name)
 	i.SetItemLevel(1)
@@ -25,6 +26,11 @@ func New(id int64, name string) *Item {
 
 func (i *Item) Map() map[string]any {
 	return i.data
+}
+
+func (i *Item) SetSynthetic() *Item {
+	i.set([]string{"item_source"}, "synthetic")
+	return i
 }
 
 func (i *Item) SetID(id int64) *Item {

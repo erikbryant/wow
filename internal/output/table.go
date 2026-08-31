@@ -61,6 +61,12 @@ var columns = []Column{
 		value:  func(item wowitem.Item, as *appearanceset.Persistence) string { return item.Quality() },
 	},
 	{
+		header: "Source",
+		value: func(item wowitem.Item, as *appearanceset.Persistence) string {
+			return item.Source()
+		},
+	},
+	{
 		header: "Updated",
 		value: func(item wowitem.Item, as *appearanceset.Persistence) string {
 			return item.Updated().Format("2006-01-02")
