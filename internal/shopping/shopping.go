@@ -200,17 +200,15 @@ func scanRealm(realm string, c chan<- Recommendations, app *application.App) {
 }
 
 // scanRealms processes auctions on all realms in 'r'
-func scanRealms(r string, app *application.App) []Recommendations {
-	realms := strings.Split(r, ",")
+func scanRealms(app *application.App) []Recommendations {
 	results := []Recommendations{}
 	c := make(chan Recommendations)
 
-	for _, realm := range realms {
-		realm = strings.TrimSpace(realm)
+	for _, realm := range app.Realms {
 		go scanRealm(realm, c, app)
 	}
 
-	for range len(realms) {
+	for range len(app.Realms) {
 		r := <-c
 		if r.Err != nil {
 			fmt.Fprintf(os.Stderr, "*** failed to scan realm %s: %s\n", r.Realm, r.Err)
@@ -341,10 +339,10 @@ func generateOutput(app *application.App, recommendations []Recommendations) err
 }
 
 // Shop looks for auction house values across the requested realms
-func Shop(realms string, app *application.App) error {
+func Shop(app *application.App) error {
 	var err error
 
-	recommendations := scanRealms(realms, app)
+	recommendations := scanRealms(app)
 
 	err = generateOutput(app, recommendations)
 	if err != nil {
