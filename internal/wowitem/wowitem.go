@@ -18,28 +18,6 @@ type Item struct {
 	XUpdated time.Time // Datetime when created or updated
 }
 
-// equipSlotTypes is a lookup set for valid gear slots
-var equipSlotTypes = map[string]struct{}{
-	"HEAD":       {},
-	"NECK":       {},
-	"SHOULDER":   {},
-	"CHEST":      {},
-	"WAIST":      {},
-	"LEGS":       {},
-	"FEET":       {},
-	"WRIST":      {},
-	"HANDS":      {},
-	"FINGER":     {},
-	"TRINKET":    {},
-	"CLOAK":      {},
-	"ONE_HANDED": {},
-	"TWO_HANDED": {},
-	"MAIN_HAND":  {},
-	"OFF_HAND":   {},
-	"RANGED":     {},
-	"SHIELD":     {},
-}
-
 // NewItem returns an Item populated with wowData
 func NewItem(wowData map[string]any) *Item {
 	return &Item{
