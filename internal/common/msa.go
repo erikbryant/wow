@@ -4,11 +4,8 @@ import "fmt"
 
 // MsaValue returns the value at keys within a nested JSON object.
 //
-// A nil value is returned if:
-//   - keys is empty,
-//   - msi is nil,
-//   - a key does not exist, or
-//   - an intermediate value is not a map[string]any.
+// A nil value is returned if a key does not exist, or an intermediate
+// value is not a map[string]any.
 //
 // This is intended for traversing values decoded from JSON using
 // encoding/json.
