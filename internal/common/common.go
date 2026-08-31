@@ -23,18 +23,18 @@ func Gold(coppers int64) string {
 	return fmt.Sprintf("%d.%02d.%02d", g, s, c)
 }
 
+var qualities = map[string]int64{
+	"poor":      0,
+	"common":    1,
+	"uncommon":  2,
+	"rare":      3,
+	"epic":      4,
+	"legendary": 5,
+	"artifact":  6,
+}
+
 // QualityID return the integer id of the given quality name string
 func QualityID(qualityName string) int64 {
-	qualities := map[string]int64{
-		"poor":      0,
-		"common":    1,
-		"uncommon":  2,
-		"rare":      3,
-		"epic":      4,
-		"legendary": 5,
-		"artifact":  6,
-	}
-
 	qID, ok := qualities[strings.ToLower(qualityName)]
 	if !ok {
 		fmt.Fprintf(os.Stderr, "*** unknown quality: %s\n", qualityName)
