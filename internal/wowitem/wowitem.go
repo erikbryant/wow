@@ -100,7 +100,11 @@ func (i *Item) Stackable() bool {
 
 // Name returns the item name
 func (i *Item) Name() string {
-	return i.XItem["name"].(string)
+	v, err := common.MsaValue(i.XItem, []string{"name"})
+	if err != nil {
+		panic(fmt.Errorf("name missing from %v: %w", i.XItem, err))
+	}
+	return v.(string)
 }
 
 func (i *Item) previewPrice() (int64, error) {

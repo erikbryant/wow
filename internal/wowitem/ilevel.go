@@ -235,6 +235,8 @@ func missing(levels Levels) []int64 {
 		need = append(need, l)
 	}
 
+	slices.Sort(need)
+
 	return need
 }
 
