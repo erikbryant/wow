@@ -105,7 +105,7 @@ func scanAlts() (map[int64]Recipe, map[string]map[int64]Recipe, error) {
 	recipesByAlt := map[string]map[int64]Recipe{}
 
 	// Find known recipes for each alt
-	for _, alt := range userconfig.Alts {
+	for _, alt := range userconfig.CookingAlts {
 		kr, err := knownClassicCookingRecipes(alt.Realm, alt.Name)
 		if err != nil {
 			return nil, nil, err
