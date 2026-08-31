@@ -8,16 +8,17 @@ import (
 )
 
 type Paths struct {
-	Appearances     string
-	Arbitrage       string
-	BattlePets      string
-	ILevels         string
-	Items           string
-	ItemsReport     string
-	PriceCache      string
-	RecipesNeeded   string
-	Recommendations string
-	Secret          string
+	Appearances          string
+	Arbitrage            string
+	BattlePets           string
+	ILevels              string
+	Items                string
+	ItemsReport          string
+	PriceCache           string
+	RecipesNeeded        string
+	Recommendations      string
+	RecommendationsBrief string
+	Secret               string
 }
 
 const (
@@ -127,16 +128,17 @@ func New(rootPath string) (*Paths, error) {
 	}
 
 	p := Paths{
-		Appearances:     filepath.Join(rootPath, dataDir, "appearances"),
-		Arbitrage:       filepath.Join(rootPath, exportsDir, "arbitrageLatest"),
-		BattlePets:      filepath.Join(rootPath, reportsDir, "battlePets"),
-		ILevels:         filepath.Join(rootPath, exportsDir, "iLevels"),
-		Items:           filepath.Join(rootPath, dataDir, "items"),
-		ItemsReport:     filepath.Join(rootPath, reportsDir, "items"),
-		PriceCache:      filepath.Join(rootPath, exportsDir, "PriceCache.lua"),
-		RecipesNeeded:   filepath.Join(rootPath, reportsDir, "recipesNeeded"),
-		Recommendations: filepath.Join(rootPath, reportsDir, "shopping"),
-		Secret:          filepath.Join(rootPath, binDir, "secret"),
+		Appearances:          filepath.Join(rootPath, dataDir, "appearances"),
+		Arbitrage:            filepath.Join(rootPath, exportsDir, "arbitrageLatest"),
+		BattlePets:           filepath.Join(rootPath, reportsDir, "battlePets"),
+		ILevels:              filepath.Join(rootPath, exportsDir, "iLevels"),
+		Items:                filepath.Join(rootPath, dataDir, "items"),
+		ItemsReport:          filepath.Join(rootPath, reportsDir, "items"),
+		PriceCache:           filepath.Join(rootPath, exportsDir, "PriceCache.lua"),
+		RecipesNeeded:        filepath.Join(rootPath, reportsDir, "recipesNeeded"),
+		Recommendations:      filepath.Join(rootPath, reportsDir, "shopping"),
+		RecommendationsBrief: filepath.Join(rootPath, reportsDir, "shopping.brief"),
+		Secret:               filepath.Join(rootPath, binDir, "secret"),
 	}
 
 	err = create(rootPath)

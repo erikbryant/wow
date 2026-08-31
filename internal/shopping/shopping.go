@@ -2,6 +2,7 @@ package shopping
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"slices"
@@ -237,8 +238,8 @@ func fmtShoppingList(label string, items []string, fgColor int, summarize bool) 
 	return output.Colorize(fmt.Sprintf("%s%s\n", header, strings.Join(compact, "\n")), fgColor)
 }
 
-// format converts a Recommendations to a string
-func (r *Recommendations) format(app *application.App, summarize bool) string {
+// toString converts a Recommendations to a string
+func (r *Recommendations) toString(app *application.App, summarize bool) string {
 	shoppingList := ""
 	shoppingList += fmtShoppingList("Pets I Need", r.PetNeededBargains, output.FgMagenta, summarize)
 	shoppingList += fmtShoppingList("Pets to Resell", r.PetResellBargains, output.FgGreen, summarize)
@@ -269,8 +270,23 @@ func (r *Recommendations) format(app *application.App, summarize bool) string {
 	return msg
 }
 
-// generateOutput handles all output (console and files) for shopping
-func generateOutput(app *application.App, recommendations []Recommendations) error {
+// writeFile creates a new file and writes data into it
+func writeFile(path string, data []byte) error {
+	err := os.Remove(path)
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+
+	err = os.WriteFile(path, data, 0600)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// stringify
+func stringify(app *application.App, recommendations []Recommendations) (string, string, string) {
 	outputBrief := []string{}
 	outputVerbose := []string{}
 	arbitrageRecords := []string{}
@@ -279,58 +295,69 @@ func generateOutput(app *application.App, recommendations []Recommendations) err
 		for _, record := range r.ArbitrageLogs {
 			arbitrageRecords = append(arbitrageRecords, record)
 		}
-		outputBrief = append(outputBrief, r.format(app, true))
-		outputVerbose = append(outputVerbose, r.format(app, false))
+		outputBrief = append(outputBrief, r.toString(app, true))
+		outputVerbose = append(outputVerbose, r.toString(app, false))
 	}
 
 	sort.Strings(outputBrief)
 	sort.Strings(outputVerbose)
 
-	fmt.Println(strings.Join(outputBrief, ""))
+	return strings.Join(outputBrief, ""), strings.Join(outputVerbose, ""), strings.Join(arbitrageRecords, "\n") + "\n"
+}
 
-	// Arbitrages file for the WoW 'wowMerchant' addon to consume
-	err := os.WriteFile(app.Paths.Arbitrage, []byte(strings.Join(arbitrageRecords, "\n")+"\n"), 0600)
+// generateOutput handles all output (console and files) for shopping
+func generateOutput(app *application.App, recommendations []Recommendations) error {
+	outputBrief, outputVerbose, arbitrageRecords := stringify(app, recommendations)
+
+	// Shopping recommendations
+	fmt.Println(outputBrief)
+
+	err := writeFile(app.Paths.RecommendationsBrief, []byte(outputBrief))
 	if err != nil {
 		return err
 	}
 
-	// Persisted items. In text form as a backup in case we lose the persistence.
-	// We can use the item IDs to know what was in the persistence.
-	var buf bytes.Buffer
-	items := app.WowItem.Values()
-	query.Sort(items, query.ByID)
-	output.Table(&buf, items, app.AppearanceSet)
-	err = os.WriteFile(app.Paths.ItemsReport, buf.Bytes(), 0600)
+	err = writeFile(app.Paths.Recommendations, []byte(outputVerbose))
+	if err != nil {
+		return err
+	}
+
+	// Arbitrages file for the WoW 'wowMerchant' addon to consume
+	err = writeFile(app.Paths.Arbitrage, []byte(arbitrageRecords))
 	if err != nil {
 		return err
 	}
 
 	// Battle pet IDs/names
-	err = os.WriteFile(app.Paths.BattlePets, []byte(app.BattlePets.Output()), 0600)
+	err = writeFile(app.Paths.BattlePets, []byte(app.BattlePets.Output()))
 	if err != nil {
 		return err
 	}
 
 	// Prices file for the WoW 'wowMerchant' addon to consume
-	err = os.WriteFile(app.Paths.PriceCache, []byte(output.Lua(app.WowItem)), 0600)
+	err = writeFile(app.Paths.PriceCache, []byte(output.Lua(app.WowItem)))
 	if err != nil {
 		return err
 	}
 
 	// Recipes needed
-	err = os.WriteFile(app.Paths.RecipesNeeded, []byte(app.Cooking.Output()), 0600)
-	if err != nil {
-		return err
-	}
-
-	// Verbose form of the shopping recommendations
-	err = os.WriteFile(app.Paths.Recommendations, []byte(strings.Join(outputVerbose, "")), 0600)
+	err = writeFile(app.Paths.RecipesNeeded, []byte(app.Cooking.Output()))
 	if err != nil {
 		return err
 	}
 
 	// Item levels we think we need, but have not encountered yet
-	err = os.WriteFile(app.Paths.ILevels, []byte(strings.Join(wowitem.ILevelsNeeded(), "\n")+"\n"), 0600)
+	err = writeFile(app.Paths.ILevels, []byte(strings.Join(wowitem.ILevelsNeeded(), "\n")+"\n"))
+	if err != nil {
+		return err
+	}
+
+	// Store persisted items in text form as a backup in case we lose the persistence.
+	var buf bytes.Buffer
+	items := app.WowItem.Values()
+	query.Sort(items, query.ByID)
+	output.Table(&buf, items, app.AppearanceSet)
+	err = writeFile(app.Paths.ItemsReport, buf.Bytes())
 	if err != nil {
 		return err
 	}
