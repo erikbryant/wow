@@ -196,9 +196,6 @@ func (f *oauthFlow) handlers() http.Handler {
 	mux.HandleFunc("/auth/blizzard/login", f.login)
 	mux.HandleFunc("/auth/blizzard/profile", f.callback)
 
-	// Preserve the existing behavior for the root page.
-	mux.Handle("/", http.FileServer(http.Dir("templates/")))
-
 	return mux
 }
 
