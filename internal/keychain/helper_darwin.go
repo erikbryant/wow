@@ -4,6 +4,7 @@ package keychain
 
 import "C"
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"time"
@@ -78,50 +79,50 @@ func (k Error) Error() string {
 	var msg string
 	// SecCopyErrorMessageString is only available on OSX, so derive manually.
 	// Messages derived from `$ security error $errcode`.
-	switch k {
-	case ErrorUnimplemented:
+	switch {
+	case errors.Is(k, ErrorUnimplemented):
 		msg = "Function or operation not implemented."
-	case ErrorParam:
+	case errors.Is(k, ErrorParam):
 		msg = "One or more parameters passed to the function were not valid."
-	case ErrorAllocate:
+	case errors.Is(k, ErrorAllocate):
 		msg = "Failed to allocate memory."
-	case ErrorNotAvailable:
+	case errors.Is(k, ErrorNotAvailable):
 		msg = "No keychain is available. You may need to restart your computer."
-	case ErrorAuthFailed:
+	case errors.Is(k, ErrorAuthFailed):
 		msg = "The user name or passphrase you entered is not correct."
-	case ErrorDuplicateItem:
+	case errors.Is(k, ErrorDuplicateItem):
 		msg = "The specified item already exists in the keychain."
-	case ErrorItemNotFound:
+	case errors.Is(k, ErrorItemNotFound):
 		msg = "The specified item could not be found in the keychain."
-	case ErrorInteractionNotAllowed:
+	case errors.Is(k, ErrorInteractionNotAllowed):
 		msg = "User interaction is not allowed."
-	case ErrorDecode:
+	case errors.Is(k, ErrorDecode):
 		msg = "Unable to decode the provided data."
-	case ErrorNoSuchKeychain:
+	case errors.Is(k, ErrorNoSuchKeychain):
 		msg = "The specified keychain could not be found."
-	case ErrorNoAccessForItem:
+	case errors.Is(k, ErrorNoAccessForItem):
 		msg = "The specified item has no access control."
-	case ErrorReadOnly:
+	case errors.Is(k, ErrorReadOnly):
 		msg = "Read-only error."
-	case ErrorReadonlyAttribute:
+	case errors.Is(k, ErrorReadonlyAttribute):
 		msg = "The attribute is read-only."
-	case ErrorInvalidKeychain:
+	case errors.Is(k, ErrorInvalidKeychain):
 		msg = "The keychain is not valid."
-	case ErrorDuplicateKeyChain:
+	case errors.Is(k, ErrorDuplicateKeyChain):
 		msg = "A keychain with the same name already exists."
-	case ErrorWrongVersion:
+	case errors.Is(k, ErrorWrongVersion):
 		msg = "The version is incorrect."
-	case ErrorInvalidItemRef:
+	case errors.Is(k, ErrorInvalidItemRef):
 		msg = "The item reference is invalid."
-	case ErrorInvalidSearchRef:
+	case errors.Is(k, ErrorInvalidSearchRef):
 		msg = "The search reference is invalid."
-	case ErrorDataNotAvailable:
+	case errors.Is(k, ErrorDataNotAvailable):
 		msg = "The data is not available."
-	case ErrorDataNotModifiable:
+	case errors.Is(k, ErrorDataNotModifiable):
 		msg = "The data is not modifiable."
-	case ErrorInvalidOwnerEdit:
+	case errors.Is(k, ErrorInvalidOwnerEdit):
 		msg = "An invalid attempt to change the owner of an item."
-	case ErrorUserCanceled:
+	case errors.Is(k, ErrorUserCanceled):
 		msg = "User canceled the operation."
 	default:
 		msg = "Keychain Error."
@@ -188,7 +189,7 @@ func queryItemRef(attr map[string]interface{}) (C.CFTypeRef, error) {
 
 	var resultsRef C.CFTypeRef
 	errCode := C.SecItemCopyMatching(cfDict, &resultsRef) //nolint
-	if Error(errCode) == ErrorItemNotFound {
+	if errors.Is(Error(errCode), ErrorItemNotFound) {
 		return 0, nil
 	}
 	err = checkError(errCode)
