@@ -44,10 +44,15 @@ func TestNewItem(t *testing.T) {
 func TestItemAccessors(t *testing.T) {
 	i := testItem(baseItem())
 	checks := map[string]string{
-		"Binding": i.Binding(), "InventoryType": i.InventoryType(), "Subclass": i.ItemSubclassName(),
-		"Class": i.ItemClassName(), "Quality": i.Quality(), "Requirements": i.Requirements(),
+		"Subclass": i.ItemSubclassName(),
+		"Class":    i.ItemClassName(),
+		"Quality":  i.Quality(),
 	}
-	want := map[string]string{"Binding": "Binds on Equip", "InventoryType": "HEAD", "Subclass": "Plate", "Class": "Armor", "Quality": "Epic", "Requirements": "Level 80"}
+	want := map[string]string{
+		"Subclass": "Plate",
+		"Class":    "Armor",
+		"Quality":  "Epic",
+	}
 	for k, got := range checks {
 		if got != want[k] {
 			t.Errorf("%s=%q want %q", k, got, want[k])
@@ -93,7 +98,7 @@ func TestMissingOptionalFields(t *testing.T) {
 	delete(data, "inventory_type")
 	i := testItem(data)
 
-	if i.Binding() != "" || i.InventoryType() != "UNKNOWN" || i.RelicType() != "" || i.Quality() != "" || i.Requirements() != "" || i.SellPriceAdvertised() != 0 || i.Toy() {
+	if i.Quality() != "" || i.SellPriceAdvertised() != 0 || i.Toy() {
 		t.Error("missing optional fields not handled")
 	}
 }

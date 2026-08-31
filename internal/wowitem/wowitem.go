@@ -54,18 +54,6 @@ func (i *Item) ID() int64 {
 	return i.XID
 }
 
-// Binding returns whether and when the item binds
-func (i *Item) Binding() string {
-	v := common.MsaValued(i.XItem, []string{"preview_item", "binding", "type"}, "")
-	return v.(string)
-}
-
-// InventoryType returns the slot this item equips to, or UNKNOWN
-func (i *Item) InventoryType() string {
-	v := common.MsaValued(i.XItem, []string{"inventory_type"}, "UNKNOWN")
-	return v.(string)
-}
-
 // Equippable returns true if the item is equippable
 func (i *Item) Equippable() bool {
 	v := common.MsaValued(i.XItem, []string{"is_equippable"}, false)
@@ -132,12 +120,6 @@ func (i *Item) Stackable() bool {
 	return v.(bool)
 }
 
-// RelicType returns the relic type
-func (i *Item) RelicType() string {
-	v := common.MsaValued(i.XItem, []string{"preview_item", "gem_properties", "relic_type"}, "")
-	return v.(string)
-}
-
 // Name returns the item name
 func (i *Item) Name() string {
 	return i.XItem["name"].(string)
@@ -175,11 +157,7 @@ func (i *Item) Updated() time.Time {
 	return i.XUpdated
 }
 
-func (i *Item) Requirements() string {
-	v := common.MsaValued(i.XItem, []string{"preview_item", "requirements", "skill", "display_string"}, "")
-	return common.JSONString(v)
-}
-
+// Quality returns the quality of this item
 func (i *Item) Quality() string {
 	v := common.MsaValued(i.XItem, []string{"preview_item", "quality", "name"}, "")
 	return common.JSONString(v)
