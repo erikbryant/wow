@@ -56,14 +56,14 @@ func (i *Item) ID() int64 {
 
 // Binding returns whether and when the item binds
 func (i *Item) Binding() string {
-	value := common.MsaValued(i.XItem, []string{"preview_item", "binding", "type"}, "")
-	return value.(string)
+	v := common.MsaValued(i.XItem, []string{"preview_item", "binding", "type"}, "")
+	return v.(string)
 }
 
 // InventoryType returns the slot this item equips to, or UNKNOWN
 func (i *Item) InventoryType() string {
-	value := common.MsaValued(i.XItem, []string{"inventory_type"}, "UNKNOWN")
-	return value.(string)
+	v := common.MsaValued(i.XItem, []string{"inventory_type"}, "UNKNOWN")
+	return v.(string)
 }
 
 // Equippable returns true if the item is equippable
