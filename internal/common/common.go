@@ -56,7 +56,7 @@ func JSONString(value any) string {
 	case nil:
 		return ""
 	default:
-		return fmt.Sprint(value)
+		panic(fmt.Sprint(value))
 	}
 }
 
