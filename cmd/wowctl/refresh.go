@@ -68,7 +68,11 @@ func invalidateAndRefreshStale(maxRefresh int, paths *path.Paths) error {
 				if err == nil {
 					refreshCount++
 				} else {
-					fmt.Fprintf(os.Stderr, "could not retrieve itemID %d: %s\n", i.ID(), err)
+					if i.Source() == "synthetic" {
+						fmt.Fprintf(os.Stderr, "deleted synthetic itemID %d; run `wowctl populate` to recreate\n", i.ID())
+					} else {
+						fmt.Fprintf(os.Stderr, "could not retrieve itemID %d: %s\n", i.ID(), err)
+					}
 					continue
 				}
 			}
