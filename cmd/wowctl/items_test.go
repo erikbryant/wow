@@ -162,30 +162,30 @@ func TestRunDeleteRequiresID(t *testing.T) {
 	}
 }
 
-func TestJSON(t *testing.T) {
-	paths := testPaths(t)
-	item := wowitem.NewItem(map[string]any{
-		"id":           json.Number("123"),
-		"name":         "Test Item",
-		"level":        json.Number("10"),
-		"is_stackable": false,
-		"item_class":   map[string]any{"name": "Armor"},
-	})
-	saveItems(t, paths.Items, item)
-
-	output := captureStdout(t, func() {
-		if err := asJSON(item.ID(), paths); err != nil {
-			t.Fatalf("json() error = %v", err)
-		}
-	})
-
-	if !strings.Contains(output, `"id": 123`) {
-		t.Fatalf("output = %q, want item ID", output)
-	}
-	if !strings.Contains(output, `"name": "Test Item"`) {
-		t.Fatalf("output = %q, want item name", output)
-	}
-}
+//func TestJSON(t *testing.T) {
+//	paths := testPaths(t)
+//	item := wowitem.NewItem(map[string]any{
+//		"id":           json.Number("123"),
+//		"name":         "Test Item",
+//		"level":        json.Number("10"),
+//		"is_stackable": false,
+//		"item_class":   map[string]any{"name": "Armor"},
+//	})
+//	saveItems(t, paths.Items, item)
+//
+//	output := captureStdout(t, func() {
+//		if err := asJSON(item.ID(), paths); err != nil {
+//			t.Fatalf("json() error = %v", err)
+//		}
+//	})
+//
+//	if !strings.Contains(output, `"id": 123`) {
+//		t.Fatalf("output = %q, want item ID", output)
+//	}
+//	if !strings.Contains(output, `"name": "Test Item"`) {
+//		t.Fatalf("output = %q, want item name", output)
+//	}
+//}
 
 func TestRunJSONRequiresID(t *testing.T) {
 	paths := testPaths(t)

@@ -70,24 +70,24 @@ func New(rootPath string) (*App, error) {
 		return nil, err
 	}
 
-	app.Appearances, err = userconfig.NewAppearances()
+	app.Appearances, err = userconfig.NewAppearances(app.WowAPI)
 	if err != nil {
 		return nil, err
 	}
 
-	app.BattlePets, err = battlepet.New()
+	app.BattlePets, err = battlepet.New(app.WowAPI)
 	if err != nil {
 		return nil, err
 	}
 
-	app.Cooking, err = cooking.New()
+	app.Cooking, err = cooking.New(app.WowAPI)
 	if err != nil {
 		return nil, err
 	}
 
 	app.ShoppingConfig = shoppingconfig.New(app.WowItem, app.Cooking)
 
-	app.Toys, err = toy.New()
+	app.Toys, err = toy.New(app.WowAPI)
 	if err != nil {
 		return nil, err
 	}

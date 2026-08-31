@@ -48,8 +48,8 @@ func (p *Persistence) Search(s string) *Item {
 }
 
 // GetLive retrieves a single item from the WoW web API and persists it.
-func (p *Persistence) GetLive(id int64) (Item, error) {
-	result, err := wowapi.Item(strconv.FormatInt(id, 10))
+func (p *Persistence) GetLive(id int64, client *wowapi.Client) (Item, error) {
+	result, err := client.Item(strconv.FormatInt(id, 10))
 	if err != nil {
 		return Item{}, err
 	}
@@ -63,13 +63,13 @@ func (p *Persistence) GetLive(id int64) (Item, error) {
 }
 
 // Get retrieves a single item. From persistence if present, web if not.
-func (p *Persistence) Get(id int64) (Item, error) {
+func (p *Persistence) Get(id int64, client *wowapi.Client) (Item, error) {
 	item, ok := p.Persistence.Get(id)
 	if ok {
 		return item, nil
 	}
 
-	return p.GetLive(id)
+	return p.GetLive(id, client)
 }
 
 func (p *Persistence) Keys() []int64 {

@@ -108,7 +108,7 @@ func appearanceSetBargain(i wowitem.Item, auc auction.Auction, app *application.
 // iterateAuctions iterates over a single auction house, checking each auction for recommendation
 func (r *Recommendations) iterateAuctions(auctions map[int64][]auction.Auction, commodities bool, app *application.App) {
 	for itemID, itemAuctions := range auctions {
-		i, err := app.WowItem.Get(itemID)
+		i, err := app.WowItem.Get(itemID, app.WowAPI)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "error getting itemID %6d, commodities=%5t: %v  https://www.wowhead.com/item=%d\n", itemID, commodities, err, itemID)
 			continue
@@ -186,7 +186,7 @@ func scanRealm(realm string, c chan<- Recommendations, app *application.App) {
 		Realm: realm,
 	}
 
-	auctions, err := auction.Get(realm)
+	auctions, err := auction.Get(realm, app.WowAPI)
 	if err != nil {
 		r.Err = err
 		c <- r
@@ -312,7 +312,7 @@ func generateOutput(app *application.App, recommendations []Recommendations) err
 	}
 
 	// Prices file for the WoW 'wowMerchant' addon to consume
-	err = os.WriteFile(app.Paths.PriceCache, []byte(output.Lua(app.WowItem)), 0600)
+	err = os.WriteFile(app.Paths.PriceCache, []byte(output.Lua(app.WowItem, app.WowAPI)), 0600)
 	if err != nil {
 		return err
 	}

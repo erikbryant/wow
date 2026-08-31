@@ -30,9 +30,14 @@ func createAppearancePersist(paths *path.Paths) error {
 		return err
 	}
 
+	client, err := wowapi.NewClient()
+	if err != nil {
+		return err
+	}
+
 	as := appearanceset.NewEmpty(paths.Appearances)
 
-	err = as.LoadFromWeb()
+	err = as.LoadFromWeb(client)
 	if err != nil {
 		return fmt.Errorf("failed to load appearance set from web: %w", err)
 	}

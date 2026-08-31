@@ -15,10 +15,10 @@ type Toy struct {
 }
 
 // getNames returns a map of all toy names by toy ID
-func getNames() (map[string]int64, error) {
+func getNames(client *wowapi.Client) (map[string]int64, error) {
 	toyNames := map[string]int64{}
 
-	allToys, err := wowapi.Toys()
+	allToys, err := client.Toys()
 	if err != nil {
 		return nil, fmt.Errorf("unable to obtain toy names: %w", err)
 	}
@@ -33,10 +33,10 @@ func getNames() (map[string]int64, error) {
 }
 
 // getOwned returns the toys I own by toy ID
-func getOwned() (map[int64]bool, error) {
+func getOwned(client *wowapi.Client) (map[int64]bool, error) {
 	myToys := map[int64]bool{}
 
-	toysOwned, err := wowapi.CollectionsToys()
+	toysOwned, err := client.CollectionsToys()
 	if err != nil {
 		return nil, fmt.Errorf("unable to obtain toys owned: %w", err)
 	}
@@ -50,16 +50,16 @@ func getOwned() (map[int64]bool, error) {
 	return myToys, nil
 }
 
-func New() (*Toy, error) {
+func New(client *wowapi.Client) (*Toy, error) {
 	var t Toy
 	var err error
 
-	t.names, err = getNames()
+	t.names, err = getNames(client)
 	if err != nil {
 		return nil, err
 	}
 
-	t.owned, err = getOwned()
+	t.owned, err = getOwned(client)
 	if err != nil {
 		return nil, err
 	}

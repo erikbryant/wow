@@ -32,8 +32,8 @@ func New(persistencePath string) (*Persistence, error) {
 	return as, nil
 }
 
-func (as *Persistence) LoadFromWeb() error {
-	appearanceSetsIDs, err := wowapi.ItemAppearanceSetsIndexIDs()
+func (as *Persistence) LoadFromWeb(client *wowapi.Client) error {
+	appearanceSetsIDs, err := client.ItemAppearanceSetsIndexIDs()
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (as *Persistence) LoadFromWeb() error {
 		fmt.Fprintf(os.Stderr, "Loading appearance set %4d/%4d: %5d  %s\n", count, total, setID, setName)
 		count++
 
-		appearanceIDs, err := wowapi.ItemAppearanceSetIDs(setID)
+		appearanceIDs, err := client.ItemAppearanceSetIDs(setID)
 		if err != nil {
 			return err
 		}

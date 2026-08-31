@@ -15,19 +15,19 @@ import (
 
 // deleteAndGetNew removes the item from the persistence. Even if we later fail to retrieve
 // new data, at least we got rid of stale data.
-func deleteAndGetNew(wowItems *wowitem.Persistence, itemID int64) (wowitem.Item, error) {
+func deleteAndGetNew(wowItems *wowitem.Persistence, itemID int64, client *wowapi.Client) (wowitem.Item, error) {
 	wowItems.Delete(itemID)
-	return wowItems.GetLive(itemID)
+	return wowItems.GetLive(itemID, client)
 }
 
 // invalidateAndRefresh refreshes a single item
-func invalidateAndRefresh(itemID int64, paths *path.Paths) error {
+func invalidateAndRefresh(itemID int64, paths *path.Paths, client *wowapi.Client) error {
 	wowItems, err := wowitem.New(paths.Items)
 	if err != nil {
 		return err
 	}
 
-	iNew, errGetNew := deleteAndGetNew(wowItems, itemID)
+	iNew, errGetNew := deleteAndGetNew(wowItems, itemID, client)
 
 	// Persist the deletion even if getting the new data fails
 	err = wowItems.Save()
@@ -50,7 +50,7 @@ func invalidateAndRefresh(itemID int64, paths *path.Paths) error {
 }
 
 // invalidateAndRefreshStale deletes items older than a certain age and attempts to refresh them
-func invalidateAndRefreshStale(maxRefresh int, paths *path.Paths) error {
+func invalidateAndRefreshStale(maxRefresh int, paths *path.Paths, client *wowapi.Client) error {
 	maxAge := 24 * time.Hour * 7 // 1 week
 	needsRefresh := 0
 	refreshCount := 0
@@ -64,7 +64,7 @@ func invalidateAndRefreshStale(maxRefresh int, paths *path.Paths) error {
 		if i.Stale(maxAge) {
 			needsRefresh++
 			if refreshCount < maxRefresh {
-				_, err := deleteAndGetNew(wowItems, i.ID())
+				_, err := deleteAndGetNew(wowItems, i.ID(), client)
 				if err == nil {
 					refreshCount++
 				} else {
@@ -104,13 +104,18 @@ func runRefresh(args []string, paths *path.Paths) error {
 		return err
 	}
 
+	client, err := wowapi.NewClient()
+	if err != nil {
+		return err
+	}
+
 	if *itemID == -1 {
-		err = invalidateAndRefreshStale(*maxRefresh, paths)
+		err = invalidateAndRefreshStale(*maxRefresh, paths, client)
 		if err != nil {
 			return err
 		}
 	} else {
-		err = invalidateAndRefresh(*itemID, paths)
+		err = invalidateAndRefresh(*itemID, paths, client)
 		if err != nil {
 			return err
 		}

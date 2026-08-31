@@ -158,8 +158,13 @@ func syntheticValidate(s []wowitem.Item, paths *path.Paths) error {
 		return err
 	}
 
+	client, err := wowapi.NewClient()
+	if err != nil {
+		return err
+	}
+
 	for _, item := range s {
-		_, err := wowapi.Item(strconv.FormatInt(item.ID(), 10))
+		_, err := client.Item(strconv.FormatInt(item.ID(), 10))
 		if err == nil {
 			return fmt.Errorf("synthetic item with id %d shadows web API", item.ID())
 		}

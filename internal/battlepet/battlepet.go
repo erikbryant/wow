@@ -19,10 +19,10 @@ const (
 )
 
 // getPetNames downloads all pet names from the WoW web API
-func getPetNames() (map[int64]string, error) {
+func getPetNames(client *wowapi.Client) (map[int64]string, error) {
 	names := map[int64]string{}
 
-	allPets, err := wowapi.Pets()
+	allPets, err := client.Pets()
 	if err != nil {
 		return nil, fmt.Errorf("unable to obtain battle pet names: %w", err)
 	}
@@ -37,10 +37,10 @@ func getPetNames() (map[int64]string, error) {
 }
 
 // getPetsOwned downloads the list of pets I own from the WoW web API
-func getPetsOwned() (map[int64]int64, error) {
+func getPetsOwned(client *wowapi.Client) (map[int64]int64, error) {
 	owned := map[int64]int64{}
 
-	pets, err := wowapi.CollectionsPets()
+	pets, err := client.CollectionsPets()
 	if err != nil {
 		return nil, fmt.Errorf("unable to obtain battle pets owned: %w", err)
 	}
@@ -60,16 +60,16 @@ func getPetsOwned() (map[int64]int64, error) {
 	return owned, nil
 }
 
-func New() (*BattlePet, error) {
+func New(client *wowapi.Client) (*BattlePet, error) {
 	var err error
 	bp := BattlePet{}
 
-	bp.names, err = getPetNames()
+	bp.names, err = getPetNames(client)
 	if err != nil {
 		return nil, err
 	}
 
-	bp.owned, err = getPetsOwned()
+	bp.owned, err = getPetsOwned(client)
 	if err != nil {
 		return nil, err
 	}

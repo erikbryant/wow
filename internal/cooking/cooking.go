@@ -37,9 +37,9 @@ func makeRecipe(r any) Recipe {
 	return recipe
 }
 
-func getProfession(realm, alt, professionName string) (any, error) {
+func getProfession(realm, alt, professionName string, client *wowapi.Client) (any, error) {
 	// Get all professions
-	result, err := wowapi.Professions(realm, alt)
+	result, err := client.Professions(realm, alt)
 	if err != nil {
 		return nil, fmt.Errorf("no professions found for %s, %s, %v", realm, alt, result)
 	}
@@ -71,8 +71,8 @@ func getTier(prof any, tierName string) (any, error) {
 	return zero, fmt.Errorf("tier not found: %s", tierName)
 }
 
-func knownClassicCookingRecipes(realm, alt string) (map[int64]Recipe, error) {
-	prof, err := getProfession(realm, alt, "Cooking")
+func knownClassicCookingRecipes(realm, alt string, client *wowapi.Client) (map[int64]Recipe, error) {
+	prof, err := getProfession(realm, alt, "Cooking", client)
 	if err != nil {
 		return nil, err
 	}
@@ -100,13 +100,13 @@ func key(alt userconfig.Alt) string {
 	return alt.Realm + "-" + alt.Name
 }
 
-func scanAlts() (map[int64]Recipe, map[string]map[int64]Recipe, error) {
+func scanAlts(client *wowapi.Client) (map[int64]Recipe, map[string]map[int64]Recipe, error) {
 	allRecipes := map[int64]Recipe{}
 	recipesByAlt := map[string]map[int64]Recipe{}
 
 	// Find known recipes for each alt
 	for _, alt := range userconfig.CookingAlts {
-		kr, err := knownClassicCookingRecipes(alt.Realm, alt.Name)
+		kr, err := knownClassicCookingRecipes(alt.Realm, alt.Name, client)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -139,13 +139,13 @@ func generateReport(recipesNeededByAlt map[string][]string, recipesNeededCount m
 	return recipeOutputLog.String()
 }
 
-func New() (*CookingRecipes, error) {
+func New(client *wowapi.Client) (*CookingRecipes, error) {
 	c := CookingRecipes{
 		neededCount: map[string]int{},
 		neededByAlt: map[string][]string{},
 	}
 
-	allRecipes, recipesByAlt, err := scanAlts()
+	allRecipes, recipesByAlt, err := scanAlts(client)
 	if err != nil {
 		return nil, err
 	}

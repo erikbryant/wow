@@ -6,6 +6,7 @@ import (
 	"text/template"
 
 	"github.com/erikbryant/wow/internal/common"
+	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
@@ -27,11 +28,11 @@ type MerchantData struct {
 }
 
 // Lua writes item data as Lua source code.
-func Lua(wi *wowitem.Persistence) string {
+func Lua(wi *wowitem.Persistence, client *wowapi.Client) string {
 	data := MerchantData{}
 
 	for _, id := range wi.Keys() {
-		i, _ := wi.Get(id)
+		i, _ := wi.Get(id, client)
 
 		if i.Cosmetic() {
 			data.Cosmetics = append(data.Cosmetics, Cosmetic{ItemID: id})

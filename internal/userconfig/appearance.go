@@ -123,8 +123,8 @@ var (
 )
 
 // getOwned returns the appearance IDs I own
-func getOwned() (map[int64]bool, error) {
-	t, err := wowapi.CollectionsTransmogs()
+func getOwned(client *wowapi.Client) (map[int64]bool, error) {
+	t, err := client.CollectionsTransmogs()
 	if err != nil {
 		return nil, fmt.Errorf("unable to obtain transmogs owned: %w", err)
 	}
@@ -145,11 +145,11 @@ func getOwned() (map[int64]bool, error) {
 	return ao, nil
 }
 
-func NewAppearances() (*Appearances, error) {
+func NewAppearances(client *wowapi.Client) (*Appearances, error) {
 	ao := Appearances{}
 	var err error
 
-	ao.owned, err = getOwned()
+	ao.owned, err = getOwned(client)
 	if err != nil {
 		return nil, err
 	}

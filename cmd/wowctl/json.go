@@ -7,6 +7,7 @@ import (
 
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/path"
+	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
@@ -16,7 +17,12 @@ func asJSON(itemID int64, paths *path.Paths) error {
 		return err
 	}
 
-	i, err := wowItems.Get(itemID)
+	client, err := wowapi.NewClient()
+	if err != nil {
+		return err
+	}
+
+	i, err := wowItems.Get(itemID, client)
 	if err != nil {
 		return fmt.Errorf("failed to get itemID %d: %w", itemID, err)
 	}
