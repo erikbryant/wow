@@ -70,12 +70,14 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 			1706: {}, // Ashmaw Cub
 			1150: {}, // Ashstone Core
 			1934: {}, // Benax
+			1965: {}, // Blightbreath
 			1964: {}, // Blood Boil
 			1963: {}, // Boneshard
 			4489: {}, // Bouncer
 			4537: {}, // Chester
 			1662: {}, // Cinder Pup
 			2087: {}, // Cinderweb Recluse
+			191:  {}, // Clockwork Rocket Bot
 			1149: {}, // Corefire Imp
 			1205: {}, // Direhorn Runt
 			119:  {}, // Father Winter's Helper
@@ -98,24 +100,10 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 			1570: {}, // Sunfire Kaliri
 			117:  {}, // Tiny Snowman
 			251:  {}, // Toxic Wasteling
+			1394: {}, // Weebomination
 			118:  {}, // Winter Reindeer
 			120:  {}, // Winter's Little Helper
 			153:  {}, // Wolpertinger
-
-			// We collect pets to sell to Stephen; limit how many of each we collect
-			2842: {}, // Anomalus
-			1965: {}, // Blightbreath
-			191:  {}, // Clockwork Rocket Bot
-			1802: {}, // Fetid Waveling
-			1961: {}, // G0-R41-0N Ultratonk
-			1233: {}, // Pocket Reaver
-			3348: {}, // Primal Stormling
-			1966: {}, // Soulbroken Whelpling
-			3006: {}, // Stoneskin Dredwing Pup
-			1151: {}, // Untamed Hatchling
-			4506: {}, // Violet Sporbit
-			1394: {}, // Weebomination
-			4496: {}, // Wriggle
 		},
 	}
 
