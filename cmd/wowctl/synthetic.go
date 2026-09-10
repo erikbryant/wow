@@ -105,6 +105,7 @@ func synthetics() []wowitem.Item {
 		newItem(62770, "Infested Feather", price(0, 0, 3), commodity),
 		newItem(201420, "Gnolan's House Special", price(0, 18, 75), commodity, l21, consumable),
 		newItem(201421, "Tuskarr Jerky", price(0, 12, 50), commodity, consumable),
+		newItem(204834, "Unidentifiable Goo", price(0, 0, 50), commodity, l21),
 		newItem(204836, "Insect Treasure", price(0, 0, 50), commodity, l21),
 		newItem(204837, "Rotting Fruit", price(0, 0, 50), commodity, l21),
 		newItem(204838, "Discarded Toy", price(0, 0, 50), commodity, l21),
