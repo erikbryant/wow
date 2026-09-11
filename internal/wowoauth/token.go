@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-const tokenHTTPTimeout = 30 * time.Second
-
 type tokenResponse struct {
 	AccessToken string `json:"access_token"`
 	TokenType   string `json:"token_type"`
@@ -23,6 +21,8 @@ type tokenErrorResponse struct {
 	Error            string `json:"error"`
 	ErrorDescription string `json:"error_description"`
 }
+
+const tokenHTTPTimeout = 30 * time.Second
 
 func GetToken(data url.Values, clientID, clientSecret string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), tokenHTTPTimeout)

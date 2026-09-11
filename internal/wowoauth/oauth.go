@@ -15,6 +15,22 @@ import (
 	"time"
 )
 
+// oauthFlow contains everything associated with one OAuth attempt.
+//
+// Nothing related to an individual authentication attempt is stored in
+// package-global state.
+type oauthFlow struct {
+	clientID     string
+	clientSecret string
+
+	result chan oauthResult
+}
+
+type oauthResult struct {
+	token string
+	err   error
+}
+
 const (
 	cookieName  = "oauthState"
 	redirectURL = "http://localhost:8888/auth/blizzard/profile"
@@ -34,22 +50,6 @@ func defaultOpenBrowser(url string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
-}
-
-// oauthFlow contains everything associated with one OAuth attempt.
-//
-// Nothing related to an individual authentication attempt is stored in
-// package-global state.
-type oauthFlow struct {
-	clientID     string
-	clientSecret string
-
-	result chan oauthResult
-}
-
-type oauthResult struct {
-	token string
-	err   error
 }
 
 // generateStateOAuthCookie generates a cryptographically random OAuth state
