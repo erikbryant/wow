@@ -104,6 +104,19 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 			118:  {}, // Winter Reindeer
 			120:  {}, // Winter's Little Helper
 			153:  {}, // Wolpertinger
+
+			// Battle pets for Stephen that we are currently full-up on
+			1624: {}, // Abyssius
+			2842: {}, // Anomalus
+			2086: {}, // Blazehound
+			1752: {}, // Crispin
+			2090: {}, // Faceless Mindlasher
+			1802: {}, // Fetid Waveling
+			1623: {}, // Leviathan Hatchling
+			2050: {}, // Orphaned Felbat
+			1233: {}, // Pocket Reaver
+			1151: {}, // Untamed Hatchling
+			4506: {}, // Violet Sporbit
 		},
 	}
 
