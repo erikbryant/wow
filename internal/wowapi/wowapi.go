@@ -232,6 +232,9 @@ var connectedRealmIDCache = map[string]string{
 	"Drakkari":    "1425",
 	"Quel'Thalas": "1428",
 	"Ragnaros":    "1427",
+
+	// Standalone Russian server
+	"Вечная Песня": "1925",
 }
 
 // ConnectedRealm returns all realms connected to the given realm ID.
@@ -385,11 +388,20 @@ func (c *Client) Auctions(realm string) ([]any, error) {
 		)
 	}
 
-	rawURL := fmt.Sprintf(
-		"%s/data/wow/connected-realm/%s/auctions?namespace=dynamic-us&locale=en_US",
-		c.apiBase,
-		connectedRealmID,
-	)
+	rawURL := ""
+	if connectedRealmID == "1925" {
+		rawURL = fmt.Sprintf(
+			"https://eu.api.blizzard.com/data/wow/connected-realm/%s/auctions?namespace=dynamic-eu&locale=ru_RU",
+			connectedRealmID,
+		)
+		fmt.Println(rawURL)
+	} else {
+		rawURL = fmt.Sprintf(
+			"%s/data/wow/connected-realm/%s/auctions?namespace=dynamic-us&locale=en_US",
+			c.apiBase,
+			connectedRealmID,
+		)
+	}
 
 	r, err := c.request(rawURL, c.accessToken, "Auctions")
 	if err != nil {
