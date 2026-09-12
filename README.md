@@ -77,8 +77,6 @@ redirect_uri = 'http://localhost:8888/auth/blizzard/profile'
 
 me: I wrote the original code.
 
-douglasmakey: Provided an Oauth2 reference implementation.
-
 Keybase: Wrote the original keystore implementation. I forked it and removed any code I did not use. Their original implementation is completely fine. I only forked it out of paranoia over supply-chain attacks.
 
 ChatGPT: Cleaned up the code, made it idiomatic, wrote tests, suggested additional features, and contributed in countless other ways.
