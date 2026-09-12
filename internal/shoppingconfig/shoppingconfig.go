@@ -115,6 +115,7 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 			1623: {}, // Leviathan Hatchling
 			2050: {}, // Orphaned Felbat
 			1233: {}, // Pocket Reaver
+			1966: {}, // Soulbroken Whelpling
 			1151: {}, // Untamed Hatchling
 			4506: {}, // Violet Sporbit
 		},
