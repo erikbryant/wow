@@ -394,7 +394,6 @@ func (c *Client) Auctions(realm string) ([]any, error) {
 			"https://eu.api.blizzard.com/data/wow/connected-realm/%s/auctions?namespace=dynamic-eu&locale=ru_RU",
 			connectedRealmID,
 		)
-		fmt.Println(rawURL)
 	} else {
 		rawURL = fmt.Sprintf(
 			"%s/data/wow/connected-realm/%s/auctions?namespace=dynamic-us&locale=en_US",
