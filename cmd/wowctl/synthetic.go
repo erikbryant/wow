@@ -96,6 +96,7 @@ func synthetics() []wowitem.Item {
 		// Items WITH vendor prices and are Commodities.
 
 		newItem(23704, "Eversong Port", price(0, 0, 75), commodity, consumable),
+		newItem(23955, "Worn Ravager Claw", price(0, 0, 70), commodity),
 		newItem(43557, "Poisonous Ivy Berries", price(0, 0, 25), commodity, l20),
 		newItem(54629, "Prickly Thorn", price(0, 0, 43), commodity),
 		newItem(60390, "Reticulated Tissue", price(0, 19, 73), commodity),
