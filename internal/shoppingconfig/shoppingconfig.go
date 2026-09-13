@@ -109,13 +109,17 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 			2842: {}, // Anomalus
 			2086: {}, // Blazehound
 			1752: {}, // Crispin
+			1720: {}, // Emmigosa
 			2090: {}, // Faceless Mindlasher
 			1802: {}, // Fetid Waveling
+			1961: {}, // G0-R41-0N Ultratonk
 			1623: {}, // Leviathan Hatchling
 			2050: {}, // Orphaned Felbat
 			1233: {}, // Pocket Reaver
+			1804: {}, // Risen Saber Kitten
 			1966: {}, // Soulbroken Whelpling
 			1146: {}, // Stitched Pup
+			3006: {}, // Stoneskin Dredwing Pup
 			1151: {}, // Untamed Hatchling
 			4506: {}, // Violet Sporbit
 		},
