@@ -59,9 +59,8 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 			wi.Search("Extreme-Impact Hole Puncher").ID(): common.Coppers(3000, 0, 0),
 
 			// Appearance set appearances
-			wi.Search("Tyrhold Visage").ID():            common.Coppers(2000, 0, 0),
-			wi.Search("Boots of the Black Flame").ID():  common.Coppers(2000, 0, 0),
-			wi.Search("Helm of the Tranquil Path").ID(): common.Coppers(2000, 0, 0),
+			wi.Search("Tyrhold Visage").ID():           common.Coppers(2000, 0, 0),
+			wi.Search("Boots of the Black Flame").ID(): common.Coppers(2000, 0, 0),
 		},
 
 		// SkipPets holds SpeciesID of pets that do not resell well
