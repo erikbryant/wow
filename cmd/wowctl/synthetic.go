@@ -99,6 +99,7 @@ func synthetics() []wowitem.Item {
 		newItem(23955, "Worn Ravager Claw", price(0, 0, 70), commodity),
 		newItem(43557, "Poisonous Ivy Berries", price(0, 0, 25), commodity, l20),
 		newItem(54629, "Prickly Thorn", price(0, 0, 43), commodity),
+		newItem(56055, "Small Parasitic Fish", price(0, 8, 9), commodity),
 		newItem(60390, "Reticulated Tissue", price(0, 19, 73), commodity),
 		newItem(60405, "Stubby Bear Tail", price(0, 22, 22), commodity),
 		newItem(60406, "Blood-Caked Incisors", price(0, 37, 27), commodity),
