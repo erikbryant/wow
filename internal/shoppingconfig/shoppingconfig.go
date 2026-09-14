@@ -122,6 +122,7 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 			3006: {}, // Stoneskin Dredwing Pup
 			1151: {}, // Untamed Hatchling
 			4506: {}, // Violet Sporbit
+			1968: {}, // Wicked Soul
 		},
 	}
 
