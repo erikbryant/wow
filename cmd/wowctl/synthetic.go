@@ -77,6 +77,7 @@ func synthetics() []wowitem.Item {
 		newItem(268948, "Fine Antique Silvermoon Drapes"),
 		newItem(268949, "Single Earthen Salt Shaker"),
 		newItem(275670, "Bill of Lading"),
+		newItem(246040, "Brew Ingredients"),
 
 		// Items WITH vendor prices.
 
