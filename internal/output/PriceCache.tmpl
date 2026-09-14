@@ -1,18 +1,18 @@
 local VendorSellPriceCache = {
 {{- range .Prices }}
-  ["{{ .ItemID }}"] = {{ .Price }},
+  [{{ .ItemID }}] = {{ .Price }},
 {{- end }}
 }
 
 local Cosmetics = {
 {{- range .Cosmetics }}
-  ["{{ .ItemID }}"] = true,
+  [{{ .ItemID }}] = true,
 {{- end }}
 }
 
 -- VendorSellPrice returns the cached vendor sell price
 local function VendorSellPrice(itemID)
-    return VendorSellPriceCache[tostring(itemID)] or 0
+    return VendorSellPriceCache[itemID] or 0
 end
 
 -- ValidatePriceCache verifies each cached sell price matches the actual sell price
@@ -34,7 +34,7 @@ end
 
 -- Cosmetic returns true if the item is a Cosmetic
 local function Cosmetic(itemID)
-    return Cosmetics[tostring(itemID)] or false
+    return Cosmetics[itemID] or false
 end
 
 PriceCache = {
