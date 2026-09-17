@@ -120,6 +120,7 @@ func synthetics() []wowitem.Item {
 		newItem(212534, "Wax Carving of a Candle", price(50, 0, 0), commodity),
 		newItem(213234, "Rusty Ritual Knife", price(20, 0, 0), commodity, l23),
 		newItem(213235, "Summoning Circle Chalk", price(10, 0, 0), commodity, l23),
+		newItem(213236, "Book of Vile Incantations", price(30, 0, 0), commodity, l23),
 		newItem(213237, "Harbinger Idol", price(20, 0, 0), commodity, l23),
 		newItem(213238, "Broken Shadow Beast Binding", price(10, 0, 0), commodity, l23),
 		newItem(213240, "Decorated Truffle", price(30, 0, 0), commodity, l23),
