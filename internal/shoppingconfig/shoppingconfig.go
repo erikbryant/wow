@@ -113,6 +113,7 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 			2090: {}, // Faceless Mindlasher
 			1802: {}, // Fetid Waveling
 			1961: {}, // G0-R41-0N Ultratonk
+			2925: {}, // Golden Cloudfeather
 			1623: {}, // Leviathan Hatchling
 			2050: {}, // Orphaned Felbat
 			1233: {}, // Pocket Reaver
