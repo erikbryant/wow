@@ -1,8 +1,6 @@
 package shopping
 
 import (
-	"bytes"
-	"errors"
 	"fmt"
 	"os"
 	"slices"
@@ -14,7 +12,6 @@ import (
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/common"
 	"github.com/erikbryant/wow/internal/output"
-	"github.com/erikbryant/wow/internal/query"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
@@ -270,21 +267,6 @@ func (r *Recommendations) toString(app *application.App, summarize bool) string 
 	return msg
 }
 
-// writeFile creates a new file and writes data into it
-func writeFile(path string, data []byte) error {
-	err := os.Remove(path)
-	if err != nil && !errors.Is(err, os.ErrNotExist) {
-		return err
-	}
-
-	err = os.WriteFile(path, data, 0600)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // stringify
 func stringify(app *application.App, recommendations []Recommendations) (string, string, string) {
 	outputBrief := []string{}
@@ -305,85 +287,18 @@ func stringify(app *application.App, recommendations []Recommendations) (string,
 	return strings.Join(outputBrief, ""), strings.Join(outputVerbose, ""), strings.Join(arbitrageRecords, "\n") + "\n"
 }
 
-// generateOutput handles all output (console and files) for shopping
-func generateOutput(app *application.App, recommendations []Recommendations) error {
-	outputBrief, outputVerbose, arbitrageRecords := stringify(app, recommendations)
-
-	// Shopping recommendations
-	fmt.Println(outputBrief)
-
-	err := writeFile(app.Paths.RecommendationsBrief, []byte(outputBrief))
-	if err != nil {
-		return err
-	}
-
-	err = writeFile(app.Paths.Recommendations, []byte(outputVerbose))
-	if err != nil {
-		return err
-	}
-
-	// Arbitrages file for the WoW 'wowMerchant' addon to consume
-	err = writeFile(app.Paths.Arbitrage, []byte(arbitrageRecords))
-	if err != nil {
-		return err
-	}
-
-	// Battle pet IDs/names
-	err = writeFile(app.Paths.BattlePets, []byte(app.BattlePets.Output()))
-	if err != nil {
-		return err
-	}
-
-	// Prices file for the WoW 'wowMerchant' addon to consume
-	err = writeFile(app.Paths.PriceCache, []byte(output.Lua(app.WowItem)))
-	if err != nil {
-		return err
-	}
-
-	// Recipes needed
-	err = writeFile(app.Paths.RecipesNeeded, []byte(app.Cooking.Output()))
-	if err != nil {
-		return err
-	}
-
-	// Item levels we think we need, but have not encountered yet
-	err = writeFile(app.Paths.ILevels, []byte(strings.Join(wowitem.ILevelsNeeded(), "\n")+"\n"))
-	if err != nil {
-		return err
-	}
-
-	// Store persisted items in text form as a backup in case we lose the persistence.
-	var buf bytes.Buffer
-	items := app.WowItem.Values()
-	query.Sort(items, query.ByID)
-	output.Table(&buf, items, app.AppearanceSet)
-	err = writeFile(app.Paths.ItemsReport, buf.Bytes())
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // Shop looks for auction house values across the requested realms
-func Shop(app *application.App) error {
-	var err error
-
+func Shop(app *application.App) (string, string, string) {
 	recommendations := scanRealms(app)
-
-	err = generateOutput(app, recommendations)
-	if err != nil {
-		return err
-	}
 
 	// Most runs do not change the persistence; only save if necessary
 	if app.WowItem.Dirty() {
-		err = app.WowItem.Save()
+		err := app.WowItem.Save()
 		if err != nil {
 			// This is just a cache; failure to save is not fatal
 			fmt.Fprintf(os.Stderr, "WARNING: failed to save wow items persistence: %s\n", err)
 		}
 	}
 
-	return nil
+	return stringify(app, recommendations)
 }

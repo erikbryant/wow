@@ -1,14 +1,19 @@
 package application
 
 import (
+	"bytes"
+	"errors"
 	"flag"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/battlepet"
 	"github.com/erikbryant/wow/internal/cooking"
+	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/path"
+	"github.com/erikbryant/wow/internal/query"
 	"github.com/erikbryant/wow/internal/shoppingconfig"
 	"github.com/erikbryant/wow/internal/toy"
 	"github.com/erikbryant/wow/internal/userconfig"
@@ -93,4 +98,82 @@ func New(rootPath string) (*App, error) {
 	fmt.Printf("-- #Battlepet species owned: %d/%d\n", app.BattlePets.LenOwned(), app.BattlePets.LenNames())
 
 	return &app, nil
+}
+
+// writeFile creates a new file and writes data into it
+func writeFile(path string, data []byte) error {
+	err := os.Remove(path)
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+
+	err = os.WriteFile(path, data, 0600)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *App) Shop(shop func(app *App) (string, string, string)) error {
+	outputBrief, outputVerbose, arbitrageRecords := shop(a)
+
+	// Shopping recommendations
+	fmt.Println(outputBrief)
+
+	err := writeFile(a.Paths.RecommendationsBrief, []byte(outputBrief))
+	if err != nil {
+		return err
+	}
+
+	err = writeFile(a.Paths.Recommendations, []byte(outputVerbose))
+	if err != nil {
+		return err
+	}
+
+	// Arbitrages file for the WoW 'wowMerchant' addon to consume
+	err = writeFile(a.Paths.Arbitrage, []byte(arbitrageRecords))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *App) GenerateOutput() error {
+	// Recipes needed
+	err := writeFile(a.Paths.RecipesNeeded, []byte(a.Cooking.Output()))
+	if err != nil {
+		return err
+	}
+
+	// Battle pet IDs/names
+	err = writeFile(a.Paths.BattlePets, []byte(a.BattlePets.Output()))
+	if err != nil {
+		return err
+	}
+
+	// Prices file for the WoW 'wowMerchant' addon to consume
+	err = writeFile(a.Paths.PriceCache, []byte(output.Lua(a.WowItem)))
+	if err != nil {
+		return err
+	}
+
+	// Item levels we think we need, but have not encountered yet
+	err = writeFile(a.Paths.ILevels, []byte(strings.Join(wowitem.ILevelsNeeded(), "\n")+"\n"))
+	if err != nil {
+		return err
+	}
+
+	// Store persisted items in text form as a backup in case we lose the persistence.
+	var buf bytes.Buffer
+	items := a.WowItem.Values()
+	query.Sort(items, query.ByID)
+	output.Table(&buf, items, a.AppearanceSet)
+	err = writeFile(a.Paths.ItemsReport, buf.Bytes())
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
