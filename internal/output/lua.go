@@ -3,6 +3,7 @@ package output
 import (
 	"cmp"
 	"embed"
+	"maps"
 	"slices"
 	"strings"
 	"text/template"
@@ -11,8 +12,21 @@ import (
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
+//go:embed ArbitrageCache.tmpl
 //go:embed PriceCache.tmpl
 var embeddedFS embed.FS
+
+type Arbitrage struct {
+	Arbitrage string
+}
+
+type Region struct {
+	Region     string
+	Arbitrages []Arbitrage
+}
+type Regions struct {
+	Regions []Region
+}
 
 type Price struct {
 	ItemID int64
@@ -28,8 +42,31 @@ type MerchantData struct {
 	Cosmetics []Cosmetic
 }
 
-// Lua writes item data as Lua source code.
-func Lua(wi *wowitem.Persistence) string {
+// ArbitrageCacheLua writes arbitrage data as Lua source code.
+func ArbitrageCacheLua(a map[string][]string) string {
+	data := Regions{}
+
+	regions := slices.Sorted(maps.Keys(a))
+
+	for _, region := range regions {
+		r := Region{Region: region}
+		for _, arbitrage := range a[region] {
+			r.Arbitrages = append(r.Arbitrages, Arbitrage{arbitrage})
+		}
+		data.Regions = append(data.Regions, r)
+	}
+
+	var buf strings.Builder
+	err := template.Must(template.ParseFS(embeddedFS, "ArbitrageCache.tmpl")).Execute(&buf, data)
+	if err != nil {
+		panic(err)
+	}
+
+	return buf.String()
+}
+
+// PriceCacheLua writes item data as Lua source code.
+func PriceCacheLua(wi *wowitem.Persistence) string {
 	data := MerchantData{}
 
 	for _, i := range wi.Values() {

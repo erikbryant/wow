@@ -10,6 +10,7 @@ import (
 type Paths struct {
 	Appearances          string
 	Arbitrage            string
+	ArbitrageCache       string
 	BattlePets           string
 	ILevels              string
 	Items                string
@@ -130,6 +131,7 @@ func New(rootPath string) (*Paths, error) {
 	p := Paths{
 		Appearances:          filepath.Join(rootPath, dataDir, "appearances"),
 		Arbitrage:            filepath.Join(rootPath, exportsDir, "arbitrageLatest"),
+		ArbitrageCache:       filepath.Join(rootPath, exportsDir, "ArbitrageCache.lua"),
 		BattlePets:           filepath.Join(rootPath, reportsDir, "battlePets"),
 		ILevels:              filepath.Join(rootPath, exportsDir, "iLevels"),
 		Items:                filepath.Join(rootPath, dataDir, "items"),

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/erikbryant/wow/internal/appearanceset"
@@ -28,6 +29,7 @@ type App struct {
 
 	AppearanceSet  *appearanceset.Persistence
 	Appearances    *userconfig.Appearances
+	Arbitrages     map[string][]string
 	BattlePets     *battlepet.BattlePet
 	ShoppingConfig *shoppingconfig.UserConfig
 	Toys           *toy.Toy
@@ -37,7 +39,9 @@ type App struct {
 // New initializes all singleton data stores
 func New(rootPath string) (*App, error) {
 	var err error
-	app := App{}
+	app := App{
+		Arbitrages: make(map[string][]string),
+	}
 
 	app.Paths, err = path.New(rootPath)
 	if err != nil {
@@ -98,7 +102,16 @@ func writeFile(path string, data []byte) error {
 	return nil
 }
 
+func unpack(s string) []string {
+	l := strings.Split(s, "\n")
+	slices.Sort(l)
+	return slices.Compact(l)
+}
+
 func (a *App) Shop(shop func(app *App) (string, string, string)) error {
+
+	// -------------------------------------------------------------
+
 	a.Realms = userconfig.RealmsWithAltsUS
 
 	outputBrief, outputVerbose, arbitrageRecords := shop(a)
@@ -122,12 +135,18 @@ func (a *App) Shop(shop func(app *App) (string, string, string)) error {
 		return err
 	}
 
+	a.Arbitrages[a.Realms.Region] = unpack(arbitrageRecords)
+
+	// -------------------------------------------------------------
+
 	a.Realms = userconfig.RealmsWithAltsEU
 
-	_, outputVerbose, _ = shop(a)
+	outputBrief, outputVerbose, arbitrageRecords = shop(a)
 
 	// Shopping recommendations
 	fmt.Println(outputVerbose)
+
+	a.Arbitrages[a.Realms.Region] = unpack(arbitrageRecords)
 
 	return nil
 }
@@ -139,8 +158,14 @@ func (a *App) GenerateOutput() error {
 		return err
 	}
 
+	// Arbitrages file for the WoW 'wowMerchant' addon to consume
+	err = writeFile(a.Paths.ArbitrageCache, []byte(output.ArbitrageCacheLua(a.Arbitrages)))
+	if err != nil {
+		return err
+	}
+
 	// Prices file for the WoW 'wowMerchant' addon to consume
-	err = writeFile(a.Paths.PriceCache, []byte(output.Lua(a.WowItem)))
+	err = writeFile(a.Paths.PriceCache, []byte(output.PriceCacheLua(a.WowItem)))
 	if err != nil {
 		return err
 	}
