@@ -202,11 +202,11 @@ func scanRealms(app *application.App) []Recommendations {
 	results := []Recommendations{}
 	c := make(chan Recommendations)
 
-	for _, realm := range app.Realms {
+	for _, realm := range app.Realms.Realms {
 		go scanRealm(realm, c, app)
 	}
 
-	for range len(app.Realms) {
+	for range len(app.Realms.Realms) {
 		r := <-c
 		if r.Err != nil {
 			fmt.Fprintf(os.Stderr, "*** failed to scan realm %s: %s\n", r.Realm, r.Err)
