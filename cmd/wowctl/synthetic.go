@@ -70,6 +70,8 @@ func synthetics() []wowitem.Item {
 		newItem(225219, "Echoing Fragment: The Ringing Deeps"),
 		newItem(225236, "Echoing Fragment: Isle of Dorn"),
 		newItem(225237, "Echoing Fragment: Azj-Kahet"),
+		newItem(244052, "Brew Ingredients"),
+		newItem(246040, "Brew Ingredients"),
 		newItem(268944, "Souvenir Halazzi Idol"),
 		newItem(268945, "Souvenir Nalorakk Mask"),
 		newItem(268946, "Souvenir Jan'alai Key Chain"),
@@ -77,7 +79,6 @@ func synthetics() []wowitem.Item {
 		newItem(268948, "Fine Antique Silvermoon Drapes"),
 		newItem(268949, "Single Earthen Salt Shaker"),
 		newItem(275670, "Bill of Lading"),
-		newItem(246040, "Brew Ingredients"),
 
 		// Items WITH vendor prices.
 
