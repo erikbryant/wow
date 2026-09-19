@@ -10,48 +10,47 @@ import (
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/query"
-	"github.com/erikbryant/wow/internal/syntheticitem"
 	"github.com/erikbryant/wow/internal/wowapi"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
-type syntheticOption func(*syntheticitem.Item)
+type syntheticOption func(*wowitem.Item)
 
-func commodity(item *syntheticitem.Item) {
+func commodity(item *wowitem.Item) {
 	item.SetStackable(true)
 }
 
-func consumable(item *syntheticitem.Item) {
+func consumable(item *wowitem.Item) {
 	item.SetItemClassName("Consumable")
 }
 
-func l20(item *syntheticitem.Item) {
+func l20(item *wowitem.Item) {
 	item.SetItemLevel(20)
 }
 
-func l21(item *syntheticitem.Item) {
+func l21(item *wowitem.Item) {
 	item.SetItemLevel(21)
 }
 
-func l23(item *syntheticitem.Item) {
+func l23(item *wowitem.Item) {
 	item.SetItemLevel(23)
 }
 
 func price(g, s, c int64) syntheticOption {
-	return func(item *syntheticitem.Item) {
+	return func(item *wowitem.Item) {
 		item.SetPreviewPrice(common.Coppers(g, s, c))
 	}
 }
 
 // newItem returns a populated non-commodity Item.
 func newItem(id int64, name string, options ...syntheticOption) wowitem.Item {
-	item := syntheticitem.New(id, name)
+	item := wowitem.NewSynthetic(id, name)
 
 	for _, option := range options {
 		option(item)
 	}
 
-	return *wowitem.NewItem(item.Map())
+	return *item
 }
 
 // synthetics returns the synthetic items we have created.

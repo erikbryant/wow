@@ -1,18 +1,14 @@
-package syntheticitem
+package wowitem
 
 import (
 	"encoding/json"
 	"strconv"
 )
 
-type Item struct {
-	data map[string]any
-}
-
-func New(id int64, name string) *Item {
-	i := Item{
-		data: map[string]any{},
-	}
+func NewSynthetic(id int64, name string) *Item {
+	i := NewItem(map[string]any{
+		"id": json.Number(strconv.FormatInt(id, 10)),
+	})
 
 	i.SetSynthetic()
 	i.SetID(id)
@@ -21,11 +17,7 @@ func New(id int64, name string) *Item {
 	i.SetStackable(false)
 	i.SetItemClassName("Miscellaneous")
 
-	return &i
-}
-
-func (i *Item) Map() map[string]any {
-	return i.data
+	return i
 }
 
 func (i *Item) SetSynthetic() *Item {
@@ -34,6 +26,7 @@ func (i *Item) SetSynthetic() *Item {
 }
 
 func (i *Item) SetID(id int64) *Item {
+	i.XID = id
 	i.set([]string{"id"}, json.Number(strconv.FormatInt(id, 10)))
 	return i
 }
@@ -64,7 +57,7 @@ func (i *Item) SetName(name string) *Item {
 }
 
 func (i *Item) set(keys []string, value any) *Item {
-	object := i.data
+	object := i.XItem
 
 	for _, key := range keys[:len(keys)-1] {
 		next, ok := object[key].(map[string]any)
