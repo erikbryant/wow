@@ -10,7 +10,6 @@ import (
 
 	"github.com/erikbryant/wow/internal/appearanceset"
 	"github.com/erikbryant/wow/internal/battlepet"
-	"github.com/erikbryant/wow/internal/cooking"
 	"github.com/erikbryant/wow/internal/output"
 	"github.com/erikbryant/wow/internal/path"
 	"github.com/erikbryant/wow/internal/query"
@@ -31,7 +30,6 @@ type App struct {
 	AppearanceSet  *appearanceset.Persistence
 	Appearances    *userconfig.Appearances
 	BattlePets     *battlepet.BattlePet
-	Cooking        *cooking.CookingRecipes
 	ShoppingConfig *shoppingconfig.UserConfig
 	Toys           *toy.Toy
 	WowAPI         *wowapi.Client
@@ -81,12 +79,7 @@ func New(rootPath string) (*App, error) {
 		return nil, err
 	}
 
-	app.Cooking, err = cooking.New(app.WowAPI)
-	if err != nil {
-		return nil, err
-	}
-
-	app.ShoppingConfig = shoppingconfig.New(app.WowItem, app.Cooking)
+	app.ShoppingConfig = shoppingconfig.New(app.WowItem)
 
 	app.Toys, err = toy.New(app.WowAPI)
 	if err != nil {
@@ -141,14 +134,8 @@ func (a *App) Shop(shop func(app *App) (string, string, string)) error {
 }
 
 func (a *App) GenerateOutput() error {
-	// Recipes needed
-	err := writeFile(a.Paths.RecipesNeeded, []byte(a.Cooking.Output()))
-	if err != nil {
-		return err
-	}
-
 	// Battle pet IDs/names
-	err = writeFile(a.Paths.BattlePets, []byte(a.BattlePets.Output()))
+	err := writeFile(a.Paths.BattlePets, []byte(a.BattlePets.Output()))
 	if err != nil {
 		return err
 	}

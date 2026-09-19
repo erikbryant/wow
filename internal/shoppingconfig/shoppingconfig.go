@@ -2,7 +2,6 @@ package shoppingconfig
 
 import (
 	"github.com/erikbryant/wow/internal/common"
-	"github.com/erikbryant/wow/internal/cooking"
 	"github.com/erikbryant/wow/internal/wowitem"
 )
 
@@ -20,7 +19,7 @@ type UserConfig struct {
 	SkipPets    map[int64]struct{}
 }
 
-func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
+func New(wi *wowitem.Persistence) *UserConfig {
 	//bagPriceMax := common.Coppers(100, 0, 0)
 	//reagentBagPriceMax := common.Coppers(100, 0, 0)
 
@@ -125,11 +124,6 @@ func New(wi *wowitem.Persistence, cr *cooking.CookingRecipes) *UserConfig {
 			4506: {}, // Violet Sporbit
 			1968: {}, // Wicked Soul
 		},
-	}
-
-	// Add any recipes that the user needs
-	for _, recipeName := range cr.RecipesNeeded() {
-		userConfig.UsefulGoods[wi.Search(recipeName).ID()] = userConfig.RecipePriceMax
 	}
 
 	return &userConfig
