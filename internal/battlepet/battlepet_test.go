@@ -8,7 +8,9 @@ import (
 )
 
 func bpItem(name, subclass string) wowitem.Item {
-	return wowitem.Item{XID: 1, XItem: map[string]any{"name": name, "item_subclass": map[string]any{"name": subclass}}}
+	return wowitem.Item{XID: 1, XItem: map[string]map[string]any{
+		"en_US": map[string]any{"name": name, "item_subclass": map[string]any{"name": subclass}},
+	}}
 }
 func TestBattlePetMethods(t *testing.T) {
 	bp := &BattlePet{names: map[int64]string{10: "Cat", 20: "Dog"}, owned: map[int64]int64{10: 2}}

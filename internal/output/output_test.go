@@ -12,7 +12,9 @@ import (
 )
 
 func outputItem() wowitem.Item {
-	return wowitem.Item{XID: 123, XUpdated: timeMust(), XItem: map[string]any{"name": "Widget", "level": json.Number("100"), "is_stackable": true, "is_equippable": false, "item_class": map[string]any{"name": "Consumable"}, "item_subclass": map[string]any{"name": "Potion"}, "preview_item": map[string]any{"quality": map[string]any{"name": "Rare"}, "sell_price": map[string]any{"value": json.Number("12345")}}}}
+	return wowitem.Item{XID: 123, XUpdated: timeMust(), XItem: map[string]map[string]any{
+		"en_US": map[string]any{"name": "Widget", "level": json.Number("100"), "is_stackable": true, "is_equippable": false, "item_class": map[string]any{"name": "Consumable"}, "item_subclass": map[string]any{"name": "Potion"}, "preview_item": map[string]any{"quality": map[string]any{"name": "Rare"}, "sell_price": map[string]any{"value": json.Number("12345")}}},
+	}}
 }
 
 func timeMust() (t time.Time) { return time.Date(2026, 8, 16, 0, 0, 0, 0, time.UTC) }

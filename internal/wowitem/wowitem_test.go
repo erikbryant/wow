@@ -7,7 +7,7 @@ import (
 )
 
 func testItem(data map[string]any) *Item {
-	return NewItem(data)
+	return NewItem(data, "en_US")
 }
 
 func baseItem() map[string]any {

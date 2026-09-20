@@ -8,7 +8,8 @@ import (
 func NewSynthetic(id int64, name string) *Item {
 	i := NewItem(map[string]any{
 		"id": json.Number(strconv.FormatInt(id, 10)),
-	})
+	},
+		"en_US")
 
 	i.SetSynthetic()
 	i.SetID(id)
@@ -21,7 +22,7 @@ func NewSynthetic(id int64, name string) *Item {
 }
 
 func (i *Item) SetSynthetic() *Item {
-	i.set([]string{"item_source"}, "synthetic")
+	i.XSource = "synthetic"
 	return i
 }
 
@@ -57,7 +58,7 @@ func (i *Item) SetName(name string) *Item {
 }
 
 func (i *Item) set(keys []string, value any) *Item {
-	object := i.XItem
+	object := i.XItem["en_US"]
 
 	for _, key := range keys[:len(keys)-1] {
 		next, ok := object[key].(map[string]any)

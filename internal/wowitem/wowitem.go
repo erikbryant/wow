@@ -14,15 +14,18 @@ type Item struct {
 	// These members have to be public to write to a gob file,
 	// but only use the accessor functions!
 	XID      int64
-	XItem    map[string]any
+	XItem    map[string]map[string]any // Item JSON, binned by language
+	XSource  string
 	XUpdated time.Time // Datetime when created or updated
 }
 
 // NewItem returns an Item populated with wowData
-func NewItem(wowData map[string]any) *Item {
+func NewItem(wowData map[string]any, language string) *Item {
 	return &Item{
-		XID:      common.JSONInt64Panic(wowData["id"]),
-		XItem:    wowData,
+		XID: common.JSONInt64Panic(wowData["id"]),
+		XItem: map[string]map[string]any{
+			language: wowData,
+		},
 		XUpdated: time.Now(),
 	}
 }
@@ -34,13 +37,13 @@ func (i *Item) ID() int64 {
 
 // Equippable returns true if the item is equippable
 func (i *Item) Equippable() bool {
-	v := common.MsaValued(i.XItem, []string{"is_equippable"}, false)
+	v := common.MsaValued(i.XItem["en_US"], []string{"is_equippable"}, false)
 	return v.(bool)
 }
 
 // ItemLevel returns the item level
 func (i *Item) ItemLevel() int64 {
-	v, err := common.MsaValue(i.XItem, []string{"level"})
+	v, err := common.MsaValue(i.XItem["en_US"], []string{"level"})
 	if err != nil {
 		panic(fmt.Errorf("level missing from %v: %w", i.XItem, err))
 	}
@@ -58,7 +61,7 @@ func (i *Item) VariableItemLevel() bool {
 
 // ItemSubclassName returns the item subclass name
 func (i *Item) ItemSubclassName() string {
-	v := common.MsaValued(i.XItem, []string{"item_subclass", "name"}, "")
+	v := common.MsaValued(i.XItem["en_US"], []string{"item_subclass", "name"}, "")
 	return v.(string)
 }
 
@@ -82,7 +85,7 @@ func (i *Item) Cosmetic() bool {
 
 // ItemClassName returns the item class name
 func (i *Item) ItemClassName() string {
-	v, err := common.MsaValue(i.XItem, []string{"item_class", "name"})
+	v, err := common.MsaValue(i.XItem["en_US"], []string{"item_class", "name"})
 	if err != nil {
 		panic(fmt.Errorf("item_class missing from %v: %w", i.XItem, err))
 	}
@@ -91,7 +94,7 @@ func (i *Item) ItemClassName() string {
 
 // Stackable returns true if the item can be stacked in the inventory
 func (i *Item) Stackable() bool {
-	v, err := common.MsaValue(i.XItem, []string{"is_stackable"})
+	v, err := common.MsaValue(i.XItem["en_US"], []string{"is_stackable"})
 	if err != nil {
 		panic(fmt.Errorf("is_stackable missing from %v: %w", i.XItem, err))
 	}
@@ -100,7 +103,7 @@ func (i *Item) Stackable() bool {
 
 // Name returns the item name
 func (i *Item) Name() string {
-	v, err := common.MsaValue(i.XItem, []string{"name"})
+	v, err := common.MsaValue(i.XItem["en_US"], []string{"name"})
 	if err != nil {
 		panic(fmt.Errorf("name missing from %v: %w", i.XItem, err))
 	}
@@ -108,7 +111,7 @@ func (i *Item) Name() string {
 }
 
 func (i *Item) previewPrice() (int64, error) {
-	v, err := common.MsaValue(i.XItem, []string{"preview_item", "sell_price", "value"})
+	v, err := common.MsaValue(i.XItem["en_US"], []string{"preview_item", "sell_price", "value"})
 	if err != nil {
 		return 0, err
 	}
@@ -141,7 +144,7 @@ func (i *Item) Updated() time.Time {
 
 // Quality returns the quality of this item
 func (i *Item) Quality() string {
-	v := common.MsaValued(i.XItem, []string{"preview_item", "quality", "name"}, "")
+	v := common.MsaValued(i.XItem["en_US"], []string{"preview_item", "quality", "name"}, "")
 	return common.JSONString(v)
 }
 
@@ -152,7 +155,7 @@ func (i *Item) Stale(age time.Duration) bool {
 
 // Toy returns true if this item is a toy
 func (i *Item) Toy() bool {
-	v := common.MsaValued(i.XItem, []string{"preview_item", "toy"}, "")
+	v := common.MsaValued(i.XItem["en_US"], []string{"preview_item", "toy"}, "")
 	return common.JSONString(v) == "Toy"
 }
 
@@ -160,7 +163,7 @@ func (i *Item) Toy() bool {
 func (i *Item) Appearances() []int64 {
 	appearanceIDs := []int64{}
 
-	v := common.MsaValued(i.XItem, []string{"appearances"}, nil)
+	v := common.MsaValued(i.XItem["en_US"], []string{"appearances"}, nil)
 	if v == nil {
 		// Most items do not have appearances
 		return nil
@@ -177,6 +180,5 @@ func (i *Item) Appearances() []int64 {
 
 // Source returns the source of the item data (e.g., API or synthetic)
 func (i *Item) Source() string {
-	v := common.MsaValued(i.XItem, []string{"item_source"}, "API")
-	return v.(string)
+	return i.XSource
 }

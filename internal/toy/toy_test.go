@@ -7,7 +7,9 @@ import (
 )
 
 func toyItem(name string) wowitem.Item {
-	return wowitem.Item{XID: 1, XItem: map[string]any{"name": name}}
+	return wowitem.Item{XID: 1, XItem: map[string]map[string]any{
+		"en_US": map[string]any{"name": name},
+	}}
 }
 func TestOwned(test *testing.T) {
 	t := &Toy{names: map[string]int64{"Toy A": 100, "Toy B": 200}, owned: map[int64]bool{100: true}}

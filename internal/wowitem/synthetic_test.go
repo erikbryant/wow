@@ -193,7 +193,7 @@ func TestSetReplacesNonMapIntermediateValue(t *testing.T) {
 
 	// Deliberately corrupt the intermediate structure. The setter should
 	// replace it with a map rather than panic.
-	item.XItem["preview_item"] = "not a map"
+	item.XItem["en_US"]["preview_item"] = "not a map"
 
 	item.SetItemClassName("Profession")
 
@@ -206,7 +206,7 @@ func TestSetReplacesNonMapIntermediateValue(t *testing.T) {
 func TestMapReturnsUnderlyingMap(t *testing.T) {
 	item := NewSynthetic(1, "test name")
 
-	data := item.XItem
+	data := item.XItem["en_US"]
 	data["name"] = "Externally Added"
 
 	if got := item.Name(); got != "Externally Added" {
@@ -222,7 +222,7 @@ func TestSyntheticIsItem(t *testing.T) {
 		SetPreviewPrice(123456).
 		SetName("test")
 
-	wi := NewItem(item.XItem)
+	wi := NewItem(item.XItem["en_US"], "en_US")
 
 	if got := wi.ID(); got != 16 {
 		t.Errorf("level = %#v, want %d", 16, got)
@@ -253,7 +253,7 @@ func TestSyntheticIsItem(t *testing.T) {
 func assertNestedValue(t *testing.T, i *Item, keys []string, want any) {
 	t.Helper()
 
-	var current any = i.XItem
+	var current any = i.XItem["en_US"]
 
 	for _, key := range keys {
 		object, ok := current.(map[string]any)

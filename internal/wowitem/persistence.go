@@ -56,7 +56,7 @@ func (p *Persistence) GetLive(id int64, client *wowapi.Client) (Item, error) {
 
 	fmt.Println("Downloaded new item:", id)
 
-	item := NewItem(result)
+	item := NewItem(result, "en_US")
 	p.Set(item.ID(), *item)
 
 	return *item, nil

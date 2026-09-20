@@ -132,7 +132,7 @@ func TestDeleteItem(t *testing.T) {
 		"level":        json.Number("10"),
 		"is_stackable": false,
 		"item_class":   map[string]any{"name": "Armor"},
-	})
+	}, "en_US")
 	saveItems(t, paths.Items, item)
 
 	output := captureStdout(t, func() {
@@ -207,7 +207,7 @@ func TestRunQueryByNameAndSort(t *testing.T) {
 			"is_stackable":   false,
 			"item_class":     map[string]any{"name": "Weapon"},
 			"preview_item":   map[string]any{"quality": map[string]any{"name": "Rare"}},
-		}),
+		}, "en_US"),
 		wowitem.NewItem(map[string]any{
 			"id":             json.Number("300"),
 			"name":           "Beta Sword",
@@ -216,7 +216,7 @@ func TestRunQueryByNameAndSort(t *testing.T) {
 			"is_stackable":   false,
 			"item_class":     map[string]any{"name": "Weapon"},
 			"preview_item":   map[string]any{"quality": map[string]any{"name": "Epic"}},
-		}),
+		}, "en_US"),
 	}
 	saveItems(t, paths.Items, items...)
 	saveAppearances(t, paths.Appearances)
