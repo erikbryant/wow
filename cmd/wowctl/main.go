@@ -15,6 +15,7 @@ Commands:
   create {appearance|item}        Create a new persistence
   delete -id <id>                 Delete persisted item
   json -id <id>                   Show JSON for an item
+  migrate                         Migrate item persistence
   query [options]                 Search for items
   refresh [-max-refresh=1000]     Refresh stale items
   synthetic {list|populate}       Manage synthetic items
@@ -55,6 +56,8 @@ func main() {
 		err = runDelete(args, paths)
 	case "json":
 		err = runJSON(args, paths)
+	case "migrate":
+		err = runMigrate(args, paths)
 	case "query":
 		err = runQuery(args, paths)
 	case "refresh":
