@@ -7,16 +7,16 @@ import (
 	"strings"
 
 	"github.com/erikbryant/wow/internal/common"
+	"github.com/erikbryant/wow/internal/regions"
 )
-
-const defaultAPIBase = "https://us.api.blizzard.com"
 
 type Client struct {
 	accessToken        string
 	profileAccessToken string
+	httpClient         *http.Client
+	realmList          regions.Realms
 
-	apiBase    string
-	httpClient *http.Client
+	apiBaseTest string // Only used by tests
 }
 
 // NewClient returns a WoW API client. Since there is only one WoW web API,
@@ -25,8 +25,8 @@ func NewClient(secretPath string) (*Client, error) {
 	var err error
 
 	c := Client{
-		apiBase:    defaultAPIBase,
 		httpClient: http.DefaultClient,
+		realmList:  regions.New(),
 	}
 
 	clientID, clientSecret, err := getSecretsFromKeychain(secretPath)
@@ -53,9 +53,28 @@ func NewClientWithHTTP(
 	}
 
 	return &Client{
-		apiBase:    strings.TrimRight(apiBase, "/"),
-		httpClient: httpClient,
+		apiBaseTest: strings.TrimRight(apiBase, "/"),
+		httpClient:  httpClient,
+		realmList:   regions.New(),
 	}
+}
+
+func (c *Client) apiBase(realm string) string {
+	if realm == "testRealm" || c.apiBaseTest != "" {
+		return c.apiBaseTest
+	}
+	region, _ := c.realmList.Config(realm)
+	return fmt.Sprintf("https://%s.api.blizzard.com", strings.ToLower(region))
+}
+
+func (c *Client) getRegion(realm string) string {
+	region, _ := c.realmList.Config(realm)
+	return region
+}
+
+func (c *Client) getLanguage(realm string) string {
+	_, language := c.realmList.Config(realm)
+	return language
 }
 
 func (c *Client) request(rawURL, token, caller string) (any, error) {
@@ -137,16 +156,6 @@ func (c *Client) requestKey(
 	}
 
 	return result, nil
-}
-
-// realmToSlug returns the slug form of a given realm name, based on WoW
-// naming rules.
-func realmToSlug(realm string) string {
-	slug := strings.ToLower(realm)
-	slug = strings.ReplaceAll(slug, "-", "")
-	slug = strings.ReplaceAll(slug, "'", "")
-	slug = strings.ReplaceAll(slug, " ", "-")
-	return slug
 }
 
 // connectedRealmIDCache caches the calls to find a connected realm ID,
@@ -233,9 +242,10 @@ var connectedRealmIDCache = map[string]string{
 
 // ConnectedRealm returns all realms connected to the given realm ID.
 func (c *Client) ConnectedRealm(realmID string) (map[string]any, error) {
+	// TODO: Verify that all realms across all regions can be looked up from US server
 	rawURL := fmt.Sprintf(
 		"%s/data/wow/connected-realm/%s?namespace=dynamic-us&locale=en_US",
-		c.apiBase,
+		c.apiBase("Aegwynn"),
 		realmID,
 	)
 
@@ -264,8 +274,11 @@ func (c *Client) ConnectedRealm(realmID string) (map[string]any, error) {
 
 // ConnectedRealmSearch returns the set of all connected realms.
 func (c *Client) ConnectedRealmSearch() (map[string]any, error) {
-	rawURL := c.apiBase +
-		"/data/wow/search/connected-realm?namespace=dynamic-us&status.type=UP"
+	// TODO: Verify that all realms across all regions can be looked up from US server
+	rawURL := fmt.Sprintf(
+		"%s/data/wow/search/connected-realm?namespace=dynamic-us&status.type=UP",
+		c.apiBase("Aegwynn"),
+	)
 
 	r, err := c.request(rawURL, c.accessToken, "ConnectedRealm")
 	if err != nil {
@@ -302,7 +315,7 @@ func (c *Client) ConnectedRealmID(realm string) (string, error) {
 		return "", fmt.Errorf("no connected realm found: %w", err)
 	}
 
-	slug := realmToSlug(realm)
+	slug := regions.RealmToSlug(realm)
 
 	results, ok := connectedRealms["results"].([]any)
 	if !ok {
@@ -382,19 +395,13 @@ func (c *Client) Auctions(realm string) ([]any, error) {
 		)
 	}
 
-	rawURL := ""
-	if connectedRealmID == "1925" {
-		rawURL = fmt.Sprintf(
-			"https://eu.api.blizzard.com/data/wow/connected-realm/%s/auctions?namespace=dynamic-eu&locale=ru_RU",
-			connectedRealmID,
-		)
-	} else {
-		rawURL = fmt.Sprintf(
-			"%s/data/wow/connected-realm/%s/auctions?namespace=dynamic-us&locale=en_US",
-			c.apiBase,
-			connectedRealmID,
-		)
-	}
+	rawURL := fmt.Sprintf(
+		"%s/data/wow/connected-realm/%s/auctions?namespace=dynamic-%s&locale=%s",
+		c.apiBase(realm),
+		connectedRealmID,
+		c.getRegion(realm),
+		c.getLanguage(realm),
+	)
 
 	r, err := c.request(rawURL, c.accessToken, "Auctions")
 	if err != nil {
@@ -429,8 +436,13 @@ func (c *Client) Auctions(realm string) ([]any, error) {
 
 // Commodities returns the current commodity auctions from the auction house.
 func (c *Client) Commodities() ([]any, error) {
-	rawURL := c.apiBase +
-		"/data/wow/auctions/commodities?namespace=dynamic-us&locale=en_US"
+	// TODO: are the commodity auctions different across regions?
+	rawURL := fmt.Sprintf(
+		"%s/data/wow/auctions/commodities?namespace=dynamic-%s&locale=%s",
+		c.apiBase("Commodities"),
+		c.getRegion("Commodities"),
+		c.getLanguage("Commodities"),
+	)
 
 	return c.requestKey(
 		rawURL,
@@ -442,10 +454,14 @@ func (c *Client) Commodities() ([]any, error) {
 
 // Item retrieves a single item from the WoW web API.
 func (c *Client) Item(id string) (map[string]any, error) {
+	// TODO: Allow retrieval of non-US item data
+	realm := "Aegwynn"
 	rawURL := fmt.Sprintf(
-		"%s/data/wow/item/%s?namespace=static-us&locale=en_US",
-		c.apiBase,
+		"%s/data/wow/item/%s?namespace=static-%s&locale=%s",
+		c.apiBase(realm),
 		id,
+		c.getRegion(realm),
+		c.getLanguage(realm),
 	)
 
 	r, err := c.request(rawURL, c.accessToken, "Item")
@@ -482,8 +498,14 @@ func (c *Client) Item(id string) (map[string]any, error) {
 
 // Pets returns a list of all battle pets in the game.
 func (c *Client) Pets() ([]any, error) {
-	rawURL := c.apiBase +
-		"/data/wow/pet/index?namespace=static-us&locale=en_US"
+	// TODO: Allow retrieval of non-US data?
+	realm := "Aegwynn"
+	rawURL := fmt.Sprintf(
+		"%s/data/wow/pet/index?namespace=static-%s&locale=%s",
+		c.apiBase(realm),
+		c.getRegion(realm),
+		c.getLanguage(realm),
+	)
 
 	return c.requestKey(
 		rawURL,
@@ -495,8 +517,14 @@ func (c *Client) Pets() ([]any, error) {
 
 // CollectionsPets returns the battle pets the user owns.
 func (c *Client) CollectionsPets() ([]any, error) {
-	rawURL := c.apiBase +
-		"/profile/user/wow/collections/pets?namespace=profile-us&locale=en_US"
+	// TODO: Allow retrieval of non-US data?
+	realm := "Aegwynn"
+	rawURL := fmt.Sprintf(
+		"%s/profile/user/wow/collections/pets?namespace=profile-%s&locale=%s",
+		c.apiBase(realm),
+		c.getRegion(realm),
+		c.getLanguage(realm),
+	)
 
 	return c.requestKey(
 		rawURL,
@@ -508,8 +536,14 @@ func (c *Client) CollectionsPets() ([]any, error) {
 
 // Toys returns a list of all toys in the game.
 func (c *Client) Toys() ([]any, error) {
-	rawURL := c.apiBase +
-		"/data/wow/toy/index?namespace=static-us&locale=en_US"
+	// TODO: Allow retrieval of non-US data?
+	realm := "Aegwynn"
+	rawURL := fmt.Sprintf(
+		"%s/data/wow/toy/index?namespace=static-%s&locale=%s",
+		c.apiBase(realm),
+		c.getRegion(realm),
+		c.getLanguage(realm),
+	)
 
 	return c.requestKey(
 		rawURL,
@@ -521,8 +555,14 @@ func (c *Client) Toys() ([]any, error) {
 
 // CollectionsToys returns the toys the user owns.
 func (c *Client) CollectionsToys() ([]any, error) {
-	rawURL := c.apiBase +
-		"/profile/user/wow/collections/toys?namespace=profile-us&locale=en_US"
+	// TODO: Allow retrieval of non-US data?
+	realm := "Aegwynn"
+	rawURL := fmt.Sprintf(
+		"%s/profile/user/wow/collections/toys?namespace=profile-%s&locale=%s",
+		c.apiBase(realm),
+		c.getRegion(realm),
+		c.getLanguage(realm),
+	)
 
 	return c.requestKey(
 		rawURL,
@@ -534,8 +574,14 @@ func (c *Client) CollectionsToys() ([]any, error) {
 
 // ItemAppearanceSetsIndex returns IDs of each appearance set.
 func (c *Client) ItemAppearanceSetsIndex() ([]any, error) {
-	rawURL := c.apiBase +
-		"/data/wow/item-appearance/set/index?namespace=static-us&locale=en_US"
+	// TODO: Allow retrieval of non-US data?
+	realm := "Aegwynn"
+	rawURL := fmt.Sprintf(
+		"%s/data/wow/item-appearance/set/index?namespace=static-%s&locale=%s",
+		c.apiBase(realm),
+		c.getRegion(realm),
+		c.getLanguage(realm),
+	)
 
 	return c.requestKey(
 		rawURL,
@@ -580,10 +626,14 @@ func (c *Client) ItemAppearanceSetsIndexIDs() (map[int64]string, error) {
 
 // ItemAppearanceSet returns the appearance IDs of the given appearance set.
 func (c *Client) ItemAppearanceSet(appearanceID int64) ([]any, error) {
+	// TODO: Allow retrieval of non-US data?
+	realm := "Aegwynn"
 	rawURL := fmt.Sprintf(
-		"%s/data/wow/item-appearance/set/%d?namespace=static-us&locale=en_US",
-		c.apiBase,
+		"%s/data/wow/item-appearance/set/%d?namespace=static-%s&locale=%s",
+		c.apiBase(realm),
 		appearanceID,
+		c.getRegion(realm),
+		c.getLanguage(realm),
 	)
 
 	return c.requestKey(
@@ -629,8 +679,14 @@ func (c *Client) ItemAppearanceSetIDs(appearanceID int64) ([]int64, error) {
 
 // CollectionsTransmogs returns the transmogs the user owns.
 func (c *Client) CollectionsTransmogs() (any, error) {
-	rawURL := c.apiBase +
-		"/profile/user/wow/collections/transmogs?namespace=profile-us&locale=en_US"
+	// TODO: Allow retrieval of non-US data?
+	realm := "Aegwynn"
+	rawURL := fmt.Sprintf(
+		"%s/profile/user/wow/collections/transmogs?namespace=profile-%s&locale=%s",
+		c.apiBase(realm),
+		c.getRegion(realm),
+		c.getLanguage(realm),
+	)
 
 	return c.request(
 		rawURL,
@@ -641,14 +697,16 @@ func (c *Client) CollectionsTransmogs() (any, error) {
 
 // Professions returns the professions this alt knows.
 func (c *Client) Professions(realm, alt string) (any, error) {
-	realm = realmToSlug(realm)
+	realm = regions.RealmToSlug(realm)
 	alt = strings.ToLower(alt)
 
 	rawURL := fmt.Sprintf(
-		"%s/profile/wow/character/%s/%s/professions?namespace=profile-us&locale=en_US",
-		c.apiBase,
+		"%s/profile/wow/character/%s/%s/professions?namespace=profile-%s&locale=%s",
+		c.apiBase(realm),
 		realm,
 		alt,
+		c.getRegion(realm),
+		c.getLanguage(realm),
 	)
 
 	return c.request(

@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/erikbryant/wow/internal/regions"
 )
 
 func testClient(t *testing.T, handler http.Handler) *Client {
@@ -53,7 +55,7 @@ func TestClientRequest(t *testing.T) {
 	}))
 
 	response, err := client.request(
-		client.apiBase+"/test",
+		client.apiBase("testRealm")+"/test",
 		"test-token",
 		"TestRequest",
 	)
@@ -77,7 +79,7 @@ func TestClientRequestHTTPError(t *testing.T) {
 	}))
 
 	_, err := client.request(
-		client.apiBase+"/test",
+		client.apiBase("testRealm")+"/test",
 		"test-token",
 		"TestRequest",
 	)
@@ -97,7 +99,7 @@ func TestClientRequestInvalidJSON(t *testing.T) {
 	}))
 
 	_, err := client.request(
-		client.apiBase+"/test",
+		client.apiBase("testRealm")+"/test",
 		"test-token",
 		"TestRequest",
 	)
@@ -121,7 +123,7 @@ func TestRequestKey(t *testing.T) {
 	}))
 
 	result, err := client.requestKey(
-		client.apiBase+"/test",
+		client.apiBase("testRealm")+"/test",
 		"test-token",
 		"items",
 		"TestRequestKey",
@@ -143,7 +145,7 @@ func TestRequestKeyMissingKey(t *testing.T) {
 	}))
 
 	_, err := client.requestKey(
-		client.apiBase+"/test",
+		client.apiBase("testRealm")+"/test",
 		"test-token",
 		"items",
 		"TestRequestKey",
@@ -702,7 +704,7 @@ func TestRealmToSlug(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.realm, func(t *testing.T) {
-			got := realmToSlug(tt.realm)
+			got := regions.RealmToSlug(tt.realm)
 			if got != tt.want {
 				t.Errorf("realmToSlug(%q) = %q, want %q",
 					tt.realm, got, tt.want)
