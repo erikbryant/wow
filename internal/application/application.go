@@ -110,7 +110,7 @@ func unpack(s string) []string {
 
 func (a *App) Shop(shop func(app *App) (string, string, string)) error {
 
-	// -------------------------------------------------------------
+	// ---------------------------- US ----------------------------
 
 	a.Realms = userconfig.RealmsWithAltsUS
 
@@ -137,7 +137,7 @@ func (a *App) Shop(shop func(app *App) (string, string, string)) error {
 
 	a.Arbitrages[a.Realms.Region] = unpack(arbitrageRecords)
 
-	// -------------------------------------------------------------
+	// ---------------------------- EU ----------------------------
 
 	a.Realms = userconfig.RealmsWithAltsEU
 
