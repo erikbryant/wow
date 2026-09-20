@@ -12,8 +12,6 @@ import (
 const defaultAPIBase = "https://us.api.blizzard.com"
 
 type Client struct {
-	clientID           string
-	clientSecret       string
 	accessToken        string
 	profileAccessToken string
 
@@ -31,12 +29,12 @@ func NewClient(secretPath string) (*Client, error) {
 		httpClient: http.DefaultClient,
 	}
 
-	err = c.getSecretsFromKeychain(secretPath)
+	clientID, clientSecret, err := getSecretsFromKeychain(secretPath)
 	if err != nil {
 		return nil, err
 	}
 
-	err = c.authenticate()
+	c.accessToken, c.profileAccessToken, err = authenticate(clientID, clientSecret)
 	if err != nil {
 		return nil, err
 	}
@@ -47,8 +45,6 @@ func NewClient(secretPath string) (*Client, error) {
 // NewClientWithHTTP creates a WoW API client using the supplied API base URL
 // and HTTP client. It is only used for tests.
 func NewClientWithHTTP(
-	clientID,
-	clientSecret,
 	apiBase string,
 	httpClient *http.Client,
 ) *Client {
@@ -57,10 +53,8 @@ func NewClientWithHTTP(
 	}
 
 	return &Client{
-		clientID:     clientID,
-		clientSecret: clientSecret,
-		apiBase:      strings.TrimRight(apiBase, "/"),
-		httpClient:   httpClient,
+		apiBase:    strings.TrimRight(apiBase, "/"),
+		httpClient: httpClient,
 	}
 }
 

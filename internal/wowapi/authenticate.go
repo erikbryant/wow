@@ -11,40 +11,40 @@ import (
 //
 // Applications should normally call this once during startup. The resulting
 // authenticated client is then used by the package-level API functions.
-func (c *Client) authenticate() error {
+func authenticate(clientID, clientSecret string) (string, string, error) {
 	var err error
 
 	data := url.Values{
 		"grant_type": {"client_credentials"},
 	}
 
-	c.accessToken, err = wowoauth.GetToken(data, c.clientID, c.clientSecret)
+	accessToken, err := wowoauth.GetToken(data, clientID, clientSecret)
 	if err != nil {
-		return err
+		return "", "", err
 	}
 
-	c.profileAccessToken, err = wowoauth.GetPAT(c.clientID, c.clientSecret)
+	profileAccessToken, err := wowoauth.GetPAT(clientID, clientSecret)
 	if err != nil {
-		return err
+		return "", "", err
 	}
 
-	return nil
+	return accessToken, profileAccessToken, nil
 }
 
 // getSecretsFromKeychain authenticates the package-level WoW API client
 // using credentials stored in the keychain.
-func (c *Client) getSecretsFromKeychain(secretPath string) error {
+func getSecretsFromKeychain(secretPath string) (string, string, error) {
 	var err error
 
-	c.clientID, err = keychain.GetSigned(secretPath, "clientID")
+	clientID, err := keychain.GetSigned(secretPath, "clientID")
 	if err != nil {
-		return err
+		return "", "", err
 	}
 
-	c.clientSecret, err = keychain.GetSigned(secretPath, "clientSecret")
+	clientSecret, err := keychain.GetSigned(secretPath, "clientSecret")
 	if err != nil {
-		return err
+		return "", "", err
 	}
 
-	return nil
+	return clientID, clientSecret, nil
 }

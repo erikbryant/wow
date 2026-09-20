@@ -16,8 +16,6 @@ func testClient(t *testing.T, handler http.Handler) *Client {
 	t.Cleanup(server.Close)
 
 	client := NewClientWithHTTP(
-		"test-client-id",
-		"test-client-secret",
 		server.URL,
 		server.Client(),
 	)
