@@ -34,6 +34,16 @@ A command line tool for searching and modifying the WoW item persistence gob fil
 
 A command line tool for managing the WoW web API credentials.
 
+# Warcraft Server Layout
+
+The Warcraft world is divided into multiple regions. A single Warcraft account spans all regions. But, characters created in one region are completely isolated from characters created in a different region. Regions include: US, EU, TW, etc.
+
+Within a region there are many different servers (realms). Characters on one realm are (in almost all cases) allowed to interact with characters on other realms. The one limitation I know of is guilds. Guilds do not span realms.
+
+[Connected Realms](https://us.support.blizzard.com/en/help/article/14296). These are realms that have been bonded together to share an auction house (among other things). 
+
+There are Russian servers. These are somewhat of a special case. These are in the EU region. They only allow gameplay in the Russian language. There is a translation addon that can help with this: [MultiLanguage](https://www.curseforge.com/wow/addons/multilanguage).
+
 # Maintenance Items
 
 From time to time there will be maintenance tasks to complete. These generally result from Blizzard adding new items. The code is written with that in mind. Fail early, fail loudly. WoW's underlying data is not static. When Blizzard changes an API response or introduces new data that the application does not understand, we prefer an obvious failure or maintenance diagnostic over silently producing an incorrect result.
