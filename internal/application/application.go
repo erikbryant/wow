@@ -139,14 +139,11 @@ func (a *App) Shop(shop func(app *App) (string, string, string)) error {
 
 	// ---------------------------- EU ----------------------------
 
-	a.Realms = userconfig.RealmsWithAltsEU
-
-	outputBrief, outputVerbose, arbitrageRecords = shop(a)
-
-	// Shopping recommendations
-	fmt.Println(outputVerbose)
-
-	a.Arbitrages[a.Realms.Region] = unpack(arbitrageRecords)
+	//a.Realms = userconfig.RealmsWithAltsEU
+	//outputBrief, outputVerbose, arbitrageRecords = shop(a)
+	//// Shopping recommendations
+	//fmt.Println(outputBrief)
+	//a.Arbitrages[a.Realms.Region] = unpack(arbitrageRecords)
 
 	return nil
 }
