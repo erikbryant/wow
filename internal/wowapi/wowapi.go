@@ -467,24 +467,3 @@ func (c *Client) CollectionsTransmogs() (any, error) {
 		"CollectionsTransmogs",
 	)
 }
-
-// Professions returns the professions this alt knows.
-func (c *Client) Professions(realm, alt string) (any, error) {
-	realm = regions.RealmToSlug(realm)
-	alt = strings.ToLower(alt)
-
-	rawURL := fmt.Sprintf(
-		"%s/profile/wow/character/%s/%s/professions?namespace=profile-%s&locale=%s",
-		c.apiBase(realm),
-		realm,
-		alt,
-		c.getRegion(realm),
-		c.getLanguage(realm),
-	)
-
-	return c.request(
-		rawURL,
-		c.profileAccessToken,
-		"Professions",
-	)
-}

@@ -489,36 +489,6 @@ func TestCollectionsTransmogs(t *testing.T) {
 	}
 }
 
-func TestProfessions(t *testing.T) {
-	client := testClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/profile/wow/character/aegwynn/testcharacter/professions" {
-			t.Errorf("path = %q, want professions endpoint", r.URL.Path)
-		}
-
-		if got := r.Header.Get("Authorization"); got != "Bearer test-profile-access-token" {
-			t.Errorf("Authorization = %q, want profile token", got)
-		}
-
-		writeJSON(t, w, map[string]any{
-			"professions": []any{},
-		})
-	}))
-
-	result, err := client.Professions("Aegwynn", "TestCharacter")
-	if err != nil {
-		t.Fatalf("Professions() error = %v", err)
-	}
-
-	response, ok := result.(map[string]any)
-	if !ok {
-		t.Fatalf("result type = %T, want map[string]any", result)
-	}
-
-	if _, ok := response["professions"]; !ok {
-		t.Error("response is missing professions")
-	}
-}
-
 func TestRealmToSlug(t *testing.T) {
 	tests := []struct {
 		realm string
