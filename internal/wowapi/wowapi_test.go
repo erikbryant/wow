@@ -7,8 +7,6 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-
-	"github.com/erikbryant/wow/internal/regions"
 )
 
 func testClient(t *testing.T, handler http.Handler) *Client {
@@ -486,28 +484,5 @@ func TestCollectionsTransmogs(t *testing.T) {
 
 	if response["some"] != "data" {
 		t.Errorf("some = %v, want data", response["some"])
-	}
-}
-
-func TestRealmToSlug(t *testing.T) {
-	tests := []struct {
-		realm string
-		want  string
-	}{
-		{"Stormrage", "stormrage"},
-		{"Test Realm", "test-realm"},
-		{"Drak'thul", "drakthul"},
-		{"Aegwynn", "aegwynn"},
-		{"Blackwing-Lair", "blackwinglair"},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.realm, func(t *testing.T) {
-			got := regions.RealmToSlug(tt.realm)
-			if got != tt.want {
-				t.Errorf("realmToSlug(%q) = %q, want %q",
-					tt.realm, got, tt.want)
-			}
-		})
 	}
 }
