@@ -106,6 +106,8 @@ func New(wi *wowitem.Persistence) *UserConfig {
 			1624: {}, // Abyssius
 			2842: {}, // Anomalus
 			2086: {}, // Blazehound
+			138:  {}, // Blue Moth
+			1152: {}, // Chrominius
 			1752: {}, // Crispin
 			1720: {}, // Emmigosa
 			2090: {}, // Faceless Mindlasher
