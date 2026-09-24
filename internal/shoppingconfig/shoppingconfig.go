@@ -53,7 +53,6 @@ func New(wi *wowitem.Persistence) *UserConfig {
 
 			// Fun weapon appearances
 			wi.Search("Tyrhold Broadsword").ID():          common.Coppers(3000, 0, 0),
-			wi.Search("Ameelton's Shot-Thrower").ID():     common.Coppers(3000, 0, 0),
 			wi.Search("Kickback 5000").ID():               common.Coppers(3000, 0, 0),
 			wi.Search("Extreme-Impact Hole Puncher").ID(): common.Coppers(3000, 0, 0),
 
@@ -91,6 +90,7 @@ func New(wi *wowitem.Persistence) *UserConfig {
 			162:  {}, // Sinister Squashling
 			1628: {}, // Sister of Temptation
 			200:  {}, // Spring Rabbit
+			3006: {}, // Stoneskin Dredwing Pup
 			211:  {}, // Strand Crawler
 			2088: {}, // Surger
 			1434: {}, // Sun Sproutling
@@ -115,12 +115,12 @@ func New(wi *wowitem.Persistence) *UserConfig {
 			1961: {}, // G0-R41-0N Ultratonk
 			2925: {}, // Golden Cloudfeather
 			1623: {}, // Leviathan Hatchling
+			2959: {}, // Micromancer
 			2050: {}, // Orphaned Felbat
 			1233: {}, // Pocket Reaver
 			1804: {}, // Risen Saber Kitten
 			1966: {}, // Soulbroken Whelpling
 			1146: {}, // Stitched Pup
-			3006: {}, // Stoneskin Dredwing Pup
 			1151: {}, // Untamed Hatchling
 			4506: {}, // Violet Sporbit
 			1968: {}, // Wicked Soul
