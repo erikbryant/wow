@@ -27,7 +27,7 @@ func New(wi *wowitem.Persistence) *UserConfig {
 		AppearancePriceMax:       common.Coppers(50, 0, 0),
 		AppearancePriceInSetMax:  common.Coppers(600, 0, 0),
 		ArbitrageProfitMin:       common.Coppers(0, 50, 0),
-		BattlePetPriceResellMax:  common.Coppers(80, 0, 0),
+		BattlePetPriceResellMax:  common.Coppers(200, 0, 0),
 		BattlePetPriceUnownedMax: common.Coppers(500, 0, 0),
 		ProfitToDisplayMin:       common.Coppers(15, 0, 0),
 		RecipePriceMax:           common.Coppers(19, 0, 0),
@@ -38,11 +38,11 @@ func New(wi *wowitem.Persistence) *UserConfig {
 		// the user can then come in here and fix the name.
 		UsefulGoods: map[int64]int64{
 			// Bags
-			//wi.Search("Weavercloth Bag").ID():              bagPriceMax, // 34 slot
-			//wi.Search("Azureweave Expedition Pack").ID():   bagPriceMax, // 34 slot
-			//wi.Search("Imbued Bright Linen Backpack").ID(): bagPriceMax, // 36 slot
-			//wi.Search("Duskweave Bag").ID():                bagPriceMax, // 36 slot
-			//wi.Search("Sunfire Silk Backpack").ID():        bagPriceMax, // 38 slot
+			wi.Search("Weavercloth Bag").ID():              common.Coppers(40, 0, 0), // 34 slot
+			wi.Search("Azureweave Expedition Pack").ID():   common.Coppers(40, 0, 0), // 34 slot
+			wi.Search("Imbued Bright Linen Backpack").ID(): common.Coppers(40, 0, 0), // 36 slot
+			wi.Search("Duskweave Bag").ID():                common.Coppers(40, 0, 0), // 36 slot
+			wi.Search("Sunfire Silk Backpack").ID():        common.Coppers(40, 0, 0), // 38 slot
 
 			// Reagent bags
 			//wi.Search("Chronocloth Reagent Bag").ID():      reagentBagPriceMax, // 36 slot
@@ -113,8 +113,10 @@ func New(wi *wowitem.Persistence) *UserConfig {
 			2090: {}, // Faceless Mindlasher
 			2119: {}, // Fel-Afflicted Skyfin
 			1802: {}, // Fetid Waveling
+			1144: {}, // Fungal Abomination
 			1961: {}, // G0-R41-0N Ultratonk
 			2925: {}, // Golden Cloudfeather
+			67:   {}, // Hawk Owl
 			1623: {}, // Leviathan Hatchling
 			2959: {}, // Micromancer
 			2050: {}, // Orphaned Felbat
