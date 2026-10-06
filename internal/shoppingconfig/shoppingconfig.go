@@ -103,30 +103,7 @@ func New(wi *wowitem.Persistence) *UserConfig {
 			153:  {}, // Wolpertinger
 
 			// Battle pets for Stephen that we are currently full-up on
-			1624: {}, // Abyssius
-			2842: {}, // Anomalus
-			2086: {}, // Blazehound
-			138:  {}, // Blue Moth
-			1152: {}, // Chrominius
-			1752: {}, // Crispin
-			1720: {}, // Emmigosa
-			2090: {}, // Faceless Mindlasher
-			2119: {}, // Fel-Afflicted Skyfin
-			1802: {}, // Fetid Waveling
-			1144: {}, // Fungal Abomination
-			1961: {}, // G0-R41-0N Ultratonk
-			2925: {}, // Golden Cloudfeather
-			67:   {}, // Hawk Owl
-			1623: {}, // Leviathan Hatchling
-			2959: {}, // Micromancer
-			2050: {}, // Orphaned Felbat
-			1233: {}, // Pocket Reaver
-			1804: {}, // Risen Saber Kitten
-			1966: {}, // Soulbroken Whelpling
-			1146: {}, // Stitched Pup
-			1151: {}, // Untamed Hatchling
-			4506: {}, // Violet Sporbit
-			1968: {}, // Wicked Soul
+			1153: {}, // Death Talon Whelpguard
 		},
 	}
 
