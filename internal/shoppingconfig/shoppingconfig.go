@@ -104,6 +104,10 @@ func New(wi *wowitem.Persistence) *UserConfig {
 
 			// Battle pets for Stephen that we are currently full-up on
 			1153: {}, // Death Talon Whelpguard
+			1720: {}, // Emmigosa
+			1961: {}, // G0-R41-0N Ultratonk
+			1921: {}, // Untethered Wyrmling
+			1959: {}, // Winter Rageling
 		},
 	}
 
