@@ -21,6 +21,7 @@ var (
 		1884:  {}, // Various fish held in offhand
 		2016:  {}, // Various fish held in offhand
 		2019:  {}, // Various fish held in offhand
+		70465: {}, // Junker's Big Ol' Bag
 		78217: {}, // Elegant Artisan's Fishing Hat
 
 		// NOT part of an appearance set (so less interesting)
