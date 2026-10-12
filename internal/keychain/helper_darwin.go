@@ -15,9 +15,10 @@ import (
 // Also see https://developer.apple.com/library/ios/documentation/Security/Conceptual/keychainServConcepts/01introduction/introduction.html .
 
 /*
-   #cgo LDFLAGS: -framework Security
+   #cgo LDFLAGS: -framework Security -framework CoreFoundation
 
    #include <Security/Security.h>
+   #include <CoreFoundation/CoreFoundation.h>
 
 CFDictionaryRef CFDictionaryCreateSafe2(CFAllocatorRef allocator, const uintptr_t *keys, const uintptr_t *values, CFIndex numValues, const CFDictionaryKeyCallBacks *keyCallBacks, const CFDictionaryValueCallBacks *valueCallBacks) {
      return CFDictionaryCreate(allocator, (const void **)keys, (const void **)values, numValues, keyCallBacks, valueCallBacks);
