@@ -106,9 +106,12 @@ func New(wi *wowitem.Persistence) *UserConfig {
 			75:   {}, // Black Kingsnake
 			1153: {}, // Death Talon Whelpguard
 			1720: {}, // Emmigosa
+			1802: {}, // Fetid Waveling
 			1961: {}, // G0-R41-0N Ultratonk
 			1804: {}, // Risen Saber Kitten
+			1151: {}, // Untamed Hatchling
 			1921: {}, // Untethered Wyrmling
+			1968: {}, // Wicked Soul
 			1959: {}, // Winter Rageling
 		},
 	}
