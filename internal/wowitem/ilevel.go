@@ -64,8 +64,8 @@ var itemLevels = map[int64]Levels{
 	240956: {iLvl80odd, iLvl80odd}, // Silvermoon Focusing Shard
 
 	// iLvl 106
-	237950: {iLvl106, []int64{218, 225, 232}},      // Sun-Blessed Needle Set
-	237951: {iLvl106, []int64{218, 225, 232}},      // Sun-Blessed Leatherworker's Toolset
+	237950: {iLvl106, []int64{212, 218, 225, 232}}, // Sun-Blessed Needle Set
+	237951: {iLvl106, []int64{212, 218, 225, 232}}, // Sun-Blessed Leatherworker's Toolset
 	237952: {iLvl106, iLvl106},                     // Sun-Blessed Blacksmith's Toolbox
 	238014: {iLvl106, []int64{212, 218, 225, 232}}, // Sun-Blessed Sickle
 	238015: {iLvl106, []int64{212, 218, 225, 232}}, // Sun-Blessed Pickaxe
@@ -85,7 +85,7 @@ var itemLevels = map[int64]Levels{
 	244621: {iLvl106, []int64{212, 218, 225, 232}}, // Sin'dorei Herbalist's Backpack
 	244622: {iLvl106, iLvl106},                     // Sin'dorei Hunter's Pack
 	244623: {iLvl106, iLvl106},                     // Eversong Hunter's Headcover
-	244624: {iLvl106, []int64{212, 218, 225, 232}}, // Sin'dorei Engineer's Gloves
+	244624: {iLvl106, iLvl106},                     // Sin'dorei Engineer's Gloves
 	244625: {iLvl106, iLvl106},                     // Sin'dorei Leathershaper's Smock
 	244628: {iLvl106, iLvl106},                     // Sin'dorei Forgemaster's Cover
 	244630: {iLvl106, iLvl106},                     // Sin'dorei Jeweler's Cover
@@ -103,7 +103,7 @@ var itemLevels = map[int64]Levels{
 
 	// iLvl 317
 	191233: {iLvl317, []int64{71, 72, 73, 74}}, // Chef's Smooth Rolling Pin
-	191234: {iLvl317, []int64{71, 72, 74}},     // Alchemist's Sturdy Mixing Rod
+	191234: {iLvl317, []int64{71, 72, 73, 74}}, // Alchemist's Sturdy Mixing Rod
 	191235: {iLvl317, iLvl317},                 // Draconium Blacksmith's Toolbox
 	191236: {iLvl317, []int64{71, 72, 73, 74}}, // Draconium Leatherworker's Toolset
 	191237: {iLvl317, iLvl317},                 // Draconium Blacksmith's Hammer
@@ -114,24 +114,24 @@ var itemLevels = map[int64]Levels{
 	191242: {iLvl317, iLvl317},                 // Draconium Pickaxe
 	193479: {iLvl317, iLvl317},                 // Floral Basket
 	193480: {iLvl317, []int64{71, 72, 73, 74}}, // Durable Pack
-	193482: {iLvl317, []int64{71, 74}},         // Skinner's Cap (sell price 2.00.00)
+	193482: {iLvl317, []int64{71, 72, 73, 74}}, // Skinner's Cap (sell price 2.00.00)
 	193485: {iLvl317, []int64{71, 72, 73, 74}}, // Protective Gloves
 	193486: {iLvl317, iLvl317},                 // Resilient Smock
 	193487: {iLvl317, []int64{71, 72, 73, 74}}, // Alchemist's Hat
 	193528: {iLvl317, []int64{71, 72, 73, 74}}, // Wildercloth Alchemist's Robe
 	193534: {iLvl317, []int64{71, 72, 73, 74}}, // Wildercloth Chef's Hat
 	193538: {iLvl317, []int64{71, 72, 73, 74}}, // Wildercloth Gardening Hat
-	193539: {iLvl317, []int64{72, 73, 74}},     // Wildercloth Enchanter's Hat
+	193539: {iLvl317, []int64{71, 72, 73, 74}}, // Wildercloth Enchanter's Hat
 	193541: {iLvl317, iLvl317},                 // Wildercloth Tailor's Coat
 	193612: {iLvl317, []int64{71, 72, 73, 74}}, // Smithing Apron
 	193615: {iLvl317, []int64{71, 72, 73, 74}}, // Jeweler's Cover
-	194125: {iLvl317, []int64{72, 73, 74}},     // Spring-Loaded Draconium Fabric Cutters
-	194874: {iLvl317, []int64{71, 72, 74}},     // Scribe's Fastened Quill
+	194125: {iLvl317, []int64{71, 72, 73, 74}}, // Spring-Loaded Draconium Fabric Cutters
+	194874: {iLvl317, []int64{71, 72, 73, 74}}, // Scribe's Fastened Quill
 	198204: {iLvl317, []int64{72, 73, 74}},     // Draconium Brainwave Amplifier
-	198225: {iLvl317, []int64{72, 74}},         // Draconium Fisherfriend
+	198225: {iLvl317, []int64{71, 72, 74}},     // Draconium Fisherfriend
 	198234: {iLvl317, []int64{71, 72, 73, 74}}, // Lapidary's Draconium Clamps
-	198243: {iLvl317, []int64{72, 74}},         // Draconium Delver's Helmet
-	198245: {iLvl317, []int64{71, 72, 74}},     // Draconium Encased Samophlange
+	198243: {iLvl317, []int64{71, 72, 73, 74}}, // Draconium Delver's Helmet
+	198245: {iLvl317, []int64{71, 72, 73, 74}}, // Draconium Encased Samophlange
 	198262: {iLvl317, []int64{71, 72, 73, 74}}, // Bottomless Stonecrust Ore Satchel
 	198715: {iLvl317, iLvl317},                 // Runed Draconium Rod
 
@@ -143,40 +143,40 @@ var itemLevels = map[int64]Levels{
 	215119: {iLvl486, iLvl486},                  // Right-Handed Magnifying Glass
 	215120: {iLvl486, iLvl486},                  // Radiant Loupes
 	215121: {iLvl486, iLvl486},                  // Incanter's Shard
-	219861: {iLvl486, []int64{85, 91, 98, 105}}, // Gardener's Basket
+	219861: {iLvl486, iLvl486},                  // Gardener's Basket
 	219862: {iLvl486, iLvl486},                  // Hideseeker's Pack
 	219863: {iLvl486, iLvl486},                  // Hideseeker's Hat
-	219864: {iLvl486, []int64{85, 91, 98, 105}}, // Scrapsmith's Gloves
-	219865: {iLvl486, []int64{85, 91, 98, 105}}, // Hideshaper's Cover
-	219866: {iLvl486, []int64{85, 91, 105}},     // Apothecary's Cap
+	219864: {iLvl486, iLvl486},                  // Scrapsmith's Gloves
+	219865: {iLvl486, iLvl486},                  // Hideshaper's Cover
+	219866: {iLvl486, iLvl486},                  // Apothecary's Cap
 	219873: {iLvl486, iLvl486},                  // Steelsmith's Apron
-	219875: {iLvl486, []int64{85, 91, 98, 105}}, // Gemcutter's Apron
-	221786: {iLvl486, []int64{91, 98, 105}},     // Spring-Loaded Bismuth Fabric Cutters
-	221788: {iLvl486, []int64{85, 91, 98, 105}}, // Bismuth Brainwave Projector
-	221790: {iLvl486, []int64{85, 91, 98, 105}}, // Bismuth Fisherfriend
-	221792: {iLvl486, []int64{98, 105}},         // Lapidary's Bismuth Clamps
+	219875: {iLvl486, iLvl486},                  // Gemcutter's Apron
+	221786: {iLvl486, []int64{85, 91, 98, 105}}, // Spring-Loaded Bismuth Fabric Cutters
+	221788: {iLvl486, iLvl486},                  // Bismuth Brainwave Projector
+	221790: {iLvl486, iLvl486},                  // Bismuth Fisherfriend
+	221792: {iLvl486, []int64{85, 91, 98, 105}}, // Lapidary's Bismuth Clamps
 	221795: {iLvl486, []int64{85, 91, 98, 105}}, // Bismuth Miner's Headgear
 	221797: {iLvl486, iLvl486},                  // Bismuth-Fueled Samophlange
-	221799: {iLvl486, []int64{91, 105}},         // Miner's Bismuth Hoard
+	221799: {iLvl486, []int64{91, 98, 105}},     // Miner's Bismuth Hoard
 	222480: {iLvl486, iLvl486},                  // Proficient Sickle
 	222481: {iLvl486, iLvl486},                  // Proficient Pickaxe
-	222482: {iLvl486, []int64{79, 91, 98, 105}}, // Proficient Skinning Knife
+	222482: {iLvl486, iLvl486},                  // Proficient Skinning Knife
 	222483: {iLvl486, iLvl486},                  // Proficient Needle Set
 	222484: {iLvl486, iLvl486},                  // Proficient Leatherworker's Knife
-	222485: {iLvl486, []int64{85, 91, 98, 105}}, // Proficient Leatherworker's Toolset
+	222485: {iLvl486, iLvl486},                  // Proficient Leatherworker's Toolset
 	222486: {iLvl486, iLvl486},                  // Proficient Blacksmith's Hammer
-	222487: {iLvl486, []int64{79, 85, 91, 105}}, // Proficient Blacksmith's Toolbox
+	222487: {iLvl486, iLvl486},                  // Proficient Blacksmith's Toolbox
 	222573: {iLvl486, iLvl486},                  // Lightweight Scribe's Quill
 	222575: {iLvl486, iLvl486},                  // Hasty Alchemist's Mixing Rod
 	222577: {iLvl486, iLvl486},                  // Burnt Rolling Pin
 	244711: {iLvl486, []int64{}},                // Farstrider Hobbyist Rod
 
 	// iLvl 486 oddities #1
-	222841: {iLvl486odd1, iLvl486odd1},             // Weavercloth Gardening Hat
-	222843: {iLvl486odd1, iLvl486odd1},             // Weavercloth Enchanter's Hat
-	222844: {iLvl486odd1, []int64{80, 81, 82, 83}}, // Weavercloth Tailor's Coat
-	222845: {iLvl486odd1, []int64{80, 81, 82, 83}}, // Weavercloth Alchemist's Robe
-	222846: {iLvl486odd1, iLvl486odd1},             // Weavercloth Chef's Hat
+	222841: {iLvl486odd1, iLvl486odd1}, // Weavercloth Gardening Hat
+	222843: {iLvl486odd1, iLvl486odd1}, // Weavercloth Enchanter's Hat
+	222844: {iLvl486odd1, iLvl486odd1}, // Weavercloth Tailor's Coat
+	222845: {iLvl486odd1, iLvl486odd1}, // Weavercloth Alchemist's Robe
+	222846: {iLvl486odd1, iLvl486odd1}, // Weavercloth Chef's Hat
 
 	// iLvl 486 oddities #2
 	244620: {iLvl486odd2, iLvl486odd2}, // Chemist's Cap
