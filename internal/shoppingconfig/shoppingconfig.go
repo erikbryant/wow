@@ -108,11 +108,13 @@ func New(wi *wowitem.Persistence) *UserConfig {
 			1720: {}, // Emmigosa
 			1802: {}, // Fetid Waveling
 			1961: {}, // G0-R41-0N Ultratonk
+			1623: {}, // Leviathan Hatchling
 			1804: {}, // Risen Saber Kitten
 			1151: {}, // Untamed Hatchling
 			1921: {}, // Untethered Wyrmling
 			1968: {}, // Wicked Soul
 			1959: {}, // Winter Rageling
+			140:  {}, // Yellow Moth
 		},
 	}
 
