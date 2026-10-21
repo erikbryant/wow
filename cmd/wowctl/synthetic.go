@@ -158,6 +158,7 @@ func synthetics() []wowitem.Item {
 		newItem(225787, "Pheromone-Covered Missive", price(1, 87, 69), commodity, l23),
 		newItem(225839, "Agitated Water", price(1, 98, 3), commodity, l23),
 		newItem(228386, "Decaying Rope", price(0, 0, 1), commodity),
+		newItem(225840, "Ionized Core", price(2, 18, 14), commodity),
 	}
 }
 
