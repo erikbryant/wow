@@ -58,6 +58,24 @@ func petResellBargain(petAuction auction.Auction, app *application.App) bool {
 	return true
 }
 
+// petUpsellBargain returns true if pet is likely to resell at a profit (if first upgraded to rare)
+func petUpsellBargain(petAuction auction.Auction, app *application.App) bool {
+	_, ok := app.ShoppingConfig.SkipPets[petAuction.Pet.SpeciesID]
+	if ok {
+		return false
+	}
+	if petAuction.Pet.QualityID == common.QualityID("Rare") {
+		return false
+	}
+	if petAuction.Pet.Level < 25 {
+		return false
+	}
+	if petAuction.Buyout > app.ShoppingConfig.BattlePetPriceUpsellMax {
+		return false
+	}
+	return true
+}
+
 // missingProfessionTool returns true if we do not have an entry for this tool in wowitem/ilevel.go
 func missingProfessionTool(i wowitem.Item, app *application.App) bool {
 	if i.SellPriceRealizable() <= app.ShoppingConfig.ArbitrageProfitMin {
@@ -119,7 +137,7 @@ func (r *Recommendations) iterateAuctions(auctions map[int64][]auction.Auction, 
 
 		for _, auc := range itemAuctions {
 
-			// ----- Business logic applicable to commodities and regular auctions -----
+			// ----- Business logic applicable to commodities AND regular auctions -----
 
 			profit, ok := isArbitrage(i, auc, app)
 			if ok {
@@ -148,6 +166,9 @@ func (r *Recommendations) iterateAuctions(auctions map[int64][]auction.Auction, 
 			if i.ID() == battlepet.PetCageItemID {
 				if petResellBargain(auc, app) {
 					r.PetResellBargains = append(r.PetResellBargains, app.BattlePets.Name(auc.Pet.SpeciesID))
+				}
+				if petUpsellBargain(auc, app) {
+					r.PetResellBargains = append(r.PetResellBargains, app.BattlePets.Name(auc.Pet.SpeciesID)+" -- Upsell")
 				}
 				if petNeeded(auc, app) {
 					r.PetNeededBargains = append(r.PetNeededBargains, app.BattlePets.Name(auc.Pet.SpeciesID))

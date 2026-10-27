@@ -11,6 +11,7 @@ type UserConfig struct {
 	ArbitrageProfitMin       int64
 	BattlePetPriceResellMax  int64
 	BattlePetPriceUnownedMax int64
+	BattlePetPriceUpsellMax  int64
 	ProfitToDisplayMin       int64
 	RecipePriceMax           int64
 	ToyPriceMax              int64
@@ -29,6 +30,7 @@ func New(wi *wowitem.Persistence) *UserConfig {
 		ArbitrageProfitMin:       common.Coppers(0, 50, 0),
 		BattlePetPriceResellMax:  common.Coppers(200, 0, 0),
 		BattlePetPriceUnownedMax: common.Coppers(500, 0, 0),
+		BattlePetPriceUpsellMax:  common.Coppers(100, 0, 0),
 		ProfitToDisplayMin:       common.Coppers(15, 0, 0),
 		RecipePriceMax:           common.Coppers(19, 0, 0),
 		ToyPriceMax:              common.Coppers(400, 0, 0),
@@ -104,12 +106,18 @@ func New(wi *wowitem.Persistence) *UserConfig {
 
 			// Battle pets for Stephen that we are currently full-up on
 			75:   {}, // Black Kingsnake
+			145:  {}, // Blue Dragonhawk Hatchling
+			2091: {}, // Corrupted Blood
 			1153: {}, // Death Talon Whelpguard
 			1720: {}, // Emmigosa
 			1802: {}, // Fetid Waveling
 			1961: {}, // G0-R41-0N Ultratonk
+			1143: {}, // Giant Bone Spider
 			1623: {}, // Leviathan Hatchling
+			2959: {}, // Micromancer
 			1804: {}, // Risen Saber Kitten
+			1146: {}, // Stitched Pup
+			1721: {}, // Stormborne Whelpling
 			1151: {}, // Untamed Hatchling
 			1921: {}, // Untethered Wyrmling
 			1968: {}, // Wicked Soul
