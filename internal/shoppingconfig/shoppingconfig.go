@@ -119,6 +119,7 @@ func New(wi *wowitem.Persistence) *UserConfig {
 			1143: {}, // Giant Bone Spider
 			1623: {}, // Leviathan Hatchling
 			2959: {}, // Micromancer
+			1156: {}, // Mini Mindslayer
 			43:   {}, // Orange Tabby Cat
 			1804: {}, // Risen Saber Kitten
 			90:   {}, // Smolderweb Hatchling
