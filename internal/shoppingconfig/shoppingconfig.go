@@ -105,17 +105,23 @@ func New(wi *wowitem.Persistence) *UserConfig {
 			153:  {}, // Wolpertinger
 
 			// Battle pets for Stephen that we are currently full-up on
+			74:   {}, // Albino Snake
+			52:   {}, // Ancona Chicken
 			75:   {}, // Black Kingsnake
 			145:  {}, // Blue Dragonhawk Hatchling
+			1152: {}, // Chrominius
 			2091: {}, // Corrupted Blood
 			1153: {}, // Death Talon Whelpguard
 			1720: {}, // Emmigosa
 			1802: {}, // Fetid Waveling
+			847:  {}, // Fishy
 			1961: {}, // G0-R41-0N Ultratonk
 			1143: {}, // Giant Bone Spider
 			1623: {}, // Leviathan Hatchling
 			2959: {}, // Micromancer
+			43:   {}, // Orange Tabby Cat
 			1804: {}, // Risen Saber Kitten
+			90:   {}, // Smolderweb Hatchling
 			1146: {}, // Stitched Pup
 			1721: {}, // Stormborne Whelpling
 			1151: {}, // Untamed Hatchling
