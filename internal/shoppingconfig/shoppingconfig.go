@@ -121,8 +121,12 @@ func New(wi *wowitem.Persistence) *UserConfig {
 			2959: {}, // Micromancer
 			1156: {}, // Mini Mindslayer
 			43:   {}, // Orange Tabby Cat
+			175:  {}, // Phoenix Hatchling
+			1233: {}, // Pocket Reaver
 			1804: {}, // Risen Saber Kitten
+			51:   {}, // Senegal
 			90:   {}, // Smolderweb Hatchling
+			1966: {}, // Soulbroken Whelpling
 			1146: {}, // Stitched Pup
 			1721: {}, // Stormborne Whelpling
 			1151: {}, // Untamed Hatchling
