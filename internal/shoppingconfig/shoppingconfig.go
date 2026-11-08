@@ -110,19 +110,24 @@ func New(wi *wowitem.Persistence) *UserConfig {
 			75:   {}, // Black Kingsnake
 			145:  {}, // Blue Dragonhawk Hatchling
 			1152: {}, // Chrominius
+			2909: {}, // Cloudfeather Fledgling
 			2091: {}, // Corrupted Blood
 			1153: {}, // Death Talon Whelpguard
 			1720: {}, // Emmigosa
+			2090: {}, // Faceless Mindlasher
 			1802: {}, // Fetid Waveling
 			847:  {}, // Fishy
 			1961: {}, // G0-R41-0N Ultratonk
 			1143: {}, // Giant Bone Spider
+			142:  {}, // Golden Dragonhawk Hatchling
+			3064: {}, // Larion Cub
 			1623: {}, // Leviathan Hatchling
 			2959: {}, // Micromancer
 			1156: {}, // Mini Mindslayer
 			43:   {}, // Orange Tabby Cat
 			175:  {}, // Phoenix Hatchling
 			1233: {}, // Pocket Reaver
+			2525: {}, // Redridge Tarantula
 			1804: {}, // Risen Saber Kitten
 			51:   {}, // Senegal
 			90:   {}, // Smolderweb Hatchling
