@@ -139,6 +139,7 @@ func New(wi *wowitem.Persistence) *UserConfig {
 			1968: {}, // Wicked Soul
 			1959: {}, // Winter Rageling
 			140:  {}, // Yellow Moth
+			1180: {}, // Zandalari Kneebiter
 		},
 	}
 
