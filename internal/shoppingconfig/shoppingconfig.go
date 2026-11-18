@@ -26,12 +26,12 @@ func New(wi *wowitem.Persistence) *UserConfig {
 
 	userConfig := UserConfig{
 		AppearancePriceMax:       common.Coppers(50, 0, 0),
-		AppearancePriceInSetMax:  common.Coppers(600, 0, 0),
+		AppearancePriceInSetMax:  common.Coppers(800, 0, 0),
 		ArbitrageProfitMin:       common.Coppers(0, 50, 0),
 		BattlePetPriceResellMax:  common.Coppers(200, 0, 0),
 		BattlePetPriceUnownedMax: common.Coppers(500, 0, 0),
 		BattlePetPriceUpsellMax:  common.Coppers(100, 0, 0),
-		ProfitToDisplayMin:       common.Coppers(15, 0, 0),
+		ProfitToDisplayMin:       common.Coppers(30, 0, 0),
 		RecipePriceMax:           common.Coppers(19, 0, 0),
 		ToyPriceMax:              common.Coppers(400, 0, 0),
 
@@ -134,8 +134,10 @@ func New(wi *wowitem.Persistence) *UserConfig {
 			1966: {}, // Soulbroken Whelpling
 			1146: {}, // Stitched Pup
 			1721: {}, // Stormborne Whelpling
+			2092: {}, // Unstable Tendril
 			1151: {}, // Untamed Hatchling
 			1921: {}, // Untethered Wyrmling
+			2839: {}, // Void-Scarred Hare
 			1968: {}, // Wicked Soul
 			1959: {}, // Winter Rageling
 			140:  {}, // Yellow Moth
