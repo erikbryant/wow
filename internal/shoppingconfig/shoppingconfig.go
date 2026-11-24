@@ -122,10 +122,12 @@ func New(wi *wowitem.Persistence) *UserConfig {
 			142:  {}, // Golden Dragonhawk Hatchling
 			3064: {}, // Larion Cub
 			1623: {}, // Leviathan Hatchling
+			2468: {}, // Laughing Stonekin
 			2959: {}, // Micromancer
 			1156: {}, // Mini Mindslayer
 			43:   {}, // Orange Tabby Cat
 			175:  {}, // Phoenix Hatchling
+			2798: {}, // Plagueborn Slime
 			1233: {}, // Pocket Reaver
 			2525: {}, // Redridge Tarantula
 			1804: {}, // Risen Saber Kitten
@@ -137,6 +139,7 @@ func New(wi *wowitem.Persistence) *UserConfig {
 			2092: {}, // Unstable Tendril
 			1151: {}, // Untamed Hatchling
 			1921: {}, // Untethered Wyrmling
+			4506: {}, // Violet Sporbit
 			2839: {}, // Void-Scarred Hare
 			1968: {}, // Wicked Soul
 			1959: {}, // Winter Rageling
