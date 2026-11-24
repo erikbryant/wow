@@ -89,18 +89,20 @@ func synthetics() []wowitem.Item {
 		newItem(226004, "Olden Text", price(200, 0, 0), l23),
 		newItem(226005, "Ancient Tool", price(200, 0, 0), l23),
 
-		// Items WITHOUT vendor prices and are Commodities.
+		// Commodity items WITHOUT vendor prices.
 
 		newItem(178149, "Centurion Anima Core", commodity),
 		newItem(225784, "Potion of Polymorphic Translation: Nerubian", commodity),
 
-		// Items WITH vendor prices and are Commodities.
+		// Commodity items WITH vendor prices.
 
 		newItem(23704, "Eversong Port", price(0, 0, 75), commodity, consumable),
 		newItem(23955, "Worn Ravager Claw", price(0, 0, 70), commodity),
 		newItem(43557, "Poisonous Ivy Berries", price(0, 0, 25), commodity, l20),
 		newItem(54629, "Prickly Thorn", price(0, 0, 43), commodity),
+		newItem(56054, "Gleaming Flipper", price(0, 5, 60), commodity),
 		newItem(56055, "Small Parasitic Fish", price(0, 8, 9), commodity),
+		newItem(56056, "Trophy Jaws", price(1, 0, 0), commodity),
 		newItem(60390, "Reticulated Tissue", price(0, 19, 73), commodity),
 		newItem(60405, "Stubby Bear Tail", price(0, 22, 22), commodity),
 		newItem(60406, "Blood-Caked Incisors", price(0, 37, 27), commodity),
@@ -157,9 +159,8 @@ func synthetics() []wowitem.Item {
 		newItem(224155, "Peeled Fungal Scale", price(20, 0, 0), commodity, l23),
 		newItem(225787, "Pheromone-Covered Missive", price(1, 87, 69), commodity, l23),
 		newItem(225839, "Agitated Water", price(1, 98, 3), commodity, l23),
-		newItem(228386, "Decaying Rope", price(0, 0, 1), commodity),
 		newItem(225840, "Ionized Core", price(2, 18, 14), commodity),
-		newItem(56056, "Trophy Jaws", price(1, 0, 0), commodity),
+		newItem(228386, "Decaying Rope", price(0, 0, 1), commodity),
 	}
 }
 
